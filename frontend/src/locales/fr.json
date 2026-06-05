@@ -75,12 +75,13 @@
     "resetPasswordWelcomeText": "Définissez un nouveau mot de passe et revenez au jeu de pronostics Aspire MAKE.",
     "verifyEmailWelcomeText": "Confirmez votre adresse e-mail pour activer votre compte Aspire MAKE.",
     "emailAddress": "Adresse e-mail",
-    "emailPlaceholder": "vous@email.fr",
+    "emailPlaceholder": "vous'@'email.fr",
     "rememberMe": "Se souvenir de moi",
     "signInNow": "Se connecter",
     "termsAgreement": "En cliquant sur « Se connecter », vous acceptez nos",
     "termsOfService": "Conditions d'utilisation",
     "privacyPolicy": "Politique de confidentialité",
+    "privacyAgreement": "En vous connectant, vous acceptez notre",
     "createAccount": "Créer un compte",
     "email": "E-mail",
     "password": "Mot de passe",
@@ -163,6 +164,87 @@
     "imageTooLarge": "L'image est trop grande (max. 2 Mo).",
     "imageRemoved": "Photo de profil supprimée.",
     "imageUploadFailed": "Impossible de téléverser la photo de profil."
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "lastUpdated": "Dernière mise à jour : juin 2026",
+    "backToLogin": "Retour à la connexion",
+    "intro": "Cette politique de confidentialité explique comment Aspire MAKE traite les données personnelles dans le jeu interne de pronostics de la Coupe du monde FIFA 2026. L'application est destinée aux employés et aux équipes au sein de l'organisation.",
+    "sections": {
+      "controller": {
+        "title": "1. Responsable du traitement",
+        "text": "Aspire MAKE est responsable du traitement des données personnelles dans cette application. Pour toute question relative à la confidentialité, veuillez contacter l'adresse indiquée ci-dessous."
+      },
+      "dataCollected": {
+        "title": "2. Données que nous traitons",
+        "items": [
+          "Données de compte : prénom, nom, adresse e-mail et mot de passe (stocké sous forme de hash)",
+          "Affectation d'équipe : rattachement à une équipe interne (p. ex. département ou groupe de projet)",
+          "Données de profil : photo de profil, langue préférée, équipe nationale favorite et buteur choisi",
+          "Données de jeu : pronostics, réponses bonus, points, rang au classement et statistiques",
+          "Données d'utilisation : notifications, demandes optionnelles au coach IA et journaux techniques",
+          "Données de communication : jetons de vérification d'e-mail et de réinitialisation du mot de passe",
+          "Visibilité : nom, équipe, photo de profil, pronostics et favoris peuvent être visibles par les autres participants inscrits"
+        ]
+      },
+      "purpose": {
+        "title": "3. Finalités du traitement",
+        "items": [
+          "Fourniture et exploitation du jeu de pronostics",
+          "Gestion des comptes utilisateurs et des classements par équipe",
+          "Calcul des points, classements et statistiques",
+          "Envoi de rappels par e-mail et de notifications dans l'application",
+          "Sécurité, analyse des erreurs et prévention des abus",
+          "Fonctionnalités IA optionnelles pour l'analyse des matchs et l'assistance"
+        ]
+      },
+      "teamData": {
+        "title": "4. Données d'équipe et de collègues",
+        "text": "Le jeu étant utilisé par équipes, vos données sont liées à celles d'autres participants de votre organisation pour les classements par équipe et généraux. Cela concerne notamment votre nom, votre équipe assignée, vos pronostics, vos points et – le cas échéant – vos favoris pour la Coupe du monde. Les données ne sont pas publiées en dehors de l'organisation."
+      },
+      "legalBasis": {
+        "title": "5. Bases juridiques",
+        "items": [
+          "Exécution du contrat ou mesures précontractuelles (art. 6 par. 1 lit. b RGPD) pour le compte et les fonctions du jeu",
+          "Intérêt légitime (art. 6 par. 1 lit. f RGPD) pour l'exploitation, la sécurité et les classements internes par équipe",
+          "Consentement (art. 6 par. 1 lit. a RGPD) lorsque vous utilisez des fonctions optionnelles ou des rappels par e-mail",
+          "Obligations légales (art. 6 par. 1 lit. c RGPD) lorsque des délais de conservation légaux s'appliquent"
+        ]
+      },
+      "sharing": {
+        "title": "6. Communication et sous-traitants",
+        "items": [
+          "Au sein de l'organisation : visibilité pour les participants inscrits selon les règles du jeu",
+          "Exploitation informatique : hébergement et fonctionnement technique de l'application",
+          "Service e-mail : envoi des e-mails de vérification, de réinitialisation et de rappel",
+          "API sportives externes : récupération des calendriers, résultats et données d'équipes (vos données de compte ne sont pas transmises)",
+          "Aucune vente de données personnelles à des tiers"
+        ]
+      },
+      "retention": {
+        "title": "7. Durée de conservation",
+        "text": "Nous conservons les données personnelles uniquement le temps nécessaire au fonctionnement du jeu de pronostics ou conformément aux obligations légales. Vous pouvez supprimer votre compte à tout moment dans votre profil. Cela supprime définitivement votre compte utilisateur et les données de jeu associées."
+      },
+      "rights": {
+        "title": "8. Vos droits",
+        "items": [
+          "Accès aux données personnelles que nous traitons à votre sujet",
+          "Rectification des données inexactes dans votre profil",
+          "Suppression de votre compte et des données associées",
+          "Limitation du traitement lorsque la loi le permet",
+          "Opposition au traitement fondé sur des intérêts légitimes",
+          "Réclamation auprès d'une autorité de contrôle compétente en matière de protection des données"
+        ]
+      },
+      "security": {
+        "title": "9. Sécurité des données",
+        "text": "Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données contre la perte, l'utilisation abusive et l'accès non autorisé. Cela inclut le stockage des mots de passe sous forme de hash, des contrôles d'accès basés sur les rôles et des connexions serveur sécurisées."
+      },
+      "contact": {
+        "title": "10. Contact",
+        "text": "Pour toute question concernant cette politique de confidentialité ou pour exercer vos droits, veuillez contacter votre administrateur Aspire MAKE ou la personne de contact désignée pour le jeu de pronostics au sein de votre organisation."
+      }
+    }
   },
   "dashboard": {
     "welcome": "Bienvenue, {name} !",

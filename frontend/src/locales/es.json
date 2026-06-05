@@ -75,12 +75,13 @@
     "resetPasswordWelcomeText": "Establece una nueva contraseña y vuelve al juego de pronósticos de Aspire MAKE.",
     "verifyEmailWelcomeText": "Confirma tu correo electrónico para activar tu cuenta de Aspire MAKE.",
     "emailAddress": "Correo electrónico",
-    "emailPlaceholder": "tu@email.com",
+    "emailPlaceholder": "tu'@'email.com",
     "rememberMe": "Recordarme",
     "signInNow": "Iniciar sesión",
     "termsAgreement": "Al hacer clic en «Iniciar sesión» aceptas nuestros",
     "termsOfService": "Términos de servicio",
     "privacyPolicy": "Política de privacidad",
+    "privacyAgreement": "Al iniciar sesión, aceptas nuestra",
     "createAccount": "Crear cuenta",
     "email": "Correo",
     "password": "Contraseña",
@@ -163,6 +164,87 @@
     "imageTooLarge": "La imagen es demasiado grande (máx. 2 MB).",
     "imageRemoved": "Foto de perfil eliminada.",
     "imageUploadFailed": "No se pudo subir la foto de perfil."
+  },
+  "privacy": {
+    "title": "Política de privacidad",
+    "lastUpdated": "Última actualización: junio de 2026",
+    "backToLogin": "Volver al inicio de sesión",
+    "intro": "Esta política de privacidad explica cómo Aspire MAKE trata los datos personales en el juego interno de pronósticos de la Copa Mundial FIFA 2026. La aplicación está destinada a empleados y equipos dentro de la organización.",
+    "sections": {
+      "controller": {
+        "title": "1. Responsable del tratamiento",
+        "text": "Aspire MAKE es responsable del tratamiento de datos personales en esta aplicación. Si tiene preguntas relacionadas con la privacidad, póngase en contacto con la dirección indicada más abajo."
+      },
+      "dataCollected": {
+        "title": "2. Datos que tratamos",
+        "items": [
+          "Datos de cuenta: nombre, apellidos, dirección de correo electrónico y contraseña (almacenada como hash)",
+          "Asignación de equipo: vinculación a un equipo interno (p. ej. departamento o grupo de proyecto)",
+          "Datos de perfil: foto de perfil, idioma preferido, selección favorita y goleador elegido",
+          "Datos del juego: pronósticos, respuestas de bonificación, puntos, posición en la clasificación y estadísticas",
+          "Datos de uso: notificaciones, solicitudes opcionales al entrenador IA y registros técnicos",
+          "Datos de comunicación: tokens de verificación de correo y restablecimiento de contraseña",
+          "Visibilidad: nombre, equipo, foto de perfil, pronósticos y favoritos pueden ser visibles para otros participantes registrados"
+        ]
+      },
+      "purpose": {
+        "title": "3. Finalidades del tratamiento",
+        "items": [
+          "Prestación y funcionamiento del juego de pronósticos",
+          "Gestión de cuentas de usuario y clasificaciones por equipos",
+          "Cálculo de puntos, clasificaciones y estadísticas",
+          "Envío de recordatorios por correo y notificaciones en la aplicación",
+          "Seguridad, análisis de errores y prevención de abusos",
+          "Funciones opcionales de IA para análisis de partidos y asistencia"
+        ]
+      },
+      "teamData": {
+        "title": "4. Datos de equipo y colegas",
+        "text": "Como el juego se utiliza por equipos, sus datos se vinculan con otros participantes de su organización para las clasificaciones por equipos y generales. Esto incluye en particular su nombre, equipo asignado, pronósticos, puntos y, si los ha indicado, sus favoritos del Mundial. Los datos no se publican fuera de la organización."
+      },
+      "legalBasis": {
+        "title": "5. Bases jurídicas",
+        "items": [
+          "Ejecución del contrato o medidas precontractuales (art. 6 ap. 1 lit. b RGPD) para la cuenta y las funciones del juego",
+          "Interés legítimo (art. 6 ap. 1 lit. f RGPD) en el funcionamiento, la seguridad y las clasificaciones internas por equipos",
+          "Consentimiento (art. 6 ap. 1 lit. a RGPD) cuando utiliza funciones opcionales o recordatorios por correo",
+          "Obligaciones legales (art. 6 ap. 1 lit. c RGPD) cuando existan plazos de conservación legales"
+        ]
+      },
+      "sharing": {
+        "title": "6. Cesión y encargados del tratamiento",
+        "items": [
+          "Dentro de la organización: visibilidad para participantes registrados según las reglas del juego",
+          "Operaciones de TI: alojamiento y funcionamiento técnico de la aplicación",
+          "Servicio de correo: envío de correos de verificación, restablecimiento y recordatorios",
+          "APIs deportivas externas: obtención de calendarios, resultados y datos de equipos (no se comparten sus datos de cuenta)",
+          "No se venden datos personales a terceros"
+        ]
+      },
+      "retention": {
+        "title": "7. Plazo de conservación",
+        "text": "Conservamos los datos personales solo el tiempo necesario para el funcionamiento del juego de pronósticos o según lo exija la ley. Puede eliminar su cuenta en cualquier momento desde su perfil. Esto elimina de forma permanente su cuenta de usuario y los datos del juego asociados."
+      },
+      "rights": {
+        "title": "8. Sus derechos",
+        "items": [
+          "Acceso a los datos personales que tratamos sobre usted",
+          "Rectificación de datos inexactos en su perfil",
+          "Supresión de su cuenta y datos relacionados",
+          "Limitación del tratamiento cuando sea legalmente aplicable",
+          "Oposición al tratamiento basado en intereses legítimos",
+          "Reclamación ante una autoridad de control de protección de datos competente"
+        ]
+      },
+      "security": {
+        "title": "9. Seguridad de los datos",
+        "text": "Aplicamos medidas técnicas y organizativas adecuadas para proteger sus datos contra pérdida, uso indebido y acceso no autorizado. Esto incluye el almacenamiento de contraseñas con hash, controles de acceso basados en roles y conexiones seguras al servidor."
+      },
+      "contact": {
+        "title": "10. Contacto",
+        "text": "Para preguntas sobre esta política de privacidad o para ejercer sus derechos, póngase en contacto con su administrador de Aspire MAKE o con la persona de contacto designada para el juego de pronósticos en su organización."
+      }
+    }
   },
   "dashboard": {
     "welcome": "¡Bienvenido, {name}!",

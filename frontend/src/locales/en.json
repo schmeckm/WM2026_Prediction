@@ -76,12 +76,13 @@
     "resetPasswordWelcomeText": "Set a new password and return to the Aspire MAKE prediction game.",
     "verifyEmailWelcomeText": "Confirm your email address to activate your Aspire MAKE account.",
     "emailAddress": "Email Address",
-    "emailPlaceholder": "you@email.com",
+    "emailPlaceholder": "you'@'email.com",
     "rememberMe": "Remember Me",
     "signInNow": "Sign in now",
     "termsAgreement": "By clicking on 'Sign in now' you agree to our",
     "termsOfService": "Terms of Service",
     "privacyPolicy": "Privacy Policy",
+    "privacyAgreement": "By signing in you agree to our",
     "createAccount": "Create account",
     "email": "Email",
     "password": "Password",
@@ -165,7 +166,96 @@
     "removeImage": "Remove profile picture",
     "imageTooLarge": "Image is too large (max. 2 MB).",
     "imageRemoved": "Profile picture removed.",
-    "imageUploadFailed": "Profile picture could not be uploaded."
+    "imageUploadFailed": "Profile picture could not be uploaded.",
+    "dangerZoneTitle": "Delete account",
+    "dangerZoneHint": "This action is permanent. Your profile, all predictions, bonus answers, notifications and statistics will be deleted irreversibly.",
+    "deletePassword": "Current password to confirm",
+    "deletePasswordHint": "For security, please enter your password.",
+    "deleteAccount": "Delete account permanently",
+    "deletingAccount": "Deleting account…",
+    "deleteConfirm": "Are you sure you want to permanently delete your account? This cannot be undone.",
+    "deleteFailed": "Account could not be deleted."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: June 2026",
+    "backToLogin": "Back to login",
+    "intro": "This privacy policy explains how Aspire MAKE processes personal data in the internal FIFA World Cup 2026 prediction game. The application is intended for employees and teams within the organisation.",
+    "sections": {
+      "controller": {
+        "title": "1. Data controller",
+        "text": "Aspire MAKE is responsible for processing personal data in this application. If you have privacy-related questions, please contact the address provided below."
+      },
+      "dataCollected": {
+        "title": "2. Data we process",
+        "items": [
+          "Account data: first name, last name, email address and password (stored as a hash)",
+          "Team assignment: link to an internal team (e.g. department or project group)",
+          "Profile data: profile picture, language preference, favourite national team and top scorer pick",
+          "Game data: predictions, bonus answers, points, leaderboard rank and statistics",
+          "Usage data: notifications, optional AI coach requests and technical logs",
+          "Communication data: email verification and password reset tokens",
+          "Visibility: name, team, profile picture, predictions and favourites may be visible to other registered participants"
+        ]
+      },
+      "purpose": {
+        "title": "3. Purposes of processing",
+        "items": [
+          "Providing and operating the prediction game",
+          "Managing user accounts and team rankings",
+          "Calculating points, leaderboards and statistics",
+          "Sending email reminders and in-app notifications",
+          "Security, error analysis and abuse prevention",
+          "Optional AI features for match analysis and assistance"
+        ]
+      },
+      "teamData": {
+        "title": "4. Team and colleague data",
+        "text": "Because the game is used on a team basis, your data is linked with other participants in your organisation for team rankings and leaderboards. This includes in particular your name, assigned team, predictions, points and – if provided – your World Cup favourites. Data is not published outside the organisation."
+      },
+      "legalBasis": {
+        "title": "5. Legal bases",
+        "items": [
+          "Contract performance or pre-contractual steps (Art. 6(1)(b) GDPR) for account and game features",
+          "Legitimate interests (Art. 6(1)(f) GDPR) in operation, security and internal team rankings",
+          "Consent (Art. 6(1)(a) GDPR) where you use optional features or email reminders",
+          "Legal obligations (Art. 6(1)(c) GDPR) where statutory retention duties apply"
+        ]
+      },
+      "sharing": {
+        "title": "6. Sharing and processors",
+        "items": [
+          "Within the organisation: visibility for registered participants according to game rules",
+          "IT operations: hosting and technical operation of the application",
+          "Email service: delivery of verification, reset and reminder emails",
+          "External sports data APIs: retrieval of schedules, results and team data (your account data is not shared)",
+          "No sale of personal data to third parties"
+        ]
+      },
+      "retention": {
+        "title": "7. Retention",
+        "text": "We retain personal data only for as long as necessary to operate the prediction game or as required by law. You can delete your account at any time in your profile. This permanently removes your user account and related game data."
+      },
+      "rights": {
+        "title": "8. Your rights",
+        "items": [
+          "Access to the personal data we process about you",
+          "Rectification of inaccurate data in your profile",
+          "Deletion of your account and related data",
+          "Restriction of processing where legally applicable",
+          "Objection to processing based on legitimate interests",
+          "Complaint to a competent data protection supervisory authority"
+        ]
+      },
+      "security": {
+        "title": "9. Data security",
+        "text": "We implement appropriate technical and organisational measures to protect your data against loss, misuse and unauthorised access. These include hashed password storage, role-based access controls and secure server connections."
+      },
+      "contact": {
+        "title": "10. Contact",
+        "text": "For questions about this privacy policy or to exercise your rights, please contact your Aspire MAKE administrator or the designated contact person for the prediction game in your organisation."
+      }
+    }
   },
   "dashboard": {
     "welcome": "Welcome, {name}!",
