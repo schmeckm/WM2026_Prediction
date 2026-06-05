@@ -19,6 +19,10 @@ const USER_COLUMNS = [
 
 async function runMigrations(sequelize) {
   const queryInterface = sequelize.getQueryInterface();
+  const q = (identifier) => queryInterface.queryGenerator.quoteIdentifier(identifier);
+  const dialect = sequelize.getDialect();
+  const trueVal = dialect === 'postgres' ? 'true' : '1';
+  const falseVal = dialect === 'postgres' ? 'false' : '0';
   let userTableInfo;
 
   try {
@@ -32,7 +36,7 @@ async function runMigrations(sequelize) {
   }
 
   await sequelize.query(
-    'UPDATE Users SET emailVerified = 1 WHERE emailVerified IS NULL OR emailVerified = 0 AND emailVerificationToken IS NULL',
+    `UPDATE ${q('Users')} SET ${q('emailVerified')} = ${trueVal} WHERE ${q('emailVerified')} IS NULL OR (${q('emailVerified')} = ${falseVal} AND ${q('emailVerificationToken')} IS NULL)`,
   );
 
   let teamTableInfo;
