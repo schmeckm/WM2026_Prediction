@@ -42,14 +42,16 @@
 
 <script setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AlertMessage from './AlertMessage.vue';
-import { MANUAL_MODE_MESSAGE } from '../constants/adminMessages';
+
+const { t } = useI18n();
 
 const props = defineProps({
   status: { type: Object, default: () => ({}) },
 });
 
-const defaultMessage = MANUAL_MODE_MESSAGE;
+const defaultMessage = computed(() => t('admin.manualMode.defaultMessage'));
 
 const modeLabel = computed(() => (
   props.status.operationMode === 'api' || props.status.apiConfigured ? 'API-Sync' : 'Manuell (CSV)'
