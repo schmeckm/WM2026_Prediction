@@ -22,8 +22,13 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        // Do not precache index.html — always fetch fresh shell after deploy.
+        globPatterns: ['**/*.{js,css,ico,png,svg,woff2,webp}'],
         navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api/, /^\/uploads/, /^\/socket.io/, /^\/assets\//],
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
       },
     }),
   ],

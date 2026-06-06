@@ -1,10 +1,13 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import { registerSW } from 'virtual:pwa-register';
 import App from './App.vue';
 import router from './router';
 import i18n from './i18n';
 import './styles/main.css';
 import { useThemeStore } from './stores/themeStore';
+
+registerSW({ immediate: true });
 
 // After a deploy, cached index.html may reference removed chunk files — reload once.
 window.addEventListener('vite:preloadError', (event) => {
