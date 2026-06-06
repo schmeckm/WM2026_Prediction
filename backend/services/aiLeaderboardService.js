@@ -12,7 +12,7 @@ async function generateLeaderboardSummary(userId = null, { regenerate = false, l
   }
 
   if (!regenerate) {
-    const cached = await getCachedCommentary('leaderboard_summary');
+    const cached = await getCachedCommentary('leaderboard_summary', { language });
     if (cached) {
       return { content: cached.content, disclaimer: buildDisclaimer('leaderboard_summary', language), cached: true, createdAt: cached.createdAt };
     }
@@ -25,7 +25,7 @@ async function generateLeaderboardSummary(userId = null, { regenerate = false, l
   const { text, model, tokenUsage } = await generateText({ systemPrompt, userPrompt, context, locale: language });
 
   await saveCommentary({
-    type: 'leaderboard_summary', content: text, context, model, tokenUsage, isCached: true,
+    type: 'leaderboard_summary', content: text, context, model, tokenUsage, isCached: true, language,
   });
 
   await logInteraction({
@@ -44,7 +44,7 @@ async function getLatestLeaderboardSummary(userId = null, language = 'de') {
     throw err;
   }
 
-  const cached = await getCachedCommentary('leaderboard_summary');
+  const cached = await getCachedCommentary('leaderboard_summary', { language });
   if (cached) {
     return { content: cached.content, disclaimer: buildDisclaimer('leaderboard_summary', language), cached: true, createdAt: cached.createdAt };
   }

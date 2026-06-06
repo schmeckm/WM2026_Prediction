@@ -1,5 +1,5 @@
 const { AICommentary, AIInteractionLog } = require('../models');
-const { PROMPT_VERSION, buildDisclaimer, getUserPrompt } = require('./aiGuardrailService');
+const { PROMPT_VERSION, buildDisclaimer, getUserPrompt, normalizeLocale } = require('./aiGuardrailService');
 const { buildMatchContext } = require('./aiContextBuilderService');
 const { generateText, checkAiAvailability, getAiConfig, getSystemPrompt } = require('./llmService');
 
@@ -16,24 +16,31 @@ async function logInteraction({ userId, role, feature, question, answer, context
   }
 }
 
-async function getCachedCommentary(type, { matchId, userId } = {}) {
+async function getCachedCommentary(type, { matchId, userId, language = 'de' } = {}) {
   const config = getAiConfig();
   if (!config.cacheEnabled) return null;
 
-  const where = { type, isCached: true };
+  const where = {
+    type,
+    isCached: true,
+    language: normalizeLocale(language),
+  };
   if (matchId) where.matchId = matchId;
   if (userId) where.userId = userId;
 
   return AICommentary.findOne({ where, order: [['createdAt', 'DESC']] });
 }
 
-async function saveCommentary({ type, matchId, userId, content, context, model, tokenUsage, isCached }) {
+async function saveCommentary({
+  type, matchId, userId, content, context, model, tokenUsage, isCached, language = 'de',
+}) {
   return AICommentary.create({
     type, matchId: matchId || null, userId: userId || null,
     content, inputContextJson: JSON.stringify(context).slice(0, 10000),
     promptVersion: PROMPT_VERSION, model,
     tokenUsageJson: tokenUsage ? JSON.stringify(tokenUsage) : null,
     isCached: !!isCached,
+    language: normalizeLocale(language),
   });
 }
 
@@ -46,7 +53,7 @@ async function generateMatchPreview(matchId, userId, { regenerate = false, langu
   }
 
   if (!regenerate) {
-    const cached = await getCachedCommentary('match_preview', { matchId });
+    const cached = await getCachedCommentary('match_preview', { matchId, language });
     if (cached) {
       return {
         content: cached.content,
@@ -69,7 +76,7 @@ async function generateMatchPreview(matchId, userId, { regenerate = false, langu
   const { text, model, tokenUsage } = await generateText({ systemPrompt, userPrompt, context, locale: language });
 
   await saveCommentary({
-    type: 'match_preview', matchId, userId, content: text, context, model, tokenUsage, isCached: true,
+    type: 'match_preview', matchId, userId, content: text, context, model, tokenUsage, isCached: true, language,
   });
 
   await logInteraction({

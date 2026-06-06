@@ -68,6 +68,19 @@ async function runMigrations(sequelize) {
     });
     console.log('Migration: PlayerImages.countryCode auf VARCHAR(64) erweitert.');
   }
+
+  let aiCommentaryTableInfo;
+  try {
+    aiCommentaryTableInfo = await queryInterface.describeTable('AICommentaries');
+  } catch {
+    return;
+  }
+
+  await ensureColumn(queryInterface, aiCommentaryTableInfo, 'AICommentaries', 'language', {
+    type: DataTypes.STRING(5),
+    allowNull: false,
+    defaultValue: 'de',
+  });
 }
 
 module.exports = { runMigrations, ensureColumn };

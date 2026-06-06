@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 
 export function useMatchPreview(matchIdSource) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const content = ref('');
   const disclaimer = ref('');
   const loading = ref(false);
@@ -20,7 +20,10 @@ export function useMatchPreview(matchIdSource) {
     loading.value = true;
     error.value = '';
     try {
-      const { data } = await api.post(`/ai/match-preview/${matchId}`, { regenerate }, {
+      const { data } = await api.post(`/ai/match-preview/${matchId}`, {
+        regenerate,
+        language: locale.value,
+      }, {
         timeout: 90000,
       });
       if (data.unavailable) {

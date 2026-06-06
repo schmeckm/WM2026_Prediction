@@ -63,7 +63,7 @@ router.post('/user-coach', authMiddleware, aiRateLimitMiddleware('user_coach'), 
 router.get('/leaderboard-summary', authMiddleware, async (req, res) => {
   try {
     const language = resolveLanguage(req);
-    const cached = await getCachedCommentary('leaderboard_summary');
+    const cached = await getCachedCommentary('leaderboard_summary', { language });
     if (cached) {
       return res.json({
         content: cached.content,

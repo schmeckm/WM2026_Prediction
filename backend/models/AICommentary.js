@@ -47,6 +47,11 @@ const AICommentary = sequelize.define('AICommentary', {
     type: DataTypes.BOOLEAN,
     defaultValue: false,
   },
+  language: {
+    type: DataTypes.STRING(5),
+    allowNull: false,
+    defaultValue: 'de',
+  },
 });
 
 module.exports = AICommentary;

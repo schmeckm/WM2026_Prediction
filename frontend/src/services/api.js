@@ -14,7 +14,7 @@ api.interceptors.request.use((config) => {
   if (authStore.token) {
     config.headers.Authorization = `Bearer ${authStore.token}`;
   }
-  const locale = authStore.user?.language || getStoredLocale();
+  const locale = i18n.global.locale.value || authStore.user?.language || getStoredLocale();
   config.headers['X-Language'] = locale;
 
   const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
