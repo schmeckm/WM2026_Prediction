@@ -32,15 +32,22 @@
       📅 {{ formatDate(match.kickoffTime) }} · 🕐 {{ formatTime(match.kickoffTime) }}
       <span v-if="match.stadium" class="match-venue">
         ·
-        <img
+        <button
           v-if="match.stadiumImageUrl"
-          :src="match.stadiumImageUrl"
-          :alt="match.stadium"
-          class="match-stadium-thumb"
-          :title="match.stadium"
-          loading="lazy"
-          decoding="async"
-        />
+          type="button"
+          class="match-stadium-thumb-btn"
+          :title="t('matches.stadiumPreview')"
+          :aria-label="t('matches.stadiumPreview')"
+          @click="showVenueModal = true"
+        >
+          <img
+            :src="match.stadiumImageUrl"
+            :alt="match.stadium"
+            class="match-stadium-thumb"
+            loading="lazy"
+            decoding="async"
+          />
+        </button>
         🏟️ {{ match.stadium }}<template v-if="match.city">, {{ match.city }}</template>
       </span>
       <CountdownBadge v-if="match.status === 'scheduled'" :kickoff-time="match.kickoffTime" />
@@ -68,19 +75,29 @@
     <div v-else-if="!match.hasPrediction" class="text-center text-muted">
       {{ t('matches.noTipGiven') }}
     </div>
-    <AIMatchPreview v-if="showAiPreview" :match-id="match.id" />
+    <AIMatchPreview v-if="showAiPreview && !match.stadiumImageUrl" :match-id="match.id" />
+    <MatchVenueModal
+      :open="showVenueModal"
+      :match="match"
+      :show-ai="showAiPreview"
+      @close="showVenueModal = false"
+    />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PredictionForm from './PredictionForm.vue';
 import LiveScoreBadge from './LiveScoreBadge.vue';
 import CountdownBadge from './CountdownBadge.vue';
 import TeamFlag from './TeamFlag.vue';
 import AIMatchPreview from './AIMatchPreview.vue';
+import MatchVenueModal from './MatchVenueModal.vue';
 import { useFormatters } from '../composables/useFormatters';
 import { useMatchMeta } from '../composables/useMatchMeta';
+
+const showVenueModal = ref(false);
 
 defineProps({
   match: { type: Object, required: true },

@@ -375,7 +375,9 @@
     "group": "Grupo",
     "yourTip": "Tu pronóstico",
     "noTip": "Sin pronóstico",
-    "noTipGiven": "Sin pronóstico enviado"
+    "noTipGiven": "Sin pronóstico enviado",
+    "stadiumPreview": "Ampliar estadio y mostrar info IA",
+    "venueDetails": "Lugar del partido"
   },
   "matchTable": {
     "number": "N.º",

@@ -399,6 +399,8 @@
     "yourTip": "Ihr Tipp",
     "noTip": "Kein Tipp abgegeben",
     "noTipGiven": "Kein Tipp abgegeben",
+    "stadiumPreview": "Stadion vergrößern & KI-Infos anzeigen",
+    "venueDetails": "Spielort",
     "loadFailed": "Spiele konnten nicht geladen werden."
   },
   "matchTable": {

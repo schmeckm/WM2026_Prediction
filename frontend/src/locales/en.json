@@ -388,6 +388,8 @@
     "yourTip": "Your prediction",
     "noTip": "No prediction submitted",
     "noTipGiven": "No prediction submitted",
+    "stadiumPreview": "Enlarge stadium & show AI info",
+    "venueDetails": "Venue",
     "loadFailed": "Could not load matches."
   },
   "matchTable": {
