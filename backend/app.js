@@ -40,6 +40,11 @@ const { translate } = require('./utils/apiResponse');
 
 const app = express();
 
+// Rate limits must use the real client IP from nginx (X-Forwarded-For), not the proxy container.
+if (process.env.NODE_ENV === 'production' || process.env.TRUST_PROXY === 'true') {
+  app.set('trust proxy', 1);
+}
+
 const { resolveDatabasePath } = require('./database/paths');
 const dbDir = path.dirname(resolveDatabasePath());
 if (!fs.existsSync(dbDir) && dbDir !== ':memory:') {
