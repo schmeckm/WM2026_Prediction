@@ -41,12 +41,23 @@
             Kostenloser Key <code>123</code> — ergänzt fehlende Stadien und Länder/Ort für WM-Spiele
             (Liga <code>4429</code>, Saison <code>2026</code>). Spielerbilder nutzen dieselbe API.
           </p>
+          <p class="hint text-muted">
+            Spielerbilder werden aus TheSportsDB, Wikidata und Wikipedia geladen und lokal zwischengespeichert.
+            Beim ersten Lauf kann der Vorgang mehrere Minuten dauern (Rate-Limit der APIs).
+          </p>
           <div class="btn-group">
             <button class="btn btn-accent btn-sm" :disabled="syncing" @click="testTheSportsDb">
               TheSportsDB testen
             </button>
             <button class="btn btn-secondary btn-sm" :disabled="syncing" @click="enrichVenues">
               {{ syncing ? 'Sync...' : 'Stadien anreichern' }}
+            </button>
+            <button
+              class="btn btn-primary btn-sm"
+              :disabled="syncing || !status.apiConfigured"
+              @click="syncPlayerImages"
+            >
+              {{ syncingPlayerImages ? 'Lade Bilder...' : 'Spielerbilder laden (WM-Kader)' }}
             </button>
           </div>
         </div>
@@ -100,6 +111,7 @@ const { t } = useI18n();
 
 const loading = ref(true);
 const syncing = ref(false);
+const syncingPlayerImages = ref(false);
 const status = ref({});
 const logs = ref([]);
 const message = ref('');
@@ -190,6 +202,24 @@ async function enrichVenues() {
     error.value = e.response?.data?.error || 'Stadion-Anreicherung fehlgeschlagen.';
   } finally {
     syncing.value = false;
+  }
+}
+
+async function syncPlayerImages() {
+  syncing.value = true;
+  syncingPlayerImages.value = true;
+  error.value = '';
+  message.value = '';
+  try {
+    const { data } = await api.post('/admin/sync/player-images', {}, { timeout: 0 });
+    message.value = data.message || 'Spielerbilder synchronisiert.';
+    messageType.value = data.errorCount > 0 ? 'warning' : (data.skipped ? 'warning' : 'success');
+    await load();
+  } catch (e) {
+    error.value = e.response?.data?.error || 'Spielerbild-Sync fehlgeschlagen.';
+  } finally {
+    syncing.value = false;
+    syncingPlayerImages.value = false;
   }
 }
 

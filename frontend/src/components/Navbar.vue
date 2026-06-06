@@ -4,6 +4,7 @@
       <button class="icon-btn mobile-menu-btn" @click="$emit('toggle-sidebar')" :aria-label="t('nav.menu')">
         <NavIcon name="menu" />
       </button>
+      <AppBrandMark v-if="!adminMode" compact :show-title="false" class="navbar-brand-mark" />
       <span v-if="adminMode" class="badge badge-admin">{{ t('nav.adminArea') }}</span>
       <span v-else class="navbar-shell-title navbar-shell-title--mobile">{{ t('brand.title') }}</span>
     </div>
@@ -47,6 +48,7 @@ import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/authStore';
 import { useThemeStore } from '../stores/themeStore';
+import AppBrandMark from './AppBrandMark.vue';
 import NotificationBell from './NotificationBell.vue';
 import LanguageSwitcher from './LanguageSwitcher.vue';
 import UserAvatar from './UserAvatar.vue';
@@ -110,6 +112,10 @@ async function handleLogout() {
 
 .navbar-logout {
   margin-left: 0.25rem;
+}
+
+.navbar-brand-mark {
+  display: none;
 }
 
 @media (max-width: 768px) {

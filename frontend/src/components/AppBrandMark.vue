@@ -1,7 +1,13 @@
 <template>
   <div class="app-brand" :class="{ compact, centered }">
     <div class="app-brand-icon" aria-hidden="true">
-      <NavIcon name="trophy" size="lg" />
+      <img
+        src="/wm2026-emblem.svg"
+        alt=""
+        class="app-brand-logo"
+        width="40"
+        height="62"
+      />
     </div>
     <div v-if="showTitle" class="app-brand-copy">
       <strong>{{ title || t('brand.title') }}</strong>
@@ -13,7 +19,6 @@
 
 <script setup>
 import { useI18n } from 'vue-i18n';
-import NavIcon from './NavIcon.vue';
 
 defineProps({
   title: { type: String, default: '' },

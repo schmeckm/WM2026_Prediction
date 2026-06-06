@@ -30,7 +30,18 @@
     </div>
     <div class="match-meta">
       📅 {{ formatDate(match.kickoffTime) }} · 🕐 {{ formatTime(match.kickoffTime) }}
-      <span v-if="match.stadium"> · 🏟️ {{ match.stadium }}, {{ match.city }}</span>
+      <span v-if="match.stadium" class="match-venue">
+        ·
+        <img
+          v-if="match.stadiumImageUrl"
+          :src="match.stadiumImageUrl"
+          :alt="match.stadium"
+          class="match-stadium-thumb"
+          loading="lazy"
+          decoding="async"
+        />
+        🏟️ {{ match.stadium }}<template v-if="match.city">, {{ match.city }}</template>
+      </span>
       <CountdownBadge v-if="match.status === 'scheduled'" :kickoff-time="match.kickoffTime" />
     </div>
     <div v-if="match.prediction" class="text-center mb-2">

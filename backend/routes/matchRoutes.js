@@ -9,6 +9,7 @@ const { getScoringRules, saveLeaderboardSnapshot } = require('../services/leader
 const { logAudit } = require('../services/auditService');
 const socketService = require('../services/socketService');
 const { isMatchEditable } = require('../services/matchLockService');
+const { attachStadiumImage, attachStadiumImages } = require('../services/matchPresentationService');
 
 const router = express.Router();
 
@@ -57,7 +58,7 @@ router.get('/', authMiddleware, async (req, res) => {
     });
     const predictionMap = new Map(userPredictions.map((p) => [p.matchId, p]));
 
-    let result = matches.map((match) => {
+    let result = attachStadiumImages(matches.map((match) => {
       const prediction = predictionMap.get(match.id);
       const editable = isMatchEditable(match);
       return {
@@ -66,7 +67,7 @@ router.get('/', authMiddleware, async (req, res) => {
         canPredict: editable,
         hasPrediction: !!prediction,
       };
-    });
+    }));
 
     if (filter === 'open') {
       result = result.filter((m) => m.canPredict);
@@ -87,7 +88,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
     if (!match) {
       return sendError(res, req, 404, 'errors.matchNotFound');
     }
-    res.json(match);
+    res.json(attachStadiumImage(match.toJSON()));
   } catch (error) {
     sendError(res, req, 500, 'errors.matchLoadFailed');
   }

@@ -1,5 +1,6 @@
 const { Match } = require('../models');
 const { fetchTheSportsDb, isVenueEnrichmentEnabled, getTheSportsDbApiKey } = require('./providers/theSportsDbClient');
+const { resolveCityFromStadium, shouldReplaceCity } = require('../data/wm2026Venues');
 
 const DEFAULT_LEAGUE_ID = '4429';
 const DEFAULT_SEASON = '2026';
@@ -71,6 +72,44 @@ async function fetchWorldCupEvents(config = {}) {
   return data.events || [];
 }
 
+function buildVenueUpdates(match, event = null) {
+  const updates = {};
+  const stadium = match.stadium || event?.strVenue?.trim() || null;
+
+  if (!match.stadium && event?.strVenue) {
+    updates.stadium = event.strVenue.trim();
+  }
+
+  const stadiumForLookup = updates.stadium || match.stadium;
+  const cityFromLookup = resolveCityFromStadium(stadiumForLookup);
+  const currentCity = match.city;
+
+  if (cityFromLookup && shouldReplaceCity(stadiumForLookup, currentCity)) {
+    updates.city = cityFromLookup;
+  } else if (!currentCity && event?.strCountry && !cityFromLookup) {
+    updates.city = event.strCountry.trim();
+  }
+
+  return updates;
+}
+
+async function enrichCitiesFromWm2026Lookup() {
+  const matches = await Match.findAll({ order: [['kickoffTime', 'ASC']] });
+  let enrichedCount = 0;
+
+  for (const match of matches) {
+    const updates = buildVenueUpdates(match);
+    if (!Object.keys(updates).length) continue;
+    await match.update(updates);
+    enrichedCount++;
+  }
+
+  return {
+    enrichedCount,
+    message: `${enrichedCount} Spiel(e) mit WM-2026-Städten aus Stadion-Lookup aktualisiert.`,
+  };
+}
+
 async function enrichMatchVenuesFromTheSportsDb(config = {}) {
   if (!isVenueEnrichmentEnabled()) {
     return { skipped: true, message: 'TheSportsDB Venue-Anreicherung ist deaktiviert.' };
@@ -95,22 +134,14 @@ async function enrichMatchVenuesFromTheSportsDb(config = {}) {
   const errors = [];
 
   for (const match of matches) {
-    if (match.stadium && match.city) {
-      skippedCount++;
-      continue;
-    }
-
     try {
       const event = findMatchingEvent(events, match);
-      if (!event) {
+      if (!event && match.stadium && match.city && !shouldReplaceCity(match.stadium, match.city)) {
         skippedCount++;
         continue;
       }
 
-      const updates = {};
-      if (!match.stadium && event.strVenue) updates.stadium = event.strVenue.trim();
-      if (!match.city && event.strCountry) updates.city = event.strCountry.trim();
-
+      const updates = buildVenueUpdates(match, event);
       if (!Object.keys(updates).length) {
         skippedCount++;
         continue;
@@ -123,12 +154,15 @@ async function enrichMatchVenuesFromTheSportsDb(config = {}) {
     }
   }
 
+  const lookupResult = await enrichCitiesFromWm2026Lookup();
+
   return {
     enrichedCount,
     skippedCount,
     eventCount: events.length,
+    lookupEnrichedCount: lookupResult.enrichedCount,
     errors,
-    message: `${enrichedCount} Spiel(e) mit Stadion/Ort aus TheSportsDB angereichert.`,
+    message: `${enrichedCount} Spiel(e) aus TheSportsDB angereichert, ${lookupResult.enrichedCount} Städte per WM-Lookup gesetzt.`,
   };
 }
 
@@ -137,5 +171,7 @@ module.exports = {
   teamsMatch,
   findMatchingEvent,
   fetchWorldCupEvents,
+  buildVenueUpdates,
+  enrichCitiesFromWm2026Lookup,
   enrichMatchVenuesFromTheSportsDb,
 };

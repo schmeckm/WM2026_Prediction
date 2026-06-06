@@ -106,11 +106,30 @@ async function listPlayers(search = '') {
   return enrichPlayersWithImages(sorted);
 }
 
+async function getAllSquadPlayers() {
+  const teams = await loadTeams();
+  const players = [];
+
+  for (const team of teams) {
+    for (const player of team.squad || []) {
+      if (!player.name) continue;
+      players.push({
+        playerName: player.name,
+        teamName: team.name,
+        countryCode: player.nationality || team.area?.code || null,
+      });
+    }
+  }
+
+  return players;
+}
+
 module.exports = {
   listTeams,
   getTeamById,
   findTeamByName,
   listPlayers,
+  getAllSquadPlayers,
   isFootballApiAvailable,
   clearCache: () => { cache = { teams: null, fetchedAt: 0 }; },
 };
