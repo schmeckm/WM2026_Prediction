@@ -5,8 +5,14 @@ function isAiEnabled() {
   return process.env.AI_FEATURES_ENABLED !== 'false';
 }
 
+function getOpenAiApiKey() {
+  const raw = process.env.OPENAI_API_KEY || '';
+  // Portainer / compose copies sometimes prefix keys with "=" (e.g. "=sk-proj...").
+  return raw.trim().replace(/^=+/, '');
+}
+
 function isApiKeyConfigured() {
-  return !!process.env.OPENAI_API_KEY;
+  return !!getOpenAiApiKey();
 }
 
 function getAiConfig() {
@@ -57,7 +63,8 @@ async function generateText({ systemPrompt, userPrompt, context, maxTokens, temp
 
   const config = getAiConfig();
   const OpenAI = require('openai');
-  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const apiKey = getOpenAiApiKey();
+  const client = new OpenAI({ apiKey });
 
   const contextStr = context ? `\n\nContext (JSON):\n${JSON.stringify(context, null, 0).slice(0, 8000)}` : '';
   const fullUserPrompt = `${userPrompt}${contextStr}`;
@@ -98,6 +105,7 @@ async function generateText({ systemPrompt, userPrompt, context, maxTokens, temp
 module.exports = {
   isAiEnabled,
   isApiKeyConfigured,
+  getOpenAiApiKey,
   getAiConfig,
   checkAiAvailability,
   generateText,

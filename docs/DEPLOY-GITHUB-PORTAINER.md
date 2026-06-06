@@ -65,7 +65,7 @@ Für **Produktion mit PostgreSQL** mindestens setzen:
 | `APP_URL` | `https://tippspiel.example.com` | Öffentliche URL (E-Mails, Links) |
 | `CORS_ORIGIN` | gleich wie `APP_URL` | CORS für API/WebSocket |
 | `FOOTBALL_API_KEY` | Ihr API-Key | Optional, für Live-Sync |
-| `OPENAI_API_KEY` | Ihr Key | Optional, für KI-Features |
+| `OPENAI_API_KEY` | Ihr Key (`sk-proj-...`, **ohne** führendes `=`) | Optional, für KI-Features |
 | `SMTP_*` | Mailserver | Für Registrierung / Passwort-Reset |
 
 `FRONTEND_PORT` steuert den externen Port (Standard `8080`).
