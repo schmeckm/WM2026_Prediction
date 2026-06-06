@@ -65,6 +65,17 @@
                 <p class="text-muted">
                   {{ selectedTeam.squad?.length || selectedTeam.squadSize || 0 }} {{ t('nationalTeams.players') }}
                 </p>
+                <button
+                  v-if="missingPlayerImages > 0"
+                  type="button"
+                  class="btn btn-secondary btn-sm national-team-load-images"
+                  :disabled="loadingPlayerImages"
+                  @click="loadPlayerImages"
+                >
+                  {{ loadingPlayerImages
+                    ? t('nationalTeams.loadingPlayerImages')
+                    : t('nationalTeams.loadPlayerImages', { count: missingPlayerImages }) }}
+                </button>
               </div>
             </div>
             <LoadingSpinner v-if="loadingTeamDetail && !squadGroups.length" />
@@ -287,6 +298,7 @@ const scorers = ref([]);
 const liveMatches = ref([]);
 const loadingTeams = ref(true);
 const loadingTeamDetail = ref(false);
+const loadingPlayerImages = ref(false);
 const loadingStandings = ref(false);
 const loadingScorers = ref(false);
 const loadingLive = ref(false);
@@ -366,6 +378,10 @@ const squadGroups = computed(() => {
   });
   return groups;
 });
+
+const missingPlayerImages = computed(() => (
+  selectedTeam.value?.squad?.filter((player) => !player.imageUrl).length || 0
+));
 
 function positionLabel(position) {
   const key = {
@@ -473,9 +489,15 @@ async function loadTeamDetail(team) {
       loadingTeamDetail.value = false;
     }
   }
+}
 
-  if (teamDetailAbort === controller && selectedTeam.value?.id === team.id) {
-    resolveTeamImagesInBackground(team.id);
+async function loadPlayerImages() {
+  if (!selectedTeam.value?.id || loadingPlayerImages.value) return;
+  loadingPlayerImages.value = true;
+  try {
+    await resolveTeamImagesInBackground(selectedTeam.value.id);
+  } finally {
+    loadingPlayerImages.value = false;
   }
 }
 
@@ -516,6 +538,7 @@ async function resolveTeamImagesInBackground(teamId) {
 
 async function selectTeam(team, { replaceRoute = true } = {}) {
   cancelTeamRequests();
+  loadingPlayerImages.value = false;
   error.value = '';
   selectedTeam.value = {
     id: team.id,
@@ -657,6 +680,7 @@ onUnmounted(() => {
 }
 
 .national-team-detail-crest { width: 72px; height: 72px; object-fit: contain; }
+.national-team-load-images { margin-top: 0.75rem; }
 .squad-group + .squad-group { margin-top: 1.25rem; }
 .squad-group h3 { margin-bottom: 0.5rem; font-size: 1rem; }
 

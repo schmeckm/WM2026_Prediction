@@ -342,6 +342,8 @@
     "birthDate": "Date of birth",
     "loadFailed": "Could not load teams.",
     "squadEmpty": "Squad could not be loaded. Please try again later.",
+    "loadPlayerImages": "Load player photos ({count} missing)",
+    "loadingPlayerImages": "Loading player photos…",
     "standingsEmpty": "No standings data available yet.",
     "scorersEmpty": "No scorers yet – starts when the tournament begins.",
     "liveEmpty": "No matches for this filter.",
