@@ -405,7 +405,7 @@
     "stage": "Runde",
     "cached": "Aus Cache",
     "footnote": "{count} WM-Spiele · {goals} Tore gesamt",
-    "summaryOnly": "Einzelspiele sind im kostenlosen football-data.org-Tarif nicht verfügbar – es wird nur die Gesamtbilanz angezeigt."
+    "summaryOnly": "Einzelspiele sind im kostenlosen football-data.org-Tarif nicht verfügbar."
   },
   "matches": {
     "title": "Spiele",

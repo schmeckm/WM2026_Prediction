@@ -5,7 +5,7 @@ const { getProviderConfig, assertApiConfigured } = require('./footballProviderSe
 const { findTeamByName, listTeams } = require('./footballTeamService');
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const DEFAULT_COMPETITIONS = 'WC';
 const DEFAULT_LIMIT = 15;
 
@@ -99,13 +99,14 @@ function computeSummary(meetings, teamAName, teamBName) {
     teamAWins,
     teamBWins,
     draws,
+    breakdownAvailable: counted > 0,
   };
 }
 
 function mapAggregatesToSummary(aggregates, teamAName, teamBName, refHomeName, refAwayName) {
   if (!aggregates?.numberOfMatches) {
     return {
-      totalMatches: 0, totalGoals: 0, teamAWins: 0, teamBWins: 0, draws: 0,
+      totalMatches: 0, totalGoals: 0, teamAWins: 0, teamBWins: 0, draws: 0, breakdownAvailable: false,
     };
   }
 
@@ -113,22 +114,35 @@ function mapAggregatesToSummary(aggregates, teamAName, teamBName, refHomeName, r
   const awayAgg = aggregates.awayTeam || {};
   const refHome = refHomeName || homeAgg.name;
   const refAway = refAwayName || awayAgg.name;
-  const draws = Math.max(homeAgg.draws ?? 0, awayAgg.draws ?? 0, 0);
 
-  let teamAWins;
-  let teamBWins;
-  if (teamsMatch(refHome, teamAName)) {
-    teamAWins = homeAgg.wins ?? 0;
-    teamBWins = awayAgg.wins ?? 0;
-  } else if (teamsMatch(refAway, teamAName)) {
-    teamAWins = awayAgg.wins ?? 0;
-    teamBWins = homeAgg.wins ?? 0;
-  } else if (teamsMatch(homeAgg.name, teamAName)) {
-    teamAWins = homeAgg.wins ?? 0;
-    teamBWins = awayAgg.wins ?? 0;
-  } else {
-    teamAWins = awayAgg.wins ?? 0;
-    teamBWins = homeAgg.wins ?? 0;
+  let homeWins = homeAgg.wins ?? 0;
+  let homeDraws = homeAgg.draws ?? 0;
+  let homeLosses = homeAgg.losses ?? 0;
+  let awayWins = awayAgg.wins ?? 0;
+  let awayDraws = awayAgg.draws ?? 0;
+  let awayLosses = awayAgg.losses ?? 0;
+
+  if (homeWins + awayWins === 0 && (homeLosses > 0 || awayLosses > 0)) {
+    homeWins = awayLosses;
+    awayWins = homeLosses;
+  }
+
+  const draws = Math.max(homeDraws, awayDraws, 0);
+  const breakdownAvailable = (homeWins + awayWins + draws) > 0;
+
+  let teamAWins = 0;
+  let teamBWins = 0;
+  if (breakdownAvailable) {
+    if (teamsMatch(refHome, teamAName) || teamsMatch(homeAgg.name, teamAName)) {
+      teamAWins = homeWins;
+      teamBWins = awayWins;
+    } else if (teamsMatch(refAway, teamAName) || teamsMatch(awayAgg.name, teamAName)) {
+      teamAWins = awayWins;
+      teamBWins = homeWins;
+    } else {
+      teamAWins = awayWins;
+      teamBWins = homeWins;
+    }
   }
 
   return {
@@ -137,6 +151,16 @@ function mapAggregatesToSummary(aggregates, teamAName, teamBName, refHomeName, r
     teamAWins,
     teamBWins,
     draws,
+    breakdownAvailable,
+  };
+}
+
+function buildUnavailable(teamAName, teamBName, reason = 'incomplete_data') {
+  return {
+    available: false,
+    reason,
+    teamA: teamAName,
+    teamB: teamBName,
   };
 }
 
@@ -272,10 +296,13 @@ async function fetchHead2HeadData({
     detailLevel = 'full';
   } else if (aggregates?.numberOfMatches) {
     summary = mapAggregatesToSummary(aggregates, teamAName, teamBName, refHome, refAway);
+    if (!summary.breakdownAvailable) {
+      return buildUnavailable(teamAName, teamBName);
+    }
     detailLevel = 'summary_only';
   } else {
     summary = {
-      totalMatches: 0, totalGoals: 0, teamAWins: 0, teamBWins: 0, draws: 0,
+      totalMatches: 0, totalGoals: 0, teamAWins: 0, teamBWins: 0, draws: 0, breakdownAvailable: false,
     };
   }
 
@@ -332,7 +359,7 @@ async function getHead2HeadByTeamIds(teamAId, teamBId, {
       teamBName: labelB,
       meetings: [],
       summary: {
-        totalMatches: 0, totalGoals: 0, teamAWins: 0, teamBWins: 0, draws: 0,
+        totalMatches: 0, totalGoals: 0, teamAWins: 0, teamBWins: 0, draws: 0, breakdownAvailable: false,
       },
       competitions,
       detailLevel: 'none',
@@ -407,7 +434,7 @@ async function getHead2HeadForMatch(matchId, {
 async function getHead2HeadForAiContext(matchId) {
   try {
     const data = await getHead2HeadForMatch(matchId, { limit: 8 });
-    if (!data?.available || !data.summary?.totalMatches) return null;
+    if (!data?.available || !data.summary?.totalMatches || data.summary?.breakdownAvailable === false) return null;
     return {
       competitions: data.competitions,
       summary: data.summary,

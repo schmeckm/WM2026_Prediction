@@ -43,14 +43,10 @@
             </p>
           </div>
 
-          <section class="match-venue-h2h">
+          <section v-if="h2hData" class="match-venue-h2h">
             <HeadToHeadPanel
               :data="h2hData"
-              :loading="h2hLoading"
-              :error="h2hError"
               :subtitle="t('head2head.wcOnly')"
-              :show-load-button="!h2hData && !h2hLoading && !h2hError"
-              @load="loadHead2Head()"
             />
           </section>
 
@@ -130,15 +126,9 @@ const {
 
 const {
   data: h2hData,
-  loading: h2hLoading,
-  error: h2hError,
   loadForMatch: loadHead2HeadRequest,
   reset: resetHead2Head,
 } = useHeadToHead();
-
-function loadHead2Head() {
-  if (matchId.value) loadHead2HeadRequest(matchId.value);
-}
 
 const modalTitle = computed(() => {
   if (props.match?.stadium) return props.match.stadium;
@@ -157,6 +147,8 @@ watch(() => props.open, (isOpen) => {
   if (!isOpen) {
     resetPreview();
     resetHead2Head();
+  } else if (matchId.value) {
+    loadHead2HeadRequest(matchId.value);
   }
 });
 

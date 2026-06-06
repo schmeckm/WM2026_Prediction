@@ -382,7 +382,7 @@
     "stage": "Fase",
     "cached": "En caché",
     "footnote": "{count} partidos de CM · {goals} goles en total",
-    "summaryOnly": "Los partidos individuales no están disponibles en el plan gratuito de football-data.org; solo se muestra el balance general."
+    "summaryOnly": "Los partidos individuales no están disponibles en el plan gratuito de football-data.org."
   },
   "matches": {
     "title": "Partidos",

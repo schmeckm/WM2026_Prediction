@@ -62,15 +62,6 @@
         {{ t('head2head.footnote', { count: data.summary.totalMatches, goals: data.summary.totalGoals }) }}
       </p>
     </template>
-
-    <button
-      v-else-if="showLoadButton"
-      type="button"
-      class="btn btn-secondary btn-sm"
-      @click="$emit('load')"
-    >
-      {{ t('head2head.show') }}
-    </button>
   </section>
 </template>
 
@@ -86,10 +77,7 @@ const props = defineProps({
   loading: { type: Boolean, default: false },
   error: { type: String, default: '' },
   subtitle: { type: String, default: '' },
-  showLoadButton: { type: Boolean, default: false },
 });
-
-defineEmits(['load']);
 
 const { t } = useI18n();
 const { formatDate } = useFormatters();

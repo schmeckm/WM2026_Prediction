@@ -309,10 +309,9 @@
           </div>
 
           <HeadToHeadPanel
-            v-if="duelData || duelError"
+            v-if="duelData"
             :data="duelData"
             :loading="duelLoading"
-            :error="duelError"
             :subtitle="t('head2head.wcOnly')"
           />
         </div>

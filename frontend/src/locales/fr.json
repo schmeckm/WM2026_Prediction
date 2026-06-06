@@ -382,7 +382,7 @@
     "stage": "Phase",
     "cached": "En cache",
     "footnote": "{count} matchs de CM · {goals} buts au total",
-    "summaryOnly": "Les matchs individuels ne sont pas disponibles avec le forfait gratuit football-data.org – seul le bilan global est affiché."
+    "summaryOnly": "Les matchs individuels ne sont pas disponibles avec le forfait gratuit football-data.org."
   },
   "matches": {
     "title": "Matchs",

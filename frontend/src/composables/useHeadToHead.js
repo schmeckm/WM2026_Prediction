@@ -19,6 +19,11 @@ export function useHeadToHead() {
       });
       data.value = response;
     } catch (err) {
+      if (err.response?.status === 404) {
+        data.value = null;
+        error.value = '';
+        return;
+      }
       error.value = err.response?.data?.error || i18n.global.t('head2head.loadFailed');
     } finally {
       loading.value = false;
@@ -40,6 +45,11 @@ export function useHeadToHead() {
       });
       data.value = response;
     } catch (err) {
+      if (err.response?.status === 404) {
+        data.value = null;
+        error.value = '';
+        return;
+      }
       error.value = err.response?.data?.error || i18n.global.t('head2head.loadFailed');
     } finally {
       loading.value = false;

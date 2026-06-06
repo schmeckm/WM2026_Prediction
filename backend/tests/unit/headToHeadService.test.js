@@ -35,6 +35,7 @@ describe('headToHeadService.computeSummary', () => {
       teamAWins: 1,
       teamBWins: 1,
       draws: 1,
+      breakdownAvailable: true,
     });
   });
 });
@@ -59,6 +60,53 @@ describe('headToHeadService.mapAggregatesToSummary', () => {
       teamAWins: 2,
       teamBWins: 1,
       draws: 0,
+      breakdownAvailable: true,
+    });
+  });
+
+  test('marks breakdown unavailable when free tier zeroes win stats', () => {
+    const summary = mapAggregatesToSummary(
+      {
+        numberOfMatches: 1,
+        totalGoals: 1,
+        homeTeam: { id: 773, name: 'France', wins: 0, draws: 0, losses: 0 },
+        awayTeam: { id: 804, name: 'Senegal', wins: 0, draws: 0, losses: 0 },
+      },
+      'France',
+      'Senegal',
+      'France',
+      'Senegal',
+    );
+    assert.deepEqual(summary, {
+      totalMatches: 1,
+      totalGoals: 1,
+      teamAWins: 0,
+      teamBWins: 0,
+      draws: 0,
+      breakdownAvailable: false,
+    });
+  });
+
+  test('infers wins from opponent losses when wins are missing', () => {
+    const summary = mapAggregatesToSummary(
+      {
+        numberOfMatches: 1,
+        totalGoals: 1,
+        homeTeam: { name: 'France', wins: 0, draws: 0, losses: 1 },
+        awayTeam: { name: 'Senegal', wins: 0, draws: 0, losses: 0 },
+      },
+      'France',
+      'Senegal',
+      'France',
+      'Senegal',
+    );
+    assert.deepEqual(summary, {
+      totalMatches: 1,
+      totalGoals: 1,
+      teamAWins: 0,
+      teamBWins: 1,
+      draws: 0,
+      breakdownAvailable: true,
     });
   });
 });
