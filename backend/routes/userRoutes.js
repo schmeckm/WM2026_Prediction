@@ -15,6 +15,7 @@ const {
   deleteUserImageFiles,
 } = require('../services/userImageService');
 const { validateImageFile } = require('../utils/fileValidation');
+const { deleteUserAccount } = require('../services/userAccountService');
 
 const router = express.Router();
 
@@ -255,6 +256,33 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+router.delete('/me', async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.id);
+    if (!user) {
+      return sendError(res, req, 404, 'errors.userNotFound');
+    }
+
+    const { password } = req.body || {};
+    if (!password) {
+      return sendError(res, req, 400, 'errors.passwordRequired');
+    }
+
+    const passwordValid = await user.comparePassword(password);
+    if (!passwordValid) {
+      return sendError(res, req, 400, 'errors.invalidPassword');
+    }
+
+    await deleteUserAccount(user, { req, auditAction: 'USER_SELF_DELETE' });
+    res.json({ message: translate(req, 'messages.accountDeleted') });
+  } catch (error) {
+    if (error.code === 'LAST_ADMIN') {
+      return sendError(res, req, 400, 'errors.cannotDeleteLastAdmin');
+    }
+    sendError(res, req, 500, 'errors.userDeleteFailed');
+  }
+});
+
 router.delete('/:id', adminMiddleware, async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -266,10 +294,12 @@ router.delete('/:id', adminMiddleware, async (req, res) => {
       return sendError(res, req, 400, 'errors.cannotDeleteSelf');
     }
 
-    deleteUserImageFiles(user.id);
-    await user.destroy();
+    await deleteUserAccount(user, { req, auditAction: 'USER_DELETE' });
     res.json({ message: translate(req, 'messages.userDeleted') });
   } catch (error) {
+    if (error.code === 'LAST_ADMIN') {
+      return sendError(res, req, 400, 'errors.cannotDeleteLastAdmin');
+    }
     sendError(res, req, 500, 'errors.userDeleteFailed');
   }
 });

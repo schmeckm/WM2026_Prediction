@@ -70,6 +70,11 @@
 
     <router-link to="/forgot-password" class="auth-immersive-link">{{ t('auth.forgotPassword') }}</router-link>
 
+    <p class="auth-immersive-legal">
+      {{ t('auth.privacyAgreement') }}
+      <router-link to="/privacy">{{ t('auth.privacyPolicy') }}</router-link>.
+    </p>
+
     <template #footer>
       {{ t('auth.noAccount') }}
       <router-link to="/register">{{ t('auth.registerNow') }}</router-link>

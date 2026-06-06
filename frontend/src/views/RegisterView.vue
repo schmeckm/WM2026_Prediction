@@ -101,6 +101,11 @@
         </select>
       </div>
 
+      <p class="auth-immersive-legal">
+        {{ t('auth.privacyAgreement') }}
+        <router-link to="/privacy">{{ t('auth.privacyPolicy') }}</router-link>.
+      </p>
+
       <button type="submit" class="auth-immersive-submit" :disabled="loading">
         {{ loading ? t('auth.registering') : t('auth.registerNow') }}
       </button>

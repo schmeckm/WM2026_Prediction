@@ -11,9 +11,9 @@
     "db:backup-pg": "node database/postgres-backup-cli.js",
     "db:reset": "node database/reset.js",
     "db:seed-teams": "node database/seed-teams.js",
-    "test": "node --require ./tests/helpers/testEnv.js --test tests/**/*.test.js tests/unit/**/*.test.js tests/integration/**/*.test.js",
-    "test:unit": "node --require ./tests/helpers/testEnv.js --test tests/unit/**/*.test.js",
-    "test:integration": "node --require ./tests/helpers/testEnv.js --test tests/integration/**/*.test.js",
+    "test": "node --require ./tests/helpers/testEnv.js --test tests/",
+    "test:unit": "node --require ./tests/helpers/testEnv.js --test tests/unit/",
+    "test:integration": "node --require ./tests/helpers/testEnv.js --test tests/integration/",
     "test:coverage": "c8 --reporter=text --reporter=lcov npm test"
   },
   "dependencies": {

@@ -326,6 +326,23 @@ const { t } = useI18n();
   text-align: center;
 }
 
+.auth-immersive-legal {
+  margin-top: 1rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.auth-immersive-legal a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.auth-immersive-legal a:hover {
+  color: var(--color-primary-light);
+}
+
 @media (max-width: 600px) {
   .auth-immersive-form-row {
     grid-template-columns: 1fr;

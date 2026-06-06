@@ -40,6 +40,11 @@ const routes = [
     children: [{ path: '', name: 'ResetPassword', component: () => import('../views/ResetPasswordView.vue'), meta: { guest: true } }],
   },
   {
+    path: '/privacy',
+    component: PublicLayout,
+    children: [{ path: '', name: 'Privacy', component: () => import('../views/PrivacyPolicyView.vue'), meta: { guest: true } }],
+  },
+  {
     path: '/',
     component: AppLayout,
     meta: { requiresAuth: true },

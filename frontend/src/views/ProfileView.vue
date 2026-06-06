@@ -161,11 +161,36 @@
         </form>
       </div>
     </div>
+
+    <div class="card profile-danger-card" style="max-width: 640px;">
+      <div class="card-body">
+        <h3 class="profile-danger-title">{{ t('profile.dangerZoneTitle') }}</h3>
+        <p class="text-muted profile-danger-hint">{{ t('profile.dangerZoneHint') }}</p>
+        <form class="profile-danger-form" @submit.prevent="handleDeleteAccount">
+          <div class="form-group">
+            <label for="deletePassword">{{ t('profile.deletePassword') }}</label>
+            <input
+              id="deletePassword"
+              v-model="deletePassword"
+              type="password"
+              class="form-control"
+              required
+              autocomplete="current-password"
+              :placeholder="t('profile.deletePasswordHint')"
+            />
+          </div>
+          <button type="submit" class="btn btn-danger" :disabled="deletingAccount">
+            {{ deletingAccount ? t('profile.deletingAccount') : t('profile.deleteAccount') }}
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/authStore';
 import { useLocaleStore } from '../stores/localeStore';
@@ -176,6 +201,7 @@ import LocalePicker from '../components/LocalePicker.vue';
 import UserAvatar from '../components/UserAvatar.vue';
 
 const { t } = useI18n();
+const router = useRouter();
 const authStore = useAuthStore();
 const themeStore = useThemeStore();
 const localeStore = useLocaleStore();
@@ -203,6 +229,8 @@ const showPassword = ref(false);
 const selectedImage = ref(null);
 const previewUrl = ref('');
 const imageBusy = ref(false);
+const deletePassword = ref('');
+const deletingAccount = ref(false);
 
 function normalizeOptionalId(id) {
   if (id == null || id === '') return null;
@@ -355,6 +383,23 @@ async function removeImage() {
   }
 }
 
+async function handleDeleteAccount() {
+  if (!confirm(t('profile.deleteConfirm'))) return;
+
+  deletingAccount.value = true;
+  success.value = '';
+  error.value = '';
+  try {
+    await authStore.deleteAccount(deletePassword.value);
+    deletePassword.value = '';
+    await router.replace('/login');
+  } catch (err) {
+    error.value = err.response?.data?.error || t('profile.deleteFailed');
+  } finally {
+    deletingAccount.value = false;
+  }
+}
+
 async function handleSave() {
   loading.value = true;
   success.value = '';
@@ -483,5 +528,26 @@ async function handleSave() {
 .password-toggle:hover {
   color: var(--color-text);
   background: var(--color-primary-soft);
+}
+
+.profile-danger-card {
+  margin-top: 1.5rem;
+  border-color: var(--sapErrorColor, #bb0000);
+}
+
+.profile-danger-title {
+  margin: 0 0 0.5rem;
+  color: var(--sapErrorColor, #bb0000);
+  font-size: 1.05rem;
+}
+
+.profile-danger-hint {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.profile-danger-form {
+  margin-top: 0.5rem;
 }
 </style>

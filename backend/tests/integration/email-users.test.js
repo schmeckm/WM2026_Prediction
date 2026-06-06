@@ -1,6 +1,7 @@
-const { describe, it, before } = require('node:test');
+const { describe, it, before, beforeEach } = require('node:test');
 const assert = require('node:assert/strict');
-const { setupTestDb, adminToken } = require('../helpers/testApp');
+const { setupTestDb, adminToken, loginAs } = require('../helpers/testApp');
+const { User, Prediction, Match } = require('../../models');
 
 describe('Email API (admin)', () => {
   let api;
@@ -86,6 +87,60 @@ describe('Users API (admin)', () => {
       .send({ role: 'admin' });
     assert.equal(res.status, 200);
     assert.equal(res.body.role, 'admin');
+  });
+});
+
+describe('User account deletion', () => {
+  let api;
+
+  beforeEach(async () => {
+    api = await setupTestDb();
+  });
+
+  it('user can delete own account with password', async () => {
+    const login = await loginAs(api, 'verified@example.com', 'user123');
+    const userId = login.body.user.id;
+    const token = login.body.token;
+
+    const match = await Match.findOne();
+    await Prediction.create({
+      userId,
+      matchId: match.id,
+      predictedHomeScore: 2,
+      predictedAwayScore: 1,
+      submittedAt: new Date(),
+    });
+
+    const res = await api
+      .delete('/api/users/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ password: 'user123' });
+    assert.equal(res.status, 200);
+
+    const deletedUser = await User.findByPk(userId);
+    assert.equal(deletedUser, null);
+
+    const deletedPrediction = await Prediction.findOne({ where: { userId } });
+    assert.equal(deletedPrediction, null);
+  });
+
+  it('rejects account deletion with wrong password', async () => {
+    const login = await loginAs(api, 'verified@example.com', 'user123');
+    const res = await api
+      .delete('/api/users/me')
+      .set('Authorization', `Bearer ${login.body.token}`)
+      .send({ password: 'wrong-password' });
+    assert.equal(res.status, 400);
+  });
+
+  it('last admin cannot delete own account', async () => {
+    const login = await loginAs(api, 'admin@example.com', 'admin123');
+    const res = await api
+      .delete('/api/users/me')
+      .set('Authorization', `Bearer ${login.body.token}`)
+      .send({ password: 'admin123' });
+    assert.equal(res.status, 400);
+    assert.match(res.body.error, /administrator/i);
   });
 });
 

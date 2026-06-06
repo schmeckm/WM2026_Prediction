@@ -111,6 +111,11 @@ export const useAuthStore = defineStore('auth', () => {
     useLocaleStore().syncFromUser(updatedUser);
   }
 
+  async function deleteAccount(password) {
+    await api.delete('/users/me', { data: { password } });
+    clearLocalAuth();
+  }
+
   return {
     token,
     user,
@@ -129,5 +134,6 @@ export const useAuthStore = defineStore('auth', () => {
     updateProfile,
     syncUser,
     setAuth,
+    deleteAccount,
   };
 });
