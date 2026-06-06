@@ -19,8 +19,9 @@ function resolveLanguage(req) {
 }
 
 function handleAiError(error, req, res) {
-  const status = error.code === 'AI_DISABLED' || error.code === 'NO_API_KEY' ? 503
-    : error.code === 'LLM_ERROR' ? 502 : 500;
+  const status = error.code === 'AI_DISABLED' || error.code === 'NO_API_KEY' || error.code === 'LLM_ERROR'
+    ? 503
+    : 500;
   res.status(status).json({ error: error.message, code: error.code });
 }
 
@@ -35,6 +36,16 @@ router.post('/match-preview/:matchId', authMiddleware, aiRateLimitMiddleware('ma
     const result = await generateMatchPreview(parseInt(req.params.matchId, 10), req.user.id, { regenerate, language });
     res.json(result);
   } catch (error) {
+    const language = resolveLanguage(req);
+    if (['LLM_ERROR', 'NO_API_KEY', 'AI_DISABLED', 'FEATURE_DISABLED'].includes(error.code)) {
+      return res.json({
+        content: null,
+        unavailable: true,
+        error: error.message,
+        disclaimer: buildDisclaimer('match_preview', language),
+        cached: false,
+      });
+    }
     handleAiError(error, req, res);
   }
 });

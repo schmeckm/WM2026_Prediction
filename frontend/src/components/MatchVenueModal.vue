@@ -129,9 +129,7 @@ function onKeydown(event) {
 }
 
 watch(() => props.open, (isOpen) => {
-  if (isOpen && props.showAi) {
-    loadPreview();
-  } else if (!isOpen) {
+  if (!isOpen) {
     resetPreview();
   }
 });

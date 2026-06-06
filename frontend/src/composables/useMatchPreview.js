@@ -10,14 +10,25 @@ export function useMatchPreview(matchIdSource) {
   const error = ref('');
   const cached = ref(false);
 
+  const loadingRequest = ref(null);
+
   async function loadPreview({ regenerate = false } = {}) {
     const matchId = unref(matchIdSource);
-    if (!matchId) return;
+    if (!matchId || loadingRequest.value === matchId) return;
 
+    loadingRequest.value = matchId;
     loading.value = true;
     error.value = '';
     try {
-      const { data } = await api.post(`/ai/match-preview/${matchId}`, { regenerate });
+      const { data } = await api.post(`/ai/match-preview/${matchId}`, { regenerate }, {
+        timeout: 90000,
+      });
+      if (data.unavailable) {
+        content.value = '';
+        disclaimer.value = data.disclaimer || '';
+        error.value = data.error || t('ai.previewUnavailable');
+        return;
+      }
       content.value = data.content || '';
       disclaimer.value = data.disclaimer || '';
       cached.value = !!data.cached;
@@ -27,6 +38,9 @@ export function useMatchPreview(matchIdSource) {
       error.value = err.response?.data?.error || t('ai.previewUnavailable');
     } finally {
       loading.value = false;
+      if (loadingRequest.value === matchId) {
+        loadingRequest.value = null;
+      }
     }
   }
 
@@ -36,6 +50,7 @@ export function useMatchPreview(matchIdSource) {
     error.value = '';
     cached.value = false;
     loading.value = false;
+    loadingRequest.value = null;
   }
 
   return {
