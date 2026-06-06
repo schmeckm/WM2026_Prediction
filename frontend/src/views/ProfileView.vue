@@ -360,9 +360,7 @@ async function uploadImage() {
   if (!selectedImage.value) return;
   const formData = new FormData();
   formData.append('image', selectedImage.value);
-  const { data } = await api.post(`/users/${authStore.user.id}/image`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  const { data } = await api.post(`/users/${authStore.user.id}/image`, formData);
   authStore.syncUser(data);
   selectedImage.value = null;
   if (previewUrl.value) URL.revokeObjectURL(previewUrl.value);

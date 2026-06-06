@@ -182,6 +182,7 @@ App: http://localhost:8080
 | Stack startet nicht | `JWT_SECRET` und `DB_PASSWORD` gesetzt? |
 | 502 / API Fehler | Backend-Logs in Portainer prüfen |
 | WebSocket / Live-Scores | Nginx leitet `/socket.io/` weiter (siehe `frontend/nginx.conf`) |
+| Profilbilder / Uploads | Nginx leitet `/uploads/` ans Backend weiter (siehe `frontend/nginx.conf`) |
 | E-Mail-Links falsch | `APP_URL` muss öffentliche HTTPS-URL sein |
 | CORS-Fehler | `CORS_ORIGIN` = exakte Frontend-URL |
 

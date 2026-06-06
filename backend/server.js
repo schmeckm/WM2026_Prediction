@@ -16,6 +16,9 @@ async function start() {
     await initDatabase();
     console.log('Datenbank verbunden und synchronisiert.');
 
+    const { ensureBootstrapAdmin } = require('./services/bootstrapAdminService');
+    await ensureBootstrapAdmin();
+
     socketService.init(server, { corsOrigin: getSocketCorsOrigin() });
     startScheduler();
 
