@@ -11,7 +11,7 @@
     <AlertMessage v-else-if="error" :message="error" type="warning" />
 
     <template v-else-if="data">
-      <div v-if="hasMeetings" class="head2head-summary">
+      <div v-if="hasSummary" class="head2head-summary">
         <div class="head2head-summary-item">
           <span class="head2head-summary-label">{{ data.teamA }}</span>
           <strong>{{ data.summary.teamAWins }}</strong>
@@ -28,6 +28,10 @@
         </div>
       </div>
       <p v-else class="text-muted head2head-empty">{{ t('head2head.empty') }}</p>
+
+      <p v-if="data.matchListLimited" class="head2head-tier-hint text-muted">
+        {{ t('head2head.summaryOnly') }}
+      </p>
 
       <div v-if="hasMeetings" class="table-wrapper head2head-table-wrap">
         <table>
@@ -54,7 +58,7 @@
         </table>
       </div>
 
-      <p v-if="hasMeetings" class="head2head-footnote text-muted">
+      <p v-if="hasSummary" class="head2head-footnote text-muted">
         {{ t('head2head.footnote', { count: data.summary.totalMatches, goals: data.summary.totalGoals }) }}
       </p>
     </template>
@@ -91,6 +95,7 @@ const { t } = useI18n();
 const { formatDate } = useFormatters();
 
 const hasMeetings = computed(() => (props.data?.meetings?.length || 0) > 0);
+const hasSummary = computed(() => (props.data?.summary?.totalMatches || 0) > 0);
 
 function formatMeetingDate(value) {
   if (!value) return '–';
@@ -174,7 +179,8 @@ function meetingLabel(meeting) {
 }
 
 .head2head-footnote,
-.head2head-empty {
+.head2head-empty,
+.head2head-tier-hint {
   margin: 0.5rem 0 0;
   font-size: 0.78rem;
 }

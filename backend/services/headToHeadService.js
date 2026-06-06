@@ -5,6 +5,7 @@ const { getProviderConfig, assertApiConfigured } = require('./footballProviderSe
 const { findTeamByName, listTeams } = require('./footballTeamService');
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const CACHE_VERSION = 'v2';
 const DEFAULT_COMPETITIONS = 'WC';
 const DEFAULT_LIMIT = 15;
 
@@ -18,6 +19,10 @@ function teamsMatch(nameA, nameB) {
   const a = normalizeTeamKey(nameA);
   const b = normalizeTeamKey(nameB);
   return a === b || a.includes(b) || b.includes(a);
+}
+
+function formatApiDate(date) {
+  return date.toISOString().slice(0, 10);
 }
 
 function cacheGet(key) {
@@ -97,8 +102,53 @@ function computeSummary(meetings, teamAName, teamBName) {
   };
 }
 
-function buildResult({ teamAName, teamBName, meetings, competitions, source = 'football-data.org' }) {
-  const summary = computeSummary(meetings, teamAName, teamBName);
+function mapAggregatesToSummary(aggregates, teamAName, teamBName, refHomeName, refAwayName) {
+  if (!aggregates?.numberOfMatches) {
+    return {
+      totalMatches: 0, totalGoals: 0, teamAWins: 0, teamBWins: 0, draws: 0,
+    };
+  }
+
+  const homeAgg = aggregates.homeTeam || {};
+  const awayAgg = aggregates.awayTeam || {};
+  const refHome = refHomeName || homeAgg.name;
+  const refAway = refAwayName || awayAgg.name;
+  const draws = Math.max(homeAgg.draws ?? 0, awayAgg.draws ?? 0, 0);
+
+  let teamAWins;
+  let teamBWins;
+  if (teamsMatch(refHome, teamAName)) {
+    teamAWins = homeAgg.wins ?? 0;
+    teamBWins = awayAgg.wins ?? 0;
+  } else if (teamsMatch(refAway, teamAName)) {
+    teamAWins = awayAgg.wins ?? 0;
+    teamBWins = homeAgg.wins ?? 0;
+  } else if (teamsMatch(homeAgg.name, teamAName)) {
+    teamAWins = homeAgg.wins ?? 0;
+    teamBWins = awayAgg.wins ?? 0;
+  } else {
+    teamAWins = awayAgg.wins ?? 0;
+    teamBWins = homeAgg.wins ?? 0;
+  }
+
+  return {
+    totalMatches: aggregates.numberOfMatches,
+    totalGoals: aggregates.totalGoals ?? 0,
+    teamAWins,
+    teamBWins,
+    draws,
+  };
+}
+
+function buildResult({
+  teamAName,
+  teamBName,
+  meetings,
+  summary,
+  competitions,
+  detailLevel = 'full',
+  source = 'football-data.org',
+}) {
   return {
     available: true,
     teamA: teamAName,
@@ -106,32 +156,50 @@ function buildResult({ teamAName, teamBName, meetings, competitions, source = 'f
     competitions,
     summary,
     meetings,
+    detailLevel,
+    matchListLimited: detailLevel === 'summary_only',
     source,
   };
 }
 
-async function findBridgeExternalMatchId(config, teamAId, teamBId, competitions) {
-  const { matches } = await footballDataProvider.fetchTeamMatches(config, teamAId, {
-    competitions,
-    limit: 100,
-    status: 'FINISHED',
-  });
+function findOpponentMatch(matches, teamAId, teamBId) {
+  return matches.find((m) => (
+    (m.homeTeam?.id === teamAId && m.awayTeam?.id === teamBId)
+    || (m.homeTeam?.id === teamBId && m.awayTeam?.id === teamAId)
+  )) || null;
+}
 
-  const bridge = matches.find((m) => (
-    m.homeTeam?.id === teamBId || m.awayTeam?.id === teamBId
-  ));
-  if (bridge?.id) return String(bridge.id);
+async function findBridgeExternalMatch(config, teamAId, teamBId, competitions) {
+  const today = new Date();
+  const recentFrom = new Date(today);
+  recentFrom.setDate(recentFrom.getDate() - 720);
 
-  const { matches: reverseMatches } = await footballDataProvider.fetchTeamMatches(config, teamBId, {
-    competitions,
-    limit: 100,
-    status: 'FINISHED',
-  });
+  const strategies = [
+    { competitions, limit: 100 },
+    { limit: 50, status: 'FINISHED', dateFrom: formatApiDate(recentFrom), dateTo: formatApiDate(today) },
+  ];
 
-  const reverseBridge = reverseMatches.find((m) => (
-    m.homeTeam?.id === teamAId || m.awayTeam?.id === teamAId
-  ));
-  return reverseBridge?.id ? String(reverseBridge.id) : null;
+  for (const teamId of [teamAId, teamBId]) {
+    for (const params of strategies) {
+      try {
+        const { matches } = await footballDataProvider.fetchTeamMatches(config, teamId, params);
+        const bridge = findOpponentMatch(matches, teamAId, teamBId);
+        if (bridge?.id) {
+          return {
+            id: String(bridge.id),
+            homeTeam: bridge.homeTeam?.name,
+            awayTeam: bridge.awayTeam?.name,
+          };
+        }
+      } catch (error) {
+        if (error.status !== 403) {
+          console.warn(`Head2Head bridge search (team ${teamId}):`, error.message);
+        }
+      }
+    }
+  }
+
+  return null;
 }
 
 async function findBridgeFromLocalMatch(teamAName, teamBName) {
@@ -148,20 +216,42 @@ async function findBridgeFromLocalMatch(teamAName, teamBName) {
     || (teamsMatch(m.homeTeam, teamBName) && teamsMatch(m.awayTeam, teamAName))
   ));
 
-  return bridge?.externalApiId ? String(bridge.externalApiId) : null;
+  if (!bridge?.externalApiId) return null;
+  return {
+    id: String(bridge.externalApiId),
+    homeTeam: bridge.homeTeam,
+    awayTeam: bridge.awayTeam,
+  };
+}
+
+async function resolveBridgeReference(config, bridge) {
+  if (bridge?.homeTeam && bridge?.awayTeam) return bridge;
+  if (!bridge?.id) return bridge;
+  try {
+    const match = await footballDataProvider.fetchMatchById(config, bridge.id);
+    return {
+      id: bridge.id,
+      homeTeam: match.homeTeam?.name,
+      awayTeam: match.awayTeam?.name,
+    };
+  } catch {
+    return bridge;
+  }
 }
 
 async function fetchHead2HeadData({
   externalMatchId,
   teamAName,
   teamBName,
+  refHomeName = null,
+  refAwayName = null,
   competitions = DEFAULT_COMPETITIONS,
   limit = DEFAULT_LIMIT,
 }) {
   const config = await getProviderConfig();
   assertApiConfigured(config);
 
-  const { matches } = await footballDataProvider.fetchHead2Head(config, externalMatchId, {
+  const { matches, aggregates, referenceMatch } = await footballDataProvider.fetchHead2Head(config, externalMatchId, {
     competitions,
     limit,
   });
@@ -171,11 +261,31 @@ async function fetchHead2HeadData({
     .filter((m) => m.homeScore != null && m.awayScore != null)
     .slice(0, limit);
 
+  const refHome = refHomeName || referenceMatch?.homeTeam?.name || aggregates?.homeTeam?.name || null;
+  const refAway = refAwayName || referenceMatch?.awayTeam?.name || aggregates?.awayTeam?.name || null;
+
+  let summary;
+  let detailLevel = 'none';
+
+  if (meetings.length > 0) {
+    summary = computeSummary(meetings, teamAName, teamBName);
+    detailLevel = 'full';
+  } else if (aggregates?.numberOfMatches) {
+    summary = mapAggregatesToSummary(aggregates, teamAName, teamBName, refHome, refAway);
+    detailLevel = 'summary_only';
+  } else {
+    summary = {
+      totalMatches: 0, totalGoals: 0, teamAWins: 0, teamBWins: 0, draws: 0,
+    };
+  }
+
   return buildResult({
     teamAName,
     teamBName,
     meetings,
+    summary,
     competitions,
+    detailLevel,
   });
 }
 
@@ -194,7 +304,7 @@ async function getHead2HeadByTeamIds(teamAId, teamBId, {
   competitions = DEFAULT_COMPETITIONS,
   limit = DEFAULT_LIMIT,
 } = {}) {
-  const cacheKey = `teams:${teamAId}:${teamBId}:${competitions}:${limit}`;
+  const cacheKey = `${CACHE_VERSION}:teams:${teamAId}:${teamBId}:${competitions}:${limit}`;
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
 
@@ -210,31 +320,33 @@ async function getHead2HeadByTeamIds(teamAId, teamBId, {
   const labelA = resolvedA.name;
   const labelB = resolvedB.name;
 
-  let externalMatchId = await findBridgeFromLocalMatch(labelA, labelB);
-  if (!externalMatchId) {
-    externalMatchId = await findBridgeExternalMatchId(config, resolvedA.id, resolvedB.id, competitions);
+  let bridge = await findBridgeFromLocalMatch(labelA, labelB);
+  if (!bridge) {
+    bridge = await findBridgeExternalMatch(config, resolvedA.id, resolvedB.id, competitions);
   }
+  bridge = await resolveBridgeReference(config, bridge);
 
-  if (!externalMatchId) {
-    const empty = {
-      available: true,
-      teamA: labelA,
-      teamB: labelB,
-      competitions,
+  if (!bridge?.id) {
+    const empty = buildResult({
+      teamAName: labelA,
+      teamBName: labelB,
+      meetings: [],
       summary: {
         totalMatches: 0, totalGoals: 0, teamAWins: 0, teamBWins: 0, draws: 0,
       },
-      meetings: [],
-      source: 'football-data.org',
-    };
+      competitions,
+      detailLevel: 'none',
+    });
     cacheSet(cacheKey, empty);
     return empty;
   }
 
   const result = await fetchHead2HeadData({
-    externalMatchId,
+    externalMatchId: bridge.id,
     teamAName: labelA,
     teamBName: labelB,
+    refHomeName: bridge.homeTeam,
+    refAwayName: bridge.awayTeam,
     competitions,
     limit,
   });
@@ -250,7 +362,7 @@ async function getHead2HeadForMatch(matchId, {
   const match = await Match.findByPk(matchId);
   if (!match) return null;
 
-  const cacheKey = `match:${matchId}:${competitions}:${limit}`;
+  const cacheKey = `${CACHE_VERSION}:match:${matchId}:${competitions}:${limit}`;
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
 
@@ -259,6 +371,8 @@ async function getHead2HeadForMatch(matchId, {
       externalMatchId: match.externalApiId,
       teamAName: match.homeTeam,
       teamBName: match.awayTeam,
+      refHomeName: match.homeTeam,
+      refAwayName: match.awayTeam,
       competitions,
       limit,
     });
@@ -299,6 +413,7 @@ async function getHead2HeadForAiContext(matchId) {
       summary: data.summary,
       teamA: data.teamA,
       teamB: data.teamB,
+      detailLevel: data.detailLevel,
       lastMeetings: data.meetings.slice(0, 5).map((m) => ({
         date: m.date,
         competition: m.competition,
@@ -320,5 +435,6 @@ module.exports = {
   getHead2HeadByTeamIds,
   getHead2HeadForAiContext,
   computeSummary,
+  mapAggregatesToSummary,
   teamsMatch,
 };

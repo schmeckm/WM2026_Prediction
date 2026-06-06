@@ -381,7 +381,8 @@
     "competition": "Torneo",
     "stage": "Fase",
     "cached": "En caché",
-    "footnote": "{count} partidos de CM · {goals} goles en total"
+    "footnote": "{count} partidos de CM · {goals} goles en total",
+    "summaryOnly": "Los partidos individuales no están disponibles en el plan gratuito de football-data.org; solo se muestra el balance general."
   },
   "matches": {
     "title": "Partidos",

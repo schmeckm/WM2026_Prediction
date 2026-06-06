@@ -366,6 +366,11 @@ async function fetchScorers(config, query = {}) {
   };
 }
 
+async function fetchMatchById(config, matchId) {
+  const result = await apiRequest(config, `/matches/${matchId}`);
+  return normalizeApiMatch(result.data);
+}
+
 async function fetchTeamMatches(config, teamId, query = {}) {
   const params = pickQuery(query, MATCH_QUERY_KEYS);
 
@@ -491,6 +496,7 @@ module.exports = {
   fetchForSync,
   fetchTeams,
   fetchTeamById,
+  fetchMatchById,
   fetchStandings,
   fetchScorers,
   fetchTeamMatches,

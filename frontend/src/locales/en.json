@@ -393,7 +393,8 @@
     "competition": "Tournament",
     "stage": "Round",
     "cached": "Cached",
-    "footnote": "{count} World Cup matches · {goals} goals total"
+    "footnote": "{count} World Cup matches · {goals} goals total",
+    "summaryOnly": "Individual matches are not available on the free football-data.org plan – only the overall record is shown."
   },
   "matches": {
     "title": "Matches",
