@@ -8,6 +8,14 @@ const { getSocketCorsOrigin } = require('./config/corsConfig');
 
 validateEnv();
 
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled promise rejection:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught exception:', error);
+});
+
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 

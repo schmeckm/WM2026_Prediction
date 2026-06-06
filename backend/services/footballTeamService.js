@@ -6,6 +6,29 @@ const { isEnabled: isPlayerImageEnabled } = require('./playerImageProviderServic
 const CACHE_TTL_MS = 60 * 60 * 1000;
 let cache = { teams: null, fetchedAt: 0 };
 
+const MAX_CONCURRENT_IMAGE_RESOLVE = 2;
+let activeImageResolves = 0;
+const imageResolveWaiters = [];
+
+async function acquireImageResolveSlot() {
+  if (activeImageResolves < MAX_CONCURRENT_IMAGE_RESOLVE) {
+    activeImageResolves += 1;
+    return;
+  }
+  await new Promise((resolve) => {
+    imageResolveWaiters.push(resolve);
+  });
+  activeImageResolves += 1;
+}
+
+function releaseImageResolveSlot() {
+  activeImageResolves = Math.max(0, activeImageResolves - 1);
+  const next = imageResolveWaiters.shift();
+  if (next) next();
+}
+
+const DEFAULT_RESOLVE_TIME_BUDGET_MS = 12000;
+
 async function loadTeams(force = false) {
   if (!force && cache.teams && Date.now() - cache.fetchedAt < CACHE_TTL_MS) {
     return cache.teams;
@@ -34,8 +57,8 @@ async function listTeams() {
 }
 
 async function resolveMissingSquadImages(squad, teamName, {
-  maxResolve = 8,
-  timeBudgetMs = 60000,
+  maxResolve = 4,
+  timeBudgetMs = DEFAULT_RESOLVE_TIME_BUDGET_MS,
 } = {}) {
   if (!isPlayerImageEnabled() || !squad?.length) return squad;
 
@@ -70,8 +93,8 @@ async function resolveMissingSquadImages(squad, teamName, {
 
 async function getTeamById(teamId, {
   resolveImages = false,
-  maxResolve = 8,
-  resolveTimeBudgetMs = 60000,
+  maxResolve = 4,
+  resolveTimeBudgetMs = DEFAULT_RESOLVE_TIME_BUDGET_MS,
 } = {}) {
   const id = parseInt(teamId, 10);
   if (!Number.isFinite(id)) return null;
@@ -99,10 +122,15 @@ async function getTeamById(teamId, {
     }
     const missingBefore = squad.filter((p) => !p.imageUrl).length;
     if (resolveImages && missingBefore > 0) {
-      squad = await resolveMissingSquadImages(squad, team.name, {
-        maxResolve,
-        timeBudgetMs: resolveTimeBudgetMs,
-      });
+      await acquireImageResolveSlot();
+      try {
+        squad = await resolveMissingSquadImages(squad, team.name, {
+          maxResolve,
+          timeBudgetMs: resolveTimeBudgetMs,
+        });
+      } finally {
+        releaseImageResolveSlot();
+      }
     }
     const missingAfter = squad.filter((p) => !p.imageUrl).length;
     team = {

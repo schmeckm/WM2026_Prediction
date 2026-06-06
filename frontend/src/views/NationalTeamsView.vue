@@ -265,7 +265,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
@@ -293,6 +293,34 @@ const loadingLive = ref(false);
 const error = ref('');
 const search = ref('');
 const liveFilter = ref('today');
+
+let teamDetailAbort = null;
+let imageResolveAbort = null;
+
+function cancelTeamRequests() {
+  teamDetailAbort?.abort();
+  imageResolveAbort?.abort();
+  teamDetailAbort = null;
+  imageResolveAbort = null;
+}
+
+function isRequestCanceled(err) {
+  return err?.code === 'ERR_CANCELED' || err?.name === 'CanceledError';
+}
+
+function wait(ms, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
+    }
+    const timer = setTimeout(resolve, ms);
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timer);
+      reject(new DOMException('Aborted', 'AbortError'));
+    }, { once: true });
+  });
+}
 
 const tabs = computed(() => [
   { id: 'teams', label: t('nationalTeams.tabs.teams') },
@@ -422,43 +450,72 @@ async function loadTeams() {
 }
 
 async function loadTeamDetail(team) {
+  teamDetailAbort?.abort();
+  const controller = new AbortController();
+  teamDetailAbort = controller;
+
   loadingTeamDetail.value = true;
   error.value = '';
   try {
-    const { data } = await api.get(`/football/teams/${team.id}`, { timeout: 60000 });
+    const { data } = await api.get(`/football/teams/${team.id}`, {
+      signal: controller.signal,
+      timeout: 30000,
+    });
+    if (controller.signal.aborted) return;
     if (!applyTeamDetail(data)) {
       error.value = t('nationalTeams.squadEmpty');
     }
   } catch (err) {
+    if (isRequestCanceled(err)) return;
     error.value = err.response?.data?.error || t('nationalTeams.loadFailed');
   } finally {
-    loadingTeamDetail.value = false;
+    if (teamDetailAbort === controller) {
+      loadingTeamDetail.value = false;
+    }
   }
-  resolveTeamImagesInBackground(team.id);
+
+  if (teamDetailAbort === controller && selectedTeam.value?.id === team.id) {
+    resolveTeamImagesInBackground(team.id);
+  }
 }
 
 async function resolveTeamImagesInBackground(teamId) {
-  const maxRounds = 30;
+  imageResolveAbort?.abort();
+  const controller = new AbortController();
+  imageResolveAbort = controller;
+
+  const maxRounds = 10;
   for (let round = 0; round < maxRounds; round += 1) {
+    if (controller.signal.aborted || selectedTeam.value?.id !== teamId) return;
+
     const missing = selectedTeam.value?.squad?.filter((p) => !p.imageUrl).length || 0;
-    if (missing === 0 || selectedTeam.value?.id !== teamId) return;
+    if (missing === 0) return;
 
     try {
+      if (round > 0) {
+        await wait(800, controller.signal);
+      }
+
       const { data } = await api.get(`/football/teams/${teamId}`, {
-        params: { resolveImages: '1', maxResolve: 6 },
-        timeout: 90000,
+        params: { resolveImages: '1', maxResolve: 4 },
+        signal: controller.signal,
+        timeout: 20000,
       });
+      if (controller.signal.aborted || selectedTeam.value?.id !== teamId) return;
+
       mergeTeamImageUpdates(data);
       if (data.imageResolve?.complete || (data.imageResolve?.resolvedThisRequest || 0) === 0) {
         return;
       }
-    } catch {
+    } catch (err) {
+      if (isRequestCanceled(err)) return;
       return;
     }
   }
 }
 
 async function selectTeam(team, { replaceRoute = true } = {}) {
+  cancelTeamRequests();
   error.value = '';
   selectedTeam.value = {
     id: team.id,
@@ -545,6 +602,10 @@ onMounted(async () => {
   if (activeTab.value === 'standings') await loadStandings();
   if (activeTab.value === 'scorers') await loadScorers();
   if (activeTab.value === 'live') await loadLiveMatches();
+});
+
+onUnmounted(() => {
+  cancelTeamRequests();
 });
 </script>
 
