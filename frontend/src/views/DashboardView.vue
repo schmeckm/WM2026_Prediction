@@ -6,7 +6,7 @@
     </div>
 
     <LoadingSpinner v-if="loading" />
-    <AlertMessage v-else-if="error" :message="error" type="error" />
+    <AlertMessage v-else-if="error" :message="error" type="error" inline />
 
     <template v-else>
       <AIInsightCard />
@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/authStore';
 import api from '../services/api';
@@ -77,6 +77,7 @@ import LeaderboardTable from '../components/LeaderboardTable.vue';
 import AIInsightCard from '../components/AIInsightCard.vue';
 import TeamDashboardCard from '../components/TeamDashboardCard.vue';
 import AlertMessage from '../components/AlertMessage.vue';
+import { onSocketEvent } from '../services/socket';
 import { useFormatters } from '../composables/useFormatters';
 
 const { t } = useI18n();
@@ -103,6 +104,25 @@ const upcomingMatches = computed(() => {
 });
 
 const top5 = computed(() => leaderboard.value.slice(0, 5));
+let unsubMatch = null;
+let unsubLeaderboard = null;
+
+function updateMatch(updated) {
+  const idx = matches.value.findIndex((m) => m.id === updated.id);
+  if (idx >= 0) {
+    const existing = matches.value[idx];
+    matches.value[idx] = { ...existing, ...updated, prediction: existing.prediction };
+  }
+}
+
+async function refreshLeaderboard() {
+  try {
+    const { data } = await api.get('/leaderboard');
+    leaderboard.value = data;
+  } catch {
+    // keep existing data on background refresh failure
+  }
+}
 
 async function loadDashboardData() {
   const [matchesRes, leaderboardRes] = await Promise.all([
@@ -122,5 +142,16 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
+
+  unsubMatch = onSocketEvent('match:update', updateMatch);
+  unsubLeaderboard = onSocketEvent('leaderboard:update', (data) => {
+    if (Array.isArray(data)) leaderboard.value = data;
+    else refreshLeaderboard();
+  });
+});
+
+onUnmounted(() => {
+  unsubMatch?.();
+  unsubLeaderboard?.();
 });
 </script>

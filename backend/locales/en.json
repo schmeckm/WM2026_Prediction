@@ -18,7 +18,8 @@
     "registrationDisabled": "Registration is currently disabled.",
     "registrationFieldsRequired": "First name, last name, email and password are required.",
     "passwordsDoNotMatch": "Passwords do not match.",
-    "passwordMinLength": "Password must be at least 6 characters long.",
+    "passwordMinLength": "Password must be at least 10 characters long.",
+    "passwordComplexity": "Password must contain at least one letter and one number.",
     "teamNotExists": "The selected team does not exist.",
     "registrationFailed": "Registration failed.",
     "loginFieldsRequired": "Email and password are required.",
@@ -101,6 +102,8 @@
     "emailStatusLoadFailed": "Email status could not be loaded.",
     "testEmailFailed": "Test email failed.",
     "remindersSendFailed": "Reminders could not be sent.",
+    "userRemindersSendFailed": "Tip reminders could not be sent.",
+    "statusUpdatesSendFailed": "Status updates could not be sent.",
     "auditLogLoadFailed": "Audit log could not be loaded.",
     "notificationsLoadFailed": "Notifications could not be loaded.",
     "notificationNotFound": "Notification not found.",
@@ -252,6 +255,31 @@
       "subject": "WM 2026 Predictions – Sync error",
       "title": "Synchronization error",
       "text": "Sync error: {errorMessage}"
+    },
+    "manualTipReminder": {
+      "subject": "WM 2026 Prediction Game – Reminder: submit predictions",
+      "title": "Prediction reminder",
+      "greeting": "Hello {firstName}!",
+      "bodyWithMissing": "You still have {missingCount} open predictions. Submit them in time to collect points.",
+      "bodyGeneric": "Check your open matches and submit your predictions in time.",
+      "cta": "Submit predictions",
+      "text": "Hello {firstName}! {missingCount} open predictions.\n{matchListText}\n{link}"
+    },
+    "statusUpdate": {
+      "subject": "WM 2026 Prediction Game – Current standings",
+      "title": "Status update",
+      "greeting": "Hello {firstName}!",
+      "intro": "Here is the current status in the prediction game:",
+      "yourRank": "You are ranked #{rank} with {points} points.",
+      "notRanked": "You are not on the leaderboard yet.",
+      "yourTeam": "Your team \"{teamName}\" is ranked #{rank} in the team standings ({points} avg. points).",
+      "teamNotRanked": "Your team \"{teamName}\" is not ranked in the team standings yet.",
+      "leaderboardHeading": "Top players",
+      "teamHeading": "Top teams",
+      "points": "pts",
+      "noEntries": "No entries yet.",
+      "cta": "View leaderboard",
+      "text": "Hello {firstName}! Your rank: {rank}, points: {points}. Team: {teamName} (rank {teamRank}). {link}"
     }
   },
   "ai": {
@@ -268,6 +296,16 @@
       "openMatches": "Show my most important open matches",
       "teamMatches": "Which matches does Germany still have?"
     },
-    "defaultCoachPrompt": "Give me a brief overview of my current prediction situation and what I should do next."
+    "defaultCoachPrompt": "Give me a brief overview of my current prediction situation and what I should do next.",
+    "dashboardInsights": {
+      "missingTodayOne": "You still have {count} prediction missing for today.",
+      "missingTodayMany": "You still have {count} predictions missing for today.",
+      "missingTotal": "You still have {count} predictions missing in total.",
+      "exactOne": "You have already tipped {count} exact result.",
+      "exactMany": "You have already tipped {count} exact results.",
+      "rankCatchUp": "You are in rank {rank}. Good picks can still help you catch up!",
+      "teamRanking": "Your team \"{teamName}\" is in rank {rank} in the team standings.",
+      "aiPrompt": "Write ONE short, motivating sentence (max. 25 words) as a dashboard tip based on the data. No guarantees."
+    }
   }
 }

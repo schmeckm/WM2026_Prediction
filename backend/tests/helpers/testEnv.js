@@ -16,5 +16,6 @@ process.env.OPEN_REGISTRATION = 'true';
 process.env.AI_FEATURES_ENABLED = 'false';
 process.env.OPENAI_API_KEY = '';
 process.env.DB_SYNC_ALTER = 'false';
+process.env.PASSWORD_MIN_LENGTH = '6';
 
 module.exports = { testDbPath };

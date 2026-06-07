@@ -8,8 +8,8 @@ describe('Auth API – logout & token blacklist', () => {
   let api;
 
   before(async () => {
-    resetBlacklistForTests();
     api = await setupTestDb();
+    await resetBlacklistForTests();
   });
 
   it('logout blacklists token and rejects subsequent requests', async () => {

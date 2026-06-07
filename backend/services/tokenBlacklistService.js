@@ -1,46 +1,88 @@
 const crypto = require('crypto');
+const { Op } = require('sequelize');
+const { RevokedToken } = require('../models');
 
-const blacklist = new Map();
+const memoryCache = new Map();
 const CLEANUP_INTERVAL_MS = 15 * 60 * 1000;
 
 function tokenHash(token) {
   return crypto.createHash('sha256').update(token).digest('hex');
 }
 
-function blacklistToken(token, expiresAtMs) {
-  if (!token) return;
-  const exp = expiresAtMs || Date.now() + 7 * 24 * 60 * 60 * 1000;
-  blacklist.set(tokenHash(token), exp);
+function cacheToken(hash, expiresAtMs) {
+  memoryCache.set(hash, expiresAtMs);
 }
 
-function isTokenBlacklisted(token) {
-  if (!token) return false;
-  cleanupExpired();
+function cleanupMemoryCache() {
+  const now = Date.now();
+  for (const [hash, exp] of memoryCache.entries()) {
+    if (now >= exp) memoryCache.delete(hash);
+  }
+}
+
+async function cleanupExpiredTokens() {
+  cleanupMemoryCache();
+  await RevokedToken.destroy({
+    where: { expiresAt: { [Op.lt]: new Date() } },
+  });
+}
+
+async function blacklistToken(token, expiresAtMs) {
+  if (!token) return;
+  const expMs = expiresAtMs || Date.now() + 7 * 24 * 60 * 60 * 1000;
   const hash = tokenHash(token);
-  const exp = blacklist.get(hash);
-  if (!exp) return false;
-  if (Date.now() >= exp) {
-    blacklist.delete(hash);
+  cacheToken(hash, expMs);
+
+  await RevokedToken.upsert({
+    tokenHash: hash,
+    expiresAt: new Date(expMs),
+  });
+}
+
+async function isTokenBlacklisted(token) {
+  if (!token) return false;
+  cleanupMemoryCache();
+
+  const hash = tokenHash(token);
+  const cachedExp = memoryCache.get(hash);
+  if (cachedExp) {
+    if (Date.now() >= cachedExp) {
+      memoryCache.delete(hash);
+    } else {
+      return true;
+    }
+  }
+
+  const row = await RevokedToken.findOne({ where: { tokenHash: hash } });
+  if (!row) return false;
+
+  if (row.expiresAt.getTime() <= Date.now()) {
+    await row.destroy();
     return false;
   }
+
+  cacheToken(hash, row.expiresAt.getTime());
   return true;
 }
 
-function cleanupExpired() {
-  const now = Date.now();
-  for (const [hash, exp] of blacklist.entries()) {
-    if (now >= exp) blacklist.delete(hash);
+setInterval(() => {
+  cleanupExpiredTokens().catch(() => {});
+}, CLEANUP_INTERVAL_MS).unref?.();
+
+async function resetBlacklistForTests() {
+  memoryCache.clear();
+  try {
+    await RevokedToken.destroy({ where: {}, truncate: true });
+  } catch (error) {
+    if (!/no such table|does not exist/i.test(error.message)) {
+      throw error;
+    }
   }
-}
-
-setInterval(cleanupExpired, CLEANUP_INTERVAL_MS).unref?.();
-
-function resetBlacklistForTests() {
-  blacklist.clear();
 }
 
 module.exports = {
   blacklistToken,
   isTokenBlacklisted,
+  cleanupExpiredTokens,
   resetBlacklistForTests,
 };

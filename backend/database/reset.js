@@ -15,9 +15,9 @@ async function reset() {
   }
 
   try {
-    const backupPath = backupDatabase('pre-reset');
-    if (backupPath) {
-      console.log(`Sicherungskopie erstellt: ${backupPath}`);
+    const backupResult = backupDatabase('pre-reset');
+    if (backupResult?.path) {
+      console.log(`Sicherungskopie erstellt: ${backupResult.path}`);
     }
 
     const { initDatabase } = require('../app');

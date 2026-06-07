@@ -1,5 +1,6 @@
 require('./config/loadEnv');
 const express = require('express');
+const helmet = require('helmet');
 const { getAppVersion } = require('./utils/appVersion');
 const cors = require('cors');
 const { getCorsOptions } = require('./config/corsConfig');
@@ -8,7 +9,7 @@ const fs = require('fs');
 const { sequelize } = require('./models');
 
 const requestLogger = require('./middleware/requestLogger');
-const { apiLimiter } = require('./middleware/rateLimiter');
+const { apiLimiter, leaderboardLimiter, displayLimiter, publicReadLimiter } = require('./middleware/rateLimiter');
 const { seedDefaultSettings } = require('./services/settingsService');
 const { isAiEnabled, isApiKeyConfigured, getAiConfig } = require('./services/llmService');
 
@@ -70,8 +71,13 @@ app.use('/uploads', express.static(uploadsDir, {
   },
 }));
 
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
+
 app.use(cors(getCorsOptions()));
-app.use(express.json());
+app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV !== 'test') {
@@ -110,10 +116,10 @@ if (process.env.NODE_ENV !== 'test') {
 app.use('/api/auth', authRoutes);
 
 app.use('/api/users', userRoutes);
-app.use('/api/teams', teamRoutes);
+app.use('/api/teams', publicReadLimiter, teamRoutes);
 app.use('/api/matches', matchRoutes);
 app.use('/api/predictions', predictionRoutes);
-app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/leaderboard', leaderboardLimiter, leaderboardRoutes);
 app.use('/api/scoring-rules', scoringRuleRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/sync', syncRoutes);
@@ -130,13 +136,16 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/football', footballRoutes);
 app.use('/api/player-images', playerImageRoutes);
 app.use('/api/admin/player-images', adminPlayerImageRoutes);
-app.use('/api/display', displayRoutes);
+app.use('/api/display', displayLimiter, displayRoutes);
 app.use('/api/admin/ai', adminAiRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
+  const isProduction = process.env.NODE_ENV === 'production';
   res.status(err.status || 500).json({
-    error: err.message || translate(req, 'errors.internalServer'),
+    error: isProduction
+      ? translate(req, 'errors.internalServer')
+      : (err.message || translate(req, 'errors.internalServer')),
   });
 });
 
@@ -166,6 +175,14 @@ async function initDatabase(options = {}) {
   // Neue Spalten werden über database/migrate.js ergänzt.
   await sequelize.sync({ force: force && (allowForce || process.env.NODE_ENV === 'test') });
   await runMigrations(sequelize);
+
+  if (sequelize.getDialect() === 'sqlite') {
+    const busyTimeout = parseInt(process.env.SQLITE_BUSY_TIMEOUT || '5000', 10);
+    await sequelize.query('PRAGMA journal_mode = WAL;');
+    await sequelize.query(`PRAGMA busy_timeout = ${busyTimeout};`);
+    await sequelize.query('PRAGMA foreign_keys = ON;');
+  }
+
   await seedDefaultSettings();
 
   const { fixLegacyApiMatchNumbers } = require('./services/matchNumberService');

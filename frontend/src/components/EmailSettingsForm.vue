@@ -2,37 +2,46 @@
   <form @submit.prevent="$emit('save', form)">
     <div class="form-group">
       <label class="checkbox-label">
-        <input v-model="form.emailRemindersEnabled" type="checkbox" /> E-Mail-Erinnerungen aktivieren
+        <input v-model="form.emailRemindersEnabled" type="checkbox" />
+        {{ t('adminPages.email.form.enableReminders') }}
       </label>
     </div>
     <div class="form-group">
       <label class="checkbox-label">
-        <input v-model="form.adminSyncErrorEmails" type="checkbox" /> Admin bei Sync-Fehlern benachrichtigen
+        <input v-model="form.adminSyncErrorEmails" type="checkbox" />
+        {{ t('adminPages.email.form.adminSyncErrors') }}
       </label>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>Erinnerungszeit</label>
+        <label>{{ t('adminPages.email.form.reminderTime') }}</label>
         <input v-model="form.reminderTime" type="time" class="form-control" />
       </div>
       <div class="form-group">
-        <label>Häufigkeit</label>
+        <label>{{ t('adminPages.email.form.frequency') }}</label>
         <select v-model="form.reminderFrequency" class="form-control">
-          <option value="daily">Täglich</option>
-          <option value="weekly">Wöchentlich</option>
+          <option value="daily">{{ t('adminPages.email.form.daily') }}</option>
+          <option value="weekly">{{ t('adminPages.email.form.weekly') }}</option>
         </select>
       </div>
     </div>
     <div class="btn-group">
-      <button type="submit" class="btn btn-primary" :disabled="loading">Speichern</button>
-      <button type="button" class="btn btn-secondary" @click="$emit('test-email')">Test-E-Mail senden</button>
-      <button type="button" class="btn btn-accent" @click="$emit('send-reminders')">Erinnerungen jetzt senden</button>
+      <button type="submit" class="btn btn-primary" :disabled="loading">{{ t('common.save') }}</button>
+      <button type="button" class="btn btn-secondary" @click="$emit('test-email')">
+        {{ t('adminPages.email.form.sendTestEmail') }}
+      </button>
+      <button type="button" class="btn btn-accent" @click="$emit('send-reminders')">
+        {{ t('adminPages.email.form.sendRemindersNow') }}
+      </button>
     </div>
   </form>
 </template>
 
 <script setup>
 import { reactive, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
   settings: { type: Object, default: () => ({}) },

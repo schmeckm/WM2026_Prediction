@@ -2,6 +2,8 @@ const { execFile } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
+const { applyRetention } = require('./backupRetentionService');
+const { copyToOffsite } = require('./backupOffsiteService');
 
 const execFileAsync = promisify(execFile);
 const BACKUP_DIR = path.join(__dirname, '..', 'backups', 'postgres');
@@ -48,11 +50,19 @@ async function createPostgresBackup() {
   });
 
   const stat = fs.statSync(filePath);
+  const retention = applyRetention(BACKUP_DIR, {
+    extension: '.sql',
+    keepCount: parseInt(process.env.BACKUP_PG_RETENTION || '14', 10),
+  });
+  const offsite = copyToOffsite(filePath);
+
   return {
     filename,
     path: filePath,
     size: stat.size,
     createdAt: stat.mtime.toISOString(),
+    retention,
+    offsite,
   };
 }
 

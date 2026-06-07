@@ -31,6 +31,11 @@ const LeaderboardSnapshot = sequelize.define('LeaderboardSnapshot', {
     type: DataTypes.DATE,
     allowNull: false,
   },
+}, {
+  indexes: [
+    { fields: ['snapshotTime'] },
+    { fields: ['userId', 'snapshotTime'] },
+  ],
 });
 
 module.exports = LeaderboardSnapshot;

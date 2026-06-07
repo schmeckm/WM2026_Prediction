@@ -18,4 +18,34 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-module.exports = { authLimiter, apiLimiter };
+const leaderboardLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 60,
+  message: { error: 'Zu viele Hitlisten-Anfragen. Bitte kurz warten.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const displayLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 30,
+  message: { error: 'Display-Modus: Rate limit erreicht.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const publicReadLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 120,
+  message: { error: 'Zu viele Anfragen. Bitte versuchen Sie es später erneut.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+module.exports = {
+  authLimiter,
+  apiLimiter,
+  leaderboardLimiter,
+  displayLimiter,
+  publicReadLimiter,
+};

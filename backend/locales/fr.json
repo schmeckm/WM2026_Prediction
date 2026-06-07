@@ -18,7 +18,8 @@
     "registrationDisabled": "L'inscription est actuellement désactivée.",
     "registrationFieldsRequired": "Prénom, nom, e-mail et mot de passe sont requis.",
     "passwordsDoNotMatch": "Les mots de passe ne correspondent pas.",
-    "passwordMinLength": "Le mot de passe doit contenir au moins 6 caractères.",
+    "passwordMinLength": "Le mot de passe doit contenir au moins 10 caractères.",
+    "passwordComplexity": "Le mot de passe doit contenir au moins une lettre et un chiffre.",
     "teamNotExists": "L'équipe sélectionnée n'existe pas.",
     "registrationFailed": "Inscription échouée.",
     "loginFieldsRequired": "E-mail et mot de passe sont requis.",
@@ -101,6 +102,8 @@
     "emailStatusLoadFailed": "Impossible de charger l'état e-mail.",
     "testEmailFailed": "E-mail de test échoué.",
     "remindersSendFailed": "Impossible d'envoyer les rappels.",
+    "userRemindersSendFailed": "Impossible d'envoyer les rappels de pronostics.",
+    "statusUpdatesSendFailed": "Impossible d'envoyer les mises à jour de statut.",
     "auditLogLoadFailed": "Impossible de charger le journal d'audit.",
     "notificationsLoadFailed": "Impossible de charger les notifications.",
     "notificationNotFound": "Notification introuvable.",
@@ -252,6 +255,31 @@
       "subject": "WM 2026 Pronostics – Erreur de synchronisation",
       "title": "Erreur de synchronisation",
       "text": "Erreur sync : {errorMessage}"
+    },
+    "manualTipReminder": {
+      "subject": "WM 2026 Pronostics – Rappel : soumettez vos pronostics",
+      "title": "Rappel de pronostics",
+      "greeting": "Bonjour {firstName} !",
+      "bodyWithMissing": "Il vous reste {missingCount} pronostics ouverts. Soumettez-les à temps pour marquer des points.",
+      "bodyGeneric": "Consultez vos matchs ouverts et soumettez vos pronostics à temps.",
+      "cta": "Soumettre des pronostics",
+      "text": "Bonjour {firstName} ! {missingCount} pronostics ouverts.\n{matchListText}\n{link}"
+    },
+    "statusUpdate": {
+      "subject": "WM 2026 Pronostics – Classement actuel",
+      "title": "Mise à jour du statut",
+      "greeting": "Bonjour {firstName} !",
+      "intro": "Voici l'état actuel du jeu de pronostics :",
+      "yourRank": "Vous êtes classé {rank}e avec {points} points.",
+      "notRanked": "Vous n'êtes pas encore au classement.",
+      "yourTeam": "Votre équipe \"{teamName}\" est classée {rank}e au classement par équipes ({points} pts moy.).",
+      "teamNotRanked": "Votre équipe \"{teamName}\" n'est pas encore classée.",
+      "leaderboardHeading": "Meilleurs joueurs",
+      "teamHeading": "Meilleures équipes",
+      "points": "pts",
+      "noEntries": "Aucune entrée pour l'instant.",
+      "cta": "Voir le classement",
+      "text": "Bonjour {firstName} ! Votre rang : {rank}, points : {points}. Équipe : {teamName} (rang {teamRank}). {link}"
     }
   },
   "ai": {
@@ -268,6 +296,16 @@
       "openMatches": "Montre mes matchs ouverts les plus importants",
       "teamMatches": "Quels matchs reste-t-il à l'Allemagne ?"
     },
-    "defaultCoachPrompt": "Donne-moi un bref aperçu de ma situation actuelle de pronostics et de ce que je devrais faire ensuite."
+    "defaultCoachPrompt": "Donne-moi un bref aperçu de ma situation actuelle de pronostics et de ce que je devrais faire ensuite.",
+    "dashboardInsights": {
+      "missingTodayOne": "Il te manque encore {count} pronostic pour aujourd'hui.",
+      "missingTodayMany": "Il te manque encore {count} pronostics pour aujourd'hui.",
+      "missingTotal": "Au total, il te manque encore {count} pronostics.",
+      "exactOne": "Tu as déjà pronostiqué {count} résultat exact.",
+      "exactMany": "Tu as déjà pronostiqué {count} résultats exacts.",
+      "rankCatchUp": "Tu es au rang {rank}. De bons pronostics peuvent encore t'aider à remonter !",
+      "teamRanking": "Ton équipe \"{teamName}\" est au rang {rank} au classement par équipes.",
+      "aiPrompt": "Rédige UNE phrase courte et motivante (max. 25 mots) comme conseil du tableau de bord à partir des données. Sans garantie."
+    }
   }
 }

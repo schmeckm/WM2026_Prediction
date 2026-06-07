@@ -39,6 +39,11 @@ import { useI18n } from 'vue-i18n';
 import axios from 'axios';
 import LeaderboardTable from '../components/LeaderboardTable.vue';
 import { useFormatters } from '../composables/useFormatters';
+import {
+  connectDisplaySocket,
+  disconnectDisplaySocket,
+  onDisplaySocketEvent,
+} from '../services/socket';
 
 const { t } = useI18n();
 const { formatTime } = useFormatters();
@@ -47,7 +52,9 @@ const appTitle = ref('WM 2026 Tippspiel');
 const leaderboard = ref([]);
 const matches = ref([]);
 const lastUpdated = ref(new Date());
-let timer = null;
+let fallbackTimer = null;
+let unsubMatch = null;
+let unsubLeaderboard = null;
 
 async function loadDisplay() {
   try {
@@ -65,11 +72,17 @@ async function loadDisplay() {
 
 onMounted(() => {
   loadDisplay();
-  timer = setInterval(loadDisplay, 30000);
+  connectDisplaySocket();
+  unsubMatch = onDisplaySocketEvent('match:update', loadDisplay);
+  unsubLeaderboard = onDisplaySocketEvent('leaderboard:update', loadDisplay);
+  fallbackTimer = setInterval(loadDisplay, 60000);
 });
 
 onUnmounted(() => {
-  if (timer) clearInterval(timer);
+  if (fallbackTimer) clearInterval(fallbackTimer);
+  unsubMatch?.();
+  unsubLeaderboard?.();
+  disconnectDisplaySocket();
 });
 </script>
 

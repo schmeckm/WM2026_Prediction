@@ -55,6 +55,11 @@ const SyncLog = sequelize.define('SyncLog', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+}, {
+  indexes: [
+    { fields: ['startedAt'] },
+    { fields: ['syncType', 'status', 'startedAt'] },
+  ],
 });
 
 module.exports = SyncLog;

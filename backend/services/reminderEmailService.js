@@ -11,7 +11,8 @@ const DATE_LOCALES = {
 };
 
 function resolveUserLocale(user) {
-  return normalizeLocale(user?.language);
+  if (user?.language) return normalizeLocale(user.language);
+  return 'en';
 }
 
 function formatKickoff(kickoffTime, locale) {
@@ -90,6 +91,8 @@ async function sendMissingPredictionsEmail(user, missingCount, upcomingMatches) 
 
 module.exports = {
   resolveUserLocale,
+  formatMatchListHtml,
+  formatMatchListText,
   templateMissingPredictions,
   buildMissingPredictionsNotification,
   sendMissingPredictionsEmail,

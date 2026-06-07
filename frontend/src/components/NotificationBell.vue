@@ -1,8 +1,18 @@
 <template>
-  <div class="notification-bell" @click="toggle">
-    <span class="bell-icon">🔔</span>
-    <span v-if="store.unreadCount > 0" class="badge-count">{{ store.unreadCount }}</span>
-    <div v-if="open" class="notification-dropdown" @click.stop>
+  <div class="notification-bell">
+    <button
+      type="button"
+      class="bell-button"
+      :aria-label="t('notifications.toggleDropdown')"
+      :aria-expanded="open"
+      aria-haspopup="true"
+      @click="toggle"
+      @keydown.escape="open = false"
+    >
+      <span class="bell-icon" aria-hidden="true">🔔</span>
+      <span v-if="store.unreadCount > 0" class="badge-count">{{ store.unreadCount }}</span>
+    </button>
+    <div v-if="open" class="notification-dropdown" role="menu" @click.stop>
       <div class="dropdown-header">
         <strong>{{ t('notifications.title') }}</strong>
         <button class="btn btn-sm btn-secondary" @click="store.markAllAsRead()">{{ t('notifications.markAllRead') }}</button>
@@ -37,7 +47,16 @@ onUnmounted(() => document.removeEventListener('click', closeOnClickOutside));
 </script>
 
 <style scoped>
-.notification-bell { position: relative; cursor: pointer; padding: 0.5rem; }
+.notification-bell { position: relative; }
+.bell-button {
+  position: relative;
+  cursor: pointer;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  color: inherit;
+  line-height: 1;
+}
 .bell-icon { font-size: 1.25rem; }
 .badge-count {
   position: absolute; top: 0; right: 0;
@@ -48,7 +67,7 @@ onUnmounted(() => document.removeEventListener('click', closeOnClickOutside));
 .notification-dropdown {
   position: absolute; top: 100%; right: 0;
   width: min(360px, calc(100vw - 2rem)); max-height: 400px;
-  background: white; border: 1px solid var(--color-border);
+  background: var(--color-surface); border: 1px solid var(--color-border);
   border-radius: var(--radius); box-shadow: var(--shadow-lg);
   z-index: 1000; overflow: hidden;
 }

@@ -81,6 +81,28 @@ async function runMigrations(sequelize) {
     allowNull: false,
     defaultValue: 'de',
   });
+
+  await ensureIndexes(queryInterface);
+}
+
+async function ensureIndexSafe(queryInterface, tableName, fields, options = {}) {
+  try {
+    await queryInterface.addIndex(tableName, fields, options);
+    console.log(`Migration: Index ${tableName}(${fields.join(', ')}) hinzugefügt.`);
+  } catch (error) {
+    if (!/already exists|duplicate/i.test(error.message)) {
+      console.warn(`Migration: Index ${tableName}(${fields.join(', ')}) übersprungen: ${error.message}`);
+    }
+  }
+}
+
+async function ensureIndexes(queryInterface) {
+  await ensureIndexSafe(queryInterface, 'Predictions', ['userId']);
+  await ensureIndexSafe(queryInterface, 'Notifications', ['userId', 'isRead', 'createdAt']);
+  await ensureIndexSafe(queryInterface, 'LeaderboardSnapshots', ['snapshotTime']);
+  await ensureIndexSafe(queryInterface, 'LeaderboardSnapshots', ['userId', 'snapshotTime']);
+  await ensureIndexSafe(queryInterface, 'SyncLogs', ['startedAt']);
+  await ensureIndexSafe(queryInterface, 'SyncLogs', ['syncType', 'status', 'startedAt']);
 }
 
 module.exports = { runMigrations, ensureColumn };

@@ -1,66 +1,88 @@
 const { buildUserContext } = require('./aiContextBuilderService');
 const { generateText, getSystemPrompt, checkAiAvailability } = require('./llmService');
+const { t, normalizeLocale } = require('./i18nService');
 
-async function getDashboardInsights(userId) {
-  const context = await buildUserContext(userId);
-  if (!context) return { insights: [], aiEnabled: false };
-
-  const deterministic = [];
+function buildDeterministicInsights(context, locale) {
+  const insights = [];
 
   if (context.missingTodayCount > 0) {
-    deterministic.push({
+    const key = context.missingTodayCount > 1
+      ? 'ai.dashboardInsights.missingTodayMany'
+      : 'ai.dashboardInsights.missingTodayOne';
+    insights.push({
       type: 'warning',
       icon: '⚠️',
-      text: `Dir fehlen noch ${context.missingTodayCount} Tipp${context.missingTodayCount > 1 ? 's' : ''} für heute.`,
+      text: t(key, locale, { count: context.missingTodayCount }),
       action: '/matches?filter=missing',
     });
   }
 
   if (context.missingPredictionsCount > 0 && context.missingTodayCount === 0) {
-    deterministic.push({
+    insights.push({
       type: 'info',
       icon: '📝',
-      text: `Insgesamt fehlen dir noch ${context.missingPredictionsCount} Tipps.`,
+      text: t('ai.dashboardInsights.missingTotal', locale, { count: context.missingPredictionsCount }),
       action: '/matches?filter=missing',
     });
   }
 
   if (context.exactResults > 0) {
-    deterministic.push({
+    const key = context.exactResults > 1
+      ? 'ai.dashboardInsights.exactMany'
+      : 'ai.dashboardInsights.exactOne';
+    insights.push({
       type: 'success',
       icon: '🎯',
-      text: `Du hast bereits ${context.exactResults} exakte${context.exactResults > 1 ? ' Ergebnisse' : 's Ergebnis'} getippt.`,
+      text: t(key, locale, { count: context.exactResults }),
       action: '/my-predictions',
     });
   }
 
   if (context.rank && context.rank > 1) {
-    const leader = context.rank - 1;
-    deterministic.push({
+    insights.push({
       type: 'info',
       icon: '🏆',
-      text: `Du bist auf Platz ${context.rank}. Mit guten Tipps kannst du noch aufholen!`,
+      text: t('ai.dashboardInsights.rankCatchUp', locale, { rank: context.rank }),
       action: '/leaderboard',
     });
   }
 
   if (context.teamRanking && context.teamRanking.rank > 1) {
-    deterministic.push({
+    insights.push({
       type: 'info',
       icon: '👥',
-      text: `Dein Team "${context.teamName}" liegt auf Platz ${context.teamRanking.rank} in der Teamwertung.`,
+      text: t('ai.dashboardInsights.teamRanking', locale, {
+        teamName: context.teamName,
+        rank: context.teamRanking.rank,
+      }),
       action: '/team-ranking',
     });
   }
 
+  return insights;
+}
+
+async function getDashboardInsights(userId, locale = 'de') {
+  const language = normalizeLocale(locale);
+  const context = await buildUserContext(userId);
+  if (!context) return { insights: [], aiEnabled: false };
+
+  const deterministic = buildDeterministicInsights(context, language);
+
   let aiInsight = null;
-  const aiCheck = checkAiAvailability('user_coach');
+  const aiCheck = checkAiAvailability('user_coach', language);
 
   if (aiCheck.available && deterministic.length > 0) {
     try {
-      const systemPrompt = getSystemPrompt('user_coach');
-      const userPrompt = 'Formuliere EINEN kurzen, motivierenden Satz (max. 25 Wörter) als Dashboard-Tipp basierend auf den Daten. Keine Garantien.';
-      const { text } = await generateText({ systemPrompt, userPrompt, context, maxTokens: 100 });
+      const systemPrompt = getSystemPrompt('user_coach', language);
+      const userPrompt = t('ai.dashboardInsights.aiPrompt', language);
+      const { text } = await generateText({
+        systemPrompt,
+        userPrompt,
+        context,
+        maxTokens: 100,
+        locale: language,
+      });
       aiInsight = { type: 'ai', icon: '🤖', text, action: '/ai-coach' };
     } catch {
       // AI optional for insights
@@ -72,4 +94,4 @@ async function getDashboardInsights(userId) {
   return { insights, aiEnabled: aiCheck.available };
 }
 
-module.exports = { getDashboardInsights };
+module.exports = { getDashboardInsights, buildDeterministicInsights };

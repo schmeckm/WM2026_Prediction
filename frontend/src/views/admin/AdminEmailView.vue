@@ -6,21 +6,30 @@
 
     <div class="card mb-2">
       <div class="card-header">
-        <h3>SMTP-Status</h3>
+        <h3>{{ t('adminPages.email.smtpStatus') }}</h3>
         <span :class="['badge', emailStatus.checklistComplete ? 'badge-success' : 'badge-warning']">
-          {{ emailStatus.checklistComplete ? 'Bereit' : 'Unvollständig' }}
+          {{ emailStatus.checklistComplete ? t('adminPages.email.ready') : t('adminPages.email.incomplete') }}
         </span>
       </div>
       <div class="card-body">
-        <p><strong>Konfiguriert:</strong> {{ emailStatus.configured ? 'Ja' : 'Nein (Mock-Modus)' }}</p>
-        <p v-if="emailStatus.host"><strong>Host:</strong> {{ emailStatus.host }}</p>
-        <p v-if="emailStatus.from"><strong>Absender:</strong> {{ emailStatus.from }}</p>
-        <p v-if="emailStatus.appUrl"><strong>APP_URL:</strong> {{ emailStatus.appUrl }}</p>
-        <p><strong>Erinnerungen:</strong> {{ emailStatus.remindersEnabled ? 'Aktiv' : 'Inaktiv' }}</p>
-        <p><strong>E-Mail-Bestätigung:</strong> {{ emailStatus.requireEmailVerification ? 'Aktiv' : 'Inaktiv' }}</p>
+        <p>
+          <strong>{{ t('adminPages.email.configured') }}:</strong>
+          {{ emailStatus.configured ? t('common.yes') : t('adminPages.email.mockMode') }}
+        </p>
+        <p v-if="emailStatus.host"><strong>{{ t('adminPages.email.host') }}:</strong> {{ emailStatus.host }}</p>
+        <p v-if="emailStatus.from"><strong>{{ t('adminPages.email.from') }}:</strong> {{ emailStatus.from }}</p>
+        <p v-if="emailStatus.appUrl"><strong>{{ t('adminPages.email.appUrl') }}:</strong> {{ emailStatus.appUrl }}</p>
+        <p>
+          <strong>{{ t('adminPages.email.reminders') }}:</strong>
+          {{ emailStatus.remindersEnabled ? t('adminPages.email.active') : t('adminPages.email.inactive') }}
+        </p>
+        <p>
+          <strong>{{ t('adminPages.email.emailVerification') }}:</strong>
+          {{ emailStatus.requireEmailVerification ? t('adminPages.email.active') : t('adminPages.email.inactive') }}
+        </p>
 
         <div v-if="emailStatus.checklist?.length" class="smtp-checklist">
-          <h4>SMTP-Checkliste</h4>
+          <h4>{{ t('adminPages.email.smtpChecklist') }}</h4>
           <ul>
             <li v-for="item in emailStatus.checklist" :key="item.id" :class="{ ok: item.ok, missing: !item.ok }">
               <span class="check-icon">{{ item.ok ? '✓' : '○' }}</span>
@@ -28,28 +37,26 @@
             </li>
           </ul>
           <p v-if="!emailStatus.checklistComplete" class="checklist-hint text-muted">
-            Ohne vollständige SMTP-Konfiguration werden Verifizierungs-, Reset- und Reminder-Links nur in der Backend-Konsole geloggt.
+            {{ t('adminPages.email.checklistHint') }}
           </p>
         </div>
       </div>
     </div>
 
     <div class="card mb-2">
-      <div class="card-header"><h3>Erinnerungs-Sprache</h3></div>
+      <div class="card-header"><h3>{{ t('adminPages.email.reminderLanguageTitle') }}</h3></div>
       <div class="card-body">
         <p class="text-muted">
-          Tipp-Erinnerungen werden automatisch in der Sprache des jeweiligen Nutzers versendet
-          (<strong>de</strong>, <strong>en</strong>, <strong>es</strong>, <strong>fr</strong>) –
-          basierend auf der Spracheinstellung im Profil, wie bei Registrierung und Passwort-Reset.
+          {{ t('adminPages.email.reminderLanguageDesc', { langs: 'de, en, es, fr' }) }}
         </p>
         <p class="text-muted mb-0">
-          Es ist keine manuelle Vorlage oder KI-Text nötig. Jeder Nutzer erhält den passenden Text in seiner Sprache.
+          {{ t('adminPages.email.reminderLanguageNote') }}
         </p>
       </div>
     </div>
 
     <div class="card">
-      <div class="card-header"><h3>Einstellungen & Tests</h3></div>
+      <div class="card-header"><h3>{{ t('adminPages.email.settingsAndTests') }}</h3></div>
       <div class="card-body">
         <EmailSettingsForm
           :settings="settings"
@@ -87,36 +94,56 @@ onMounted(async () => {
   emailStatus.value = emailRes.data;
 });
 
+async function refreshEmailStatus() {
+  const { data } = await api.get('/admin/email/status');
+  emailStatus.value = data;
+}
+
 async function saveSettings(form) {
   saving.value = true;
+  error.value = '';
   try {
     const { data } = await api.put('/admin/settings', form);
     settings.value = data;
-    message.value = 'Einstellungen gespeichert.';
-  } catch (e) { error.value = e.response?.data?.error || 'Fehler.'; }
-  finally { saving.value = false; }
+    await refreshEmailStatus();
+    message.value = t('adminPages.email.settingsSaved');
+  } catch (e) {
+    error.value = e.response?.data?.error || t('adminPages.email.saveFailed');
+  } finally {
+    saving.value = false;
+  }
 }
 
 async function sendTest() {
+  error.value = '';
   try {
     const { data } = await api.post('/admin/email/send-test');
-    message.value = data.message || 'Test-E-Mail gesendet.';
-  } catch (e) { error.value = e.response?.data?.error || 'Fehler.'; }
+    if (data.result?.mock) {
+      error.value = data.message || t('adminPages.email.smtpNotConfigured');
+      return;
+    }
+    message.value = data.message || t('adminPages.email.testEmailSent');
+  } catch (e) {
+    error.value = e.response?.data?.error || t('adminPages.email.saveFailed');
+  }
 }
 
 async function sendReminders() {
+  error.value = '';
   try {
     const { data } = await api.post('/admin/email/send-reminders');
     if (data.skipped) {
-      error.value = data.message || 'Erinnerungen sind deaktiviert.';
+      error.value = data.message || t('adminPages.email.remindersDisabled');
       return;
     }
     if (data.sent === 0) {
-      error.value = data.message || 'Keine E-Mails gesendet.';
+      error.value = data.message || t('adminPages.email.noEmailsSent');
       return;
     }
-    message.value = data.message || `${data.sent} Erinnerungen gesendet.`;
-  } catch (e) { error.value = e.response?.data?.error || 'Fehler.'; }
+    message.value = data.message || t('adminPages.email.remindersSent', { count: data.sent });
+  } catch (e) {
+    error.value = e.response?.data?.error || t('adminPages.email.saveFailed');
+  }
 }
 </script>
 

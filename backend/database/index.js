@@ -16,6 +16,12 @@ if (dialect === 'postgres') {
       port: parseInt(process.env.DB_PORT || '5432', 10),
       dialect: 'postgres',
       logging: false,
+      pool: {
+        max: parseInt(process.env.DB_POOL_MAX || '20', 10),
+        min: parseInt(process.env.DB_POOL_MIN || '2', 10),
+        acquire: 30000,
+        idle: 10000,
+      },
     }
   );
 } else {

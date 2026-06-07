@@ -18,6 +18,7 @@ const { validateImageFile } = require('../utils/fileValidation');
 const { deleteUserAccount } = require('../services/userAccountService');
 const { normalizeAvatarColor } = require('../services/avatarColorService');
 const { normalizeAvatarEmoji } = require('../services/avatarEmojiService');
+const { validatePassword } = require('../utils/passwordValidation');
 
 const router = express.Router();
 
@@ -216,7 +217,13 @@ router.put('/:id', async (req, res) => {
     if (firstName) user.firstName = firstName.trim();
     if (lastName) user.lastName = lastName.trim();
     if (email && isAdmin) user.email = email.toLowerCase().trim();
-    if (password) user.password = password;
+    if (password) {
+      const passwordCheck = validatePassword(password);
+      if (!passwordCheck.valid) {
+        return sendError(res, req, 400, passwordCheck.errorKey);
+      }
+      user.password = password;
+    }
     if (isAdmin && role) user.role = role;
     if (isAdmin && req.body.emailVerified !== undefined) {
       user.emailVerified = !!req.body.emailVerified;

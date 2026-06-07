@@ -8,13 +8,21 @@
     </div>
 
     <div class="filter-bar">
-      <button v-for="f in filters" :key="f.value" :class="['filter-btn', { active: activeFilter === f.value }]" @click="setFilter(f.value)">{{ f.label }}</button>
+      <button
+        v-for="f in filters"
+        :key="f.value"
+        :class="['filter-btn', { active: activeFilter === f.value }]"
+        :aria-pressed="activeFilter === f.value"
+        @click="setFilter(f.value)"
+      >
+        {{ f.label }}
+      </button>
     </div>
 
     <AILeaderboardSummary />
 
     <LoadingSpinner v-if="loading" />
-    <AlertMessage v-else-if="error" :message="error" type="error" />
+    <ErrorState v-else-if="error" :message="error" @retry="loadLeaderboard" />
     <div v-else class="card"><div class="card-body"><LeaderboardTable :entries="leaderboard" :current-user-id="authStore.user?.id" /></div></div>
   </div>
 </template>
@@ -28,7 +36,7 @@ import { onSocketEvent } from '../services/socket';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import LeaderboardTable from '../components/LeaderboardTable.vue';
 import AILeaderboardSummary from '../components/AILeaderboardSummary.vue';
-import AlertMessage from '../components/AlertMessage.vue';
+import ErrorState from '../components/ErrorState.vue';
 import { useAuthStore } from '../stores/authStore';
 
 const authStore = useAuthStore();

@@ -1,0 +1,46 @@
+const { describe, it } = require('node:test');
+const assert = require('node:assert/strict');
+const {
+  resolveUserEmailLocale,
+  templateManualTipReminder,
+  templateStatusUpdate,
+} = require('../../services/adminUserEmailService');
+
+describe('adminUserEmailService', () => {
+  const userDe = { firstName: 'Max', email: 'max@example.com', language: 'de', team: { name: 'Team A' } };
+  const userNoLang = { firstName: 'Alex', email: 'alex@example.com', team: { name: 'Team B' } };
+
+  it('falls back to English when user has no language', () => {
+    assert.equal(resolveUserEmailLocale(userNoLang), 'en');
+  });
+
+  it('uses user language when set', () => {
+    assert.equal(resolveUserEmailLocale(userDe), 'de');
+  });
+
+  it('builds branded manual tip reminder in user language', () => {
+    const tpl = templateManualTipReminder(userDe, 2, [{
+      homeTeam: 'Deutschland',
+      awayTeam: 'Frankreich',
+      kickoffTime: new Date('2026-06-15T18:00:00Z'),
+    }]);
+    assert.match(tpl.subject, /Erinnerung/i);
+    assert.match(tpl.html, /Hallo Max!/);
+    assert.match(tpl.html, /Aspire MAKE/);
+    assert.match(tpl.text, /2/);
+  });
+
+  it('builds branded status update with leaderboard sections', () => {
+    const tpl = templateStatusUpdate(userNoLang, {
+      userEntry: { rank: 3, totalPoints: 42 },
+      topUsers: [{ rank: 1, firstName: 'A', lastName: 'B', totalPoints: 50 }],
+      teamEntry: { rank: 2, teamName: 'Team B', averagePoints: 35 },
+      topTeams: [{ rank: 1, teamName: 'Team X', averagePoints: 40 }],
+    });
+    assert.match(tpl.subject, /Current standings/i);
+    assert.match(tpl.html, /Hello Alex!/);
+    assert.match(tpl.html, /Top players/i);
+    assert.match(tpl.html, /Top teams/i);
+    assert.match(tpl.html, /Aspire MAKE/);
+  });
+});

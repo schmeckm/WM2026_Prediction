@@ -38,6 +38,7 @@ const Prediction = sequelize.define('Prediction', {
 }, {
   indexes: [
     { unique: true, fields: ['userId', 'matchId'] },
+    { fields: ['userId'] },
   ],
 });
 

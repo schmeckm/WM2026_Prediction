@@ -3,6 +3,66 @@ const { User, Team, Prediction, Match, ScoringRule, BonusPrediction, BonusQuesti
 const { calculatePoints, classifyPrediction } = require('./pointsCalculationService');
 const { getSetting } = require('./settingsService');
 
+const CACHE_TTL_MS = parseInt(process.env.LEADERBOARD_CACHE_TTL_MS || '45000', 10);
+const leaderboardCache = new Map();
+
+function buildCacheKey(options) {
+  return JSON.stringify({
+    filter: options.filter || 'overall',
+    teamId: options.teamId || null,
+    sortBy: options.sortBy || 'total',
+    includeEmail: !!options.includeEmail,
+    includeAdmins: options.includeAdmins ?? null,
+  });
+}
+
+function getCachedLeaderboard(cacheKey) {
+  const entry = leaderboardCache.get(cacheKey);
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    leaderboardCache.delete(cacheKey);
+    return null;
+  }
+  return entry.data;
+}
+
+function setCachedLeaderboard(cacheKey, data) {
+  leaderboardCache.set(cacheKey, { data, timestamp: Date.now() });
+}
+
+function invalidateLeaderboardCache() {
+  leaderboardCache.clear();
+}
+
+function groupByUserId(items) {
+  const map = {};
+  for (const item of items) {
+    if (!map[item.userId]) map[item.userId] = [];
+    map[item.userId].push(item);
+  }
+  return map;
+}
+
+function buildStageWhere(stageFilter) {
+  if (stageFilter === 'group') {
+    return { stage: { [Op.like]: '%Group%' } };
+  }
+  if (stageFilter === 'knockout') {
+    return { stage: { [Op.notLike]: '%Group%' } };
+  }
+  return {};
+}
+
+function sumBonusPoints(predictions) {
+  let total = 0;
+  for (const bp of predictions || []) {
+    if (bp.points !== null && bp.points !== undefined) {
+      total += bp.points;
+    }
+  }
+  return total;
+}
+
 async function getScoringRules() {
   let rules = await ScoringRule.findOne();
   if (!rules) {
@@ -22,36 +82,23 @@ async function getBonusPoints(userId) {
     include: [{ model: BonusQuestion, as: 'bonusQuestion' }],
   });
 
-  let total = 0;
-  for (const bp of predictions) {
-    if (bp.points !== null && bp.points !== undefined) {
-      total += bp.points;
-    }
-  }
-  return total;
+  return sumBonusPoints(predictions);
 }
 
-async function buildUserLeaderboardEntry(user, scoringRules, options = {}) {
-  const { stageFilter = null, includeEmail = false } = options;
-
-  const predictions = await Prediction.findAll({
-    where: { userId: user.id },
-    include: [{ model: Match, as: 'match' }],
-  });
+function buildUserLeaderboardEntryFromData(user, scoringRules, options = {}) {
+  const {
+    stageFilter = null,
+    includeEmail = false,
+    predictions = [],
+    bonusPredictions = [],
+    totalMatches = 0,
+  } = options;
 
   let matchPoints = 0;
   let exactResults = 0;
   let goalDifferences = 0;
   let tendencies = 0;
   let relevantPredictions = 0;
-
-  const totalMatches = await Match.count({
-    where: stageFilter
-      ? stageFilter === 'group'
-        ? { stage: { [Op.like]: '%Group%' } }
-        : { stage: { [Op.notLike]: '%Group%' } }
-      : {},
-  });
 
   for (const prediction of predictions) {
     if (!prediction.match) continue;
@@ -73,7 +120,7 @@ async function buildUserLeaderboardEntry(user, scoringRules, options = {}) {
     }
   }
 
-  const bonusPoints = await getBonusPoints(user.id);
+  const bonusPoints = sumBonusPoints(bonusPredictions);
   const totalPoints = matchPoints + bonusPoints;
   const completionPercentage = totalMatches > 0
     ? Math.round((relevantPredictions / totalMatches) * 100)
@@ -105,6 +152,30 @@ async function buildUserLeaderboardEntry(user, scoringRules, options = {}) {
   return entry;
 }
 
+async function buildUserLeaderboardEntry(user, scoringRules, options = {}) {
+  const { stageFilter = null, includeEmail = false } = options;
+
+  const predictions = await Prediction.findAll({
+    where: { userId: user.id },
+    include: [{ model: Match, as: 'match' }],
+  });
+
+  const bonusPredictions = await BonusPrediction.findAll({
+    where: { userId: user.id },
+    include: [{ model: BonusQuestion, as: 'bonusQuestion' }],
+  });
+
+  const totalMatches = await Match.count({ where: buildStageWhere(stageFilter) });
+
+  return buildUserLeaderboardEntryFromData(user, scoringRules, {
+    stageFilter,
+    includeEmail,
+    predictions,
+    bonusPredictions,
+    totalMatches,
+  });
+}
+
 async function getPreviousRanks() {
   const latestSnapshot = await LeaderboardSnapshot.max('snapshotTime');
   if (!latestSnapshot) return {};
@@ -127,14 +198,28 @@ async function getLeaderboard(options = {}) {
     sortBy = 'total',
     includeEmail = false,
     includeAdmins = null,
+    skipCache = false,
   } = options;
-
-  const scoringRules = await getScoringRules();
-  const stageFilter = filter === 'group' ? 'group' : filter === 'knockout' ? 'knockout' : null;
 
   const includeAdminsInLeaderboard = includeAdmins != null
     ? includeAdmins
     : await getSetting('includeAdminsInLeaderboard', false);
+
+  const cacheKey = buildCacheKey({
+    filter,
+    teamId,
+    sortBy,
+    includeEmail,
+    includeAdmins: includeAdminsInLeaderboard,
+  });
+
+  if (!skipCache) {
+    const cached = getCachedLeaderboard(cacheKey);
+    if (cached) return cached;
+  }
+
+  const scoringRules = await getScoringRules();
+  const stageFilter = filter === 'group' ? 'group' : filter === 'knockout' ? 'knockout' : null;
 
   const users = await User.findAll({
     where: { role: 'user' },
@@ -155,9 +240,33 @@ async function getLeaderboard(options = {}) {
     allUsers = allUsers.filter((u) => u.teamId === parseInt(teamId, 10));
   }
 
-  const entries = await Promise.all(
-    allUsers.map((user) => buildUserLeaderboardEntry(user, scoringRules, { stageFilter, includeEmail }))
-  );
+  const userIds = allUsers.map((u) => u.id);
+  const stageWhere = buildStageWhere(stageFilter);
+  const totalMatches = await Match.count({ where: stageWhere });
+
+  const [allPredictions, allBonusPredictions] = userIds.length > 0
+    ? await Promise.all([
+      Prediction.findAll({
+        where: { userId: { [Op.in]: userIds } },
+        include: [{ model: Match, as: 'match' }],
+      }),
+      BonusPrediction.findAll({
+        where: { userId: { [Op.in]: userIds } },
+        include: [{ model: BonusQuestion, as: 'bonusQuestion' }],
+      }),
+    ])
+    : [[], []];
+
+  const predictionsByUser = groupByUserId(allPredictions);
+  const bonusByUser = groupByUserId(allBonusPredictions);
+
+  let entries = allUsers.map((user) => buildUserLeaderboardEntryFromData(user, scoringRules, {
+    stageFilter,
+    includeEmail,
+    predictions: predictionsByUser[user.id] || [],
+    bonusPredictions: bonusByUser[user.id] || [],
+    totalMatches,
+  }));
 
   if (filter === 'match') {
     entries.forEach((e) => { e.totalPoints = e.matchPoints; });
@@ -176,7 +285,7 @@ async function getLeaderboard(options = {}) {
 
   const previousRanks = await getPreviousRanks();
 
-  return entries.map((entry, index) => {
+  const leaderboard = entries.map((entry, index) => {
     const rank = index + 1;
     const previousRank = previousRanks[entry.userId];
     return {
@@ -186,10 +295,17 @@ async function getLeaderboard(options = {}) {
       ...entry,
     };
   });
+
+  if (!skipCache) {
+    setCachedLeaderboard(cacheKey, leaderboard);
+  }
+
+  return leaderboard;
 }
 
 async function saveLeaderboardSnapshot() {
-  const leaderboard = await getLeaderboard();
+  invalidateLeaderboardCache();
+  const leaderboard = await getLeaderboard({ skipCache: true });
   const snapshotTime = new Date();
 
   await LeaderboardSnapshot.bulkCreate(
@@ -273,6 +389,7 @@ async function recalculateAllPoints() {
     await recalculateBonusPoints(transaction);
     return { updated, matchesProcessed: finishedMatches.length };
   }).then(async (result) => {
+    invalidateLeaderboardCache();
     await saveLeaderboardSnapshot();
     return result;
   });
@@ -362,4 +479,5 @@ module.exports = {
   saveLeaderboardSnapshot,
   exportLeaderboardCsv,
   getBonusPoints,
+  invalidateLeaderboardCache,
 };

@@ -31,7 +31,8 @@
     "all": "Alle",
     "none": "Keine",
     "optional": "optional",
-    "required": "Pflichtfeld"
+    "required": "Pflichtfeld",
+    "retry": "Erneut versuchen"
   },
   "nav": {
     "navigation": "Navigation",
@@ -425,7 +426,12 @@
     "noTipGiven": "Kein Tipp abgegeben",
     "stadiumPreview": "Stadion vergrößern & KI-Infos anzeigen",
     "venueDetails": "Spielort",
-    "loadFailed": "Spiele konnten nicht geladen werden."
+    "loadFailed": "Spiele konnten nicht geladen werden.",
+    "viewMode": "Ansicht",
+    "viewCards": "Karten",
+    "viewTable": "Tabelle",
+    "lockWarningMissing": "Achtung: {count} offene Spiele sperren in weniger als 15 Minuten – Tipps fehlen noch!",
+    "lockWarningSoon": "Achtung: {count} Spiele starten in weniger als 15 Minuten – Tipps sperren bald."
   },
   "matchTable": {
     "number": "Nr.",
@@ -473,7 +479,10 @@
     "noTipLocked": "Kein Tipp abgegeben",
     "game": "Spiel",
     "round": "Gruppe / Runde",
-    "empty": "Noch keine Tipps abgegeben."
+    "empty": "Noch keine Tipps abgegeben.",
+    "loadFailed": "Tipps konnten nicht geladen werden.",
+    "homeScoreLabel": "Heimtore {team}",
+    "awayScoreLabel": "Auswärtstore {team}"
   },
   "leaderboard": {
     "title": "Hitliste",
@@ -517,6 +526,7 @@
     "open": "Offen",
     "resolved": "Aufgelöst",
     "empty": "Keine Bonusfragen verfügbar.",
+    "loadFailed": "Bonusfragen konnten nicht geladen werden.",
     "points": "Punkte",
     "pointsShort": "Pkt.",
     "lockTime": "Sperrung",
@@ -627,7 +637,9 @@
     "title": "Benachrichtigungen",
     "empty": "Keine Benachrichtigungen",
     "markAllRead": "Alle gelesen",
-    "markAllReadLong": "Alle als gelesen markieren"
+    "markAllReadLong": "Alle als gelesen markieren",
+    "bellLabel": "Benachrichtigungen",
+    "toggleDropdown": "Benachrichtigungen ein-/ausblenden"
   },
   "statistics": {
     "title": "Statistiken",
@@ -643,6 +655,9 @@
     "loadFailed": "Statistiken konnten nicht geladen werden."
   },
   "adminPages": {
+    "table": {
+      "noEntries": "Keine Einträge vorhanden."
+    },
     "dashboard": {
       "title": "Admin Dashboard",
       "recalculate": "Punkte neu berechnen",
@@ -658,7 +673,62 @@
         "missing": "Fehlende Tipps"
       }
     },
-    "users": { "title": "Benutzerverwaltung" },
+    "users": {
+      "title": "Benutzerverwaltung",
+      "newUser": "Neuer Benutzer",
+      "editUser": "Benutzer bearbeiten",
+      "createUser": "Neuer Benutzer",
+      "selectAll": "Alle Benutzer auswählen",
+      "selectUser": "{name} auswählen",
+      "selectedCount": "{count} ausgewählt",
+      "sendTipReminders": "Tipp-Erinnerung senden",
+      "sendStatusUpdate": "Status-Update senden",
+      "confirmTipReminders": "Tipp-Erinnerung an {count} Benutzer senden?",
+      "confirmStatusUpdate": "Status-Update an {count} Benutzer senden?",
+      "confirmDelete": "Benutzer \"{name}\" wirklich löschen?",
+      "sending": "Wird gesendet…",
+      "noSelection": "Bitte mindestens einen Benutzer auswählen.",
+      "roleAdmin": "Admin",
+      "roleUser": "Benutzer",
+      "verified": "Bestätigt",
+      "pending": "Offen",
+      "passwordOptionalHint": "(leer = unverändert)",
+      "profileImage": "Profilbild",
+      "uploadHint": "JPG, PNG, WebP oder GIF, max. 2 MB",
+      "removeImage": "Bild entfernen",
+      "emailVerifiedLabel": "E-Mail bestätigt",
+      "createImageHint": "Nach dem Erstellen kannst du ein Profilbild hochladen.",
+      "imageTooLarge": "Bild ist zu groß (max. 2 MB).",
+      "imageRemoved": "Profilbild entfernt.",
+      "imageRemoveFailed": "Bild konnte nicht entfernt werden.",
+      "userUpdated": "Benutzer aktualisiert.",
+      "userCreated": "Benutzer erstellt.",
+      "userUpdatedWithImage": "Benutzer und Profilbild aktualisiert.",
+      "userCreatedWithImage": "Benutzer erstellt und Profilbild hochgeladen.",
+      "saveFailed": "Fehler beim Speichern.",
+      "userDeleted": "Benutzer gelöscht.",
+      "deleteFailed": "Löschen fehlgeschlagen.",
+      "emailsSent": "{count} E-Mail(s) gesendet.",
+      "emailsFailed": "E-Mails konnten nicht gesendet werden.",
+      "statusUpdatesFailed": "Status-Updates konnten nicht gesendet werden.",
+      "columns": {
+        "image": "Bild",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "email": "E-Mail",
+        "emailVerified": "Bestätigt",
+        "role": "Rolle",
+        "team": "Team"
+      },
+      "form": {
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "email": "E-Mail",
+        "password": "Passwort",
+        "role": "Rolle",
+        "team": "Team"
+      }
+    },
     "teams": { "title": "Teamverwaltung" },
     "matches": { "title": "Spielverwaltung" },
     "results": { "title": "Ergebnisverwaltung" },
@@ -715,7 +785,44 @@
     "import": { "title": "CSV Import" },
     "sync": { "title": "Synchronisierung" },
     "bonus": { "title": "Bonusfragen" },
-    "email": { "title": "E-Mail Erinnerungen" },
+    "email": {
+      "title": "E-Mail Erinnerungen",
+      "smtpStatus": "SMTP-Status",
+      "ready": "Bereit",
+      "incomplete": "Unvollständig",
+      "configured": "Konfiguriert",
+      "mockMode": "Nein (Mock-Modus)",
+      "host": "Host",
+      "from": "Absender",
+      "appUrl": "APP_URL",
+      "reminders": "Erinnerungen",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "emailVerification": "E-Mail-Bestätigung",
+      "smtpChecklist": "SMTP-Checkliste",
+      "checklistHint": "Ohne vollständige SMTP-Konfiguration werden Verifizierungs-, Reset- und Reminder-Links nur in der Backend-Konsole geloggt.",
+      "reminderLanguageTitle": "Erinnerungs-Sprache",
+      "reminderLanguageDesc": "Tipp-Erinnerungen werden automatisch in der Sprache des jeweiligen Nutzers versendet ({langs}) – basierend auf der Spracheinstellung im Profil, wie bei Registrierung und Passwort-Reset.",
+      "reminderLanguageNote": "Es ist keine manuelle Vorlage oder KI-Text nötig. Jeder Nutzer erhält den passenden Text in seiner Sprache.",
+      "settingsAndTests": "Einstellungen & Tests",
+      "settingsSaved": "Einstellungen gespeichert.",
+      "saveFailed": "Fehler beim Speichern.",
+      "testEmailSent": "Test-E-Mail gesendet.",
+      "smtpNotConfigured": "SMTP nicht konfiguriert – keine echte E-Mail versendet.",
+      "remindersDisabled": "Erinnerungen sind deaktiviert.",
+      "noEmailsSent": "Keine E-Mails gesendet.",
+      "remindersSent": "{count} Erinnerungen gesendet.",
+      "form": {
+        "enableReminders": "E-Mail-Erinnerungen aktivieren",
+        "adminSyncErrors": "Admin bei Sync-Fehlern benachrichtigen",
+        "reminderTime": "Erinnerungszeit",
+        "frequency": "Häufigkeit",
+        "daily": "Täglich",
+        "weekly": "Wöchentlich",
+        "sendTestEmail": "Test-E-Mail senden",
+        "sendRemindersNow": "Erinnerungen jetzt senden"
+      }
+    },
     "statistics": { "title": "Statistiken" },
     "notifications": { "title": "Benachrichtigungen senden" },
     "auditLog": { "title": "Audit Log" },
@@ -767,7 +874,8 @@
     "started": "Gestartet",
     "days": "d",
     "hours": "h",
-    "minutes": "m"
+    "minutes": "m",
+    "seconds": "s"
   },
   "chart": {
     "rank": "Rang",

@@ -1,7 +1,7 @@
 const { Match, Prediction, User } = require('../models');
 const footballProviderService = require('./footballProviderService');
 const { calculatePoints } = require('./pointsCalculationService');
-const { getScoringRules, saveLeaderboardSnapshot, getLeaderboard } = require('./leaderboardService');
+const { getScoringRules, saveLeaderboardSnapshot, getLeaderboard, invalidateLeaderboardCache } = require('./leaderboardService');
 const { getSetting } = require('./settingsService');
 const { logAudit } = require('./auditService');
 const socketService = require('./socketService');
@@ -122,8 +122,9 @@ async function applyResultUpdates({ syncType = 'results', userId = null, req = n
     if (summary.updatedCount > 0) {
       const finishedUpdates = summary.updatedMatches.filter((m) => m.status === 'finished');
       if (finishedUpdates.length > 0) {
+        invalidateLeaderboardCache();
         await saveLeaderboardSnapshot();
-        const leaderboard = await getLeaderboard();
+        const leaderboard = await getLeaderboard({ skipCache: true });
         socketService.emitToLeaderboard('leaderboard:update', leaderboard);
         await notifyAffectedUsers(finishedUpdates.map((m) => m.id));
       }

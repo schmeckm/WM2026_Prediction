@@ -33,7 +33,7 @@ async function safeRun(fn, label) {
   try {
     console.log(`[Scheduler] Starte: ${label}`);
     const result = await fn();
-    console.log(`[Scheduler] Fertig: ${label}`, result?.message || '');
+    console.log(`[Scheduler] Fertig: ${label}`, result?.message || result?.path || result?.filename || '');
     return result;
   } catch (error) {
     console.error(`[Scheduler] Fehler bei ${label}:`, error.message);
@@ -112,18 +112,47 @@ function startScheduler() {
     }
   }));
 
-  // Lock matches at kickoff every minute
+  // Lock matches at kickoff – every 15s during tournament, otherwise every minute
   const { lockPastKickoffMatches } = require('./matchLockSchedulerService');
-  jobs.push(cron.schedule('* * * * *', () => {
-    safeRun(() => lockPastKickoffMatches(), 'Kickoff-Sperre');
+  jobs.push(cron.schedule('*/15 * * * * *', async () => {
+    if (isTournamentActive()) {
+      await safeRun(() => lockPastKickoffMatches(), 'Kickoff-Sperre (15s)');
+    }
+  }));
+  jobs.push(cron.schedule('* * * * *', async () => {
+    if (!isTournamentActive()) {
+      await safeRun(() => lockPastKickoffMatches(), 'Kickoff-Sperre');
+    }
   }));
 
-  // Weekly postgres backup (Sunday 02:00)
+  // Daily database backup at 03:00
   const { createPostgresBackup, isPostgresConfigured } = require('./postgresBackupService');
+  const { backupDatabase } = require('../database/backup');
+  const { createUploadsBackup } = require('./uploadsBackupService');
+  jobs.push(cron.schedule('0 3 * * *', async () => {
+    if (isPostgresConfigured()) {
+      await safeRun(() => createPostgresBackup(), 'Postgres-Backup (täglich)');
+    } else {
+      await safeRun(async () => backupDatabase('scheduled'), 'SQLite-Backup (täglich)');
+    }
+  }));
+
+  // Weekly postgres backup (Sunday 02:00) – additional full dump
   jobs.push(cron.schedule('0 2 * * 0', async () => {
     if (isPostgresConfigured()) {
-      await safeRun(() => createPostgresBackup(), 'Postgres-Backup');
+      await safeRun(() => createPostgresBackup(), 'Postgres-Backup (wöchentlich)');
     }
+  }));
+
+  // Daily uploads backup at 03:30
+  jobs.push(cron.schedule('30 3 * * *', async () => {
+    await safeRun(() => createUploadsBackup(), 'Uploads-Backup');
+  }));
+
+  // Cleanup expired revoked tokens daily at 04:00
+  const { cleanupExpiredTokens } = require('./tokenBlacklistService');
+  jobs.push(cron.schedule('0 4 * * *', async () => {
+    await safeRun(() => cleanupExpiredTokens(), 'Token-Blacklist-Bereinigung');
   }));
 
   console.log(`[Scheduler] ${jobs.length} Cron-Jobs gestartet.`);
@@ -134,4 +163,4 @@ function stopScheduler() {
   jobs = [];
 }
 
-module.exports = { startScheduler, stopScheduler };
+module.exports = { startScheduler, stopScheduler, isTournamentActive };

@@ -33,7 +33,7 @@ describe('Admin player data backup', () => {
     assert.equal(res.status, 200);
     assert.match(res.headers['content-disposition'], /spieler-backup-/);
     const payload = JSON.parse(res.text);
-    assert.equal(payload.version, '1.0');
+    assert.equal(payload.version, '1.1');
     assert.ok(Array.isArray(payload.data.users));
     assert.ok(payload.meta.userCount >= 1);
   });

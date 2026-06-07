@@ -2,7 +2,7 @@
   <div>
     <div class="page-header"><h1>{{ t('statistics.title') }}</h1></div>
     <LoadingSpinner v-if="loading" />
-    <AlertMessage v-else-if="error" :message="error" type="error" />
+    <ErrorState v-else-if="error" :message="error" @retry="loadStats" />
     <template v-else-if="stats">
       <UserStatsCards :data="stats" />
       <div class="grid-2 mt-2">
@@ -36,7 +36,7 @@ import LoadingSpinner from '../components/LoadingSpinner.vue';
 import UserStatsCards from '../components/UserStatsCards.vue';
 import PointsChart from '../components/PointsChart.vue';
 import RankChart from '../components/RankChart.vue';
-import AlertMessage from '../components/AlertMessage.vue';
+import ErrorState from '../components/ErrorState.vue';
 import { useFormatters } from '../composables/useFormatters';
 
 const { t } = useI18n();
@@ -45,7 +45,8 @@ const stats = ref(null);
 const loading = ref(true);
 const error = ref('');
 
-onMounted(async () => {
+async function loadStats() {
+  loading.value = true;
   error.value = '';
   try {
     const { data } = await api.get('/statistics/me');
@@ -55,5 +56,7 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
-});
+}
+
+onMounted(loadStats);
 </script>

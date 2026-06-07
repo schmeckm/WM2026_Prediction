@@ -18,7 +18,8 @@
     "registrationDisabled": "El registro está desactivado.",
     "registrationFieldsRequired": "Nombre, apellido, correo y contraseña son obligatorios.",
     "passwordsDoNotMatch": "Las contraseñas no coinciden.",
-    "passwordMinLength": "La contraseña debe tener al menos 6 caracteres.",
+    "passwordMinLength": "La contraseña debe tener al menos 10 caracteres.",
+    "passwordComplexity": "La contraseña debe contener al menos una letra y un número.",
     "teamNotExists": "El equipo seleccionado no existe.",
     "registrationFailed": "Registro fallido.",
     "loginFieldsRequired": "Correo y contraseña son obligatorios.",
@@ -101,6 +102,8 @@
     "emailStatusLoadFailed": "No se pudo cargar el estado del correo.",
     "testEmailFailed": "Correo de prueba fallido.",
     "remindersSendFailed": "No se pudieron enviar los recordatorios.",
+    "userRemindersSendFailed": "No se pudieron enviar los recordatorios de pronósticos.",
+    "statusUpdatesSendFailed": "No se pudieron enviar las actualizaciones de estado.",
     "auditLogLoadFailed": "No se pudo cargar el registro de auditoría.",
     "notificationsLoadFailed": "No se pudieron cargar las notificaciones.",
     "notificationNotFound": "Notificación no encontrada.",
@@ -252,6 +255,31 @@
       "subject": "WM 2026 Pronósticos – Error de sincronización",
       "title": "Error de sincronización",
       "text": "Error de sync: {errorMessage}"
+    },
+    "manualTipReminder": {
+      "subject": "WM 2026 Pronósticos – Recordatorio: envía tus pronósticos",
+      "title": "Recordatorio de pronósticos",
+      "greeting": "Hola {firstName}!",
+      "bodyWithMissing": "Aún tienes {missingCount} pronósticos abiertos. Envíalos a tiempo para sumar puntos.",
+      "bodyGeneric": "Revisa tus partidos abiertos y envía tus pronósticos a tiempo.",
+      "cta": "Enviar pronósticos",
+      "text": "Hola {firstName}! {missingCount} pronósticos abiertos.\n{matchListText}\n{link}"
+    },
+    "statusUpdate": {
+      "subject": "WM 2026 Pronósticos – Clasificación actual",
+      "title": "Actualización de estado",
+      "greeting": "Hola {firstName}!",
+      "intro": "Este es el estado actual del juego de pronósticos:",
+      "yourRank": "Estás en el puesto {rank} con {points} puntos.",
+      "notRanked": "Aún no estás en la clasificación.",
+      "yourTeam": "Tu equipo \"{teamName}\" está en el puesto {rank} de la clasificación por equipos ({points} pts. prom.).",
+      "teamNotRanked": "Tu equipo \"{teamName}\" aún no está en la clasificación por equipos.",
+      "leaderboardHeading": "Mejores jugadores",
+      "teamHeading": "Mejores equipos",
+      "points": "pts",
+      "noEntries": "Sin entradas todavía.",
+      "cta": "Ver clasificación",
+      "text": "Hola {firstName}! Tu puesto: {rank}, puntos: {points}. Equipo: {teamName} (puesto {teamRank}). {link}"
     }
   },
   "ai": {
@@ -268,6 +296,16 @@
       "openMatches": "Muestra mis partidos abiertos más importantes",
       "teamMatches": "¿Qué partidos le quedan a Alemania?"
     },
-    "defaultCoachPrompt": "Dame un breve resumen de mi situación actual de pronósticos y qué debo hacer a continuación."
+    "defaultCoachPrompt": "Dame un breve resumen de mi situación actual de pronósticos y qué debo hacer a continuación.",
+    "dashboardInsights": {
+      "missingTodayOne": "Aún te falta {count} pronóstico para hoy.",
+      "missingTodayMany": "Aún te faltan {count} pronósticos para hoy.",
+      "missingTotal": "En total aún te faltan {count} pronósticos.",
+      "exactOne": "Ya has acertado {count} resultado exacto.",
+      "exactMany": "Ya has acertado {count} resultados exactos.",
+      "rankCatchUp": "Estás en el puesto {rank}. ¡Buenos pronósticos pueden ayudarte a remontar!",
+      "teamRanking": "Tu equipo \"{teamName}\" está en el puesto {rank} en la clasificación por equipos.",
+      "aiPrompt": "Redacta UNA frase corta y motivadora (máx. 25 palabras) como consejo del panel según los datos. Sin garantías."
+    }
   }
 }

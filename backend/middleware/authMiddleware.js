@@ -12,7 +12,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    if (isTokenBlacklisted(token)) {
+    if (await isTokenBlacklisted(token)) {
       return sendError(res, req, 401, 'errors.sessionExpired');
     }
 

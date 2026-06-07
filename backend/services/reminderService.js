@@ -5,6 +5,16 @@ const reminderEmailService = require('./reminderEmailService');
 const notificationService = require('./notificationService');
 const { getSetting } = require('./settingsService');
 const { getLeaderboard } = require('./leaderboardService');
+const { runWithConcurrency } = require('./emailQueueService');
+
+function groupPredictionsByUser(predictions) {
+  const map = new Map();
+  for (const prediction of predictions) {
+    if (!map.has(prediction.userId)) map.set(prediction.userId, new Set());
+    map.get(prediction.userId).add(prediction.matchId);
+  }
+  return map;
+}
 
 async function getReminderRecipients() {
   const requireVerification = await getSetting('requireEmailVerification', true);
@@ -21,10 +31,10 @@ async function getReminderRecipients() {
   return User.findAll({ where: { role: { [Op.in]: ['user', 'admin'] } } });
 }
 
-async function sendMissingPredictionReminders() {
+async function sendMissingPredictionReminders({ force = false } = {}) {
   const enabled = await getSetting('emailRemindersEnabled', false);
-  if (!enabled) {
-    return { skipped: true, message: 'E-Mail-Erinnerungen deaktiviert.' };
+  if (!enabled && !force) {
+    return { skipped: true, message: 'E-Mail-Erinnerungen deaktiviert. Bitte aktivieren und speichern, oder manuell erneut senden.' };
   }
 
   const users = await getReminderRecipients();
@@ -36,23 +46,34 @@ async function sendMissingPredictionReminders() {
     },
   });
 
-  let sent = 0;
-  const now = new Date();
-  const in48h = new Date(now.getTime() + 48 * 60 * 60 * 1000);
-  const upcoming = openMatches.filter((m) => new Date(m.kickoffTime) <= in48h);
-
   if (users.length === 0) {
     return { sent: 0, message: 'Keine Empfänger gefunden (registrierte Spieler mit bestätigter E-Mail).' };
   }
 
-  for (const user of users) {
-    const predictions = await Prediction.findAll({
-      where: { userId: user.id, matchId: openMatches.map((m) => m.id) },
-    });
-    const predictedIds = new Set(predictions.map((p) => p.matchId));
-    const missing = openMatches.filter((m) => !predictedIds.has(m.id));
+  const openMatchIds = openMatches.map((m) => m.id);
+  const predictionsByUser = openMatchIds.length > 0
+    ? groupPredictionsByUser(await Prediction.findAll({
+      where: { matchId: { [Op.in]: openMatchIds } },
+      attributes: ['userId', 'matchId'],
+    }))
+    : new Map();
 
-    if (missing.length === 0) continue;
+  const now = new Date();
+  const in48h = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+  const upcoming = openMatches.filter((m) => new Date(m.kickoffTime) <= in48h);
+
+  const recipients = users.filter((user) => {
+    const predictedIds = predictionsByUser.get(user.id) || new Set();
+    return openMatches.some((m) => !predictedIds.has(m.id));
+  });
+
+  if (recipients.length === 0) {
+    return { sent: 0, message: 'Keine Erinnerungen nötig – alle Spieler haben ihre offenen Tipps abgegeben.' };
+  }
+
+  await runWithConcurrency(recipients, async (user) => {
+    const predictedIds = predictionsByUser.get(user.id) || new Set();
+    const missing = openMatches.filter((m) => !predictedIds.has(m.id));
 
     await reminderEmailService.sendMissingPredictionsEmail(
       user,
@@ -69,14 +90,9 @@ async function sendMissingPredictionReminders() {
       type: 'warning',
       link: '/matches?filter=missing',
     });
+  });
 
-    sent++;
-  }
-
-  if (sent === 0) {
-    return { sent: 0, message: 'Keine Erinnerungen nötig – alle Spieler haben ihre offenen Tipps abgegeben.' };
-  }
-  return { sent, message: `${sent} Erinnerungen gesendet.` };
+  return { sent: recipients.length, message: `${recipients.length} Erinnerungen gesendet.` };
 }
 
 async function sendUpcomingMatchesSummary() {
@@ -95,14 +111,12 @@ async function sendUpcomingMatchesSummary() {
     limit: 10,
   });
 
-  let sent = 0;
-  for (const user of users) {
+  await runWithConcurrency(users, async (user) => {
     const template = emailService.templateUpcomingMatches(user, upcoming);
     await emailService.sendEmail({ to: user.email, ...template });
-    sent++;
-  }
+  });
 
-  return { sent };
+  return { sent: users.length };
 }
 
 async function sendBonusQuestionReminders() {
@@ -120,31 +134,38 @@ async function sendBonusQuestionReminders() {
   if (questions.length === 0) return { sent: 0 };
 
   const users = await getReminderRecipients();
-  let sent = 0;
+  const questionIds = questions.map((q) => q.id);
+  const existingPredictions = await BonusPrediction.findAll({
+    where: { bonusQuestionId: { [Op.in]: questionIds } },
+    attributes: ['userId', 'bonusQuestionId'],
+  });
 
+  const answered = new Set(
+    existingPredictions.map((p) => `${p.userId}:${p.bonusQuestionId}`)
+  );
+
+  const jobs = [];
   for (const question of questions) {
     for (const user of users) {
-      const existing = await BonusPrediction.findOne({
-        where: { userId: user.id, bonusQuestionId: question.id },
-      });
-      if (existing) continue;
-
-      const template = emailService.templateBonusReminder(user, question);
-      await emailService.sendEmail({ to: user.email, ...template });
-
-      await notificationService.createNotification({
-        userId: user.id,
-        title: 'Bonusfrage schließt bald',
-        message: question.questionText,
-        type: 'warning',
-        link: '/bonus',
-      });
-
-      sent++;
+      if (answered.has(`${user.id}:${question.id}`)) continue;
+      jobs.push({ user, question });
     }
   }
 
-  return { sent };
+  await runWithConcurrency(jobs, async ({ user, question }) => {
+    const template = emailService.templateBonusReminder(user, question);
+    await emailService.sendEmail({ to: user.email, ...template });
+
+    await notificationService.createNotification({
+      userId: user.id,
+      title: 'Bonusfrage schließt bald',
+      message: question.questionText,
+      type: 'warning',
+      link: '/bonus',
+    });
+  });
+
+  return { sent: jobs.length };
 }
 
 async function sendSyncErrorToAdmin(errorMessage) {
@@ -155,9 +176,9 @@ async function sendSyncErrorToAdmin(errorMessage) {
   const admins = await User.findAll({ where: { role: 'admin' } });
   const template = emailService.templateSyncError(errorMessage);
 
-  for (const admin of admins) {
+  await runWithConcurrency(admins, async (admin) => {
     await emailService.sendEmail({ to: admin.email, ...template });
-  }
+  });
 }
 
 async function sendLeaderboardUpdates() {
@@ -167,17 +188,16 @@ async function sendLeaderboardUpdates() {
   const leaderboard = await getLeaderboard();
   const users = await getReminderRecipients();
 
-  let sent = 0;
-  for (const user of users) {
-    const entry = leaderboard.find((e) => e.userId === user.id);
-    if (!entry) continue;
+  const recipients = users
+    .map((user) => ({ user, entry: leaderboard.find((e) => e.userId === user.id) }))
+    .filter(({ entry }) => entry);
 
+  await runWithConcurrency(recipients, async ({ user, entry }) => {
     const template = emailService.templateLeaderboardUpdate(user, entry.rank, entry.totalPoints);
     await emailService.sendEmail({ to: user.email, ...template });
-    sent++;
-  }
+  });
 
-  return { sent };
+  return { sent: recipients.length };
 }
 
 module.exports = {

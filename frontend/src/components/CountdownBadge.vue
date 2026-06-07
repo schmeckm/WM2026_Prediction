@@ -4,7 +4,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 const props = defineProps({
@@ -20,22 +20,40 @@ function update() {
   remaining.value = Math.max(0, new Date(props.kickoffTime) - Date.now());
 }
 
+function getIntervalMs() {
+  return remaining.value <= 3600000 ? 1000 : 60000;
+}
+
+function scheduleUpdate() {
+  if (timer) clearInterval(timer);
+  update();
+  timer = setInterval(() => {
+    update();
+    if (remaining.value <= 3600000 && getIntervalMs() === 1000) {
+      scheduleUpdate();
+    }
+  }, getIntervalMs());
+}
+
 const display = computed(() => {
   const ms = remaining.value;
   const days = Math.floor(ms / 86400000);
   const hours = Math.floor((ms % 86400000) / 3600000);
   const mins = Math.floor((ms % 3600000) / 60000);
+  const secs = Math.floor((ms % 60000) / 1000);
   if (days > 0) return `${days}${t('countdown.days')} ${hours}${t('countdown.hours')}`;
   if (hours > 0) return `${hours}${t('countdown.hours')} ${mins}${t('countdown.minutes')}`;
-  return `${mins}${t('countdown.minutes')}`;
+  if (mins > 0) return `${mins}${t('countdown.minutes')} ${secs}${t('countdown.seconds')}`;
+  return `${secs}${t('countdown.seconds')}`;
 });
 
-onMounted(() => {
-  update();
-  timer = setInterval(update, 60000);
-});
+watch(() => props.kickoffTime, scheduleUpdate);
 
-onUnmounted(() => clearInterval(timer));
+onMounted(scheduleUpdate);
+
+onUnmounted(() => {
+  if (timer) clearInterval(timer);
+});
 </script>
 
 <style scoped>

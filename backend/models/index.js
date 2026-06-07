@@ -14,6 +14,7 @@ const LeaderboardSnapshot = require('./LeaderboardSnapshot');
 const AICommentary = require('./AICommentary');
 const AIInteractionLog = require('./AIInteractionLog');
 const PlayerImage = require('./PlayerImage');
+const RevokedToken = require('./RevokedToken');
 
 Team.hasMany(User, { foreignKey: 'teamId', as: 'users', onDelete: 'SET NULL' });
 User.belongsTo(Team, { foreignKey: 'teamId', as: 'team', onDelete: 'SET NULL' });
@@ -64,4 +65,5 @@ module.exports = {
   AICommentary,
   AIInteractionLog,
   PlayerImage,
+  RevokedToken,
 };

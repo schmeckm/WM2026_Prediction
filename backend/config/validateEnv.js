@@ -25,6 +25,8 @@ function validateEnv() {
     for (const key of ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD']) {
       if (!process.env[key]) errors.push(`${key} is required when DB_DIALECT=postgres.`);
     }
+  } else if ((process.env.DB_DIALECT || 'sqlite') === 'sqlite' && isProduction) {
+    errors.push('DB_DIALECT=sqlite is not allowed in production. Use DB_DIALECT=postgres.');
   }
 
   const syncEnabled = process.env.FOOTBALL_API_SYNC_ENABLED !== 'false';

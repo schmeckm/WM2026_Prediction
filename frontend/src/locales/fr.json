@@ -31,7 +31,8 @@
     "all": "Tous",
     "none": "Aucun",
     "optional": "optionnel",
-    "required": "Obligatoire"
+    "required": "Obligatoire",
+    "retry": "Réessayer"
   },
   "nav": {
     "navigation": "Navigation",
@@ -401,7 +402,13 @@
     "noTip": "Aucun pronostic",
     "noTipGiven": "Aucun pronostic soumis",
     "stadiumPreview": "Agrandir le stade et afficher les infos IA",
-    "venueDetails": "Lieu du match"
+    "venueDetails": "Lieu du match",
+    "loadFailed": "Impossible de charger les matchs.",
+    "viewMode": "Affichage",
+    "viewCards": "Cartes",
+    "viewTable": "Tableau",
+    "lockWarningMissing": "Attention : {count} matchs ouverts se verrouillent dans moins de 15 minutes – pronostics manquants !",
+    "lockWarningSoon": "Attention : {count} matchs commencent dans moins de 15 minutes – les pronostics seront bientôt verrouillés."
   },
   "matchTable": {
     "number": "N°",
@@ -445,7 +452,10 @@
     "myTip": "Mon pronostic",
     "game": "Match",
     "round": "Groupe / Tour",
-    "empty": "Aucun pronostic soumis pour le moment."
+    "empty": "Aucun pronostic soumis pour le moment.",
+    "loadFailed": "Impossible de charger les pronostics.",
+    "homeScoreLabel": "Buts domicile {team}",
+    "awayScoreLabel": "Buts extérieur {team}"
   },
   "leaderboard": {
     "title": "Classement",
@@ -488,6 +498,7 @@
     "open": "Ouvert",
     "resolved": "Résolu",
     "empty": "Aucune question bonus disponible.",
+    "loadFailed": "Impossible de charger les questions bonus.",
     "points": "Points",
     "pointsShort": "pts",
     "lockTime": "Verrouillage",
@@ -598,7 +609,14 @@
     "title": "Notifications",
     "empty": "Aucune notification",
     "markAllRead": "Tout marquer lu",
-    "markAllReadLong": "Tout marquer comme lu"
+    "markAllReadLong": "Tout marquer comme lu",
+    "bellLabel": "Notifications",
+    "toggleDropdown": "Afficher ou masquer les notifications"
+  },
+  "display": {
+    "updated": "Mis à jour",
+    "liveMatches": "Matchs",
+    "noMatches": "Aucun match."
   },
   "statistics": {
     "title": "Statistiques",
@@ -624,11 +642,111 @@
     "started": "Commencé",
     "days": "j",
     "hours": "h",
-    "minutes": "m"
+    "minutes": "m",
+    "seconds": "s"
   },
   "chart": {
     "rank": "Rang",
     "points": "Points"
+  },
+  "adminPages": {
+    "table": {
+      "noEntries": "Aucune entrée."
+    },
+    "users": {
+      "title": "Gestion des utilisateurs",
+      "newUser": "Nouvel utilisateur",
+      "editUser": "Modifier l'utilisateur",
+      "createUser": "Nouvel utilisateur",
+      "selectAll": "Sélectionner tous les utilisateurs",
+      "selectUser": "Sélectionner {name}",
+      "selectedCount": "{count} sélectionné(s)",
+      "sendTipReminders": "Envoyer un rappel de pronostics",
+      "sendStatusUpdate": "Envoyer une mise à jour de statut",
+      "confirmTipReminders": "Envoyer un rappel à {count} utilisateur(s) ?",
+      "confirmStatusUpdate": "Envoyer une mise à jour à {count} utilisateur(s) ?",
+      "confirmDelete": "Supprimer l'utilisateur « {name} » ?",
+      "sending": "Envoi…",
+      "noSelection": "Veuillez sélectionner au moins un utilisateur.",
+      "roleAdmin": "Admin",
+      "roleUser": "Utilisateur",
+      "verified": "Vérifié",
+      "pending": "En attente",
+      "passwordOptionalHint": "(vide = inchangé)",
+      "profileImage": "Photo de profil",
+      "uploadHint": "JPG, PNG, WebP ou GIF, max. 2 Mo",
+      "removeImage": "Supprimer l'image",
+      "emailVerifiedLabel": "E-mail vérifié",
+      "createImageHint": "Après la création, vous pourrez téléverser une photo de profil.",
+      "imageTooLarge": "L'image est trop volumineuse (max. 2 Mo).",
+      "imageRemoved": "Photo de profil supprimée.",
+      "imageRemoveFailed": "Impossible de supprimer l'image.",
+      "userUpdated": "Utilisateur mis à jour.",
+      "userCreated": "Utilisateur créé.",
+      "userUpdatedWithImage": "Utilisateur et photo de profil mis à jour.",
+      "userCreatedWithImage": "Utilisateur créé et photo téléversée.",
+      "saveFailed": "Erreur lors de l'enregistrement.",
+      "userDeleted": "Utilisateur supprimé.",
+      "deleteFailed": "Échec de la suppression.",
+      "emailsSent": "{count} e-mail(s) envoyé(s).",
+      "emailsFailed": "Impossible d'envoyer les e-mails.",
+      "statusUpdatesFailed": "Impossible d'envoyer les mises à jour.",
+      "columns": {
+        "image": "Image",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "email": "E-mail",
+        "emailVerified": "Vérifié",
+        "role": "Rôle",
+        "team": "Équipe"
+      },
+      "form": {
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "email": "E-mail",
+        "password": "Mot de passe",
+        "role": "Rôle",
+        "team": "Équipe"
+      }
+    },
+    "email": {
+      "title": "Rappels par e-mail",
+      "smtpStatus": "Statut SMTP",
+      "ready": "Prêt",
+      "incomplete": "Incomplet",
+      "configured": "Configuré",
+      "mockMode": "Non (mode simulation)",
+      "host": "Hôte",
+      "from": "Expéditeur",
+      "appUrl": "APP_URL",
+      "reminders": "Rappels",
+      "active": "Actif",
+      "inactive": "Inactif",
+      "emailVerification": "Vérification e-mail",
+      "smtpChecklist": "Liste de contrôle SMTP",
+      "checklistHint": "Sans SMTP complet, les liens de vérification, réinitialisation et rappels ne sont enregistrés que dans la console backend.",
+      "reminderLanguageTitle": "Langue des rappels",
+      "reminderLanguageDesc": "Les rappels sont envoyés automatiquement dans la langue de chaque utilisateur ({langs}), selon le profil, comme pour l'inscription et la réinitialisation du mot de passe.",
+      "reminderLanguageNote": "Aucun modèle manuel ni texte IA n'est nécessaire. Chaque utilisateur reçoit le texte dans sa langue.",
+      "settingsAndTests": "Paramètres et tests",
+      "settingsSaved": "Paramètres enregistrés.",
+      "saveFailed": "Erreur lors de l'enregistrement.",
+      "testEmailSent": "E-mail de test envoyé.",
+      "smtpNotConfigured": "SMTP non configuré – aucun e-mail réel envoyé.",
+      "remindersDisabled": "Les rappels sont désactivés.",
+      "noEmailsSent": "Aucun e-mail envoyé.",
+      "remindersSent": "{count} rappels envoyés.",
+      "form": {
+        "enableReminders": "Activer les rappels par e-mail",
+        "adminSyncErrors": "Notifier l'admin en cas d'erreur de sync",
+        "reminderTime": "Heure du rappel",
+        "frequency": "Fréquence",
+        "daily": "Quotidien",
+        "weekly": "Hebdomadaire",
+        "sendTestEmail": "Envoyer un e-mail de test",
+        "sendRemindersNow": "Envoyer les rappels maintenant"
+      }
+    }
   },
   "adminPlayerImages": {
     "title": "Images des joueurs",

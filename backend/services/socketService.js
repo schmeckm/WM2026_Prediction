@@ -17,16 +17,20 @@ function init(server, options = {}) {
     const token = socket.handshake.auth?.token
       || socket.handshake.query?.token;
     const decoded = verifyToken(token);
-    if (!decoded?.userId) {
-      return next(new Error('Unauthorized'));
+    if (decoded?.userId) {
+      socket.userId = decoded.userId;
+      socket.userRole = decoded.role;
+      socket.authenticated = true;
+    } else {
+      socket.authenticated = false;
     }
-    socket.userId = decoded.userId;
-    socket.userRole = decoded.role;
     next();
   });
 
   io.on('connection', (socket) => {
-    socket.join(`user:${socket.userId}`);
+    if (socket.authenticated) {
+      socket.join(`user:${socket.userId}`);
+    }
 
     socket.on('join', (userId) => {
       const requestedId = parseInt(userId, 10);

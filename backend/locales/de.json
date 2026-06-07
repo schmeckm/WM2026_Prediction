@@ -18,7 +18,8 @@
     "registrationDisabled": "Die Registrierung ist derzeit deaktiviert.",
     "registrationFieldsRequired": "Vorname, Nachname, E-Mail und Passwort sind erforderlich.",
     "passwordsDoNotMatch": "Die Passwörter stimmen nicht überein.",
-    "passwordMinLength": "Das Passwort muss mindestens 6 Zeichen lang sein.",
+    "passwordMinLength": "Das Passwort muss mindestens 10 Zeichen lang sein.",
+    "passwordComplexity": "Das Passwort muss mindestens einen Buchstaben und eine Zahl enthalten.",
     "teamNotExists": "Das ausgewählte Team existiert nicht.",
     "registrationFailed": "Registrierung fehlgeschlagen.",
     "loginFieldsRequired": "E-Mail und Passwort sind erforderlich.",
@@ -101,6 +102,8 @@
     "emailStatusLoadFailed": "E-Mail-Status konnte nicht geladen werden.",
     "testEmailFailed": "Test-E-Mail fehlgeschlagen.",
     "remindersSendFailed": "Erinnerungen konnten nicht gesendet werden.",
+    "userRemindersSendFailed": "Tipp-Erinnerungen konnten nicht gesendet werden.",
+    "statusUpdatesSendFailed": "Status-Updates konnten nicht gesendet werden.",
     "auditLogLoadFailed": "Audit-Log konnte nicht geladen werden.",
     "notificationsLoadFailed": "Benachrichtigungen konnten nicht geladen werden.",
     "notificationNotFound": "Benachrichtigung nicht gefunden.",
@@ -252,6 +255,31 @@
       "subject": "WM 2026 Tippspiel – Sync-Fehler",
       "title": "Synchronisierungsfehler",
       "text": "Sync-Fehler: {errorMessage}"
+    },
+    "manualTipReminder": {
+      "subject": "WM 2026 Tippspiel – Erinnerung: Tipps abgeben",
+      "title": "Tipp-Erinnerung",
+      "greeting": "Hallo {firstName}!",
+      "bodyWithMissing": "Du hast noch {missingCount} offene Tipps. Gib sie rechtzeitig ab, um Punkte zu sammeln.",
+      "bodyGeneric": "Schau dir deine offenen Spiele an und gib rechtzeitig deine Tipps ab.",
+      "cta": "Tipps abgeben",
+      "text": "Hallo {firstName}! {missingCount} offene Tipps.\n{matchListText}\n{link}"
+    },
+    "statusUpdate": {
+      "subject": "WM 2026 Tippspiel – Aktueller Stand",
+      "title": "Status-Update",
+      "greeting": "Hallo {firstName}!",
+      "intro": "Hier ist der aktuelle Stand im Tippspiel:",
+      "yourRank": "Du liegst auf Platz {rank} mit {points} Punkten.",
+      "notRanked": "Du bist aktuell noch nicht in der Hitliste platziert.",
+      "yourTeam": "Dein Team \"{teamName}\" liegt auf Platz {rank} in der Teamwertung ({points} Ø-Punkte).",
+      "teamNotRanked": "Dein Team \"{teamName}\" ist aktuell noch nicht in der Teamwertung platziert.",
+      "leaderboardHeading": "Top-Spieler",
+      "teamHeading": "Top-Teams",
+      "points": "Pkt.",
+      "noEntries": "Noch keine Einträge.",
+      "cta": "Hitliste ansehen",
+      "text": "Hallo {firstName}! Dein Rang: {rank}, Punkte: {points}. Team: {teamName} (Platz {teamRank}). {link}"
     }
   },
   "ai": {
@@ -268,6 +296,16 @@
       "openMatches": "Zeige meine wichtigsten offenen Spiele",
       "teamMatches": "Welche Spiele hat Deutschland noch?"
     },
-    "defaultCoachPrompt": "Gib mir eine kurze Übersicht meiner aktuellen Tipp-Situation und was ich als Nächstes tun sollte."
+    "defaultCoachPrompt": "Gib mir eine kurze Übersicht meiner aktuellen Tipp-Situation und was ich als Nächstes tun sollte.",
+    "dashboardInsights": {
+      "missingTodayOne": "Dir fehlt noch {count} Tipp für heute.",
+      "missingTodayMany": "Dir fehlen noch {count} Tipps für heute.",
+      "missingTotal": "Insgesamt fehlen dir noch {count} Tipps.",
+      "exactOne": "Du hast bereits {count} exaktes Ergebnis getippt.",
+      "exactMany": "Du hast bereits {count} exakte Ergebnisse getippt.",
+      "rankCatchUp": "Du bist auf Platz {rank}. Mit guten Tipps kannst du noch aufholen!",
+      "teamRanking": "Dein Team \"{teamName}\" liegt auf Platz {rank} in der Teamwertung.",
+      "aiPrompt": "Formuliere EINEN kurzen, motivierenden Satz (max. 25 Wörter) als Dashboard-Tipp basierend auf den Daten. Keine Garantien."
+    }
   }
 }

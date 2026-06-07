@@ -9,8 +9,9 @@
       class="form-control"
       :style="{ width: compact ? '48px' : '60px', textAlign: 'center' }"
       :placeholder="t('predictions.home')"
+      :aria-label="t('predictions.homeScoreLabel', { team: match.homeTeam })"
     />
-    <span class="prediction-separator">:</span>
+    <span class="prediction-separator" aria-hidden="true">:</span>
     <input
       v-model.number="awayScore"
       type="number"
@@ -20,6 +21,7 @@
       class="form-control"
       :style="{ width: compact ? '48px' : '60px', textAlign: 'center' }"
       :placeholder="t('predictions.away')"
+      :aria-label="t('predictions.awayScoreLabel', { team: match.awayTeam })"
     />
     <button type="submit" class="btn btn-primary btn-sm" :disabled="loading">
       {{ loading ? t('common.loading') : (prediction ? t('common.save') : t('predictions.submit')) }}

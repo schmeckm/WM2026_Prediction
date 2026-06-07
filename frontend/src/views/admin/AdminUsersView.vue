@@ -2,7 +2,26 @@
   <div>
     <div class="page-header">
       <h1>{{ t('adminPages.users.title') }}</h1>
-      <button class="btn btn-primary btn-sm" @click="openCreate">+ Neuer Benutzer</button>
+      <div class="header-actions">
+        <template v-if="selectedIds.length">
+          <span class="selected-count">{{ t('adminPages.users.selectedCount', { count: selectedIds.length }) }}</span>
+          <button
+            class="btn btn-secondary btn-sm"
+            :disabled="emailBusy"
+            @click="requestTipReminders"
+          >
+            {{ emailBusy ? t('adminPages.users.sending') : t('adminPages.users.sendTipReminders') }}
+          </button>
+          <button
+            class="btn btn-accent btn-sm"
+            :disabled="emailBusy"
+            @click="requestStatusUpdates"
+          >
+            {{ emailBusy ? t('adminPages.users.sending') : t('adminPages.users.sendStatusUpdate') }}
+          </button>
+        </template>
+        <button class="btn btn-primary btn-sm" @click="openCreate">+ {{ t('adminPages.users.newUser') }}</button>
+      </div>
     </div>
 
     <AlertMessage v-if="message" :message="message" type="success" />
@@ -13,10 +32,12 @@
     <div v-else class="card">
       <div class="card-body">
         <AdminTable
+          v-model:selected-ids="selectedIds"
           :items="users"
           :columns="columns"
+          selectable
           @edit="openEdit"
-          @delete="handleDelete"
+          @delete="requestDelete"
         >
           <template #cell-imageUrl="{ item }">
             <UserAvatar
@@ -28,12 +49,12 @@
           </template>
           <template #cell-role="{ item }">
             <span :class="['badge', item.role === 'admin' ? 'badge-admin' : 'badge-info']">
-              {{ item.role === 'admin' ? 'Admin' : 'Benutzer' }}
+              {{ item.role === 'admin' ? t('adminPages.users.roleAdmin') : t('adminPages.users.roleUser') }}
             </span>
           </template>
           <template #cell-emailVerified="{ item }">
             <span :class="['badge', item.emailVerified ? 'badge-success' : 'badge-warning']">
-              {{ item.emailVerified ? 'Bestätigt' : 'Offen' }}
+              {{ item.emailVerified ? t('adminPages.users.verified') : t('adminPages.users.pending') }}
             </span>
           </template>
           <template #cell-team="{ item }">
@@ -43,107 +64,138 @@
       </div>
     </div>
 
-    <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-      <div class="modal">
-        <div class="modal-header">
-          <h3>{{ editingUser ? 'Benutzer bearbeiten' : 'Neuer Benutzer' }}</h3>
-          <button class="modal-close" @click="showModal = false">&times;</button>
-        </div>
-        <form @submit.prevent="handleSave">
-          <div class="modal-body">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Vorname</label>
-                <input v-model="form.firstName" class="form-control" required />
-              </div>
-              <div class="form-group">
-                <label>Nachname</label>
-                <input v-model="form.lastName" class="form-control" required />
-              </div>
-            </div>
-            <div class="form-group">
-              <label>E-Mail</label>
-              <input v-model="form.email" type="email" class="form-control" required />
-            </div>
-            <div class="form-group">
-              <label>Passwort {{ editingUser ? '(leer = unverändert)' : '' }}</label>
-              <input v-model="form.password" type="password" class="form-control" :required="!editingUser" />
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Rolle</label>
-                <select v-model="form.role" class="form-control">
-                  <option value="user">Benutzer</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Team</label>
-                <select v-model="form.teamId" class="form-control">
-                  <option :value="null">Kein Team</option>
-                  <option v-for="t in teams" :key="t.id" :value="t.id">{{ t.name }}</option>
-                </select>
-              </div>
-            </div>
-            <div v-if="editingUser" class="form-group">
-              <label>Profilbild</label>
-              <div class="user-image-editor">
-                <UserAvatar
-                  :image-url="previewUrl || editingUser.imageUrl"
-                  :first-name="form.firstName"
-                  :last-name="form.lastName"
-                  size="lg"
-                />
-                <div class="user-image-actions">
-                  <input
-                    ref="fileInput"
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    class="form-control"
-                    @change="onFileSelected"
-                  />
-                  <p class="text-muted user-image-hint">JPG, PNG, WebP oder GIF, max. 2 MB</p>
-                  <button
-                    v-if="editingUser.imageUrl && !selectedFile"
-                    type="button"
-                    class="btn btn-secondary btn-sm"
-                    :disabled="imageBusy"
-                    @click="removeImage"
-                  >
-                    Bild entfernen
-                  </button>
+    <Teleport to="body">
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+        <div
+          class="modal"
+          role="dialog"
+          aria-modal="true"
+          :aria-label="editingUser ? t('adminPages.users.editUser') : t('adminPages.users.createUser')"
+        >
+          <div class="modal-header">
+            <h3>{{ editingUser ? t('adminPages.users.editUser') : t('adminPages.users.createUser') }}</h3>
+            <button
+              type="button"
+              class="modal-close"
+              :aria-label="t('common.close')"
+              @click="closeModal"
+            >
+              &times;
+            </button>
+          </div>
+          <form @submit.prevent="handleSave">
+            <div class="modal-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>{{ t('adminPages.users.form.firstName') }}</label>
+                  <input v-model="form.firstName" class="form-control" required />
+                </div>
+                <div class="form-group">
+                  <label>{{ t('adminPages.users.form.lastName') }}</label>
+                  <input v-model="form.lastName" class="form-control" required />
                 </div>
               </div>
+              <div class="form-group">
+                <label>{{ t('adminPages.users.form.email') }}</label>
+                <input v-model="form.email" type="email" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label>
+                  {{ t('adminPages.users.form.password') }}
+                  <span v-if="editingUser" class="text-muted">{{ t('adminPages.users.passwordOptionalHint') }}</span>
+                </label>
+                <input v-model="form.password" type="password" class="form-control" :required="!editingUser" />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>{{ t('adminPages.users.form.role') }}</label>
+                  <select v-model="form.role" class="form-control">
+                    <option value="user">{{ t('adminPages.users.roleUser') }}</option>
+                    <option value="admin">{{ t('adminPages.users.roleAdmin') }}</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>{{ t('adminPages.users.form.team') }}</label>
+                  <select v-model="form.teamId" class="form-control">
+                    <option :value="null">{{ t('common.noTeam') }}</option>
+                    <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.name }}</option>
+                  </select>
+                </div>
+              </div>
+              <div v-if="editingUser" class="form-group">
+                <label>{{ t('adminPages.users.profileImage') }}</label>
+                <div class="user-image-editor">
+                  <UserAvatar
+                    :image-url="previewUrl || editingUser.imageUrl"
+                    :first-name="form.firstName"
+                    :last-name="form.lastName"
+                    size="lg"
+                  />
+                  <div class="user-image-actions">
+                    <input
+                      ref="fileInput"
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      class="form-control"
+                      @change="onFileSelected"
+                    />
+                    <p class="text-muted user-image-hint">{{ t('adminPages.users.uploadHint') }}</p>
+                    <button
+                      v-if="editingUser.imageUrl && !selectedFile"
+                      type="button"
+                      class="btn btn-secondary btn-sm"
+                      :disabled="imageBusy"
+                      @click="removeImage"
+                    >
+                      {{ t('adminPages.users.removeImage') }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div v-if="editingUser" class="form-group">
+                <label class="checkbox-label">
+                  <input v-model="form.emailVerified" type="checkbox" />
+                  {{ t('adminPages.users.emailVerifiedLabel') }}
+                </label>
+              </div>
+              <p v-else class="text-muted user-image-hint">
+                {{ t('adminPages.users.createImageHint') }}
+              </p>
             </div>
-            <div v-if="editingUser" class="form-group">
-              <label class="checkbox-label">
-                <input v-model="form.emailVerified" type="checkbox" />
-                E-Mail bestätigt
-              </label>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="closeModal">{{ t('common.cancel') }}</button>
+              <button type="submit" class="btn btn-primary" :disabled="saving">
+                {{ saving ? t('common.saving') : t('common.save') }}
+              </button>
             </div>
-            <p v-else class="text-muted user-image-hint">
-              Nach dem Erstellen kannst du ein Profilbild hochladen.
-            </p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="showModal = false">Abbrechen</button>
-            <button type="submit" class="btn btn-primary" :disabled="saving">{{ saving ? 'Speichern...' : 'Speichern' }}</button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </Teleport>
+
+    <ConfirmModal
+      :open="confirmState.open"
+      :title="confirmState.title"
+      :message="confirmState.message"
+      :confirm-label="confirmState.confirmLabel"
+      :danger="confirmState.danger"
+      @confirm="onConfirm"
+      @cancel="closeConfirm"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import {
+  ref, computed, onMounted, onUnmounted,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
 import AdminTable from '../../components/AdminTable.vue';
 import AlertMessage from '../../components/AlertMessage.vue';
 import UserAvatar from '../../components/UserAvatar.vue';
-
+import ConfirmModal from '../../components/ConfirmModal.vue';
 
 const { t } = useI18n();
 
@@ -155,23 +207,60 @@ const editingUser = ref(null);
 const saving = ref(false);
 const message = ref('');
 const error = ref('');
+const selectedIds = ref([]);
+const emailBusy = ref(false);
 
 const selectedFile = ref(null);
 const previewUrl = ref('');
 const imageBusy = ref(false);
 const fileInput = ref(null);
 
-const columns = [
-  { key: 'imageUrl', label: 'Bild' },
-  { key: 'firstName', label: 'Vorname' },
-  { key: 'lastName', label: 'Nachname' },
-  { key: 'email', label: 'E-Mail' },
-  { key: 'emailVerified', label: 'Bestätigt' },
-  { key: 'role', label: 'Rolle' },
-  { key: 'team', label: 'Team' },
-];
+const confirmState = ref({
+  open: false,
+  title: '',
+  message: '',
+  confirmLabel: '',
+  danger: false,
+  action: null,
+});
 
-const form = ref({ firstName: '', lastName: '', email: '', password: '', role: 'user', teamId: null, emailVerified: true });
+const columns = computed(() => [
+  { key: 'imageUrl', label: t('adminPages.users.columns.image') },
+  { key: 'firstName', label: t('adminPages.users.columns.firstName') },
+  { key: 'lastName', label: t('adminPages.users.columns.lastName') },
+  { key: 'email', label: t('adminPages.users.columns.email') },
+  { key: 'emailVerified', label: t('adminPages.users.columns.emailVerified') },
+  { key: 'role', label: t('adminPages.users.columns.role') },
+  { key: 'team', label: t('adminPages.users.columns.team') },
+]);
+
+const form = ref({
+  firstName: '', lastName: '', email: '', password: '', role: 'user', teamId: null, emailVerified: true,
+});
+
+function openConfirm({ title, message, confirmLabel, danger, action }) {
+  confirmState.value = {
+    open: true, title, message, confirmLabel, danger, action,
+  };
+}
+
+function closeConfirm() {
+  confirmState.value = { ...confirmState.value, open: false, action: null };
+}
+
+function onConfirm() {
+  const action = confirmState.value.action;
+  closeConfirm();
+  action?.();
+}
+
+function onKeydown(event) {
+  if (event.key === 'Escape' && showModal.value) closeModal();
+}
+
+function closeModal() {
+  showModal.value = false;
+}
 
 async function loadData() {
   loading.value = true;
@@ -196,7 +285,9 @@ function clearFileSelection() {
 
 function openCreate() {
   editingUser.value = null;
-  form.value = { firstName: '', lastName: '', email: '', password: '', role: 'user', teamId: null, emailVerified: true };
+  form.value = {
+    firstName: '', lastName: '', email: '', password: '', role: 'user', teamId: null, emailVerified: true,
+  };
   clearFileSelection();
   showModal.value = true;
 }
@@ -220,7 +311,7 @@ function onFileSelected(event) {
   const file = event.target.files?.[0];
   if (!file) return;
   if (file.size > 2 * 1024 * 1024) {
-    error.value = 'Bild ist zu groß (max. 2 MB).';
+    error.value = t('adminPages.users.imageTooLarge');
     clearFileSelection();
     return;
   }
@@ -245,10 +336,10 @@ async function removeImage() {
   try {
     await api.delete(`/users/${editingUser.value.id}/image`);
     editingUser.value.imageUrl = null;
-    message.value = 'Profilbild entfernt.';
+    message.value = t('adminPages.users.imageRemoved');
     await loadData();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Bild konnte nicht entfernt werden.';
+    error.value = err.response?.data?.error || t('adminPages.users.imageRemoveFailed');
   } finally {
     imageBusy.value = false;
   }
@@ -265,43 +356,127 @@ async function handleSave() {
 
     if (editingUser.value) {
       await api.put(`/users/${editingUser.value.id}`, payload);
-      message.value = 'Benutzer aktualisiert.';
+      message.value = t('adminPages.users.userUpdated');
     } else {
       const { data } = await api.post('/users', payload);
       userId = data.id;
-      message.value = 'Benutzer erstellt.';
+      message.value = t('adminPages.users.userCreated');
     }
 
     if (userId && selectedFile.value) {
       await uploadImage(userId);
-      message.value = editingUser.value ? 'Benutzer und Profilbild aktualisiert.' : 'Benutzer erstellt und Profilbild hochgeladen.';
+      message.value = editingUser.value
+        ? t('adminPages.users.userUpdatedWithImage')
+        : t('adminPages.users.userCreatedWithImage');
     }
 
     showModal.value = false;
     clearFileSelection();
     await loadData();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Fehler beim Speichern.';
+    error.value = err.response?.data?.error || t('adminPages.users.saveFailed');
   } finally {
     saving.value = false;
   }
 }
 
+function requestDelete(user) {
+  openConfirm({
+    title: t('common.delete'),
+    message: t('adminPages.users.confirmDelete', { name: `${user.firstName} ${user.lastName}` }),
+    confirmLabel: t('common.delete'),
+    danger: true,
+    action: () => handleDelete(user),
+  });
+}
+
 async function handleDelete(user) {
-  if (!confirm(`Benutzer "${user.firstName} ${user.lastName}" wirklich löschen?`)) return;
   try {
     await api.delete(`/users/${user.id}`);
-    message.value = 'Benutzer gelöscht.';
+    message.value = t('adminPages.users.userDeleted');
+    selectedIds.value = selectedIds.value.filter((id) => id !== user.id);
     await loadData();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Löschen fehlgeschlagen.';
+    error.value = err.response?.data?.error || t('adminPages.users.deleteFailed');
   }
 }
 
-onMounted(loadData);
+function requestTipReminders() {
+  if (selectedIds.value.length === 0) {
+    error.value = t('adminPages.users.noSelection');
+    return;
+  }
+  openConfirm({
+    title: t('adminPages.users.sendTipReminders'),
+    message: t('adminPages.users.confirmTipReminders', { count: selectedIds.value.length }),
+    action: sendTipReminders,
+  });
+}
+
+function requestStatusUpdates() {
+  if (selectedIds.value.length === 0) {
+    error.value = t('adminPages.users.noSelection');
+    return;
+  }
+  openConfirm({
+    title: t('adminPages.users.sendStatusUpdate'),
+    message: t('adminPages.users.confirmStatusUpdate', { count: selectedIds.value.length }),
+    action: sendStatusUpdates,
+  });
+}
+
+async function sendTipReminders() {
+  emailBusy.value = true;
+  error.value = '';
+  message.value = '';
+  try {
+    const { data } = await api.post('/admin/email/send-user-reminders', { userIds: selectedIds.value });
+    message.value = data.message || t('adminPages.users.emailsSent', { count: data.sent });
+  } catch (err) {
+    error.value = err.response?.data?.error || t('adminPages.users.emailsFailed');
+  } finally {
+    emailBusy.value = false;
+  }
+}
+
+async function sendStatusUpdates() {
+  emailBusy.value = true;
+  error.value = '';
+  message.value = '';
+  try {
+    const { data } = await api.post('/admin/email/send-status-updates', { userIds: selectedIds.value });
+    message.value = data.message || t('adminPages.users.emailsSent', { count: data.sent });
+  } catch (err) {
+    error.value = err.response?.data?.error || t('adminPages.users.statusUpdatesFailed');
+  } finally {
+    emailBusy.value = false;
+  }
+}
+
+onMounted(() => {
+  loadData();
+  globalThis.addEventListener('keydown', onKeydown);
+});
+
+onUnmounted(() => {
+  globalThis.removeEventListener('keydown', onKeydown);
+});
 </script>
 
 <style scoped>
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.selected-count {
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #666);
+  margin-right: 0.25rem;
+}
+
 .checkbox-label {
   display: flex;
   align-items: center;

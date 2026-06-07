@@ -1,6 +1,6 @@
 <template>
-  <div v-if="inline && message" :class="['alert', `alert-${type}`]">
-    {{ message }}
+  <div v-if="inline && (message || $slots.default)" :class="['alert', `alert-${type}`]">
+    <slot>{{ message }}</slot>
   </div>
 </template>
 
@@ -26,3 +26,11 @@ watch(
   { immediate: true },
 );
 </script>
+
+<style scoped>
+.alert :slotted(.btn),
+.alert .btn {
+  display: inline-block;
+  margin-top: 0.75rem;
+}
+</style>

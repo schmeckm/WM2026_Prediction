@@ -29,7 +29,7 @@ onMounted(async () => {
 .insight-card {
   display: flex; align-items: center; gap: 0.75rem;
   padding: 0.875rem 1rem; border-radius: var(--radius-sm);
-  background: white; border: 1px solid var(--color-border);
+  background: var(--color-surface); border: 1px solid var(--color-border);
   font-size: 0.875rem;
 }
 .insight-card.warning { border-left: 3px solid var(--color-warning); }

@@ -10,6 +10,7 @@ const { generateToken, expiresInHours } = require('../services/authTokenService'
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../services/authEmailService');
 const emailService = require('../services/emailService');
 const { blacklistToken } = require('../services/tokenBlacklistService');
+const { validatePassword } = require('../utils/passwordValidation');
 const { authLimiter } = require('../middleware/rateLimiter');
 
 const router = express.Router();
@@ -46,8 +47,9 @@ router.post('/register', sensitiveAuthLimiter, async (req, res) => {
       return sendError(res, req, 400, 'errors.passwordsDoNotMatch');
     }
 
-    if (password.length < 6) {
-      return sendError(res, req, 400, 'errors.passwordMinLength');
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.valid) {
+      return sendError(res, req, 400, passwordCheck.errorKey);
     }
 
     const requireTeam = await getSetting('requireTeamOnRegistration', true);
@@ -279,8 +281,9 @@ router.post('/reset-password', sensitiveAuthLimiter, async (req, res) => {
     if (!token || !password) {
       return sendError(res, req, 400, 'errors.passwordResetFieldsRequired');
     }
-    if (password.length < 6) {
-      return sendError(res, req, 400, 'errors.passwordMinLength');
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.valid) {
+      return sendError(res, req, 400, passwordCheck.errorKey);
     }
 
     const user = await User.findOne({
@@ -317,7 +320,7 @@ router.post('/logout', authMiddleware, async (req, res) => {
     if (token) {
       const decoded = jwt.decode(token);
       const expMs = decoded?.exp ? decoded.exp * 1000 : Date.now() + 7 * 24 * 60 * 60 * 1000;
-      blacklistToken(token, expMs);
+      await blacklistToken(token, expMs);
     }
     res.json({ message: translate(req, 'messages.logoutSuccess') });
   } catch (error) {

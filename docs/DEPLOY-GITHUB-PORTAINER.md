@@ -154,13 +154,84 @@ docker compose -f docker-compose.prod.yml up -d --build
 |--------|--------|
 | `postgres-data` | PostgreSQL-Daten |
 | `backend-uploads` | Profilbilder, Uploads |
-| `backend-backups` | PG-Backups (Scheduler) |
+| `backend-backups` | DB-Dumps, SQLite-Kopien, Uploads-Backups |
+
+### Automatische Backups (Scheduler)
+
+| Job | Zeitplan | Inhalt |
+|-----|----------|--------|
+| Postgres/SQLite | Täglich 03:00 | Vollständiger DB-Dump bzw. SQLite-Dateikopie |
+| Postgres | Sonntag 02:00 | Zusätzlicher wöchentlicher Dump |
+| Uploads | Täglich 03:30 | Kopie des `/app/uploads`-Ordners |
+| Retention | automatisch | PG: 14 Tage, SQLite/Uploads: 7 Tage (konfigurierbar) |
+
+Optional: `BACKUP_OFFSITE_DIR` setzen – Backups werden nach jedem Lauf dorthin kopiert (z. B. gemountetes NAS oder Cloud-Sync-Ordner).
 
 PostgreSQL-Backup manuell:
 
 ```bash
 docker compose -f docker-compose.prod.yml exec backend node database/postgres-backup-cli.js
 ```
+
+### Disaster Recovery – PostgreSQL wiederherstellen
+
+**Voraussetzung:** Stack gestoppt oder Wartungsfenster; aktuelles Backup vorhanden unter `backend/backups/postgres/`.
+
+1. Backup-Datei identifizieren (neueste `.sql`-Datei im Volume `backend-backups`):
+
+```bash
+docker compose -f docker-compose.prod.yml exec backend ls -la /app/backups/postgres/
+```
+
+2. **Leere DB wiederherstellen** (bestehende Daten werden überschrieben):
+
+```bash
+docker compose -f docker-compose.prod.yml stop backend
+
+docker compose -f docker-compose.prod.yml exec postgres psql -U wm2026 -d wm2026 -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+
+docker compose -f docker-compose.prod.yml exec -T postgres psql -U wm2026 -d wm2026 < /pfad/zum/postgres-YYYY-MM-DD.sql
+```
+
+In Portainer: SQL-Datei in den `postgres`-Container kopieren, dann:
+
+```bash
+psql -U wm2026 -d wm2026 -f /tmp/postgres-YYYY-MM-DD.sql
+```
+
+3. **Uploads wiederherstellen** (falls nötig):
+
+```bash
+docker compose -f docker-compose.prod.yml exec backend cp -r /app/backups/uploads/uploads-YYYY-MM-DD/* /app/uploads/
+```
+
+4. Backend neu starten:
+
+```bash
+docker compose -f docker-compose.prod.yml start backend
+```
+
+5. **Verifikation:**
+
+```bash
+curl https://ihre-domain.de/api/health
+docker compose -f docker-compose.prod.yml exec backend node -e "const {User}=require('./models'); User.count().then(c=>console.log('Users:',c))"
+```
+
+### Restore-Test (empfohlen: quartalsweise)
+
+1. Prod-Backup auf Staging-Server kopieren
+2. Staging-Stack mit gleicher `docker-compose.prod.yml` starten
+3. Restore durchführen (siehe oben)
+4. Login, Hitliste und Stichprobe Tipps prüfen
+
+---
+
+## Wichtige Produktions-Regeln
+
+- **`DB_DIALECT=postgres` ist Pflicht** – SQLite startet in `NODE_ENV=production` nicht mehr
+- **Nur eine Backend-Instanz** – Cron-Jobs und WebSockets sind nicht für horizontale Skalierung ausgelegt
+- **`JWT_SECRET` und `DB_PASSWORD`** müssen starke, einzigartige Werte sein
 
 ---
 

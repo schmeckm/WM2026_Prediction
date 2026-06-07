@@ -74,6 +74,15 @@ async function setSetting(key, value) {
     valueJson: jsonValue,
   });
 
+  if (key === 'includeAdminsInLeaderboard') {
+    try {
+      const { invalidateLeaderboardCache } = require('./leaderboardService');
+      invalidateLeaderboardCache();
+    } catch {
+      // ignore during startup
+    }
+  }
+
   return value;
 }
 

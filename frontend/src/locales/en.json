@@ -31,7 +31,8 @@
     "all": "All",
     "none": "None",
     "optional": "optional",
-    "required": "Required"
+    "required": "Required",
+    "retry": "Try again"
   },
   "nav": {
     "navigation": "Navigation",
@@ -414,7 +415,12 @@
     "noTipGiven": "No prediction submitted",
     "stadiumPreview": "Enlarge stadium & show AI info",
     "venueDetails": "Venue",
-    "loadFailed": "Could not load matches."
+    "loadFailed": "Could not load matches.",
+    "viewMode": "View",
+    "viewCards": "Cards",
+    "viewTable": "Table",
+    "lockWarningMissing": "Warning: {count} open matches lock in less than 15 minutes – predictions still missing!",
+    "lockWarningSoon": "Warning: {count} matches start in less than 15 minutes – predictions lock soon."
   },
   "matchTable": {
     "number": "No.",
@@ -458,7 +464,10 @@
     "myTip": "My prediction",
     "game": "Match",
     "round": "Group / Round",
-    "empty": "No predictions submitted yet."
+    "empty": "No predictions submitted yet.",
+    "loadFailed": "Could not load predictions.",
+    "homeScoreLabel": "Home goals {team}",
+    "awayScoreLabel": "Away goals {team}"
   },
   "leaderboard": {
     "title": "Leaderboard",
@@ -501,6 +510,7 @@
     "open": "Open",
     "resolved": "Resolved",
     "empty": "No bonus questions available.",
+    "loadFailed": "Could not load bonus questions.",
     "points": "Points",
     "pointsShort": "pts",
     "lockTime": "Lock time",
@@ -611,7 +621,14 @@
     "title": "Notifications",
     "empty": "No notifications",
     "markAllRead": "Mark all read",
-    "markAllReadLong": "Mark all as read"
+    "markAllReadLong": "Mark all as read",
+    "bellLabel": "Notifications",
+    "toggleDropdown": "Toggle notifications panel"
+  },
+  "display": {
+    "updated": "Updated",
+    "liveMatches": "Matches",
+    "noMatches": "No matches."
   },
   "statistics": {
     "title": "Statistics",
@@ -627,6 +644,9 @@
     "loadFailed": "Could not load statistics."
   },
   "adminPages": {
+    "table": {
+      "noEntries": "No entries found."
+    },
     "dashboard": {
       "title": "Admin dashboard",
       "recalculate": "Recalculate points",
@@ -642,7 +662,62 @@
         "missing": "Missing predictions"
       }
     },
-    "users": { "title": "User management" },
+    "users": {
+      "title": "User management",
+      "newUser": "New user",
+      "editUser": "Edit user",
+      "createUser": "New user",
+      "selectAll": "Select all users",
+      "selectUser": "Select {name}",
+      "selectedCount": "{count} selected",
+      "sendTipReminders": "Send tip reminder",
+      "sendStatusUpdate": "Send status update",
+      "confirmTipReminders": "Send tip reminder to {count} user(s)?",
+      "confirmStatusUpdate": "Send status update to {count} user(s)?",
+      "confirmDelete": "Delete user \"{name}\"?",
+      "sending": "Sending…",
+      "noSelection": "Please select at least one user.",
+      "roleAdmin": "Admin",
+      "roleUser": "User",
+      "verified": "Verified",
+      "pending": "Pending",
+      "passwordOptionalHint": "(leave blank to keep unchanged)",
+      "profileImage": "Profile image",
+      "uploadHint": "JPG, PNG, WebP or GIF, max. 2 MB",
+      "removeImage": "Remove image",
+      "emailVerifiedLabel": "Email verified",
+      "createImageHint": "After creating the user you can upload a profile image.",
+      "imageTooLarge": "Image is too large (max. 2 MB).",
+      "imageRemoved": "Profile image removed.",
+      "imageRemoveFailed": "Could not remove image.",
+      "userUpdated": "User updated.",
+      "userCreated": "User created.",
+      "userUpdatedWithImage": "User and profile image updated.",
+      "userCreatedWithImage": "User created and profile image uploaded.",
+      "saveFailed": "Could not save user.",
+      "userDeleted": "User deleted.",
+      "deleteFailed": "Could not delete user.",
+      "emailsSent": "{count} email(s) sent.",
+      "emailsFailed": "Could not send emails.",
+      "statusUpdatesFailed": "Could not send status updates.",
+      "columns": {
+        "image": "Image",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "emailVerified": "Verified",
+        "role": "Role",
+        "team": "Team"
+      },
+      "form": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "password": "Password",
+        "role": "Role",
+        "team": "Team"
+      }
+    },
     "teams": { "title": "Team management" },
     "matches": { "title": "Match management" },
     "results": { "title": "Result management" },
@@ -699,7 +774,44 @@
     "import": { "title": "CSV import" },
     "sync": { "title": "Synchronization" },
     "bonus": { "title": "Bonus questions" },
-    "email": { "title": "Email reminders" },
+    "email": {
+      "title": "Email reminders",
+      "smtpStatus": "SMTP status",
+      "ready": "Ready",
+      "incomplete": "Incomplete",
+      "configured": "Configured",
+      "mockMode": "No (mock mode)",
+      "host": "Host",
+      "from": "From",
+      "appUrl": "APP_URL",
+      "reminders": "Reminders",
+      "active": "Active",
+      "inactive": "Inactive",
+      "emailVerification": "Email verification",
+      "smtpChecklist": "SMTP checklist",
+      "checklistHint": "Without full SMTP configuration, verification, reset and reminder links are only logged in the backend console.",
+      "reminderLanguageTitle": "Reminder language",
+      "reminderLanguageDesc": "Tip reminders are sent automatically in each user's language ({langs}) – based on their profile language, same as registration and password reset.",
+      "reminderLanguageNote": "No manual template or AI text is required. Each user receives the appropriate text in their language.",
+      "settingsAndTests": "Settings & tests",
+      "settingsSaved": "Settings saved.",
+      "saveFailed": "Could not save settings.",
+      "testEmailSent": "Test email sent.",
+      "smtpNotConfigured": "SMTP not configured – no real email was sent.",
+      "remindersDisabled": "Reminders are disabled.",
+      "noEmailsSent": "No emails sent.",
+      "remindersSent": "{count} reminders sent.",
+      "form": {
+        "enableReminders": "Enable email reminders",
+        "adminSyncErrors": "Notify admin on sync errors",
+        "reminderTime": "Reminder time",
+        "frequency": "Frequency",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "sendTestEmail": "Send test email",
+        "sendRemindersNow": "Send reminders now"
+      }
+    },
     "statistics": { "title": "Statistics" },
     "notifications": { "title": "Send notifications" },
     "auditLog": { "title": "Audit log" },
@@ -719,7 +831,8 @@
     "started": "Started",
     "days": "d",
     "hours": "h",
-    "minutes": "m"
+    "minutes": "m",
+    "seconds": "s"
   },
   "chart": {
     "rank": "Rank",
