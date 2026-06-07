@@ -17,47 +17,38 @@
       <SyncStatusCard :status="status" class="mb-2" />
 
       <div class="card mb-2">
-        <div class="card-header"><h3>football-data.org v4</h3></div>
+        <div class="card-header"><h3>{{ t('adminPages.sync.footballDataTitle') }}</h3></div>
         <div class="card-body provider-form">
-          <p class="hint text-muted">
-            Primärer und einziger Football-API-Provider. Authentifizierung nur im Backend via
-            <code>X-Auth-Token</code>. Wettbewerb: WM 2026 (<code>WC</code>, Fallback-ID <code>2000</code>).
-          </p>
+          <p class="hint text-muted">{{ t('adminPages.sync.footballDataHint') }}</p>
           <dl class="provider-details">
-            <dt>Base URL</dt><dd>https://api.football-data.org/v4</dd>
-            <dt>Spielplan-Endpunkt</dt><dd><code>GET /competitions/WC/matches?season=2026</code></dd>
-            <dt>Fallback</dt><dd><code>GET /competitions/2000/matches?season=2026</code></dd>
+            <dt>{{ t('adminPages.sync.baseUrl') }}</dt><dd>https://api.football-data.org/v4</dd>
+            <dt>{{ t('adminPages.sync.fixturesEndpoint') }}</dt><dd><code>GET /competitions/WC/matches?season=2026</code></dd>
+            <dt>{{ t('adminPages.sync.fallback') }}</dt><dd><code>GET /competitions/2000/matches?season=2026</code></dd>
           </dl>
           <button class="btn btn-accent btn-sm" :disabled="syncing || !status.apiConfigured" @click="testConnection">
-            Verbindung testen
+            {{ t('adminPages.sync.testConnection') }}
           </button>
         </div>
       </div>
 
       <div class="card mb-2">
-        <div class="card-header"><h3>TheSportsDB (Stadion &amp; Spielerbilder)</h3></div>
+        <div class="card-header"><h3>{{ t('adminPages.sync.theSportsDbTitle') }}</h3></div>
         <div class="card-body provider-form">
-          <p class="hint text-muted">
-            Kostenloser Key <code>123</code> — ergänzt fehlende Stadien und Länder/Ort für WM-Spiele
-            (Liga <code>4429</code>, Saison <code>2026</code>). Spielerbilder nutzen dieselbe API.
-          </p>
-          <p class="hint text-muted">
-            Spielerbilder werden aus TheSportsDB, Wikidata und Wikipedia geladen und lokal zwischengespeichert.
-            Der erste Lauf läuft im Hintergrund (~20 Min. für alle Kader, Rate-Limit der APIs) — Fortschritt in den Sync-Logs.
-          </p>
+          <p class="hint text-muted">{{ t('adminPages.sync.theSportsDbHint') }}</p>
+          <p class="hint text-muted">{{ t('adminPages.sync.playerImagesHint') }}</p>
           <div class="btn-group">
             <button class="btn btn-accent btn-sm" :disabled="syncing" @click="testTheSportsDb">
-              TheSportsDB testen
+              {{ t('adminPages.sync.testTheSportsDb') }}
             </button>
             <button class="btn btn-secondary btn-sm" :disabled="syncing" @click="enrichVenues">
-              {{ syncing ? 'Sync...' : 'Stadien anreichern' }}
+              {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.enrichVenues') }}
             </button>
             <button
               class="btn btn-primary btn-sm"
               :disabled="syncingPlayerImages || !status.apiConfigured"
               @click="syncPlayerImages"
             >
-              {{ syncingPlayerImages ? 'Lade Bilder...' : 'Spielerbilder laden (WM-Kader)' }}
+              {{ syncingPlayerImages ? t('adminPages.sync.loadingImages') : t('adminPages.sync.syncPlayerImages') }}
             </button>
           </div>
         </div>
@@ -65,19 +56,21 @@
 
       <div class="btn-group mb-2">
         <button class="btn btn-primary" :disabled="syncing || !status.apiConfigured" @click="syncFixtures">
-          {{ syncing ? 'Sync...' : 'Spielplan synchronisieren' }}
+          {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.syncFixtures') }}
         </button>
         <button class="btn btn-accent" :disabled="syncing || !status.apiConfigured" @click="syncResults">
-          {{ syncing ? 'Sync...' : 'Ergebnisse synchronisieren' }}
+          {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.syncResults') }}
         </button>
         <button class="btn btn-accent" :disabled="syncing || !status.apiConfigured" @click="syncLive">
-          {{ syncing ? 'Sync...' : 'Live-Scores synchronisieren' }}
+          {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.syncLive') }}
         </button>
-        <button class="btn btn-secondary" :disabled="syncing" @click="recalculate">Punkte neu berechnen</button>
+        <button class="btn btn-secondary" :disabled="syncing" @click="recalculate">
+          {{ t('adminPages.sync.recalculate') }}
+        </button>
       </div>
 
       <div v-if="status.recentErrors?.length && status.apiConfigured" class="card mb-2 error-card">
-        <div class="card-header"><h3>Letzte Sync-Fehler</h3></div>
+        <div class="card-header"><h3>{{ t('adminPages.sync.recentErrors') }}</h3></div>
         <div class="card-body">
           <ul class="error-list">
             <li v-for="log in status.recentErrors" :key="log.id">
@@ -89,7 +82,7 @@
       </div>
 
       <div class="card">
-        <div class="card-header"><h3>Sync-Logs</h3></div>
+        <div class="card-header"><h3>{{ t('adminPages.sync.syncLogs') }}</h3></div>
         <div class="card-body"><SyncLogTable :logs="logs" /></div>
       </div>
     </template>
@@ -106,8 +99,7 @@ import SyncStatusCard from '../../components/SyncStatusCard.vue';
 import SyncLogTable from '../../components/SyncLogTable.vue';
 import AdminManualModeBanner from '../../components/AdminManualModeBanner.vue';
 
-
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const loading = ref(true);
 const syncing = ref(false);
@@ -120,7 +112,7 @@ const error = ref('');
 
 function formatDate(d) {
   if (!d) return '–';
-  return new Date(d).toLocaleString('de-DE');
+  return new Date(d).toLocaleString(locale.value);
 }
 
 async function load() {
@@ -143,10 +135,10 @@ async function testConnection() {
   message.value = '';
   try {
     const { data } = await api.post('/admin/sync/test-connection');
-    message.value = data.message || 'Verbindung erfolgreich.';
+    message.value = data.message || t('adminPages.sync.connectionSuccess');
     messageType.value = 'success';
   } catch (e) {
-    error.value = e.response?.data?.error || 'Verbindungstest fehlgeschlagen.';
+    error.value = e.response?.data?.error || t('adminPages.sync.connectionFailed');
   } finally {
     syncing.value = false;
   }
@@ -155,7 +147,8 @@ async function testConnection() {
 function formatVenueEnrichment(data) {
   const venue = data?.venueEnrichment;
   if (!venue || venue.skipped) return '';
-  return ` ${venue.message || `${venue.enrichedCount || 0} Stadien angereichert.`}`;
+  if (venue.message) return ` ${venue.message}`;
+  return ` ${t('adminPages.sync.venuesEnrichedCount', { count: venue.enrichedCount || 0 })}`;
 }
 
 async function syncFixtures() {
@@ -164,11 +157,11 @@ async function syncFixtures() {
   message.value = '';
   try {
     const { data } = await api.post('/admin/sync/fixtures');
-    message.value = `${data.message || 'Spielplan synchronisiert.'}${formatVenueEnrichment(data)}`;
+    message.value = `${data.message || t('adminPages.sync.fixturesSynced')}${formatVenueEnrichment(data)}`;
     messageType.value = data.errorCount > 0 ? 'warning' : 'success';
     await load();
   } catch (e) {
-    error.value = e.response?.data?.error || 'Sync fehlgeschlagen.';
+    error.value = e.response?.data?.error || t('adminPages.sync.syncFailed');
   } finally {
     syncing.value = false;
   }
@@ -180,10 +173,10 @@ async function testTheSportsDb() {
   message.value = '';
   try {
     const { data } = await api.post('/admin/sync/test-thesportsdb');
-    message.value = data.message || 'TheSportsDB verbunden.';
+    message.value = data.message || t('adminPages.sync.theSportsDbConnected');
     messageType.value = 'success';
   } catch (e) {
-    error.value = e.response?.data?.error || 'TheSportsDB-Test fehlgeschlagen.';
+    error.value = e.response?.data?.error || t('adminPages.sync.theSportsDbTestFailed');
   } finally {
     syncing.value = false;
   }
@@ -195,11 +188,11 @@ async function enrichVenues() {
   message.value = '';
   try {
     const { data } = await api.post('/admin/sync/enrich-venues');
-    message.value = data.message || 'Stadien angereichert.';
+    message.value = data.message || t('adminPages.sync.venuesEnriched');
     messageType.value = data.skipped ? 'warning' : 'success';
     await load();
   } catch (e) {
-    error.value = e.response?.data?.error || 'Stadion-Anreicherung fehlgeschlagen.';
+    error.value = e.response?.data?.error || t('adminPages.sync.venueEnrichFailed');
   } finally {
     syncing.value = false;
   }
@@ -218,17 +211,21 @@ function playerImageProgressMessage(log) {
   const total = details.totalPlayers;
   const processed = details.processedCount;
   const progress = processed && total ? ` (${processed}/${total})` : '';
-  return `Lade Spielerbilder… ${resolved} mit Bild, ${log.skippedCount || 0} übersprungen${progress}`;
+  return t('adminPages.sync.playerImagesProgress', {
+    resolved,
+    skipped: log.skippedCount || 0,
+    progress,
+  });
 }
 
 async function pollPlayerImageSync(logId) {
   const maxPolls = 500;
   for (let i = 0; i < maxPolls; i += 1) {
     await new Promise((resolve) => { setTimeout(resolve, 3000); });
-    const { data: logs } = await api.get('/admin/sync/logs', {
+    const { data: pollLogs } = await api.get('/admin/sync/logs', {
       params: { syncType: 'player_images', limit: 5 },
     });
-    const log = logs.find((entry) => entry.id === logId) || logs[0];
+    const log = pollLogs.find((entry) => entry.id === logId) || pollLogs[0];
     if (!log) continue;
 
     if (log.status === 'running') {
@@ -239,16 +236,19 @@ async function pollPlayerImageSync(logId) {
     }
 
     if (log.status === 'success') {
-      message.value = `Spielerbilder fertig: ${log.createdCount || 0} neu, ${log.updatedCount || 0} aktualisiert.`;
+      message.value = t('adminPages.sync.playerImagesFinished', {
+        created: log.createdCount || 0,
+        updated: log.updatedCount || 0,
+      });
       messageType.value = 'success';
     } else {
-      message.value = log.errorMessage || 'Spielerbild-Sync mit Fehlern beendet.';
+      message.value = log.errorMessage || t('adminPages.sync.playerImagesErrors');
       messageType.value = 'warning';
     }
     await load();
     return;
   }
-  error.value = 'Spielerbild-Sync dauert länger als erwartet — bitte Sync-Logs prüfen.';
+  error.value = t('adminPages.sync.playerImagesTimeout');
 }
 
 async function syncPlayerImages() {
@@ -257,7 +257,7 @@ async function syncPlayerImages() {
   message.value = '';
   try {
     const { data } = await api.post('/admin/sync/player-images', {}, { timeout: 30000 });
-    message.value = data.message || 'Spielerbild-Sync gestartet.';
+    message.value = data.message || t('adminPages.sync.playerImagesStarted');
     messageType.value = 'success';
     if (data.logId && (data.started || data.running)) {
       await pollPlayerImageSync(data.logId);
@@ -265,7 +265,7 @@ async function syncPlayerImages() {
       await load();
     }
   } catch (e) {
-    error.value = e.response?.data?.error || 'Spielerbild-Sync fehlgeschlagen.';
+    error.value = e.response?.data?.error || t('adminPages.sync.playerImagesFailed');
   } finally {
     syncingPlayerImages.value = false;
   }
@@ -277,11 +277,11 @@ async function syncResults() {
   message.value = '';
   try {
     const { data } = await api.post('/admin/sync/results');
-    message.value = data.message || 'Ergebnisse synchronisiert.';
+    message.value = data.message || t('adminPages.sync.resultsSynced');
     messageType.value = data.errorCount > 0 ? 'warning' : 'success';
     await load();
   } catch (e) {
-    error.value = e.response?.data?.error || 'Sync fehlgeschlagen.';
+    error.value = e.response?.data?.error || t('adminPages.sync.syncFailed');
   } finally {
     syncing.value = false;
   }
@@ -293,10 +293,10 @@ async function syncLive() {
   message.value = '';
   try {
     const { data } = await api.post('/admin/sync/live-scores');
-    message.value = data.message || 'Live-Scores synchronisiert.';
+    message.value = data.message || t('adminPages.sync.liveSynced');
     await load();
   } catch (e) {
-    error.value = e.response?.data?.error || 'Live-Sync fehlgeschlagen.';
+    error.value = e.response?.data?.error || t('adminPages.sync.liveSyncFailed');
   } finally {
     syncing.value = false;
   }
@@ -309,7 +309,7 @@ async function recalculate() {
     message.value = data.message;
     await load();
   } catch (e) {
-    error.value = e.response?.data?.error || 'Fehler.';
+    error.value = e.response?.data?.error || t('adminPages.sync.genericError');
   } finally {
     syncing.value = false;
   }

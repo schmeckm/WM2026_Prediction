@@ -9,9 +9,9 @@
           :disabled="seeding"
           @click="handleSeedDefaults"
         >
-          {{ seeding ? 'Lade Teams...' : 'Standard-Teams laden' }}
+          {{ seeding ? t('adminPages.teams.seedingDefaults') : t('adminPages.teams.seedDefaults') }}
         </button>
-        <button type="button" class="btn btn-primary btn-sm" @click="openCreate">+ Neues Team</button>
+        <button type="button" class="btn btn-primary btn-sm" @click="openCreate">+ {{ t('adminPages.teams.newTeam') }}</button>
       </div>
     </div>
 
@@ -22,7 +22,7 @@
 
     <div v-else class="card">
       <div class="card-body">
-        <AdminTable :items="teams" :columns="columns" @edit="openEdit" @delete="handleDelete">
+        <AdminTable :items="teams" :columns="columns" @edit="openEdit" @delete="requestDelete">
           <template #cell-imageUrl="{ item }">
             <TeamAvatar :image-url="item.imageUrl" :name="item.name" size="sm" />
           </template>
@@ -30,76 +30,99 @@
       </div>
     </div>
 
-    <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-      <div class="modal">
-        <div class="modal-header">
-          <h3>{{ editingTeam ? 'Team bearbeiten' : 'Neues Team' }}</h3>
-          <button class="modal-close" @click="showModal = false">&times;</button>
-        </div>
-        <form @submit.prevent="handleSave">
-          <div class="modal-body">
-            <div class="form-group">
-              <label>Name</label>
-              <input v-model="form.name" class="form-control" required />
-            </div>
-            <div class="form-group">
-              <label>Beschreibung</label>
-              <input v-model="form.description" class="form-control" />
-            </div>
-            <div v-if="editingTeam" class="form-group">
-              <label>Team-Bild</label>
-              <div class="team-image-editor">
-                <TeamAvatar
-                  :image-url="previewUrl || editingTeam.imageUrl"
-                  :name="form.name"
-                  size="lg"
-                />
-                <div class="team-image-actions">
-                  <input
-                    ref="fileInput"
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    class="form-control"
-                    @change="onFileSelected"
+    <Teleport to="body">
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+        <div
+          class="modal"
+          role="dialog"
+          aria-modal="true"
+          :aria-label="editingTeam ? t('adminPages.teams.editTeam') : t('adminPages.teams.createTeam')"
+        >
+          <div class="modal-header">
+            <h3>{{ editingTeam ? t('adminPages.teams.editTeam') : t('adminPages.teams.createTeam') }}</h3>
+            <button type="button" class="modal-close" :aria-label="t('common.close')" @click="closeModal">&times;</button>
+          </div>
+          <form @submit.prevent="handleSave">
+            <div class="modal-body">
+              <div class="form-group">
+                <label>{{ t('adminPages.teams.form.name') }}</label>
+                <input v-model="form.name" class="form-control" required />
+              </div>
+              <div class="form-group">
+                <label>{{ t('adminPages.teams.form.description') }}</label>
+                <input v-model="form.description" class="form-control" />
+              </div>
+              <div v-if="editingTeam" class="form-group">
+                <label>{{ t('adminPages.teams.teamImage') }}</label>
+                <div class="team-image-editor">
+                  <TeamAvatar
+                    :image-url="previewUrl || editingTeam.imageUrl"
+                    :name="form.name"
+                    size="lg"
                   />
-                  <p class="text-muted team-image-hint">JPG, PNG, WebP oder GIF, max. 2 MB</p>
-                  <button
-                    v-if="editingTeam.imageUrl && !selectedFile"
-                    type="button"
-                    class="btn btn-secondary btn-sm"
-                    :disabled="imageBusy"
-                    @click="removeImage"
-                  >
-                    Bild entfernen
-                  </button>
+                  <div class="team-image-actions">
+                    <input
+                      ref="fileInput"
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      class="form-control"
+                      @change="onFileSelected"
+                    />
+                    <p class="text-muted team-image-hint">{{ t('adminPages.teams.uploadHint') }}</p>
+                    <button
+                      v-if="editingTeam.imageUrl && !selectedFile"
+                      type="button"
+                      class="btn btn-secondary btn-sm"
+                      :disabled="imageBusy"
+                      @click="removeImage"
+                    >
+                      {{ t('adminPages.teams.removeImage') }}
+                    </button>
+                  </div>
                 </div>
               </div>
+              <p v-else class="text-muted team-image-hint">
+                {{ t('adminPages.teams.createImageHint') }}
+              </p>
             </div>
-            <p v-else class="text-muted team-image-hint">
-              Nach dem Erstellen kannst du ein Team-Bild hochladen.
-            </p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="showModal = false">Abbrechen</button>
-            <button type="submit" class="btn btn-primary" :disabled="saving">{{ saving ? 'Speichern...' : 'Speichern' }}</button>
-          </div>
-        </form>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="closeModal">{{ t('common.cancel') }}</button>
+              <button type="submit" class="btn btn-primary" :disabled="saving">
+                {{ saving ? t('common.saving') : t('common.save') }}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </Teleport>
+
+    <ConfirmModal
+      :open="confirmState.open"
+      :title="confirmState.title"
+      :message="confirmState.message"
+      :confirm-label="confirmState.confirmLabel"
+      :danger="confirmState.danger"
+      @confirm="onConfirm"
+      @cancel="closeConfirm"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import {
+  ref, computed, onMounted, onUnmounted,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
 import AdminTable from '../../components/AdminTable.vue';
 import AlertMessage from '../../components/AlertMessage.vue';
 import TeamAvatar from '../../components/TeamAvatar.vue';
-
+import ConfirmModal from '../../components/ConfirmModal.vue';
+import { useConfirmModal } from '../../composables/useConfirmModal';
 
 const { t } = useI18n();
+const { confirmState, openConfirm, closeConfirm, onConfirm } = useConfirmModal();
 
 const teams = ref([]);
 const loading = ref(true);
@@ -114,13 +137,21 @@ const selectedFile = ref(null);
 const previewUrl = ref('');
 const fileInput = ref(null);
 
-const columns = [
-  { key: 'imageUrl', label: 'Bild' },
-  { key: 'name', label: 'Name' },
-  { key: 'description', label: 'Beschreibung' },
-];
+const columns = computed(() => [
+  { key: 'imageUrl', label: t('adminPages.teams.columns.image') },
+  { key: 'name', label: t('adminPages.teams.columns.name') },
+  { key: 'description', label: t('adminPages.teams.columns.description') },
+]);
 
 const form = ref({ name: '', description: '' });
+
+function closeModal() {
+  showModal.value = false;
+}
+
+function onKeydown(event) {
+  if (event.key === 'Escape' && showModal.value) closeModal();
+}
 
 function clearFileSelection() {
   selectedFile.value = null;
@@ -136,7 +167,7 @@ async function loadTeams() {
     const { data } = await api.get('/teams');
     teams.value = data;
   } catch (err) {
-    error.value = err.response?.data?.error || 'Teams konnten nicht geladen werden.';
+    error.value = err.response?.data?.error || t('adminPages.teams.loadFailed');
     teams.value = [];
   } finally {
     loading.value = false;
@@ -151,10 +182,10 @@ async function handleSeedDefaults() {
     teams.value = data.teams || [];
     const created = data.created?.length || 0;
     message.value = created
-      ? `${data.message || 'Standard-Teams geladen.'} (${created} neu)`
-      : (data.message || 'Alle Standard-Teams sind bereits vorhanden.');
+      ? `${data.message || t('adminPages.teams.seedSuccess')} (${t('adminPages.teams.seedCreated', { count: created })})`
+      : (data.message || t('adminPages.teams.seedAllPresent'));
   } catch (err) {
-    error.value = err.response?.data?.error || 'Standard-Teams konnten nicht geladen werden.';
+    error.value = err.response?.data?.error || t('adminPages.teams.seedFailed');
   } finally {
     seeding.value = false;
   }
@@ -178,7 +209,7 @@ function onFileSelected(event) {
   const file = event.target.files?.[0];
   if (!file) return;
   if (file.size > 2 * 1024 * 1024) {
-    error.value = 'Bild ist zu groß (max. 2 MB).';
+    error.value = t('adminPages.teams.imageTooLarge');
     clearFileSelection();
     return;
   }
@@ -201,10 +232,10 @@ async function removeImage() {
   try {
     await api.delete(`/teams/${editingTeam.value.id}/image`);
     editingTeam.value.imageUrl = null;
-    message.value = 'Team-Bild entfernt.';
+    message.value = t('adminPages.teams.imageRemoved');
     await loadTeams();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Bild konnte nicht entfernt werden.';
+    error.value = err.response?.data?.error || t('adminPages.teams.imageRemoveFailed');
   } finally {
     imageBusy.value = false;
   }
@@ -228,31 +259,47 @@ async function handleSave() {
     }
 
     message.value = selectedFile.value
-      ? (editingTeam.value ? 'Team und Bild aktualisiert.' : 'Team erstellt und Bild hochgeladen.')
-      : (editingTeam.value ? 'Team aktualisiert.' : 'Team erstellt.');
+      ? (editingTeam.value ? t('adminPages.teams.teamUpdatedWithImage') : t('adminPages.teams.teamCreatedWithImage'))
+      : (editingTeam.value ? t('adminPages.teams.teamUpdated') : t('adminPages.teams.teamCreated'));
 
     showModal.value = false;
     clearFileSelection();
     await loadTeams();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Fehler beim Speichern.';
+    error.value = err.response?.data?.error || t('adminPages.teams.saveFailed');
   } finally {
     saving.value = false;
   }
 }
 
+function requestDelete(team) {
+  openConfirm({
+    title: t('common.delete'),
+    message: t('adminPages.teams.confirmDelete', { name: team.name }),
+    confirmLabel: t('common.delete'),
+    danger: true,
+    action: () => handleDelete(team),
+  });
+}
+
 async function handleDelete(team) {
-  if (!confirm(`Team "${team.name}" wirklich löschen?`)) return;
   try {
     await api.delete(`/teams/${team.id}`);
-    message.value = 'Team gelöscht.';
+    message.value = t('adminPages.teams.teamDeleted');
     await loadTeams();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Löschen fehlgeschlagen.';
+    error.value = err.response?.data?.error || t('adminPages.teams.deleteFailed');
   }
 }
 
-onMounted(loadTeams);
+onMounted(() => {
+  loadTeams();
+  globalThis.addEventListener('keydown', onKeydown);
+});
+
+onUnmounted(() => {
+  globalThis.removeEventListener('keydown', onKeydown);
+});
 </script>
 
 <style scoped>

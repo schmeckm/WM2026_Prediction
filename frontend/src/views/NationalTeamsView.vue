@@ -11,6 +11,7 @@
         :key="tab.id"
         type="button"
         :class="['filter-btn', { active: activeTab === tab.id }]"
+        :aria-pressed="activeTab === tab.id"
         @click="switchTab(tab.id)"
       >
         {{ tab.label }}
@@ -223,6 +224,7 @@
           :key="f.value"
           type="button"
           :class="['filter-btn', { active: liveFilter === f.value }]"
+          :aria-pressed="liveFilter === f.value"
           @click="setLiveFilter(f.value)"
         >
           {{ f.label }}
@@ -733,7 +735,7 @@ onUnmounted(() => {
   padding: 0.625rem 0.75rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: white;
+  background: var(--color-surface);
   cursor: pointer;
   text-align: left;
 }

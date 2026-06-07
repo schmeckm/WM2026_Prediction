@@ -33,10 +33,47 @@ function deleteUserImageFiles(userId) {
   }
 }
 
+const MIME_TO_EXT = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+};
+
+function normalizeGooglePictureUrl(url) {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.set('sz', '256');
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
+async function importProfileImageFromUrl(userId, imageUrl) {
+  const sourceUrl = normalizeGooglePictureUrl(imageUrl);
+  if (!sourceUrl) return null;
+
+  const response = await fetch(sourceUrl);
+  if (!response.ok) return null;
+
+  const contentType = (response.headers.get('content-type') || '').split(';')[0].trim();
+  const ext = MIME_TO_EXT[contentType] || '.jpg';
+  const buffer = Buffer.from(await response.arrayBuffer());
+  if (buffer.length === 0 || buffer.length > 2 * 1024 * 1024) return null;
+
+  deleteUserImageFiles(userId);
+  const filePath = path.join(getUsersUploadDir(), `user-${userId}${ext}`);
+  fs.writeFileSync(filePath, buffer);
+  return buildImageUrl(userId, ext);
+}
+
 module.exports = {
   ALLOWED_EXTENSIONS,
   getUsersUploadDir,
   resolveExtension,
   buildImageUrl,
   deleteUserImageFiles,
+  importProfileImageFromUrl,
 };

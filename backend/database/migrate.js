@@ -17,6 +17,8 @@ const USER_COLUMNS = [
   { name: 'imageUrl', spec: { type: DataTypes.STRING, allowNull: true } },
   { name: 'avatarColor', spec: { type: DataTypes.STRING(16), allowNull: false, defaultValue: 'default' } },
   { name: 'avatarEmoji', spec: { type: DataTypes.STRING(16), allowNull: true } },
+  { name: 'authProvider', spec: { type: DataTypes.STRING(16), allowNull: false, defaultValue: 'local' } },
+  { name: 'providerId', spec: { type: DataTypes.STRING, allowNull: true } },
 ];
 
 async function runMigrations(sequelize) {
@@ -103,6 +105,10 @@ async function ensureIndexes(queryInterface) {
   await ensureIndexSafe(queryInterface, 'LeaderboardSnapshots', ['userId', 'snapshotTime']);
   await ensureIndexSafe(queryInterface, 'SyncLogs', ['startedAt']);
   await ensureIndexSafe(queryInterface, 'SyncLogs', ['syncType', 'status', 'startedAt']);
+  await ensureIndexSafe(queryInterface, 'Users', ['authProvider', 'providerId'], {
+    unique: true,
+    name: 'users_auth_provider_id_unique',
+  });
 }
 
 module.exports = { runMigrations, ensureColumn };

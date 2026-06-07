@@ -278,14 +278,17 @@ router.delete('/me', async (req, res) => {
       return sendError(res, req, 404, 'errors.userNotFound');
     }
 
-    const { password } = req.body || {};
-    if (!password) {
-      return sendError(res, req, 400, 'errors.passwordRequired');
-    }
+    const isLocalAccount = !user.authProvider || user.authProvider === 'local';
+    if (isLocalAccount) {
+      const { password } = req.body || {};
+      if (!password) {
+        return sendError(res, req, 400, 'errors.passwordRequired');
+      }
 
-    const passwordValid = await user.comparePassword(password);
-    if (!passwordValid) {
-      return sendError(res, req, 400, 'errors.invalidPassword');
+      const passwordValid = await user.comparePassword(password);
+      if (!passwordValid) {
+        return sendError(res, req, 400, 'errors.invalidPassword');
+      }
     }
 
     await deleteUserAccount(user, { req, auditAction: 'USER_SELF_DELETE' });

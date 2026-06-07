@@ -5,10 +5,21 @@
     <div class="card" style="max-width: 600px;">
       <div class="card-body">
         <form @submit.prevent="send">
-          <div class="form-group"><label>Titel</label><input v-model="form.title" class="form-control" required /></div>
-          <div class="form-group"><label>Nachricht</label><textarea v-model="form.message" class="form-control" rows="3" required /></div>
-          <div class="form-group"><label>Link (optional)</label><input v-model="form.link" class="form-control" placeholder="/matches" /></div>
-          <button type="submit" class="btn btn-primary" :disabled="loading">{{ loading ? 'Senden...' : 'An alle Benutzer senden' }}</button>
+          <div class="form-group">
+            <label>{{ t('adminPages.notifications.formTitle') }}</label>
+            <input v-model="form.title" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label>{{ t('adminPages.notifications.formMessage') }}</label>
+            <textarea v-model="form.message" class="form-control" rows="3" required />
+          </div>
+          <div class="form-group">
+            <label>{{ t('adminPages.notifications.formLink') }}</label>
+            <input v-model="form.link" class="form-control" placeholder="/matches" />
+          </div>
+          <button type="submit" class="btn btn-primary" :disabled="loading">
+            {{ loading ? t('adminPages.notifications.sending') : t('adminPages.notifications.send') }}
+          </button>
         </form>
       </div>
     </div>
@@ -21,7 +32,6 @@ import { useI18n } from 'vue-i18n';
 import api from '../../services/api';
 import AlertMessage from '../../components/AlertMessage.vue';
 
-
 const { t } = useI18n();
 
 const form = ref({ title: '', message: '', link: '' });
@@ -32,7 +42,7 @@ async function send() {
   loading.value = true;
   try {
     await api.post('/admin/notifications/send', form.value);
-    message.value = 'Benachrichtigung gesendet.';
+    message.value = t('adminPages.notifications.sent');
     form.value = { title: '', message: '', link: '' };
   } finally {
     loading.value = false;

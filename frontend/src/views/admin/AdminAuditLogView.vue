@@ -2,8 +2,18 @@
   <div>
     <div class="page-header"><h1>{{ t('adminPages.auditLog.title') }}</h1></div>
     <div class="filter-bar mb-2">
-      <input v-model="filters.action" placeholder="Aktion filtern..." class="form-control" style="max-width: 200px;" @input="load" />
-      <input v-model="filters.entityType" placeholder="Entität filtern..." class="form-control" style="max-width: 200px;" @input="load" />
+      <input
+        v-model="filters.action"
+        :placeholder="t('adminPages.auditLog.filterAction')"
+        class="form-control filter-input"
+        @input="load"
+      />
+      <input
+        v-model="filters.entityType"
+        :placeholder="t('adminPages.auditLog.filterEntity')"
+        class="form-control filter-input"
+        @input="load"
+      />
     </div>
     <LoadingSpinner v-if="loading" />
     <div v-else class="card"><div class="card-body"><AuditLogTable :logs="logs" /></div></div>
@@ -16,7 +26,6 @@ import { useI18n } from 'vue-i18n';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
 import AuditLogTable from '../../components/AuditLogTable.vue';
-
 
 const { t } = useI18n();
 
@@ -39,4 +48,5 @@ onMounted(load);
 
 <style scoped>
 .mb-2 { margin-bottom: 1rem; }
+.filter-input { max-width: 200px; }
 </style>

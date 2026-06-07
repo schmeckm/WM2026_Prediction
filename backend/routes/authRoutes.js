@@ -12,6 +12,18 @@ const emailService = require('../services/emailService');
 const { blacklistToken } = require('../services/tokenBlacklistService');
 const { validatePassword } = require('../utils/passwordValidation');
 const { authLimiter } = require('../middleware/rateLimiter');
+const {
+  isGoogleEnabled,
+  startGoogleAuth,
+  handleGoogleCallback,
+  findOrCreateSsoUser,
+  completeSsoRegistration,
+  createExchangeCode,
+  consumeExchangeCode,
+  peekExchangeCode,
+  isEmailDomainAllowed,
+  getAppUrl,
+} = require('../services/oauthService');
 
 const router = express.Router();
 const sensitiveAuthLimiter = process.env.NODE_ENV === 'test'
@@ -29,6 +41,172 @@ function issueToken(user) {
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' },
   );
 }
+
+function redirectWithSsoError(res, errorKey) {
+  const appUrl = getAppUrl();
+  res.redirect(`${appUrl}/login?ssoError=${encodeURIComponent(errorKey)}`);
+}
+
+function mapOAuthCallbackError(error) {
+  const message = String(error?.message || error?.error || error?.oauthError || '').toLowerCase();
+  if (/invalid_client|client authentication failed|unauthorized_client/.test(message)) {
+    return 'sso_invalid_client';
+  }
+  if (/redirect_uri_mismatch/.test(message)) {
+    return 'sso_redirect_mismatch';
+  }
+  if (/iss missing|invalid_grant|invalid_client|client authentication failed/.test(message)) {
+    return 'sso_invalid_client';
+  }
+  if (/invalid_state|state mismatch/.test(message)) {
+    return 'sso_failed';
+  }
+  return 'sso_failed';
+}
+
+router.get('/providers', (_req, res) => {
+  res.json({ google: isGoogleEnabled() });
+});
+
+router.get('/google', async (req, res) => {
+  try {
+    if (!isGoogleEnabled()) {
+      return sendError(res, req, 503, 'errors.ssoNotConfigured');
+    }
+    const locale = normalizeLocale(req.query.language || req.locale);
+    const url = await startGoogleAuth(locale);
+    res.redirect(url);
+  } catch (error) {
+    console.error('Google OAuth start error:', error);
+    sendError(res, req, 500, 'errors.ssoFailed');
+  }
+});
+
+router.get('/google/callback', async (req, res) => {
+  try {
+    const { code, state, error } = req.query;
+    if (error) {
+      return redirectWithSsoError(res, 'sso_cancelled');
+    }
+    if (!code || !state) {
+      return redirectWithSsoError(res, 'sso_failed');
+    }
+
+    const profile = await handleGoogleCallback(code, state);
+
+    if (!profile.email || !profile.emailVerified) {
+      return redirectWithSsoError(res, 'sso_email_not_verified');
+    }
+    if (!isEmailDomainAllowed(profile.email)) {
+      return redirectWithSsoError(res, 'sso_domain_not_allowed');
+    }
+
+    const result = await findOrCreateSsoUser(profile, issueToken);
+
+    if (result.error) {
+      return redirectWithSsoError(res, result.error);
+    }
+
+    const exchangeCode = createExchangeCode(result);
+    if (result.requiresTeam) {
+      return res.redirect(`${getAppUrl()}/auth/complete-registration?code=${exchangeCode}`);
+    }
+    return res.redirect(`${getAppUrl()}/auth/callback?code=${exchangeCode}`);
+  } catch (error) {
+    console.error('Google OAuth callback error:', error);
+    redirectWithSsoError(res, mapOAuthCallbackError(error));
+  }
+});
+
+router.post('/exchange', sensitiveAuthLimiter, async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code) {
+      return sendError(res, req, 400, 'errors.ssoInvalidCode');
+    }
+
+    const data = consumeExchangeCode(code);
+    if (!data) {
+      return sendError(res, req, 400, 'errors.ssoInvalidCode');
+    }
+
+    if (data.error) {
+      const errorMap = {
+        local_account_exists: 'errors.ssoLocalAccountExists',
+        other_provider: 'errors.ssoOtherProvider',
+        registration_disabled: 'errors.registrationDisabled',
+      };
+      return sendError(res, req, 403, errorMap[data.error] || 'errors.ssoFailed');
+    }
+
+    if (data.requiresTeam) {
+      return sendError(res, req, 400, 'errors.ssoTeamRequired');
+    }
+
+    res.json({
+      message: translate(req, 'messages.loginSuccess'),
+      token: data.token,
+      user: data.user,
+    });
+  } catch (error) {
+    console.error('SSO exchange error:', error);
+    sendError(res, req, 500, 'errors.ssoFailed');
+  }
+});
+
+router.get('/sso-pending', async (req, res) => {
+  try {
+    const { code } = req.query;
+    if (!code) {
+      return sendError(res, req, 400, 'errors.ssoInvalidCode');
+    }
+
+    const data = peekExchangeCode(code);
+    if (!data?.requiresTeam || !data.pending) {
+      return sendError(res, req, 400, 'errors.ssoInvalidCode');
+    }
+
+    res.json({
+      email: data.pending.email,
+      firstName: data.pending.firstName,
+      lastName: data.pending.lastName,
+    });
+  } catch (error) {
+    sendError(res, req, 500, 'errors.ssoFailed');
+  }
+});
+
+router.post('/complete-sso', sensitiveAuthLimiter, async (req, res) => {
+  try {
+    const { code, teamId } = req.body;
+    if (!code) {
+      return sendError(res, req, 400, 'errors.ssoInvalidCode');
+    }
+
+    const result = await completeSsoRegistration(code, teamId, issueToken);
+
+    const errorMap = {
+      invalid_code: 'errors.ssoInvalidCode',
+      team_required: 'errors.teamRequiredOnRegistration',
+      team_not_found: 'errors.teamNotExists',
+      local_account_exists: 'errors.ssoLocalAccountExists',
+      registration_disabled: 'errors.registrationDisabled',
+    };
+
+    if (result.error) {
+      return sendError(res, req, 400, errorMap[result.error] || 'errors.ssoFailed');
+    }
+
+    res.json({
+      message: translate(req, 'messages.loginSuccess'),
+      token: result.token,
+      user: result.user,
+    });
+  } catch (error) {
+    console.error('SSO complete error:', error);
+    sendError(res, req, 500, 'errors.ssoFailed');
+  }
+});
 
 router.post('/register', sensitiveAuthLimiter, async (req, res) => {
   try {
@@ -137,6 +315,10 @@ router.post('/login', sensitiveAuthLimiter, async (req, res) => {
 
     if (!user) {
       return sendError(res, req, 401, 'errors.invalidCredentials');
+    }
+
+    if (user.authProvider && user.authProvider !== 'local') {
+      return sendError(res, req, 401, 'errors.useSsoLogin');
     }
 
     const valid = await user.comparePassword(password);

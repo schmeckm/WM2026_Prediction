@@ -2,7 +2,7 @@
   <div>
     <div class="page-header">
       <h1>🤖 {{ t('adminPages.aiAssistant.title') }}</h1>
-      <span class="text-muted">Admin-Hilfe für Diagnose und Texte</span>
+      <span class="text-muted">{{ t('adminPages.aiAssistant.subtitle') }}</span>
     </div>
     <div class="card"><div class="card-body"><AdminAIAssistant /></div></div>
   </div>

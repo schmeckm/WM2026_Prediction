@@ -30,6 +30,16 @@ const routes = [
     children: [{ path: '', name: 'VerifyEmail', component: () => import('../views/VerifyEmailView.vue'), meta: { guest: true } }],
   },
   {
+    path: '/auth/callback',
+    component: PublicLayout,
+    children: [{ path: '', name: 'AuthCallback', component: () => import('../views/AuthCallbackView.vue'), meta: { guest: true } }],
+  },
+  {
+    path: '/auth/complete-registration',
+    component: PublicLayout,
+    children: [{ path: '', name: 'SsoComplete', component: () => import('../views/SsoCompleteView.vue'), meta: { guest: true } }],
+  },
+  {
     path: '/forgot-password',
     component: PublicLayout,
     children: [{ path: '', name: 'ForgotPassword', component: () => import('../views/ForgotPasswordView.vue'), meta: { guest: true } }],

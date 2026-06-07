@@ -15,18 +15,18 @@
           <table>
             <thead>
               <tr>
-                <th>#</th>
-                <th>Spiel</th>
-                <th>Datum</th>
-                <th>Status</th>
-                <th>Ergebnis</th>
-                <th>Aktionen</th>
+                <th>{{ t('adminPages.results.columns.number') }}</th>
+                <th>{{ t('adminPages.results.columns.match') }}</th>
+                <th>{{ t('adminPages.results.columns.date') }}</th>
+                <th>{{ t('adminPages.results.columns.status') }}</th>
+                <th>{{ t('adminPages.results.columns.result') }}</th>
+                <th>{{ t('adminPages.results.columns.actions') }}</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="match in matches" :key="match.id">
                 <td>{{ match.matchNumber }}</td>
-                <td><strong>{{ match.homeTeam }}</strong> vs <strong>{{ match.awayTeam }}</strong></td>
+                <td><strong>{{ match.homeTeam }}</strong> {{ t('common.vs') }} <strong>{{ match.awayTeam }}</strong></td>
                 <td>{{ formatDate(match.kickoffTime) }}</td>
                 <td><span :class="['badge', `badge-${match.status}`]">{{ statusLabel(match.status) }}</span></td>
                 <td>
@@ -34,17 +34,17 @@
                     <input v-model.number="resultForm.homeScore" type="number" min="0" class="form-control" style="width: 60px; text-align: center;" />
                     <span>:</span>
                     <input v-model.number="resultForm.awayScore" type="number" min="0" class="form-control" style="width: 60px; text-align: center;" />
-                    <button class="btn btn-primary btn-sm" @click="saveResult(match)">Speichern</button>
-                    <button class="btn btn-secondary btn-sm" @click="editingId = null">Abbrechen</button>
+                    <button class="btn btn-primary btn-sm" @click="saveResult(match)">{{ t('common.save') }}</button>
+                    <button class="btn btn-secondary btn-sm" @click="editingId = null">{{ t('common.cancel') }}</button>
                   </div>
                   <span v-else-if="match.status === 'finished'">{{ match.homeScore }} : {{ match.awayScore }}</span>
                   <span v-else class="text-muted">–</span>
                 </td>
                 <td>
                   <div class="btn-group">
-                    <button class="btn btn-primary btn-sm" @click="startEdit(match)">Ergebnis</button>
-                    <button v-if="match.status !== 'locked' && match.status !== 'finished'" class="btn btn-secondary btn-sm" @click="lockMatch(match)">Sperren</button>
-                    <button v-if="match.isManuallyLocked" class="btn btn-secondary btn-sm" @click="unlockMatch(match)">Entsperren</button>
+                    <button class="btn btn-primary btn-sm" @click="startEdit(match)">{{ t('adminPages.results.setResult') }}</button>
+                    <button v-if="match.status !== 'locked' && match.status !== 'finished'" class="btn btn-secondary btn-sm" @click="lockMatch(match)">{{ t('adminPages.results.lock') }}</button>
+                    <button v-if="match.isManuallyLocked" class="btn btn-secondary btn-sm" @click="unlockMatch(match)">{{ t('adminPages.results.unlock') }}</button>
                   </div>
                 </td>
               </tr>
@@ -63,8 +63,7 @@ import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
 import AlertMessage from '../../components/AlertMessage.vue';
 
-
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const matches = ref([]);
 const loading = ref(true);
@@ -74,12 +73,11 @@ const message = ref('');
 const error = ref('');
 
 function formatDate(dateStr) {
-  return new Date(dateStr).toLocaleDateString('de-DE');
+  return new Date(dateStr).toLocaleDateString(locale.value);
 }
 
 function statusLabel(status) {
-  const labels = { scheduled: 'Geplant', locked: 'Gesperrt', finished: 'Beendet' };
-  return labels[status] || status;
+  return t(`adminPages.results.statusLabels.${status}`, status);
 }
 
 async function loadMatches() {
@@ -104,31 +102,31 @@ async function saveResult(match) {
   error.value = '';
   try {
     await api.post(`/matches/${match.id}/result`, resultForm.value);
-    message.value = 'Ergebnis gespeichert und Punkte berechnet.';
+    message.value = t('adminPages.results.resultSaved');
     editingId.value = null;
     await loadMatches();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Fehler beim Speichern.';
+    error.value = err.response?.data?.error || t('adminPages.results.saveFailed');
   }
 }
 
 async function lockMatch(match) {
   try {
     await api.post(`/matches/${match.id}/lock`);
-    message.value = 'Spiel gesperrt.';
+    message.value = t('adminPages.results.matchLocked');
     await loadMatches();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Sperren fehlgeschlagen.';
+    error.value = err.response?.data?.error || t('adminPages.results.lockFailed');
   }
 }
 
 async function unlockMatch(match) {
   try {
     await api.post(`/matches/${match.id}/unlock`);
-    message.value = 'Spiel entsperrt.';
+    message.value = t('adminPages.results.matchUnlocked');
     await loadMatches();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Entsperren fehlgeschlagen.';
+    error.value = err.response?.data?.error || t('adminPages.results.unlockFailed');
   }
 }
 

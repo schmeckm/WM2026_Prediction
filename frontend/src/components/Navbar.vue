@@ -23,7 +23,7 @@
         <LanguageSwitcher />
         <NotificationBell v-if="!adminMode" />
       </div>
-      <div class="navbar-user-block">
+      <router-link to="/profile" class="navbar-user-block" :title="t('nav.profile')">
         <UserAvatar
           :image-url="authStore.user?.imageUrl"
           :image-cache="authStore.profileImageCache"
@@ -37,7 +37,7 @@
           <div class="navbar-user-name">{{ authStore.fullName }}</div>
           <div class="navbar-user-team">{{ authStore.user?.team?.name || t('common.noTeam') }}</div>
         </div>
-      </div>
+      </router-link>
       <button class="btn btn-secondary btn-sm navbar-logout" @click="handleLogout">{{ t('nav.logout') }}</button>
     </div>
   </nav>
@@ -94,6 +94,16 @@ async function handleLogout() {
   display: flex;
   align-items: center;
   gap: 0.625rem;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.4rem;
+  margin: -0.2rem -0.4rem;
+  transition: background 0.15s ease;
+}
+
+.navbar-user-block:hover {
+  background: var(--color-bg);
 }
 
 .navbar-user-text {

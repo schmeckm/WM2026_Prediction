@@ -26,6 +26,16 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  authProvider: {
+    type: DataTypes.STRING(16),
+    allowNull: false,
+    defaultValue: 'local',
+    validate: { isIn: [['local', 'google', 'microsoft']] },
+  },
+  providerId: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   role: {
     type: DataTypes.ENUM('admin', 'user'),
     defaultValue: 'user',
@@ -93,10 +103,12 @@ const User = sequelize.define('User', {
 }, {
   hooks: {
     beforeCreate: async (user) => {
-      user.password = await bcrypt.hash(user.password, 10);
+      if (user.password) {
+        user.password = await bcrypt.hash(user.password, 10);
+      }
     },
     beforeUpdate: async (user) => {
-      if (user.changed('password')) {
+      if (user.changed('password') && user.password) {
         user.password = await bcrypt.hash(user.password, 10);
       }
     },
@@ -104,6 +116,7 @@ const User = sequelize.define('User', {
 });
 
 User.prototype.comparePassword = async function (candidatePassword) {
+  if (!this.password || this.authProvider !== 'local') return false;
   return bcrypt.compare(candidatePassword, this.password);
 };
 

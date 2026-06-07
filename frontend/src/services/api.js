@@ -30,6 +30,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 429) {
+      const toastStore = useToastStore();
+      toastStore.warning(i18n.global.t('common.tooManyRequests'));
+    }
     if (error.response?.status === 401) {
       const requestUrl = error.config?.url || '';
       const isAuthRequest = /\/auth\/(login|register)(\/|$|\?)/.test(requestUrl);

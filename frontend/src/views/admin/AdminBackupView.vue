@@ -3,7 +3,7 @@
     <div class="page-header">
       <h1>{{ t('adminPages.backup.title') }}</h1>
       <button class="btn btn-secondary btn-sm" :disabled="loading" @click="loadOverview">
-        {{ loading ? 'Lädt...' : 'Aktualisieren' }}
+        {{ loading ? t('adminPages.backup.refreshing') : t('adminPages.backup.refresh') }}
       </button>
     </div>
 
@@ -15,64 +15,50 @@
     <template v-else>
       <div class="card mb-2 backup-notice">
         <div class="card-body">
-          <strong>💾 Spieler- und Benutzerdaten sichern</strong>
-          <p class="text-muted">
-            Erstellt eine Sicherungskopie aller Benutzer, Teams, Tipps und Bonus-Tipps.
-            Im Problemfall kann die Datei wieder hochgeladen und die Daten wiederhergestellt werden.
-          </p>
+          <strong>{{ t('adminPages.backup.noticeTitle') }}</strong>
+          <p class="text-muted">{{ t('adminPages.backup.noticeDesc') }}</p>
         </div>
       </div>
 
       <div class="stats-grid mb-2">
         <div class="stat-card">
           <div class="stat-value">{{ overview.current?.userCount || 0 }}</div>
-          <div class="stat-label">Benutzer</div>
+          <div class="stat-label">{{ t('adminPages.backup.stats.users') }}</div>
         </div>
         <div class="stat-card">
           <div class="stat-value">{{ overview.current?.teamCount || 0 }}</div>
-          <div class="stat-label">Teams</div>
+          <div class="stat-label">{{ t('adminPages.backup.stats.teams') }}</div>
         </div>
         <div class="stat-card">
           <div class="stat-value">{{ overview.current?.predictionCount || 0 }}</div>
-          <div class="stat-label">Tipps</div>
+          <div class="stat-label">{{ t('adminPages.backup.stats.predictions') }}</div>
         </div>
         <div class="stat-card">
           <div class="stat-value">{{ overview.current?.bonusPredictionCount || 0 }}</div>
-          <div class="stat-label">Bonus-Tipps</div>
+          <div class="stat-label">{{ t('adminPages.backup.stats.bonusPredictions') }}</div>
         </div>
       </div>
 
       <div class="grid-2">
         <div class="card">
-          <div class="card-header"><h3>Backup erstellen</h3></div>
+          <div class="card-header"><h3>{{ t('adminPages.backup.createTitle') }}</h3></div>
           <div class="card-body backup-actions">
-            <button
-              class="btn btn-primary"
-              :disabled="exporting"
-              @click="downloadBackup"
-            >
-              {{ exporting ? 'Exportiere...' : 'Als Datei herunterladen' }}
+            <button class="btn btn-primary" :disabled="exporting" @click="downloadBackup">
+              {{ exporting ? t('adminPages.backup.downloading') : t('adminPages.backup.download') }}
             </button>
-            <button
-              class="btn btn-secondary"
-              :disabled="saving"
-              @click="saveBackup"
-            >
-              {{ saving ? 'Speichere...' : 'Auf Server speichern' }}
+            <button class="btn btn-secondary" :disabled="saving" @click="saveBackup">
+              {{ saving ? t('adminPages.backup.saving') : t('adminPages.backup.saveOnServer') }}
             </button>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-header"><h3>Daten wiederherstellen</h3></div>
+          <div class="card-header"><h3>{{ t('adminPages.backup.restoreTitle') }}</h3></div>
           <div class="card-body">
-            <p class="text-muted restore-hint">
-              Bestehende Benutzer werden anhand der E-Mail-Adresse aktualisiert.
-              Fehlende Benutzer werden neu angelegt. Tipps werden den passenden Spielen zugeordnet.
-            </p>
-            <form @submit.prevent="handleRestore">
+            <p class="text-muted restore-hint">{{ t('adminPages.backup.restoreHint') }}</p>
+            <form @submit.prevent="requestRestore">
               <div class="form-group">
-                <label>Backup-Datei (JSON)</label>
+                <label>{{ t('adminPages.backup.restoreFile') }}</label>
                 <input
                   type="file"
                   accept=".json,application/json"
@@ -80,12 +66,8 @@
                   @change="onRestoreFileSelect"
                 />
               </div>
-              <button
-                type="submit"
-                class="btn btn-accent"
-                :disabled="!restoreFile || restoring"
-              >
-                {{ restoring ? 'Stelle wieder her...' : 'Wiederherstellen' }}
+              <button type="submit" class="btn btn-accent" :disabled="!restoreFile || restoring">
+                {{ restoring ? t('adminPages.backup.restoring') : t('adminPages.backup.restore') }}
               </button>
             </form>
           </div>
@@ -93,43 +75,43 @@
       </div>
 
       <div v-if="restoreSummary" class="card mt-2">
-        <div class="card-header"><h3>Wiederherstellungs-Ergebnis</h3></div>
+        <div class="card-header"><h3>{{ t('adminPages.backup.restoreResultTitle') }}</h3></div>
         <div class="card-body">
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-value">{{ restoreSummary.usersCreated }}</div>
-              <div class="stat-label">Benutzer neu</div>
+              <div class="stat-label">{{ t('adminPages.backup.usersCreated') }}</div>
             </div>
             <div class="stat-card">
               <div class="stat-value">{{ restoreSummary.usersUpdated }}</div>
-              <div class="stat-label">Benutzer aktualisiert</div>
+              <div class="stat-label">{{ t('adminPages.backup.usersUpdated') }}</div>
             </div>
             <div class="stat-card">
               <div class="stat-value">{{ restoreSummary.predictionsRestored }}</div>
-              <div class="stat-label">Tipps wiederhergestellt</div>
+              <div class="stat-label">{{ t('adminPages.backup.predictionsRestored') }}</div>
             </div>
             <div class="stat-card accent">
               <div class="stat-value">{{ restoreSummary.skippedPredictions }}</div>
-              <div class="stat-label">Tipps übersprungen</div>
+              <div class="stat-label">{{ t('adminPages.backup.predictionsSkipped') }}</div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="card mt-2">
-        <div class="card-header"><h3>Gespeicherte Backups</h3></div>
+        <div class="card-header"><h3>{{ t('adminPages.backup.savedBackupsTitle') }}</h3></div>
         <div class="card-body">
-          <p v-if="!overview.backups?.length" class="text-muted">Noch keine Backups auf dem Server gespeichert.</p>
+          <p v-if="!overview.backups?.length" class="text-muted">{{ t('adminPages.backup.noBackups') }}</p>
           <div v-else class="table-wrapper">
             <table>
               <thead>
                 <tr>
-                  <th>Dateiname</th>
-                  <th>Erstellt</th>
-                  <th>Benutzer</th>
-                  <th>Tipps</th>
-                  <th>Größe</th>
-                  <th>Aktionen</th>
+                  <th>{{ t('adminPages.backup.columns.filename') }}</th>
+                  <th>{{ t('adminPages.backup.columns.created') }}</th>
+                  <th>{{ t('adminPages.backup.columns.users') }}</th>
+                  <th>{{ t('adminPages.backup.columns.predictions') }}</th>
+                  <th>{{ t('adminPages.backup.columns.size') }}</th>
+                  <th>{{ t('adminPages.backup.columns.actions') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -140,17 +122,11 @@
                   <td>{{ backup.meta?.predictionCount ?? '–' }}</td>
                   <td>{{ formatSize(backup.size) }}</td>
                   <td class="backup-row-actions">
-                    <button
-                      class="btn btn-secondary btn-sm"
-                      @click="downloadSavedBackup(backup.filename)"
-                    >
-                      Download
+                    <button class="btn btn-secondary btn-sm" @click="downloadSavedBackup(backup.filename)">
+                      {{ t('adminPages.backup.download') }}
                     </button>
-                    <button
-                      class="btn btn-secondary btn-sm"
-                      @click="deleteBackup(backup.filename)"
-                    >
-                      Löschen
+                    <button class="btn btn-secondary btn-sm" @click="requestDeleteBackup(backup.filename)">
+                      {{ t('common.delete') }}
                     </button>
                   </td>
                 </tr>
@@ -160,6 +136,16 @@
         </div>
       </div>
     </template>
+
+    <ConfirmModal
+      :open="confirmState.open"
+      :title="confirmState.title"
+      :message="confirmState.message"
+      :confirm-label="confirmState.confirmLabel"
+      :danger="confirmState.danger"
+      @confirm="onConfirm"
+      @cancel="closeConfirm"
+    />
   </div>
 </template>
 
@@ -169,9 +155,11 @@ import { useI18n } from 'vue-i18n';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
 import AlertMessage from '../../components/AlertMessage.vue';
+import ConfirmModal from '../../components/ConfirmModal.vue';
+import { useConfirmModal } from '../../composables/useConfirmModal';
 
-
-const { t } = useI18n();
+const { t, locale } = useI18n();
+const { confirmState, openConfirm, closeConfirm, onConfirm } = useConfirmModal();
 
 const loading = ref(true);
 const exporting = ref(false);
@@ -184,15 +172,13 @@ const restoreFile = ref(null);
 const restoreSummary = ref(null);
 
 function apiErrorMessage(err, fallback) {
-  if (!err.response) {
-    return 'Server nicht erreichbar. Bitte prüfen, ob das Backend läuft (Port 3000).';
-  }
+  if (!err.response) return t('adminPages.backup.serverUnreachable');
   return err.response?.data?.error || fallback;
 }
 
 function formatDate(value) {
   if (!value) return '–';
-  return new Date(value).toLocaleString('de-DE');
+  return new Date(value).toLocaleString(locale.value);
 }
 
 function formatSize(bytes) {
@@ -223,7 +209,7 @@ async function loadOverview() {
     const { data } = await api.get('/admin/backup');
     overview.value = data;
   } catch (err) {
-    error.value = apiErrorMessage(err, 'Backup-Übersicht konnte nicht geladen werden.');
+    error.value = apiErrorMessage(err, t('adminPages.backup.loadFailed'));
   } finally {
     loading.value = false;
   }
@@ -240,9 +226,9 @@ async function downloadBackup() {
       `spieler-backup-${new Date().toISOString().slice(0, 10)}.json`
     );
     triggerDownload(response.data, filename);
-    message.value = 'Backup wurde heruntergeladen.';
+    message.value = t('adminPages.backup.downloadSuccess');
   } catch (err) {
-    error.value = err.response?.data?.error || 'Backup-Export fehlgeschlagen.';
+    error.value = err.response?.data?.error || t('adminPages.backup.exportFailed');
   } finally {
     exporting.value = false;
   }
@@ -254,10 +240,10 @@ async function saveBackup() {
   message.value = '';
   try {
     const { data } = await api.post('/admin/backup');
-    message.value = data.message || 'Backup gespeichert.';
+    message.value = data.message || t('adminPages.backup.saveSuccess');
     await loadOverview();
   } catch (err) {
-    error.value = apiErrorMessage(err, 'Backup konnte nicht gespeichert werden.');
+    error.value = apiErrorMessage(err, t('adminPages.backup.saveFailed'));
   } finally {
     saving.value = false;
   }
@@ -268,21 +254,30 @@ async function downloadSavedBackup(filename) {
   try {
     const response = await api.get(`/admin/backup/${filename}`, { responseType: 'blob' });
     triggerDownload(response.data, filename);
-    message.value = 'Backup wurde heruntergeladen.';
+    message.value = t('adminPages.backup.downloadSuccess');
   } catch (err) {
-    error.value = err.response?.data?.error || 'Backup-Download fehlgeschlagen.';
+    error.value = err.response?.data?.error || t('adminPages.backup.downloadFailed');
   }
 }
 
+function requestDeleteBackup(filename) {
+  openConfirm({
+    title: t('common.delete'),
+    message: t('adminPages.backup.confirmDelete', { name: filename }),
+    confirmLabel: t('common.delete'),
+    danger: true,
+    action: () => deleteBackup(filename),
+  });
+}
+
 async function deleteBackup(filename) {
-  if (!confirm(`Backup "${filename}" wirklich löschen?`)) return;
   error.value = '';
   try {
     const { data } = await api.delete(`/admin/backup/${filename}`);
-    message.value = data.message || 'Backup gelöscht.';
+    message.value = data.message || t('adminPages.backup.deleteSuccess');
     await loadOverview();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Backup konnte nicht gelöscht werden.';
+    error.value = err.response?.data?.error || t('adminPages.backup.deleteFailed');
   }
 }
 
@@ -291,11 +286,17 @@ function onRestoreFileSelect(event) {
   restoreSummary.value = null;
 }
 
+function requestRestore() {
+  if (!restoreFile.value) return;
+  openConfirm({
+    title: t('adminPages.backup.restore'),
+    message: t('adminPages.backup.confirmRestore'),
+    action: handleRestore,
+  });
+}
+
 async function handleRestore() {
   if (!restoreFile.value) return;
-  if (!confirm(
-    'Daten aus dem Backup wiederherstellen? Bestehende Benutzer werden anhand der E-Mail aktualisiert.'
-  )) return;
 
   restoring.value = true;
   error.value = '';
@@ -309,11 +310,11 @@ async function handleRestore() {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     restoreSummary.value = data.summary;
-    message.value = data.message || 'Daten wiederhergestellt.';
+    message.value = data.message || t('adminPages.backup.restoreSuccess');
     restoreFile.value = null;
     await loadOverview();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Wiederherstellung fehlgeschlagen.';
+    error.value = err.response?.data?.error || t('adminPages.backup.restoreFailed');
   } finally {
     restoring.value = false;
   }

@@ -226,8 +226,8 @@
       <div class="card-body">
         <h3 class="profile-danger-title">{{ t('profile.dangerZoneTitle') }}</h3>
         <p class="text-muted profile-danger-hint">{{ t('profile.dangerZoneHint') }}</p>
-        <form class="profile-danger-form" @submit.prevent="handleDeleteAccount">
-          <div class="form-group">
+        <form class="profile-danger-form" @submit.prevent="requestDeleteAccount">
+          <div v-if="isLocalAccount" class="form-group">
             <label for="deletePassword">{{ t('profile.deletePassword') }}</label>
             <input
               id="deletePassword"
@@ -239,12 +239,23 @@
               :placeholder="t('profile.deletePasswordHint')"
             />
           </div>
+          <p v-else class="text-muted profile-danger-hint">{{ t('profile.deleteSsoHint') }}</p>
           <button type="submit" class="btn btn-danger" :disabled="deletingAccount">
             {{ deletingAccount ? t('profile.deletingAccount') : t('profile.deleteAccount') }}
           </button>
         </form>
       </div>
     </div>
+
+    <ConfirmModal
+      :open="confirmState.open"
+      :title="confirmState.title"
+      :message="confirmState.message"
+      :confirm-label="confirmState.confirmLabel"
+      :danger="confirmState.danger"
+      @confirm="onConfirm"
+      @cancel="closeConfirm"
+    />
   </div>
 </template>
 
@@ -259,6 +270,8 @@ import api from '../services/api';
 import AlertMessage from '../components/AlertMessage.vue';
 import LocalePicker from '../components/LocalePicker.vue';
 import UserAvatar from '../components/UserAvatar.vue';
+import ConfirmModal from '../components/ConfirmModal.vue';
+import { useConfirmModal } from '../composables/useConfirmModal';
 import { AVATAR_COLOR_OPTIONS, resolveAvatarColorStyle } from '../utils/avatarColors';
 import { AVATAR_FACE_OPTIONS } from '../utils/avatarFaces';
 
@@ -267,6 +280,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 const themeStore = useThemeStore();
 const localeStore = useLocaleStore();
+const { confirmState, openConfirm, closeConfirm, onConfirm } = useConfirmModal();
 
 const avatarColorOptions = AVATAR_COLOR_OPTIONS;
 const avatarFaceOptions = AVATAR_FACE_OPTIONS;
@@ -313,6 +327,10 @@ const previewUrl = ref('');
 const hasProfileImage = computed(
   () => Boolean(previewUrl.value || authStore.user?.imageUrl),
 );
+const isLocalAccount = computed(() => {
+  const provider = authStore.user?.authProvider || 'local';
+  return provider === 'local';
+});
 const imageBusy = ref(false);
 const deletePassword = ref('');
 const deletingAccount = ref(false);
@@ -468,14 +486,22 @@ async function removeImage() {
   }
 }
 
-async function handleDeleteAccount() {
-  if (!confirm(t('profile.deleteConfirm'))) return;
+function requestDeleteAccount() {
+  openConfirm({
+    title: t('profile.deleteAccount'),
+    message: t('profile.deleteConfirm'),
+    confirmLabel: t('profile.deleteAccount'),
+    danger: true,
+    action: handleDeleteAccount,
+  });
+}
 
+async function handleDeleteAccount() {
   deletingAccount.value = true;
   success.value = '';
   error.value = '';
   try {
-    await authStore.deleteAccount(deletePassword.value);
+    await authStore.deleteAccount(isLocalAccount.value ? deletePassword.value : null);
     deletePassword.value = '';
     await router.replace('/login');
   } catch (err) {

@@ -98,7 +98,7 @@
                     <button class="btn btn-secondary btn-sm" @click="openEdit(pred)">
                       {{ t('common.edit') }}
                     </button>
-                    <button class="btn btn-danger btn-sm" :disabled="saving" @click="handleDelete(pred)">
+                    <button class="btn btn-danger btn-sm" :disabled="saving" @click="requestDelete(pred)">
                       {{ t('common.delete') }}
                     </button>
                   </div>
@@ -193,6 +193,16 @@
         </form>
       </div>
     </div>
+
+    <ConfirmModal
+      :open="confirmState.open"
+      :title="confirmState.title"
+      :message="confirmState.message"
+      :confirm-label="confirmState.confirmLabel"
+      :danger="confirmState.danger"
+      @confirm="onConfirm"
+      @cancel="closeConfirm"
+    />
   </div>
 </template>
 
@@ -205,9 +215,12 @@ import LoadingSpinner from '../../components/LoadingSpinner.vue';
 import AlertMessage from '../../components/AlertMessage.vue';
 import UserAvatar from '../../components/UserAvatar.vue';
 import TeamFlag from '../../components/TeamFlag.vue';
+import ConfirmModal from '../../components/ConfirmModal.vue';
+import { useConfirmModal } from '../../composables/useConfirmModal';
 
 const { t } = useI18n();
 const { formatDateTime, formatPoints } = useFormatters();
+const { confirmState, openConfirm, closeConfirm, onConfirm } = useConfirmModal();
 
 const predictions = ref([]);
 const loading = ref(true);
@@ -282,9 +295,17 @@ async function handleSave() {
   }
 }
 
-async function handleDelete(pred) {
-  if (!confirm(t('adminPages.predictions.deleteConfirm'))) return;
+function requestDelete(pred) {
+  openConfirm({
+    title: t('common.delete'),
+    message: t('adminPages.predictions.deleteConfirm'),
+    confirmLabel: t('common.delete'),
+    danger: true,
+    action: () => handleDelete(pred),
+  });
+}
 
+async function handleDelete(pred) {
   message.value = '';
   error.value = '';
   try {

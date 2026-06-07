@@ -9,40 +9,38 @@
 
     <div class="card mb-2 default-mode-notice">
       <div class="card-body">
-        <strong>📋 Standard-Betriebsmodus</strong>
+        <strong>{{ t('adminPages.import.defaultModeTitle') }}</strong>
         <p class="text-muted">
-          Importieren Sie den offiziellen Spielplan per CSV. Ergebnisse tragen Sie anschließend unter
-          <router-link to="/admin/results">Ergebnisverwaltung</router-link> manuell ein.
-          Punkte und Hitliste werden automatisch berechnet.
+          {{ t('adminPages.import.defaultModeDescPart1') }}
+          <router-link to="/admin/results">{{ t('adminPages.import.resultsLink') }}</router-link>
+          {{ t('adminPages.import.defaultModeDescPart2') }}
         </p>
       </div>
     </div>
 
     <div class="grid-2">
       <div class="card">
-        <div class="card-header"><h3>Spiele importieren</h3></div>
+        <div class="card-header"><h3>{{ t('adminPages.import.importMatches') }}</h3></div>
         <div class="card-body">
-          <p class="text-muted mb-2" style="font-size: 0.875rem;">
-            Laden Sie eine CSV-Datei mit folgenden Spalten hoch:
-          </p>
+          <p class="text-muted mb-2 csv-hint">{{ t('adminPages.import.columnsHint') }}</p>
           <code class="csv-columns">
             matchNumber,stage,groupName,homeTeam,awayTeam,kickoffTime,stadium,city
           </code>
 
           <form @submit.prevent="handleImport">
             <div class="form-group">
-              <label>CSV-Datei</label>
-              <input type="file" accept=".csv" @change="onFileSelect" class="form-control" required />
+              <label>{{ t('adminPages.import.csvFile') }}</label>
+              <input type="file" accept=".csv" class="form-control" required @change="onFileSelect" />
             </div>
             <button type="submit" class="btn btn-primary" :disabled="!selectedFile || importing">
-              {{ importing ? 'Importiere...' : 'Import starten' }}
+              {{ importing ? t('adminPages.import.importing') : t('adminPages.import.startImport') }}
             </button>
           </form>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-header"><h3>Beispiel-CSV</h3></div>
+        <div class="card-header"><h3>{{ t('adminPages.import.exampleCsv') }}</h3></div>
         <div class="card-body">
           <pre class="csv-example">matchNumber,stage,groupName,homeTeam,awayTeam,kickoffTime,stadium,city
 1,Group Stage,A,Deutschland,Frankreich,2026-06-11T21:00:00,MetLife Stadium,New York
@@ -52,21 +50,24 @@
     </div>
 
     <div v-if="summary" class="card mt-2">
-      <div class="card-header"><h3>Import-Ergebnis</h3></div>
+      <div class="card-header"><h3>{{ t('adminPages.import.importResult') }}</h3></div>
       <div class="card-body">
         <div class="stats-grid">
-          <div class="stat-card"><div class="stat-value">{{ summary.created }}</div><div class="stat-label">Erstellt</div></div>
-          <div class="stat-card"><div class="stat-value">{{ summary.updated }}</div><div class="stat-label">Aktualisiert</div></div>
-          <div class="stat-card"><div class="stat-value">{{ summary.skipped }}</div><div class="stat-label">Übersprungen</div></div>
-          <div class="stat-card accent"><div class="stat-value">{{ summary.errors?.length || 0 }}</div><div class="stat-label">Fehler</div></div>
+          <div class="stat-card"><div class="stat-value">{{ summary.created }}</div><div class="stat-label">{{ t('adminPages.import.created') }}</div></div>
+          <div class="stat-card"><div class="stat-value">{{ summary.updated }}</div><div class="stat-label">{{ t('adminPages.import.updated') }}</div></div>
+          <div class="stat-card"><div class="stat-value">{{ summary.skipped }}</div><div class="stat-label">{{ t('adminPages.import.skipped') }}</div></div>
+          <div class="stat-card accent"><div class="stat-value">{{ summary.errors?.length || 0 }}</div><div class="stat-label">{{ t('adminPages.import.errors') }}</div></div>
         </div>
 
         <div v-if="summary.errors?.length" class="mt-2">
-          <h4>Fehlerdetails</h4>
+          <h4>{{ t('adminPages.import.errorDetails') }}</h4>
           <div class="table-wrapper">
             <table>
               <thead>
-                <tr><th>Zeile</th><th>Fehlermeldung</th></tr>
+                <tr>
+                  <th>{{ t('adminPages.import.row') }}</th>
+                  <th>{{ t('adminPages.import.errorMessage') }}</th>
+                </tr>
               </thead>
               <tbody>
                 <tr v-for="(err, i) in summary.errors" :key="i">
@@ -87,7 +88,6 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../../services/api';
 import AlertMessage from '../../components/AlertMessage.vue';
-
 
 const { t } = useI18n();
 
@@ -122,7 +122,7 @@ async function handleImport() {
     message.value = data.message;
     messageType.value = data.summary.errors?.length ? 'warning' : 'success';
   } catch (err) {
-    error.value = err.response?.data?.error || 'Import fehlgeschlagen.';
+    error.value = err.response?.data?.error || t('adminPages.import.importFailed');
   } finally {
     importing.value = false;
   }
@@ -133,6 +133,7 @@ async function handleImport() {
 .mb-2 { margin-bottom: 1.5rem; }
 .mt-2 { margin-top: 1.5rem; }
 .default-mode-notice { border-left: 3px solid var(--color-primary); }
+.csv-hint { font-size: 0.875rem; }
 .csv-columns {
   display: block;
   padding: 0.75rem;

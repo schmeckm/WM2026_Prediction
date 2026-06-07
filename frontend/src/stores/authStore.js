@@ -122,8 +122,31 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function deleteAccount(password) {
-    await api.delete('/users/me', { data: { password } });
+    const payload = password ? { password } : {};
+    await api.delete('/users/me', { data: payload });
     clearLocalAuth();
+  }
+
+  async function fetchAuthProviders() {
+    const { data } = await api.get('/auth/providers');
+    return data;
+  }
+
+  function loginWithGoogle() {
+    const locale = useLocaleStore().locale;
+    window.location.href = `/api/auth/google?language=${encodeURIComponent(locale)}`;
+  }
+
+  async function exchangeSsoCode(code) {
+    const { data } = await api.post('/auth/exchange', { code });
+    setAuth(data.token, data.user);
+    return data;
+  }
+
+  async function completeSsoRegistration(code, teamId) {
+    const { data } = await api.post('/auth/complete-sso', { code, teamId });
+    setAuth(data.token, data.user);
+    return data;
   }
 
   return {
@@ -146,5 +169,9 @@ export const useAuthStore = defineStore('auth', () => {
     syncUser,
     setAuth,
     deleteAccount,
+    fetchAuthProviders,
+    loginWithGoogle,
+    exchangeSsoCode,
+    completeSsoRegistration,
   };
 });

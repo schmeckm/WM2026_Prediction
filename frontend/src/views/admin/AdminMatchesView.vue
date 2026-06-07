@@ -2,7 +2,7 @@
   <div>
     <div class="page-header">
       <h1>{{ t('adminPages.matches.title') }}</h1>
-      <button class="btn btn-primary btn-sm" @click="openCreate">+ Neues Spiel</button>
+      <button class="btn btn-primary btn-sm" @click="openCreate">+ {{ t('adminPages.matches.newMatch') }}</button>
     </div>
 
     <AlertMessage v-if="message" :message="message" type="success" />
@@ -12,78 +12,100 @@
 
     <div v-else class="card">
       <div class="card-body">
-        <MatchTable :matches="matches" show-actions show-match-ref @edit="openEdit" @delete="handleDelete" />
+        <MatchTable :matches="matches" show-actions show-match-ref @edit="openEdit" @delete="requestDelete" />
       </div>
     </div>
 
-    <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
-      <div class="modal">
-        <div class="modal-header">
-          <h3>{{ editingMatch ? 'Spiel bearbeiten' : 'Neues Spiel' }}</h3>
-          <button class="modal-close" @click="showModal = false">&times;</button>
+    <Teleport to="body">
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+        <div
+          class="modal"
+          role="dialog"
+          aria-modal="true"
+          :aria-label="editingMatch ? t('adminPages.matches.editMatch') : t('adminPages.matches.createMatch')"
+        >
+          <div class="modal-header">
+            <h3>{{ editingMatch ? t('adminPages.matches.editMatch') : t('adminPages.matches.createMatch') }}</h3>
+            <button type="button" class="modal-close" :aria-label="t('common.close')" @click="closeModal">&times;</button>
+          </div>
+          <form @submit.prevent="handleSave">
+            <div class="modal-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>{{ t('adminPages.matches.form.matchNumber') }}</label>
+                  <input v-model.number="form.matchNumber" type="number" class="form-control" required />
+                </div>
+                <div class="form-group">
+                  <label>{{ t('adminPages.matches.form.stage') }}</label>
+                  <input v-model="form.stage" class="form-control" required :placeholder="t('adminPages.matches.form.stagePlaceholder')" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>{{ t('adminPages.matches.form.group') }}</label>
+                  <input v-model="form.groupName" class="form-control" placeholder="A" />
+                </div>
+                <div class="form-group">
+                  <label>{{ t('adminPages.matches.form.kickoffTime') }}</label>
+                  <input v-model="form.kickoffTime" type="datetime-local" class="form-control" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>{{ t('adminPages.matches.form.homeTeam') }}</label>
+                  <input v-model="form.homeTeam" class="form-control" required />
+                </div>
+                <div class="form-group">
+                  <label>{{ t('adminPages.matches.form.awayTeam') }}</label>
+                  <input v-model="form.awayTeam" class="form-control" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>{{ t('adminPages.matches.form.stadium') }}</label>
+                  <input v-model="form.stadium" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label>{{ t('adminPages.matches.form.city') }}</label>
+                  <input v-model="form.city" class="form-control" />
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="closeModal">{{ t('common.cancel') }}</button>
+              <button type="submit" class="btn btn-primary" :disabled="saving">
+                {{ saving ? t('common.saving') : t('common.save') }}
+              </button>
+            </div>
+          </form>
         </div>
-        <form @submit.prevent="handleSave">
-          <div class="modal-body">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Spielnummer</label>
-                <input v-model.number="form.matchNumber" type="number" class="form-control" required />
-              </div>
-              <div class="form-group">
-                <label>Phase</label>
-                <input v-model="form.stage" class="form-control" required placeholder="Group Stage" />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Gruppe</label>
-                <input v-model="form.groupName" class="form-control" placeholder="A" />
-              </div>
-              <div class="form-group">
-                <label>Anstoßzeit</label>
-                <input v-model="form.kickoffTime" type="datetime-local" class="form-control" required />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Heimteam</label>
-                <input v-model="form.homeTeam" class="form-control" required />
-              </div>
-              <div class="form-group">
-                <label>Auswärtsteam</label>
-                <input v-model="form.awayTeam" class="form-control" required />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label>Stadion</label>
-                <input v-model="form.stadium" class="form-control" />
-              </div>
-              <div class="form-group">
-                <label>Stadt</label>
-                <input v-model="form.city" class="form-control" />
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="showModal = false">Abbrechen</button>
-            <button type="submit" class="btn btn-primary" :disabled="saving">{{ saving ? 'Speichern...' : 'Speichern' }}</button>
-          </div>
-        </form>
       </div>
-    </div>
+    </Teleport>
+
+    <ConfirmModal
+      :open="confirmState.open"
+      :title="confirmState.title"
+      :message="confirmState.message"
+      :confirm-label="confirmState.confirmLabel"
+      :danger="confirmState.danger"
+      @confirm="onConfirm"
+      @cancel="closeConfirm"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
 import MatchTable from '../../components/MatchTable.vue';
 import AlertMessage from '../../components/AlertMessage.vue';
+import ConfirmModal from '../../components/ConfirmModal.vue';
+import { useConfirmModal } from '../../composables/useConfirmModal';
 
 const { t } = useI18n();
+const { confirmState, openConfirm, closeConfirm, onConfirm } = useConfirmModal();
 
 const matches = ref([]);
 const loading = ref(true);
@@ -103,6 +125,14 @@ const form = ref({
   stadium: '',
   city: '',
 });
+
+function closeModal() {
+  showModal.value = false;
+}
+
+function onKeydown(event) {
+  if (event.key === 'Escape' && showModal.value) closeModal();
+}
 
 async function loadMatches() {
   loading.value = true;
@@ -164,30 +194,46 @@ async function handleSave() {
 
     if (editingMatch.value) {
       await api.put(`/matches/${editingMatch.value.id}`, payload);
-      message.value = 'Spiel aktualisiert.';
+      message.value = t('adminPages.matches.matchUpdated');
     } else {
       await api.post('/matches', payload);
-      message.value = 'Spiel erstellt.';
+      message.value = t('adminPages.matches.matchCreated');
     }
     showModal.value = false;
     await loadMatches();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Fehler beim Speichern.';
+    error.value = err.response?.data?.error || t('adminPages.matches.saveFailed');
   } finally {
     saving.value = false;
   }
 }
 
+function requestDelete(match) {
+  openConfirm({
+    title: t('common.delete'),
+    message: t('adminPages.matches.confirmDelete', { number: match.matchNumber }),
+    confirmLabel: t('common.delete'),
+    danger: true,
+    action: () => handleDelete(match),
+  });
+}
+
 async function handleDelete(match) {
-  if (!confirm(`Spiel #${match.matchNumber} wirklich löschen?`)) return;
   try {
     await api.delete(`/matches/${match.id}`);
-    message.value = 'Spiel gelöscht.';
+    message.value = t('adminPages.matches.matchDeleted');
     await loadMatches();
   } catch (err) {
-    error.value = err.response?.data?.error || 'Löschen fehlgeschlagen.';
+    error.value = err.response?.data?.error || t('adminPages.matches.deleteFailed');
   }
 }
 
-onMounted(loadMatches);
+onMounted(() => {
+  loadMatches();
+  globalThis.addEventListener('keydown', onKeydown);
+});
+
+onUnmounted(() => {
+  globalThis.removeEventListener('keydown', onKeydown);
+});
 </script>

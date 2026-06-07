@@ -13,34 +13,34 @@
       <div class="card-body">
         <form @submit.prevent="handleSave">
           <div class="form-group">
-            <label>Exaktes Ergebnis (Punkte)</label>
+            <label>{{ t('adminPages.scoringRules.exactResult') }}</label>
             <input v-model.number="form.exactResultPoints" type="number" min="0" class="form-control" required />
           </div>
           <div class="form-group">
-            <label>Richtige Tordifferenz (Punkte)</label>
+            <label>{{ t('adminPages.scoringRules.goalDifference') }}</label>
             <input v-model.number="form.goalDifferencePoints" type="number" min="0" class="form-control" required />
           </div>
           <div class="form-group">
-            <label>Richtige Tendenz (Punkte)</label>
+            <label>{{ t('adminPages.scoringRules.tendency') }}</label>
             <input v-model.number="form.tendencyPoints" type="number" min="0" class="form-control" required />
           </div>
           <div class="form-group">
-            <label>Falscher Tipp (Punkte)</label>
+            <label>{{ t('adminPages.scoringRules.wrongPrediction') }}</label>
             <input v-model.number="form.wrongPredictionPoints" type="number" min="0" class="form-control" required />
           </div>
           <button type="submit" class="btn btn-primary" :disabled="saving">
-            {{ saving ? 'Speichern...' : 'Regeln speichern' }}
+            {{ saving ? t('common.saving') : t('adminPages.scoringRules.saveRules') }}
           </button>
         </form>
 
-        <div class="mt-2" style="padding: 1rem; background: var(--color-bg); border-radius: var(--radius-sm);">
-          <h4 style="margin-bottom: 0.5rem;">Beispiel</h4>
-          <p class="text-muted" style="font-size: 0.875rem;">
-            Endergebnis: Deutschland 2:1 Frankreich<br />
-            Tipp 2:1 = {{ form.exactResultPoints }} Pkt. (exakt)<br />
-            Tipp 3:2 = {{ form.goalDifferencePoints }} Pkt. (Tordifferenz)<br />
-            Tipp 1:0 = {{ form.tendencyPoints }} Pkt. (Tendenz)<br />
-            Tipp 1:2 = {{ form.wrongPredictionPoints }} Pkt. (falsch)
+        <div class="example-box">
+          <h4>{{ t('adminPages.scoringRules.exampleTitle') }}</h4>
+          <p class="text-muted example-text">
+            {{ t('adminPages.scoringRules.exampleLine1') }}<br />
+            {{ t('adminPages.scoringRules.exampleExact', { points: form.exactResultPoints }) }}<br />
+            {{ t('adminPages.scoringRules.exampleDiff', { points: form.goalDifferencePoints }) }}<br />
+            {{ t('adminPages.scoringRules.exampleTendency', { points: form.tendencyPoints }) }}<br />
+            {{ t('adminPages.scoringRules.exampleWrong', { points: form.wrongPredictionPoints }) }}
           </p>
         </div>
       </div>
@@ -54,7 +54,6 @@ import { useI18n } from 'vue-i18n';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
 import AlertMessage from '../../components/AlertMessage.vue';
-
 
 const { t } = useI18n();
 
@@ -85,11 +84,27 @@ async function handleSave() {
   message.value = '';
   try {
     await api.put('/scoring-rules', form.value);
-    message.value = 'Punkte-Regeln gespeichert. Bitte Punkte neu berechnen, falls nötig.';
+    message.value = t('adminPages.scoringRules.saved');
   } catch (err) {
-    error.value = err.response?.data?.error || 'Speichern fehlgeschlagen.';
+    error.value = err.response?.data?.error || t('adminPages.scoringRules.saveFailed');
   } finally {
     saving.value = false;
   }
 }
 </script>
+
+<style scoped>
+.example-box {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+}
+.example-box h4 {
+  margin-bottom: 0.5rem;
+}
+.example-text {
+  font-size: 0.875rem;
+  margin: 0;
+}
+</style>

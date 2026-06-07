@@ -63,7 +63,7 @@ onUnmounted(() => {
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
-  background: #fff3cd;
+  background: var(--color-warning-bg, #fff3cd);
   color: #856404;
 }
 .countdown-badge.expired { background: #f8d7da; color: #721c24; }
