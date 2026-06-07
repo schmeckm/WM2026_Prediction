@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "WM 2026 Tippspiel",
+    "title": "Aspire World Cup 2026 - Wettbewerb",
     "subtitle": "Tippspiel"
   },
   "languages": {
@@ -38,6 +38,7 @@
   "nav": {
     "navigation": "Navigation",
     "menu": "Menü",
+    "menuMore": "Mehr",
     "administration": "Administration",
     "dashboard": "Dashboard",
     "matches": "Spiele",
@@ -253,6 +254,7 @@
       "fire": "Feuer"
     },
     "dangerZoneTitle": "Konto löschen",
+    "signOutHint": "Melden Sie sich auf diesem Gerät ab.",
     "dangerZoneHint": "Diese Aktion ist endgültig. Es werden Ihr Profil, alle Tipps, Bonusantworten, Benachrichtigungen und Statistiken unwiderruflich gelöscht.",
     "deletePassword": "Aktuelles Passwort zur Bestätigung",
     "deletePasswordHint": "Zur Sicherheit geben Sie bitte Ihr Passwort ein.",

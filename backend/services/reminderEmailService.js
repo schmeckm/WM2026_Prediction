@@ -1,6 +1,6 @@
 const emailService = require('./emailService');
 const { getAppUrl } = require('./authTokenService');
-const { t, normalizeLocale } = require('./i18nService');
+const { t, resolveUserEmailLocale } = require('./i18nService');
 const { escapeHtml, wrapBrandedEmail } = require('./emailLayoutService');
 
 const DATE_LOCALES = {
@@ -9,11 +9,6 @@ const DATE_LOCALES = {
   es: 'es-ES',
   fr: 'fr-FR',
 };
-
-function resolveUserLocale(user) {
-  if (user?.language) return normalizeLocale(user.language);
-  return 'en';
-}
 
 function formatKickoff(kickoffTime, locale) {
   return new Date(kickoffTime).toLocaleString(DATE_LOCALES[locale] || DATE_LOCALES.de);
@@ -39,7 +34,7 @@ function formatMatchListText(matches, locale) {
 }
 
 function templateMissingPredictions(user, missingCount, upcomingMatches) {
-  const locale = resolveUserLocale(user);
+  const locale = resolveUserEmailLocale(user);
   const link = `${getAppUrl()}/matches?filter=missing`;
   const greeting = t('emails.missingPredictions.greeting', locale, { firstName: user.firstName });
   const body = t('emails.missingPredictions.body', locale, { missingCount });
@@ -75,7 +70,7 @@ function templateMissingPredictions(user, missingCount, upcomingMatches) {
 }
 
 function buildMissingPredictionsNotification(user, missingCount) {
-  const locale = resolveUserLocale(user);
+  const locale = resolveUserEmailLocale(user);
   return {
     title: t('emails.missingPredictions.notificationTitle', locale),
     message: t('emails.missingPredictions.notificationBody', locale, { missingCount }),
@@ -90,7 +85,6 @@ async function sendMissingPredictionsEmail(user, missingCount, upcomingMatches) 
 }
 
 module.exports = {
-  resolveUserLocale,
   formatMatchListHtml,
   formatMatchListText,
   templateMissingPredictions,

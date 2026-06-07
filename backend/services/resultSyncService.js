@@ -1,4 +1,4 @@
-const { Match, Prediction, User } = require('../models');
+const { Match, Prediction, User, sequelize } = require('../models');
 const footballProviderService = require('./footballProviderService');
 const { calculatePoints } = require('./pointsCalculationService');
 const { getScoringRules, saveLeaderboardSnapshot, getLeaderboard, invalidateLeaderboardCache } = require('./leaderboardService');
@@ -9,15 +9,32 @@ const notificationService = require('./notificationService');
 const { startSyncLog, finishSyncLog, failSyncLog, emptySummary } = require('./syncLogService');
 const { canUpdateMatch, buildResultUpdateData, isResultRelevant } = require('./matchSyncUtils');
 const { shouldSkipSyncDueToRateLimit, markLiveSyncCompleted } = require('./footballDataRateLimitService');
+const { captureSyncSummaryErrors } = require('./sentryCronService');
 
-async function recalculateMatchPoints(match) {
+async function recalculateMatchPoints(match, transaction = null) {
   const scoringRules = await getScoringRules();
-  const predictions = await Prediction.findAll({ where: { matchId: match.id } });
+  const predictions = await Prediction.findAll({
+    where: { matchId: match.id },
+    transaction,
+  });
 
   for (const prediction of predictions) {
     const points = calculatePoints(prediction, match, scoringRules);
-    await prediction.update({ points });
+    await prediction.update({ points }, { transaction });
   }
+}
+
+async function applyFinishedMatchUpdate(match, updateData) {
+  return sequelize.transaction(async (transaction) => {
+    await match.update(updateData, { transaction });
+    await match.reload({ transaction });
+
+    if (match.status === 'finished') {
+      await recalculateMatchPoints(match, transaction);
+    }
+
+    return match;
+  });
 }
 
 async function notifyAffectedUsers(matchIds) {
@@ -50,7 +67,7 @@ async function applyResultUpdates({ syncType = 'results', userId = null, req = n
 
   footballProviderService.assertApiConfigured(config);
 
-  const rateCheck = shouldSkipSyncDueToRateLimit(syncType);
+  const rateCheck = await shouldSkipSyncDueToRateLimit(syncType);
   if (rateCheck.skip) {
     return {
       skipped: true,
@@ -102,12 +119,8 @@ async function applyResultUpdates({ syncType = 'results', userId = null, req = n
           continue;
         }
 
-        await match.update(updateData);
+        await applyFinishedMatchUpdate(match, updateData);
         await match.reload();
-
-        if (match.status === 'finished') {
-          await recalculateMatchPoints(match);
-        }
 
         socketService.emitToMatches('match:update', match);
         summary.updatedMatches.push({ id: match.id, matchNumber: match.matchNumber, status: match.status, prevStatus });
@@ -134,6 +147,7 @@ async function applyResultUpdates({ syncType = 'results', userId = null, req = n
       markLiveSyncCompleted();
     }
 
+    captureSyncSummaryErrors(summary, syncType);
     await finishSyncLog(log, summary, rateLimits);
 
     if (userId) {
@@ -164,4 +178,4 @@ async function syncResults(options = {}) {
   return applyResultUpdates({ ...options, syncType: 'results', liveOnly: false });
 }
 
-module.exports = { syncResults, recalculateMatchPoints, applyResultUpdates };
+module.exports = { syncResults, recalculateMatchPoints, applyResultUpdates, applyFinishedMatchUpdate };

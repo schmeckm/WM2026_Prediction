@@ -18,7 +18,7 @@
     </div>
     <div class="navbar-user">
       <div class="navbar-actions">
-        <router-link to="/help" class="icon-btn navbar-action--desktop" :title="t('help.nav')">
+        <router-link to="/help" class="icon-btn" :title="t('help.nav')">
           <NavIcon name="help" />
         </router-link>
         <button
@@ -28,13 +28,22 @@
         >
           <NavIcon :name="themeStore.theme === 'dark' ? 'sun' : 'moon'" />
         </button>
-        <div class="navbar-action--desktop">
+        <div class="navbar-lang">
           <LanguageSwitcher />
         </div>
         <div v-if="!adminMode" class="navbar-notification">
           <NotificationBell />
         </div>
       </div>
+      <button
+        type="button"
+        class="icon-btn navbar-logout-mobile"
+        :title="t('nav.logout')"
+        :aria-label="t('nav.logout')"
+        @click="handleLogout"
+      >
+        <NavIcon name="logout" />
+      </button>
       <router-link to="/profile" class="navbar-user-block" :title="t('nav.profile')">
         <UserAvatar
           :image-url="authStore.user?.imageUrl"
@@ -136,6 +145,10 @@ async function handleLogout() {
   margin-left: 0.25rem;
 }
 
+.navbar-logout-mobile {
+  display: none;
+}
+
 .navbar-brand-mark {
   display: none;
 }
@@ -159,8 +172,8 @@ async function handleLogout() {
     display: none;
   }
 
-  .navbar-action--desktop {
-    display: none;
+  .navbar-logout-mobile {
+    display: inline-flex;
   }
 
   .navbar-actions {
@@ -169,8 +182,17 @@ async function handleLogout() {
     gap: 0.125rem;
   }
 
+  .navbar-lang :deep(.locale-picker.compact .locale-picker-trigger) {
+    min-width: auto;
+    padding: 0.25rem 0.35rem;
+  }
+
+  .navbar-lang :deep(.locale-picker-label) {
+    display: none;
+  }
+
   .navbar-user {
-    gap: 0.5rem;
+    gap: 0.375rem;
   }
 
   .navbar-user-block {

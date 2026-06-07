@@ -174,6 +174,11 @@ function setFilter(value) {
 }
 
 onMounted(async () => {
+  if (window.matchMedia('(max-width: 768px)').matches && viewMode.value === 'table') {
+    viewMode.value = 'cards';
+    localStorage.setItem(VIEW_MODE_KEY, 'cards');
+  }
+
   lockTimer = setInterval(() => {
     now.value = Date.now();
   }, 1000);
@@ -225,5 +230,26 @@ onUnmounted(() => {
   width: auto;
   min-width: 11rem;
   max-width: 14rem;
+}
+
+@media (max-width: 768px) {
+  .group-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .group-filter {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .view-toggle {
+    width: 100%;
+  }
+
+  .view-toggle .btn {
+    flex: 1;
+  }
 }
 </style>

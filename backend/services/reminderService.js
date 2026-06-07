@@ -174,9 +174,8 @@ async function sendSyncErrorToAdmin(errorMessage) {
 
   const { User } = require('../models');
   const admins = await User.findAll({ where: { role: 'admin' } });
-  const template = emailService.templateSyncError(errorMessage);
-
   await runWithConcurrency(admins, async (admin) => {
+    const template = emailService.templateSyncError(errorMessage, admin);
     await emailService.sendEmail({ to: admin.email, ...template });
   });
 }

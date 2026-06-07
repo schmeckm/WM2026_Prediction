@@ -37,4 +37,11 @@ describe('reminderEmailService', () => {
     assert.match(de.message, /2/);
     assert.match(en.message, /2/);
   });
+
+  it('falls back to English when user has no language', () => {
+    const userNoLang = { firstName: 'Alex', email: 'alex@example.com' };
+    const tpl = templateMissingPredictions(userNoLang, 1, matches);
+    assert.match(tpl.subject, /missing predictions/i);
+    assert.match(tpl.html, /Hello Alex!/);
+  });
 });

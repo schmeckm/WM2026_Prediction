@@ -201,7 +201,7 @@
       "tagline": "Willkommen beim WM 2026 Tippspiel von Aspire MAKE – tippen Sie mit, verfolgen Sie Spiele und messen Sie sich mit Ihren Kollegen."
     },
     "passwordReset": {
-      "subject": "WM 2026 Tippspiel – Passwort zurücksetzen",
+      "subject": "Aspire World Cup 2026 - Wettbewerb – Passwort zurücksetzen",
       "title": "Passwort zurücksetzen",
       "greeting": "Hallo {firstName}!",
       "body": "Sie haben eine Passwort-Zurücksetzung angefordert.",
@@ -211,7 +211,7 @@
       "text": "Passwort zurücksetzen: {link}"
     },
     "emailVerification": {
-      "subject": "WM 2026 Tippspiel – E-Mail bestätigen",
+      "subject": "Aspire World Cup 2026 - Wettbewerb – E-Mail bestätigen",
       "title": "E-Mail bestätigen",
       "greeting": "Willkommen, {firstName}!",
       "body": "Bitte bestätigen Sie Ihre E-Mail-Adresse, um sich anzumelden:",
@@ -221,7 +221,7 @@
       "text": "Willkommen {firstName}! Bitte bestätigen Sie Ihre E-Mail: {link}"
     },
     "missingPredictions": {
-      "subject": "WM 2026 Tippspiel – {missingCount} fehlende Tipps",
+      "subject": "Aspire World Cup 2026 - Wettbewerb – {missingCount} fehlende Tipps",
       "title": "Fehlende Tipps",
       "greeting": "Hallo {firstName}!",
       "body": "Sie haben noch {missingCount} offene Tipps.",
@@ -234,7 +234,7 @@
       "notificationBody": "Sie haben noch {missingCount} offene Tipps."
     },
     "upcomingMatches": {
-      "subject": "WM 2026 Tippspiel – Anstehende Spiele",
+      "subject": "Aspire World Cup 2026 - Wettbewerb – Anstehende Spiele",
       "title": "Anstehende Spiele",
       "greeting": "Hallo {firstName}!",
       "body": "Diese Spiele stehen in den nächsten Tagen an:",
@@ -243,7 +243,7 @@
       "text": "Anstehende Spiele:\n{matchListText}\n{link}"
     },
     "bonusReminder": {
-      "subject": "WM 2026 Tippspiel – Bonusfrage schließt bald",
+      "subject": "Aspire World Cup 2026 - Wettbewerb – Bonusfrage schließt bald",
       "title": "Bonusfrage",
       "greeting": "Hallo {firstName}!",
       "body": "Die Bonusfrage \"{questionText}\" schließt am {lockTime}.",
@@ -251,7 +251,7 @@
       "text": "Hallo {firstName}! Bonusfrage \"{questionText}\" schließt am {lockTime}.\n{link}"
     },
     "leaderboardUpdate": {
-      "subject": "WM 2026 Tippspiel – Hitliste aktualisiert",
+      "subject": "Aspire World Cup 2026 - Wettbewerb – Hitliste aktualisiert",
       "title": "Hitliste",
       "greeting": "Hallo {firstName}!",
       "body": "Ihr aktueller Rang: #{rank} mit {points} Punkten.",
@@ -259,12 +259,12 @@
       "text": "Hallo {firstName}! Rang: #{rank}, Punkte: {points}\n{link}"
     },
     "syncError": {
-      "subject": "WM 2026 Tippspiel – Sync-Fehler",
+      "subject": "Aspire World Cup 2026 - Wettbewerb – Sync-Fehler",
       "title": "Synchronisierungsfehler",
       "text": "Sync-Fehler: {errorMessage}"
     },
     "manualTipReminder": {
-      "subject": "WM 2026 Tippspiel – Erinnerung: Tipps abgeben",
+      "subject": "Aspire World Cup 2026 - Wettbewerb – Erinnerung: Tipps abgeben",
       "title": "Tipp-Erinnerung",
       "greeting": "Hallo {firstName}!",
       "bodyWithMissing": "Du hast noch {missingCount} offene Tipps. Gib sie rechtzeitig ab, um Punkte zu sammeln.",
@@ -273,7 +273,7 @@
       "text": "Hallo {firstName}! {missingCount} offene Tipps.\n{matchListText}\n{link}"
     },
     "statusUpdate": {
-      "subject": "WM 2026 Tippspiel – Aktueller Stand",
+      "subject": "Aspire World Cup 2026 - Wettbewerb – Aktueller Stand",
       "title": "Status-Update",
       "greeting": "Hallo {firstName}!",
       "intro": "Hier ist der aktuelle Stand im Tippspiel:",
@@ -287,6 +287,13 @@
       "noEntries": "Noch keine Einträge.",
       "cta": "Hitliste ansehen",
       "text": "Hallo {firstName}! Dein Rang: {rank}, Punkte: {points}. Team: {teamName} (Platz {teamRank}). {link}"
+    },
+    "test": {
+      "subject": "Aspire World Cup 2026 - Wettbewerb – Test-E-Mail",
+      "title": "Test",
+      "greeting": "Hallo!",
+      "body": "Die E-Mail-Konfiguration funktioniert.",
+      "text": "Test erfolgreich! Die E-Mail-Konfiguration funktioniert."
     }
   },
   "ai": {

@@ -1,4 +1,6 @@
 require('./config/loadEnv');
+require('./instrument');
+const { Sentry, isSentryEnabled } = require('./instrument');
 const express = require('express');
 const helmet = require('helmet');
 const { getAppVersion } = require('./utils/appVersion');
@@ -141,6 +143,11 @@ app.use('/api/admin/ai', adminAiRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
+  if (isSentryEnabled()) {
+    Sentry.captureException(err, {
+      extra: { path: req.path, method: req.method },
+    });
+  }
   const isProduction = process.env.NODE_ENV === 'production';
   res.status(err.status || 500).json({
     error: isProduction

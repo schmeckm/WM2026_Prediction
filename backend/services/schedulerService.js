@@ -6,8 +6,59 @@ const { syncLiveScores } = require('./liveScoreSyncService');
 const { sendMissingPredictionReminders, sendBonusQuestionReminders, sendSyncErrorToAdmin, sendUpcomingMatchesSummary, sendLeaderboardUpdates } = require('./reminderService');
 const { getSetting } = require('./settingsService');
 const footballProviderService = require('./footballProviderService');
+const { runWithCronMonitor, captureException } = require('./sentryCronService');
 
 let jobs = [];
+
+const CRON_TZ = process.env.SENTRY_CRON_TIMEZONE || process.env.FOOTBALL_API_TIMEZONE || 'Europe/Zurich';
+
+const CRON_MONITORS = {
+  resultSync: {
+    slug: 'wm2026-result-sync',
+    config: {
+      schedule: { type: 'interval', value: 15, unit: 'minute' },
+      timezone: CRON_TZ,
+      checkinMargin: 5,
+      maxRuntime: 12,
+    },
+  },
+  liveScoreSync: {
+    slug: 'wm2026-live-score-sync',
+    config: {
+      schedule: { type: 'interval', value: 5, unit: 'minute' },
+      timezone: CRON_TZ,
+      checkinMargin: 3,
+      maxRuntime: 4,
+    },
+  },
+  leaderboardSnapshot: {
+    slug: 'wm2026-leaderboard-snapshot',
+    config: {
+      schedule: { type: 'interval', value: 1, unit: 'hour' },
+      timezone: CRON_TZ,
+      checkinMargin: 10,
+      maxRuntime: 5,
+    },
+  },
+  kickoffLock: {
+    slug: 'wm2026-kickoff-lock',
+    config: {
+      schedule: { type: 'interval', value: 1, unit: 'minute' },
+      timezone: CRON_TZ,
+      checkinMargin: 2,
+      maxRuntime: 1,
+    },
+  },
+  postgresBackup: {
+    slug: 'wm2026-postgres-backup',
+    config: {
+      schedule: { type: 'crontab', value: '0 3 * * *' },
+      timezone: CRON_TZ,
+      checkinMargin: 30,
+      maxRuntime: 20,
+    },
+  },
+};
 
 function isTournamentActive() {
   const now = new Date();
@@ -29,25 +80,34 @@ async function isSyncAllowed() {
   return apiSyncEnabled;
 }
 
-async function safeRun(fn, label) {
-  try {
-    console.log(`[Scheduler] Starte: ${label}`);
-    const result = await fn();
-    console.log(`[Scheduler] Fertig: ${label}`, result?.message || result?.path || result?.filename || '');
-    return result;
-  } catch (error) {
-    console.error(`[Scheduler] Fehler bei ${label}:`, error.message);
+async function safeRun(fn, label, monitor = null) {
+  const execute = async () => {
     try {
-      await sendSyncErrorToAdmin(`${label}: ${error.message}`);
-    } catch {
-      // ignore email errors
+      console.log(`[Scheduler] Starte: ${label}`);
+      const result = await fn();
+      console.log(`[Scheduler] Fertig: ${label}`, result?.message || result?.path || result?.filename || '');
+      return result;
+    } catch (error) {
+      console.error(`[Scheduler] Fehler bei ${label}:`, error.message);
+      captureException(error, { schedulerLabel: label, monitorSlug: monitor?.slug });
+      try {
+        await sendSyncErrorToAdmin(`${label}: ${error.message}`);
+      } catch {
+        // ignore email errors
+      }
     }
+    return null;
+  };
+
+  if (monitor) {
+    return runWithCronMonitor(monitor.slug, execute, monitor.config);
   }
+  return execute();
 }
 
-async function safeSyncRun(fn, label) {
+async function safeSyncRun(fn, label, monitor = null) {
   if (!(await isSyncAllowed())) return null;
-  return safeRun(fn, label);
+  return safeRun(fn, label, monitor);
 }
 
 function startScheduler() {
@@ -68,14 +128,14 @@ function startScheduler() {
   // Every 15 minutes on active match days
   jobs.push(cron.schedule('*/15 * * * *', async () => {
     if (isTournamentActive()) {
-      await safeSyncRun(() => syncResults(), 'Ergebnis-Sync (15min)');
+      await safeSyncRun(() => syncResults(), 'Ergebnis-Sync (15min)', CRON_MONITORS.resultSync);
     }
   }));
 
   // Every 5 minutes while matches are live (football-data.org rate limit friendly)
   jobs.push(cron.schedule('*/5 * * * *', async () => {
     if (await hasLiveMatches()) {
-      await safeSyncRun(() => syncLiveScores(), 'Live-Score-Sync (5min)');
+      await safeSyncRun(() => syncLiveScores(), 'Live-Score-Sync (5min)', CRON_MONITORS.liveScoreSync);
     }
   }));
 
@@ -108,7 +168,11 @@ function startScheduler() {
   const { saveLeaderboardSnapshot } = require('./leaderboardService');
   jobs.push(cron.schedule('0 * * * *', async () => {
     if (isTournamentActive()) {
-      await safeRun(() => saveLeaderboardSnapshot(), 'Hitliste-Snapshot');
+      await safeRun(
+        () => saveLeaderboardSnapshot(),
+        'Hitliste-Snapshot',
+        CRON_MONITORS.leaderboardSnapshot,
+      );
     }
   }));
 
@@ -116,7 +180,11 @@ function startScheduler() {
   const { lockPastKickoffMatches } = require('./matchLockSchedulerService');
   jobs.push(cron.schedule('*/15 * * * * *', async () => {
     if (isTournamentActive()) {
-      await safeRun(() => lockPastKickoffMatches(), 'Kickoff-Sperre (15s)');
+      await safeRun(
+        () => lockPastKickoffMatches(),
+        'Kickoff-Sperre (15s)',
+        CRON_MONITORS.kickoffLock,
+      );
     }
   }));
   jobs.push(cron.schedule('* * * * *', async () => {
@@ -131,7 +199,11 @@ function startScheduler() {
   const { createUploadsBackup } = require('./uploadsBackupService');
   jobs.push(cron.schedule('0 3 * * *', async () => {
     if (isPostgresConfigured()) {
-      await safeRun(() => createPostgresBackup(), 'Postgres-Backup (täglich)');
+      await safeRun(
+        () => createPostgresBackup(),
+        'Postgres-Backup (täglich)',
+        CRON_MONITORS.postgresBackup,
+      );
     } else {
       await safeRun(async () => backupDatabase('scheduled'), 'SQLite-Backup (täglich)');
     }

@@ -4,8 +4,8 @@ const { Op } = require('sequelize');
 const { Match, Prediction } = require('../models');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
-const { calculatePoints } = require('../services/pointsCalculationService');
-const { getScoringRules, saveLeaderboardSnapshot } = require('../services/leaderboardService');
+const { applyFinishedMatchUpdate } = require('../services/resultSyncService');
+const { saveLeaderboardSnapshot } = require('../services/leaderboardService');
 const { logAudit } = require('../services/auditService');
 const socketService = require('../services/socketService');
 const { isMatchEditable } = require('../services/matchLockService');
@@ -188,21 +188,14 @@ router.post('/:id/result', authMiddleware, adminMiddleware, async (req, res) => 
       return sendError(res, req, 400, 'errors.scoresRequired');
     }
 
-    await match.update({
+    await applyFinishedMatchUpdate(match, {
       homeScore: parseInt(homeScore, 10),
       awayScore: parseInt(awayScore, 10),
       status: 'finished',
       isManuallyLocked: true,
       isApiManaged: false,
     });
-
-    const scoringRules = await getScoringRules();
-    const predictions = await Prediction.findAll({ where: { matchId: match.id } });
-
-    for (const prediction of predictions) {
-      const points = calculatePoints(prediction, match, scoringRules);
-      await prediction.update({ points });
-    }
+    await match.reload();
 
     await saveLeaderboardSnapshot();
     socketService.emitToMatches('match:update', match);

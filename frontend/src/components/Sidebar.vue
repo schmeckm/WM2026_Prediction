@@ -32,6 +32,12 @@
         </router-link>
       </template>
     </nav>
+    <div v-if="!adminMode" class="sidebar-footer-links">
+      <router-link to="/help" class="sidebar-link" active-class="active" @click="close">
+        <span class="icon"><NavIcon name="help" /></span>
+        {{ t('help.nav') }}
+      </router-link>
+    </div>
     <div class="sidebar-footer">
       <div class="sidebar-footer-name">{{ authStore.fullName }}</div>
     </div>

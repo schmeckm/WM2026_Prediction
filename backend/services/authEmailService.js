@@ -1,11 +1,7 @@
 const emailService = require('./emailService');
 const { getAppUrl } = require('./authTokenService');
-const { t, normalizeLocale } = require('./i18nService');
+const { t, resolveUserEmailLocale } = require('./i18nService');
 const { escapeHtml, wrapBrandedEmail } = require('./emailLayoutService');
-
-function resolveEmailLocale(user, locale) {
-  return normalizeLocale(locale || user?.language);
-}
 
 function renderLinkFallback(text, link) {
   const idx = text.indexOf(link);
@@ -18,7 +14,7 @@ function renderLinkFallback(text, link) {
 }
 
 function templateEmailVerification(user, token, locale) {
-  const lang = resolveEmailLocale(user, locale);
+  const lang = resolveUserEmailLocale(user, locale);
   const link = `${getAppUrl()}/verify-email?token=${token}`;
   const greeting = t('emails.emailVerification.greeting', lang, { firstName: user.firstName });
   const body = t('emails.emailVerification.body', lang);
@@ -45,7 +41,7 @@ function templateEmailVerification(user, token, locale) {
 }
 
 function templatePasswordReset(user, token, locale) {
-  const lang = resolveEmailLocale(user, locale);
+  const lang = resolveUserEmailLocale(user, locale);
   const link = `${getAppUrl()}/reset-password?token=${token}`;
   const greeting = t('emails.passwordReset.greeting', lang, { firstName: user.firstName });
   const body = t('emails.passwordReset.body', lang);

@@ -6,8 +6,8 @@ const emailService = require('../services/emailService');
 const reminderService = require('../services/reminderService');
 const adminUserEmailService = require('../services/adminUserEmailService');
 const { logAudit } = require('../services/auditService');
-const { wrapBrandedEmail } = require('../services/emailLayoutService');
-const { normalizeLocale } = require('../services/i18nService');
+const { wrapBrandedEmail, escapeHtml } = require('../services/emailLayoutService');
+const { normalizeLocale, resolveUserEmailLocale, t } = require('../services/i18nService');
 
 const router = express.Router();
 
@@ -25,17 +25,17 @@ router.get('/status', async (req, res) => {
 router.post('/send-test', async (req, res) => {
   try {
     const to = req.body.to || req.user.email;
-    const locale = normalizeLocale(req.locale);
+    const locale = resolveUserEmailLocale(req.user, req.locale);
     const result = await emailService.sendEmail({
       to,
-      subject: 'WM 2026 Tippspiel – Test-E-Mail',
+      subject: t('emails.test.subject', locale),
       html: wrapBrandedEmail({
         locale,
-        title: 'Test',
-        greeting: 'Hello!',
-        bodyHtml: '<p style="margin:0;">The email configuration is working.</p>',
+        title: t('emails.test.title', locale),
+        greeting: t('emails.test.greeting', locale),
+        bodyHtml: `<p style="margin:0;">${escapeHtml(t('emails.test.body', locale))}</p>`,
       }),
-      text: 'Test successful! The email configuration is working.',
+      text: t('emails.test.text', locale),
     });
     await logAudit({ userId: req.user.id, action: 'EMAIL_TEST', req });
     const message = result.mock

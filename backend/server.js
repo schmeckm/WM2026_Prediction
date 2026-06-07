@@ -1,4 +1,6 @@
 require('./config/loadEnv');
+require('./instrument');
+const { Sentry, isSentryEnabled } = require('./instrument');
 const { validateEnv } = require('./config/validateEnv');
 const http = require('http');
 const { app, initDatabase } = require('./app');
@@ -10,10 +12,19 @@ validateEnv();
 
 process.on('unhandledRejection', (reason) => {
   console.error('Unhandled promise rejection:', reason);
+  if (isSentryEnabled()) {
+    Sentry.captureException(reason instanceof Error ? reason : new Error(String(reason)));
+  }
 });
 
 process.on('uncaughtException', (error) => {
   console.error('Uncaught exception:', error);
+  if (isSentryEnabled()) {
+    Sentry.captureException(error);
+    Sentry.flush(2000).finally(() => process.exit(1));
+    return;
+  }
+  process.exit(1);
 });
 
 const PORT = process.env.PORT || 3000;
@@ -42,6 +53,10 @@ async function start() {
     process.on('SIGINT', shutdown);
   } catch (error) {
     console.error('Serverstart fehlgeschlagen:', error);
+    if (isSentryEnabled()) {
+      Sentry.captureException(error);
+      await Sentry.flush(2000);
+    }
     process.exit(1);
   }
 }

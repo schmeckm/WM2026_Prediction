@@ -1,7 +1,7 @@
 const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
+const { resolveUserEmailLocale } = require('../../services/i18nService');
 const {
-  resolveUserEmailLocale,
   templateManualTipReminder,
   templateStatusUpdate,
 } = require('../../services/adminUserEmailService');

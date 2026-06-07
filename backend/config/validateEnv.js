@@ -34,6 +34,10 @@ function validateEnv() {
     warnings.push('FOOTBALL_API_KEY is not set while API sync is enabled.');
   }
 
+  if (isProduction && !process.env.SENTRY_DSN) {
+    warnings.push('SENTRY_DSN is not set – production errors during live matches will not be monitored.');
+  }
+
   for (const msg of warnings) console.warn(`[Env] ${msg}`);
   if (errors.length > 0) {
     for (const msg of errors) console.error(`[Env] ${msg}`);

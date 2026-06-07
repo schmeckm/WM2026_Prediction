@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const { getSetting } = require('./settingsService');
 const { wrapBrandedEmail, escapeHtml } = require('./emailLayoutService');
-const { t, normalizeLocale } = require('./i18nService');
+const { t, resolveUserEmailLocale } = require('./i18nService');
 const { getAppUrl } = require('./authTokenService');
 
 let transporter = null;
@@ -34,10 +34,6 @@ function getTransporter() {
 
 function isEmailConfigured() {
   return !!process.env.SMTP_HOST;
-}
-
-function resolveUserLocale(user) {
-  return normalizeLocale(user?.language);
 }
 
 function formatKickoff(kickoffTime, locale) {
@@ -77,7 +73,7 @@ function formatMatchListText(matches, locale) {
 }
 
 function templateUpcomingMatches(user, matches) {
-  const locale = resolveUserLocale(user);
+  const locale = resolveUserEmailLocale(user);
   const greeting = t('emails.upcomingMatches.greeting', locale, { firstName: user.firstName });
   const body = t('emails.upcomingMatches.body', locale);
   const matchListHtml = formatMatchListHtml(matches, locale);
@@ -102,7 +98,7 @@ function templateUpcomingMatches(user, matches) {
 }
 
 function templateBonusReminder(user, question) {
-  const locale = resolveUserLocale(user);
+  const locale = resolveUserEmailLocale(user);
   const lockTime = formatKickoff(question.lockTime, locale);
   const link = `${getAppUrl()}/bonus`;
 
@@ -128,8 +124,8 @@ function templateBonusReminder(user, question) {
   };
 }
 
-function templateSyncError(errorMessage) {
-  const locale = 'de';
+function templateSyncError(errorMessage, user) {
+  const locale = resolveUserEmailLocale(user);
   return {
     subject: t('emails.syncError.subject', locale),
     html: wrapBrandedEmail({
@@ -142,7 +138,7 @@ function templateSyncError(errorMessage) {
 }
 
 function templateLeaderboardUpdate(user, rank, points) {
-  const locale = resolveUserLocale(user);
+  const locale = resolveUserEmailLocale(user);
   const link = `${getAppUrl()}/leaderboard`;
 
   return {

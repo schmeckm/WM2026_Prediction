@@ -201,7 +201,7 @@
       "tagline": "Bienvenue au jeu de pronostics Coupe du Monde FIFA 2026 d'Aspire MAKE – suivez les matchs, faites vos prédictions et rivalisez avec vos collègues."
     },
     "passwordReset": {
-      "subject": "CM 2026 Jeu de pronostics – Réinitialiser le mot de passe",
+      "subject": "Aspire World Cup 2026 - Compétition – Réinitialiser le mot de passe",
       "title": "Réinitialiser le mot de passe",
       "greeting": "Bonjour {firstName} !",
       "body": "Vous avez demandé une réinitialisation de mot de passe.",
@@ -211,7 +211,7 @@
       "text": "Réinitialiser le mot de passe : {link}"
     },
     "emailVerification": {
-      "subject": "CM 2026 Jeu de pronostics – Confirmer l'e-mail",
+      "subject": "Aspire World Cup 2026 - Compétition – Confirmer l'e-mail",
       "title": "Confirmer l'e-mail",
       "greeting": "Bienvenue, {firstName} !",
       "body": "Veuillez confirmer votre adresse e-mail pour vous connecter :",
@@ -221,7 +221,7 @@
       "text": "Bienvenue {firstName} ! Veuillez confirmer votre e-mail : {link}"
     },
     "missingPredictions": {
-      "subject": "CM 2026 Jeu de pronostics – {missingCount} pronostics manquants",
+      "subject": "Aspire World Cup 2026 - Compétition – {missingCount} pronostics manquants",
       "title": "Pronostics manquants",
       "greeting": "Bonjour {firstName} !",
       "body": "Il vous reste {missingCount} pronostics ouverts.",
@@ -234,7 +234,7 @@
       "notificationBody": "Il vous reste {missingCount} pronostics ouverts."
     },
     "upcomingMatches": {
-      "subject": "WM 2026 Pronostics – Matchs à venir",
+      "subject": "Aspire World Cup 2026 - Compétition – Matchs à venir",
       "title": "Matchs à venir",
       "greeting": "Bonjour {firstName} !",
       "body": "Ces matchs arrivent bientôt :",
@@ -243,7 +243,7 @@
       "text": "Matchs à venir :\n{matchListText}\n{link}"
     },
     "bonusReminder": {
-      "subject": "WM 2026 Pronostics – Question bonus bientôt fermée",
+      "subject": "Aspire World Cup 2026 - Compétition – Question bonus bientôt fermée",
       "title": "Question bonus",
       "greeting": "Bonjour {firstName} !",
       "body": "La question bonus « {questionText} » se ferme le {lockTime}.",
@@ -251,7 +251,7 @@
       "text": "Bonjour {firstName} ! Question bonus « {questionText} » se ferme le {lockTime}.\n{link}"
     },
     "leaderboardUpdate": {
-      "subject": "WM 2026 Pronostics – Classement mis à jour",
+      "subject": "Aspire World Cup 2026 - Compétition – Classement mis à jour",
       "title": "Classement",
       "greeting": "Bonjour {firstName} !",
       "body": "Votre rang actuel : #{rank} avec {points} points.",
@@ -259,12 +259,12 @@
       "text": "Bonjour {firstName} ! Rang : #{rank}, Points : {points}\n{link}"
     },
     "syncError": {
-      "subject": "WM 2026 Pronostics – Erreur de synchronisation",
+      "subject": "Aspire World Cup 2026 - Compétition – Erreur de synchronisation",
       "title": "Erreur de synchronisation",
       "text": "Erreur sync : {errorMessage}"
     },
     "manualTipReminder": {
-      "subject": "WM 2026 Pronostics – Rappel : soumettez vos pronostics",
+      "subject": "Aspire World Cup 2026 - Compétition – Rappel : soumettez vos pronostics",
       "title": "Rappel de pronostics",
       "greeting": "Bonjour {firstName} !",
       "bodyWithMissing": "Il vous reste {missingCount} pronostics ouverts. Soumettez-les à temps pour marquer des points.",
@@ -273,7 +273,7 @@
       "text": "Bonjour {firstName} ! {missingCount} pronostics ouverts.\n{matchListText}\n{link}"
     },
     "statusUpdate": {
-      "subject": "WM 2026 Pronostics – Classement actuel",
+      "subject": "Aspire World Cup 2026 - Compétition – Classement actuel",
       "title": "Mise à jour du statut",
       "greeting": "Bonjour {firstName} !",
       "intro": "Voici l'état actuel du jeu de pronostics :",
@@ -287,6 +287,13 @@
       "noEntries": "Aucune entrée pour l'instant.",
       "cta": "Voir le classement",
       "text": "Bonjour {firstName} ! Votre rang : {rank}, points : {points}. Équipe : {teamName} (rang {teamRank}). {link}"
+    },
+    "test": {
+      "subject": "Aspire World Cup 2026 - Compétition – E-mail de test",
+      "title": "Test",
+      "greeting": "Bonjour !",
+      "body": "La configuration e-mail fonctionne.",
+      "text": "Test réussi ! La configuration e-mail fonctionne."
     }
   },
   "ai": {

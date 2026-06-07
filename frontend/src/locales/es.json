@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "Juego de Pronósticos WM 2026",
+    "title": "Aspire World Cup 2026 - Competición",
     "subtitle": "Juego de Pronósticos"
   },
   "languages": {
@@ -38,6 +38,7 @@
   "nav": {
     "navigation": "Navegación",
     "menu": "Menú",
+    "menuMore": "Más",
     "administration": "Administración",
     "dashboard": "Panel",
     "matches": "Partidos",
@@ -235,7 +236,8 @@
       "clown": "Payaso",
       "nerd": "Nerd",
       "fire": "Fuego"
-    }
+    },
+    "signOutHint": "Cierra sesión en este dispositivo."
   },
   "privacy": {
     "title": "Política de privacidad",

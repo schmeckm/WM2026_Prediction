@@ -18,7 +18,7 @@ async function syncFixtures({ userId = null, req = null } = {}) {
 
   footballProviderService.assertApiConfigured(config);
 
-  const rateCheck = shouldSkipSyncDueToRateLimit('fixtures');
+  const rateCheck = await shouldSkipSyncDueToRateLimit('fixtures');
   if (rateCheck.skip) {
     return {
       skipped: true,

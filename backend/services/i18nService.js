@@ -3,6 +3,7 @@ const path = require('path');
 
 const SUPPORTED_LOCALES = ['de', 'en', 'es', 'fr'];
 const DEFAULT_LOCALE = 'de';
+const EMAIL_FALLBACK_LOCALE = 'en';
 
 const catalogs = {};
 for (const locale of SUPPORTED_LOCALES) {
@@ -14,6 +15,12 @@ function normalizeLocale(locale) {
   if (!locale) return DEFAULT_LOCALE;
   const code = String(locale).toLowerCase().split('-')[0];
   return SUPPORTED_LOCALES.includes(code) ? code : DEFAULT_LOCALE;
+}
+
+function resolveUserEmailLocale(user, locale) {
+  if (locale) return normalizeLocale(locale);
+  if (user?.language) return normalizeLocale(user.language);
+  return EMAIL_FALLBACK_LOCALE;
 }
 
 function getNestedValue(obj, keyPath) {
@@ -49,7 +56,9 @@ function parseAcceptLanguage(header) {
 module.exports = {
   SUPPORTED_LOCALES,
   DEFAULT_LOCALE,
+  EMAIL_FALLBACK_LOCALE,
   normalizeLocale,
+  resolveUserEmailLocale,
   t,
   resolveLocale,
   parseAcceptLanguage,

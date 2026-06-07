@@ -51,6 +51,7 @@
   --sidebar-width: 16rem;
   --shell-height: 2.75rem;
   --bottom-nav-height: 4rem;
+  --system-status-bar-height: 2.5rem;
   --sidebar-bg: #111111;
   --sidebar-bg-bottom: #0A0A0A;
   --sidebar-text: rgba(255, 255, 255, 0.88);
@@ -453,6 +454,11 @@ a:hover {
 
 .sidebar-footer {
   padding: 0.875rem 1rem;
+  border-top: 1px solid var(--sidebar-border);
+}
+
+.sidebar-footer-links {
+  padding: 0.5rem 0.5rem 0;
   border-top: 1px solid var(--sidebar-border);
 }
 
@@ -1171,6 +1177,29 @@ tbody tr:hover {
   color: var(--color-text-muted);
 }
 
+@media (max-width: 480px) {
+  .prediction-inputs {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .prediction-inputs .btn {
+    width: 100%;
+    margin-top: 0.25rem;
+  }
+
+  .score-stepper--vertical .score-stepper-btn {
+    width: 3.25rem;
+    height: 2.5rem;
+    font-size: 1.75rem;
+  }
+
+  .score-stepper--vertical .score-stepper-input {
+    width: 2.75rem;
+    font-size: 1.25rem;
+  }
+}
+
 /* Loading */
 .loading-spinner {
   display: flex;
@@ -1334,13 +1363,23 @@ tbody tr:hover {
   justify-content: center;
   gap: 0.2rem;
   flex: 1;
-  padding: 0.5rem 0.25rem;
+  min-width: 0;
+  padding: 0.5rem 0.15rem;
   color: var(--color-text-muted);
   text-decoration: none;
   font-size: 0.625rem;
   font-weight: 600;
   transition: color 0.15s ease;
   min-height: var(--bottom-nav-height);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.bottom-nav-link span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .bottom-nav-link:hover {
@@ -1435,8 +1474,16 @@ tbody tr:hover {
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.4);
   }
 
+  .layout-main:has(.bottom-nav) .system-status-bar {
+    margin-bottom: var(--bottom-nav-height);
+  }
+
   .layout-content {
-    padding-bottom: calc(var(--bottom-nav-height) + 1rem);
+    padding-bottom: calc(var(--bottom-nav-height) + var(--system-status-bar-height) + 1rem);
+  }
+
+  .layout-main:not(:has(.bottom-nav)) .layout-content {
+    padding-bottom: calc(var(--system-status-bar-height) + 1rem);
   }
 }
 

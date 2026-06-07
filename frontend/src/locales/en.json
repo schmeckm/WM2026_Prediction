@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "WM 2026 Prediction Game",
+    "title": "Aspire World Cup 2026 - Competition",
     "subtitle": "Prediction Game"
   },
   "languages": {
@@ -38,6 +38,7 @@
   "nav": {
     "navigation": "Navigation",
     "menu": "Menu",
+    "menuMore": "More",
     "administration": "Administration",
     "dashboard": "Dashboard",
     "matches": "Matches",
@@ -242,6 +243,7 @@
       "fire": "Fire"
     },
     "dangerZoneTitle": "Delete account",
+    "signOutHint": "Sign out on this device.",
     "dangerZoneHint": "This action is permanent. Your profile, all predictions, bonus answers, notifications and statistics will be deleted irreversibly.",
     "deletePassword": "Current password to confirm",
     "deletePasswordHint": "For security, please enter your password.",

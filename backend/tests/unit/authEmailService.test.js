@@ -45,4 +45,11 @@ describe('authEmailService templates', () => {
     assert.match(tpl.html, /You requested a password reset/);
     assert.match(tpl.html, /Set new password/);
   });
+
+  it('falls back to English when user has no language', () => {
+    const userNoLang = { firstName: 'Alex', email: 'alex@example.com' };
+    const tpl = templateEmailVerification(userNoLang, 'token123');
+    assert.match(tpl.subject, /Verify email/i);
+    assert.match(tpl.html, /Welcome, Alex!/);
+  });
 });

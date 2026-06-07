@@ -230,6 +230,16 @@
       </div>
     </div>
 
+    <div class="card profile-card profile-session-card">
+      <div class="card-body">
+        <h3 class="profile-section-title">{{ t('nav.logout') }}</h3>
+        <p class="text-muted profile-section-hint">{{ t('profile.signOutHint') }}</p>
+        <button type="button" class="btn btn-secondary profile-logout-btn" @click="handleLogout">
+          {{ t('nav.logout') }}
+        </button>
+      </div>
+    </div>
+
     <div class="card profile-card profile-danger-card">
       <div class="card-body">
         <h3 class="profile-danger-title">{{ t('profile.dangerZoneTitle') }}</h3>
@@ -517,6 +527,11 @@ async function handleDeleteAccount() {
   } finally {
     deletingAccount.value = false;
   }
+}
+
+async function handleLogout() {
+  await authStore.logoutAsync();
+  router.push('/login');
 }
 
 async function handleSave() {

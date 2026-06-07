@@ -6,6 +6,7 @@ import router from './router';
 import i18n from './i18n';
 import './styles/main.css';
 import { useThemeStore } from './stores/themeStore';
+import { initSentry } from './sentry';
 
 registerSW({ immediate: true });
 
@@ -51,6 +52,7 @@ router.onError((error) => {
 
 const app = createApp(App);
 const pinia = createPinia();
+initSentry(app, router);
 app.use(pinia);
 app.use(i18n);
 app.use(router);

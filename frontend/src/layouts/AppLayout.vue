@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, provide, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Sidebar from '../components/Sidebar.vue';
 import Navbar from '../components/Navbar.vue';
@@ -41,6 +41,8 @@ function closeSidebar() {
   sidebarOpen.value = false;
   sidebarRef.value?.close();
 }
+
+provide('toggleSidebar', toggleSidebar);
 
 const userLinks = computed(() => [
   { to: '/dashboard', label: t('nav.dashboard'), icon: 'home' },

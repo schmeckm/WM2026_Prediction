@@ -201,7 +201,7 @@
       "tagline": "Welcome to the Aspire MAKE FIFA World Cup 2026 prediction game – follow matches, place your predictions, and compete with your colleagues."
     },
     "passwordReset": {
-      "subject": "WM 2026 Prediction Game – Reset password",
+      "subject": "Aspire World Cup 2026 - Competition – Reset password",
       "title": "Reset password",
       "greeting": "Hello {firstName}!",
       "body": "You requested a password reset.",
@@ -211,7 +211,7 @@
       "text": "Reset password: {link}"
     },
     "emailVerification": {
-      "subject": "WM 2026 Prediction Game – Verify email",
+      "subject": "Aspire World Cup 2026 - Competition – Verify email",
       "title": "Verify email",
       "greeting": "Welcome, {firstName}!",
       "body": "Please verify your email address to sign in:",
@@ -221,7 +221,7 @@
       "text": "Welcome {firstName}! Please verify your email: {link}"
     },
     "missingPredictions": {
-      "subject": "WM 2026 Prediction Game – {missingCount} missing predictions",
+      "subject": "Aspire World Cup 2026 - Competition – {missingCount} missing predictions",
       "title": "Missing predictions",
       "greeting": "Hello {firstName}!",
       "body": "You still have {missingCount} open predictions.",
@@ -234,7 +234,7 @@
       "notificationBody": "You still have {missingCount} open predictions."
     },
     "upcomingMatches": {
-      "subject": "WM 2026 Predictions – Upcoming matches",
+      "subject": "Aspire World Cup 2026 - Competition – Upcoming matches",
       "title": "Upcoming matches",
       "greeting": "Hello {firstName}!",
       "body": "These matches are coming up:",
@@ -243,7 +243,7 @@
       "text": "Upcoming matches:\n{matchListText}\n{link}"
     },
     "bonusReminder": {
-      "subject": "WM 2026 Predictions – Bonus question closing soon",
+      "subject": "Aspire World Cup 2026 - Competition – Bonus question closing soon",
       "title": "Bonus question",
       "greeting": "Hello {firstName}!",
       "body": "The bonus question \"{questionText}\" closes on {lockTime}.",
@@ -251,7 +251,7 @@
       "text": "Hello {firstName}! Bonus question \"{questionText}\" closes on {lockTime}.\n{link}"
     },
     "leaderboardUpdate": {
-      "subject": "WM 2026 Predictions – Leaderboard updated",
+      "subject": "Aspire World Cup 2026 - Competition – Leaderboard updated",
       "title": "Leaderboard",
       "greeting": "Hello {firstName}!",
       "body": "Your current rank: #{rank} with {points} points.",
@@ -259,12 +259,12 @@
       "text": "Hello {firstName}! Rank: #{rank}, Points: {points}\n{link}"
     },
     "syncError": {
-      "subject": "WM 2026 Predictions – Sync error",
+      "subject": "Aspire World Cup 2026 - Competition – Sync error",
       "title": "Synchronization error",
       "text": "Sync error: {errorMessage}"
     },
     "manualTipReminder": {
-      "subject": "WM 2026 Prediction Game – Reminder: submit predictions",
+      "subject": "Aspire World Cup 2026 - Competition – Reminder: submit predictions",
       "title": "Prediction reminder",
       "greeting": "Hello {firstName}!",
       "bodyWithMissing": "You still have {missingCount} open predictions. Submit them in time to collect points.",
@@ -273,7 +273,7 @@
       "text": "Hello {firstName}! {missingCount} open predictions.\n{matchListText}\n{link}"
     },
     "statusUpdate": {
-      "subject": "WM 2026 Prediction Game – Current standings",
+      "subject": "Aspire World Cup 2026 - Competition – Current standings",
       "title": "Status update",
       "greeting": "Hello {firstName}!",
       "intro": "Here is the current status in the prediction game:",
@@ -287,6 +287,13 @@
       "noEntries": "No entries yet.",
       "cta": "View leaderboard",
       "text": "Hello {firstName}! Your rank: {rank}, points: {points}. Team: {teamName} (rank {teamRank}). {link}"
+    },
+    "test": {
+      "subject": "Aspire World Cup 2026 - Competition – Test email",
+      "title": "Test",
+      "greeting": "Hello!",
+      "body": "The email configuration is working.",
+      "text": "Test successful! The email configuration is working."
     }
   },
   "ai": {

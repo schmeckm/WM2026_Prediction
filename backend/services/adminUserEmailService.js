@@ -2,17 +2,12 @@ const { Op } = require('sequelize');
 const { User, Team, Match, Prediction } = require('../models');
 const emailService = require('./emailService');
 const { getAppUrl } = require('./authTokenService');
-const { t, normalizeLocale } = require('./i18nService');
+const { t, resolveUserEmailLocale } = require('./i18nService');
 const { escapeHtml, wrapBrandedEmail } = require('./emailLayoutService');
 const { getLeaderboard, getTeamRanking } = require('./leaderboardService');
 const { formatMatchListHtml, formatMatchListText } = require('./reminderEmailService');
 
 const TOP_LIST_SIZE = 5;
-
-function resolveUserEmailLocale(user) {
-  if (user?.language) return normalizeLocale(user.language);
-  return 'en';
-}
 
 function formatRankingListHtml(items, locale, nameKey = 'name', pointsKey = 'points') {
   if (!items.length) {
@@ -252,7 +247,6 @@ async function sendStatusUpdatesToUsers(userIds) {
 }
 
 module.exports = {
-  resolveUserEmailLocale,
   sendTipRemindersToUsers,
   sendStatusUpdatesToUsers,
   templateManualTipReminder,
