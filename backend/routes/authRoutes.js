@@ -14,6 +14,7 @@ const { validatePassword } = require('../utils/passwordValidation');
 const { authLimiter } = require('../middleware/rateLimiter');
 const {
   isGoogleEnabled,
+  getGoogleProviderStatus,
   startGoogleAuth,
   handleGoogleCallback,
   findOrCreateSsoUser,
@@ -65,7 +66,7 @@ function mapOAuthCallbackError(error) {
 }
 
 router.get('/providers', (_req, res) => {
-  res.json({ google: isGoogleEnabled() });
+  res.json(getGoogleProviderStatus());
 });
 
 router.get('/google', async (req, res) => {

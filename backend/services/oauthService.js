@@ -22,6 +22,17 @@ function isGoogleEnabled() {
   return !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 }
 
+function getGoogleProviderStatus() {
+  return {
+    google: isGoogleEnabled(),
+    googleConfig: {
+      clientId: !!process.env.GOOGLE_CLIENT_ID,
+      clientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+      callbackUrl: !!process.env.GOOGLE_CALLBACK_URL,
+    },
+  };
+}
+
 function getGoogleCallbackUrl() {
   return process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback';
 }
@@ -354,6 +365,7 @@ function resetOAuthStateForTests() {
 
 module.exports = {
   isGoogleEnabled,
+  getGoogleProviderStatus,
   startGoogleAuth,
   handleGoogleCallback,
   findOrCreateSsoUser,

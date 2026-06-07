@@ -67,6 +67,11 @@ Für **Produktion mit PostgreSQL** mindestens setzen:
 | `FOOTBALL_API_KEY` | Ihr API-Key | Optional, für Live-Sync |
 | `OPENAI_API_KEY` | Ihr Key (`sk-proj-...`, **ohne** führendes `=`) | Optional, für KI-Features |
 | `SMTP_*` | Mailserver | Für Registrierung / Passwort-Reset |
+| `GOOGLE_CLIENT_ID` | OAuth Client ID | Für Google SSO (beide Google-Variablen nötig) |
+| `GOOGLE_CLIENT_SECRET` | OAuth Secret | **Ohne führendes `=`** |
+| `GOOGLE_CALLBACK_URL` | `https://…/api/auth/google/callback` | Muss in Google Console eingetragen sein |
+
+**Google SSO:** Raw-IPs werden von Google abgelehnt – statt `http://136.244.90.128:8081` z. B. `http://136-244-90-128.sslip.io:8081` für `APP_URL`, `CORS_ORIGIN` und `GOOGLE_CALLBACK_URL` nutzen.
 
 `FRONTEND_PORT` steuert den externen Port (Standard `8080`).
 
@@ -256,6 +261,7 @@ App: http://localhost:8080
 | Profilbilder / Uploads | Nginx leitet `/uploads/` ans Backend weiter (siehe `frontend/nginx.conf`) |
 | E-Mail-Links falsch | `APP_URL` muss öffentliche HTTPS-URL sein |
 | CORS-Fehler | `CORS_ORIGIN` = exakte Frontend-URL |
+| `{"google":false}` | `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` in **Stack-Umgebung** setzen **und** in `docker-compose.prod.yml` unter `backend.environment` durchreichen; Stack neu deployen. Prüfen: `printenv \| grep GOOGLE` im Backend-Container |
 
 ---
 
