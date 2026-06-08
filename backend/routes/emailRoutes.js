@@ -42,7 +42,12 @@ router.post('/send-test', async (req, res) => {
       }),
       text: t('emails.test.text', locale),
     });
-    await logAudit({ userId: req.user.id, action: 'EMAIL_TEST', req });
+    await logAudit({
+      userId: req.user.id,
+      action: 'EMAIL_TEST',
+      newValue: { to, mock: !!result.mock },
+      req,
+    });
     const message = result.mock
       ? 'SMTP nicht konfiguriert – Test nur simuliert (siehe Backend-Log).'
       : `Test-E-Mail an ${to} gesendet.`;

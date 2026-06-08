@@ -143,6 +143,7 @@
     "passwordMismatch": "Les mots de passe ne correspondent pas.",
     "verifyEmailTitle": "Confirmer l'e-mail",
     "verifyEmailSuccess": "E-mail confirmé. Connexion en cours…",
+    "noRocheAccountNotice": "Veuillez ne pas utiliser votre adresse e-mail Roche ni votre compte Google Roche. Utilisez plutôt un compte privé ou",
     "signInWithGoogle": "Se connecter avec Google",
     "orContinueWith": "ou",
     "ssoSigningIn": "Finalisation de la connexion…",

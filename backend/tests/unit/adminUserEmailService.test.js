@@ -4,10 +4,11 @@ const { resolveUserEmailLocale } = require('../../services/i18nService');
 const {
   templateManualTipReminder,
   templateStatusUpdate,
+  toRecipientAuditEntry,
 } = require('../../services/adminUserEmailService');
 
 describe('adminUserEmailService', () => {
-  const userDe = { firstName: 'Max', email: 'max@example.com', language: 'de', team: { name: 'Team A' } };
+  const userDe = { id: 1, firstName: 'Max', email: 'max@example.com', language: 'de', team: { name: 'Team A' } };
   const userNoLang = { firstName: 'Alex', email: 'alex@example.com', team: { name: 'Team B' } };
 
   it('falls back to English when user has no language', () => {
@@ -28,6 +29,22 @@ describe('adminUserEmailService', () => {
     assert.match(tpl.html, /Hallo Max!/);
     assert.match(tpl.html, /Aspire MAKE/);
     assert.match(tpl.text, /2/);
+  });
+
+  it('builds audit recipient entries with email and status', () => {
+    assert.deepEqual(toRecipientAuditEntry(userDe, 'sent'), {
+      userId: userDe.id,
+      email: 'max@example.com',
+      name: 'Max',
+      status: 'sent',
+    });
+    assert.deepEqual(toRecipientAuditEntry({ id: 9, firstName: 'No', lastName: 'Mail' }, 'skipped', 'no_email'), {
+      userId: 9,
+      email: null,
+      name: 'No Mail',
+      status: 'skipped',
+      reason: 'no_email',
+    });
   });
 
   it('builds branded status update with leaderboard sections', () => {

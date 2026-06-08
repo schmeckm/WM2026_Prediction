@@ -144,6 +144,7 @@
     "passwordMismatch": "Passwörter stimmen nicht überein.",
     "verifyEmailTitle": "E-Mail bestätigen",
     "verifyEmailSuccess": "E-Mail bestätigt. Sie werden angemeldet…",
+    "noRocheAccountNotice": "Bitte verwenden Sie keine Roche-E-Mail-Adresse und keinen Roche-Google-Account. Nutzen Sie stattdessen ein privates Konto oder",
     "signInWithGoogle": "Mit Google anmelden",
     "orContinueWith": "oder",
     "ssoSigningIn": "Anmeldung wird abgeschlossen…",
@@ -194,7 +195,15 @@
     "online": "Online",
     "offline": "Offline",
     "aiActive": "Aktiv",
-    "aiInactive": "Inaktiv"
+    "aiInactive": "Inaktiv",
+    "clickForDetails": "Klicken für Details",
+    "detailBackendOffline": "Backend nicht erreichbar. Stack/Container in Portainer prüfen.",
+    "detailDatabaseUnavailable": "Datenbank nicht erreichbar. Postgres-Container und DB_PASSWORD prüfen.",
+    "detailBackendOfflineAi": "KI-Status unbekannt, weil das Backend nicht erreichbar ist.",
+    "detailAiDisabled": "KI ist deaktiviert (AI_FEATURES_ENABLED=false im Stack).",
+    "detailAiNoApiKey": "OPENAI_API_KEY fehlt im Portainer-Stack.",
+    "detailAiInactive": "KI Backend ist nicht einsatzbereit.",
+    "detailAiFrontendDisabled": "KI Frontend ist im Build deaktiviert (VITE_AI_FEATURES_ENABLED=false)."
   },
   "profile": {
     "title": "Profil",
@@ -1216,7 +1225,27 @@
     "auditLog": {
       "title": "Audit Log",
       "filterAction": "Aktion filtern...",
-      "filterEntity": "Entität filtern..."
+      "filterEntity": "Entität filtern...",
+      "colTime": "Zeitpunkt",
+      "colUser": "Benutzer",
+      "colAction": "Aktion",
+      "colEntity": "Entität",
+      "colDetails": "Details",
+      "system": "System",
+      "empty": "Keine Einträge.",
+      "noDetails": "Keine Details vorhanden.",
+      "showDetails": "Details",
+      "hideDetails": "Schließen",
+      "recipients": "Empfänger",
+      "recipientName": "Name",
+      "recipientEmail": "E-Mail",
+      "recipientStatus": "Status",
+      "statusSent": "Gesendet",
+      "statusSkipped": "Übersprungen",
+      "statusNoEmail": "Keine E-Mail-Adresse",
+      "sentTo": "An {email}",
+      "sentSummary": "{count} gesendet: {emails}",
+      "mockMode": "nur simuliert"
     },
     "backup": {
       "title": "Datensicherung",

@@ -6,6 +6,7 @@ const notificationService = require('./notificationService');
 const { getSetting } = require('./settingsService');
 const { getLeaderboard } = require('./leaderboardService');
 const { runWithConcurrency } = require('./emailQueueService');
+const { toRecipientAuditEntry } = require('./adminUserEmailService');
 
 function groupPredictionsByUser(predictions) {
   const map = new Map();
@@ -47,7 +48,7 @@ async function sendMissingPredictionReminders({ force = false } = {}) {
   });
 
   if (users.length === 0) {
-    return { sent: 0, message: 'Keine Empfänger gefunden (registrierte Spieler mit bestätigter E-Mail).' };
+    return { sent: 0, skipped: 0, recipients: [], message: 'Keine Empfänger gefunden (registrierte Spieler mit bestätigter E-Mail).' };
   }
 
   const openMatchIds = openMatches.map((m) => m.id);
@@ -68,10 +69,17 @@ async function sendMissingPredictionReminders({ force = false } = {}) {
   });
 
   if (recipients.length === 0) {
-    return { sent: 0, message: 'Keine Erinnerungen nötig – alle Spieler haben ihre offenen Tipps abgegeben.' };
+    return { sent: 0, skipped: 0, recipients: [], message: 'Keine Erinnerungen nötig – alle Spieler haben ihre offenen Tipps abgegeben.' };
   }
 
+  const recipientLog = [];
+
   await runWithConcurrency(recipients, async (user) => {
+    if (!user.email) {
+      recipientLog.push(toRecipientAuditEntry(user, 'skipped', 'no_email'));
+      return;
+    }
+
     const predictedIds = predictionsByUser.get(user.id) || new Set();
     const missing = openMatches.filter((m) => !predictedIds.has(m.id));
 
@@ -90,9 +98,19 @@ async function sendMissingPredictionReminders({ force = false } = {}) {
       type: 'warning',
       link: '/matches?filter=missing',
     });
+
+    recipientLog.push(toRecipientAuditEntry(user, 'sent'));
   });
 
-  return { sent: recipients.length, message: `${recipients.length} Erinnerungen gesendet.` };
+  const sent = recipientLog.filter((entry) => entry.status === 'sent').length;
+  const skipped = recipientLog.filter((entry) => entry.status === 'skipped').length;
+
+  return {
+    sent,
+    skipped,
+    recipients: recipientLog,
+    message: `${sent} Erinnerung${sent === 1 ? '' : 'en'} gesendet.`,
+  };
 }
 
 async function sendUpcomingMatchesSummary() {

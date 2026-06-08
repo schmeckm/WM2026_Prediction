@@ -144,6 +144,7 @@
     "passwordMismatch": "Passwords do not match.",
     "verifyEmailTitle": "Verify email",
     "verifyEmailSuccess": "Email verified. Signing you in…",
+    "noRocheAccountNotice": "Please do not use your Roche email address or Roche Google account. Use a private account instead, or",
     "signInWithGoogle": "Sign in with Google",
     "orContinueWith": "or",
     "ssoSigningIn": "Completing sign-in…",
@@ -188,7 +189,15 @@
     "online": "Online",
     "offline": "Offline",
     "aiActive": "Active",
-    "aiInactive": "Inactive"
+    "aiInactive": "Inactive",
+    "clickForDetails": "Click for details",
+    "detailBackendOffline": "Backend unreachable. Check stack/containers in Portainer.",
+    "detailDatabaseUnavailable": "Database unreachable. Check Postgres container and DB_PASSWORD.",
+    "detailBackendOfflineAi": "AI status unknown because the backend is unreachable.",
+    "detailAiDisabled": "AI is disabled (AI_FEATURES_ENABLED=false in stack).",
+    "detailAiNoApiKey": "OPENAI_API_KEY is missing in the Portainer stack.",
+    "detailAiInactive": "AI backend is not ready.",
+    "detailAiFrontendDisabled": "AI frontend is disabled in the build (VITE_AI_FEATURES_ENABLED=false)."
   },
   "profile": {
     "title": "Profile",
@@ -1217,7 +1226,27 @@
     "auditLog": {
       "title": "Audit log",
       "filterAction": "Filter action...",
-      "filterEntity": "Filter entity..."
+      "filterEntity": "Filter entity...",
+      "colTime": "Time",
+      "colUser": "User",
+      "colAction": "Action",
+      "colEntity": "Entity",
+      "colDetails": "Details",
+      "system": "System",
+      "empty": "No entries.",
+      "noDetails": "No details available.",
+      "showDetails": "Details",
+      "hideDetails": "Close",
+      "recipients": "Recipients",
+      "recipientName": "Name",
+      "recipientEmail": "Email",
+      "recipientStatus": "Status",
+      "statusSent": "Sent",
+      "statusSkipped": "Skipped",
+      "statusNoEmail": "No email address",
+      "sentTo": "To {email}",
+      "sentSummary": "{count} sent: {emails}",
+      "mockMode": "simulated only"
     },
     "backup": {
       "title": "Data backup",

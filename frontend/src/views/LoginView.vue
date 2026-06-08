@@ -3,6 +3,11 @@
     <AlertMessage v-if="error" :message="error" type="error" class="auth-immersive-alert" />
     <AlertMessage v-if="resendMessage" :message="resendMessage" type="success" class="auth-immersive-alert" />
 
+    <p class="auth-roche-notice" role="note">
+      {{ t('auth.noRocheAccountNotice') }}
+      <router-link to="/register">{{ t('auth.registerNow') }}</router-link>.
+    </p>
+
     <button
       v-if="googleEnabled"
       type="button"
@@ -234,5 +239,26 @@ async function handleResendVerification() {
   margin: 0.35rem 0 0;
   font-size: 0.8125rem;
   color: var(--color-text-muted);
+}
+
+.auth-roche-notice {
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 0.875rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 193, 7, 0.35);
+  border-radius: 0.5rem;
+}
+
+.auth-roche-notice a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.auth-roche-notice a:hover {
+  color: var(--auth-accent, var(--color-primary-light));
 }
 </style>

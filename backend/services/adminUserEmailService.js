@@ -138,6 +138,16 @@ function templateStatusUpdate(user, {
   };
 }
 
+function toRecipientAuditEntry(user, status = 'sent', reason = null) {
+  return {
+    userId: user.id,
+    email: user.email || null,
+    name: [user.firstName, user.lastName].filter(Boolean).join(' '),
+    status,
+    ...(reason ? { reason } : {}),
+  };
+}
+
 async function loadUsersByIds(userIds) {
   const ids = [...new Set(userIds.map((id) => parseInt(id, 10)).filter(Number.isFinite))];
   if (ids.length === 0) return [];
@@ -176,26 +186,30 @@ async function getMissingPredictionData(userId) {
 async function sendTipRemindersToUsers(userIds) {
   const users = await loadUsersByIds(userIds);
   if (users.length === 0) {
-    return { sent: 0, skipped: 0, message: 'Keine gültigen Empfänger ausgewählt.' };
+    return { sent: 0, skipped: 0, recipients: [], message: 'Keine gültigen Empfänger ausgewählt.' };
   }
 
   let sent = 0;
   let skipped = 0;
+  const recipients = [];
 
   for (const user of users) {
     if (!user.email) {
       skipped += 1;
+      recipients.push(toRecipientAuditEntry(user, 'skipped', 'no_email'));
       continue;
     }
     const { missingCount, upcomingMatches } = await getMissingPredictionData(user.id);
     const template = templateManualTipReminder(user, missingCount, upcomingMatches);
     await emailService.sendEmail({ to: user.email, ...template });
     sent += 1;
+    recipients.push(toRecipientAuditEntry(user, 'sent'));
   }
 
   return {
     sent,
     skipped,
+    recipients,
     message: sent > 0
       ? `${sent} Tipp-Erinnerung${sent === 1 ? '' : 'en'} gesendet.`
       : 'Keine E-Mails gesendet.',
@@ -205,7 +219,7 @@ async function sendTipRemindersToUsers(userIds) {
 async function sendStatusUpdatesToUsers(userIds) {
   const users = await loadUsersByIds(userIds);
   if (users.length === 0) {
-    return { sent: 0, skipped: 0, message: 'Keine gültigen Empfänger ausgewählt.' };
+    return { sent: 0, skipped: 0, recipients: [], message: 'Keine gültigen Empfänger ausgewählt.' };
   }
 
   const leaderboard = await getLeaderboard();
@@ -215,10 +229,12 @@ async function sendStatusUpdatesToUsers(userIds) {
 
   let sent = 0;
   let skipped = 0;
+  const recipients = [];
 
   for (const user of users) {
     if (!user.email) {
       skipped += 1;
+      recipients.push(toRecipientAuditEntry(user, 'skipped', 'no_email'));
       continue;
     }
 
@@ -235,11 +251,13 @@ async function sendStatusUpdatesToUsers(userIds) {
     });
     await emailService.sendEmail({ to: user.email, ...template });
     sent += 1;
+    recipients.push(toRecipientAuditEntry(user, 'sent'));
   }
 
   return {
     sent,
     skipped,
+    recipients,
     message: sent > 0
       ? `${sent} Status-Update${sent === 1 ? '' : 's'} gesendet.`
       : 'Keine E-Mails gesendet.',
@@ -249,6 +267,7 @@ async function sendStatusUpdatesToUsers(userIds) {
 module.exports = {
   sendTipRemindersToUsers,
   sendStatusUpdatesToUsers,
+  toRecipientAuditEntry,
   templateManualTipReminder,
   templateStatusUpdate,
 };

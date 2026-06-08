@@ -15,6 +15,9 @@ describe('GET /api/health', () => {
     assert.equal(res.status, 200);
     assert.equal(res.body.status, 'ok');
     assert.equal(res.body.version, getAppVersion());
+    assert.ok(res.body.ai);
+    assert.equal(typeof res.body.ai.active, 'boolean');
+    assert.ok(['ok', 'disabled', 'no_api_key'].includes(res.body.ai.reason));
   });
 });
 

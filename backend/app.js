@@ -106,9 +106,20 @@ app.use(['/api', '/api/v1'], localeMiddleware);
 app.get('/api/health', async (req, res) => {
   try {
     await sequelize.authenticate();
-    res.json({ status: 'ok', version: getAppVersion() });
+    const aiEnabled = isAiEnabled();
+    const aiKeyConfigured = isApiKeyConfigured();
+    res.json({
+      status: 'ok',
+      version: getAppVersion(),
+      ai: {
+        enabled: aiEnabled,
+        apiKeyConfigured: aiKeyConfigured,
+        active: aiEnabled && aiKeyConfigured,
+        reason: !aiEnabled ? 'disabled' : !aiKeyConfigured ? 'no_api_key' : 'ok',
+      },
+    });
   } catch (error) {
-    res.status(503).json({ status: 'error' });
+    res.status(503).json({ status: 'error', reason: 'database_unavailable' });
   }
 });
 
