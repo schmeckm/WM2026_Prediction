@@ -3,12 +3,14 @@ import { ref, computed } from 'vue';
 import api from '../services/api';
 import { getStoredLocale, normalizeLocale, setStoredLocale } from '../i18n';
 import { useLocaleStore } from './localeStore';
+import { isProfileWmComplete } from '../composables/useProfileCompletion';
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token') || null);
   const refreshToken = ref(localStorage.getItem('refreshToken') || null);
   const user = ref(JSON.parse(localStorage.getItem('user') || 'null'));
   const profileImageCache = ref(0);
+  const profileLoginReminderDue = ref(false);
 
   const isAuthenticated = computed(() => !!token.value);
   const isAdmin = computed(() => user.value?.role === 'admin');
@@ -36,6 +38,7 @@ export const useAuthStore = defineStore('auth', () => {
     const userLocale = normalizeLocale(newUser?.language || getStoredLocale());
     setStoredLocale(userLocale);
     localeStore.applyLocale(userLocale);
+    profileLoginReminderDue.value = !isProfileWmComplete(newUser);
   }
 
   function clearLocalAuth() {
@@ -43,6 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken.value = null;
     user.value = null;
     profileImageCache.value = 0;
+    profileLoginReminderDue.value = false;
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
@@ -178,6 +182,7 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken,
     user,
     profileImageCache,
+    profileLoginReminderDue,
     isAuthenticated,
     isAdmin,
     fullName,

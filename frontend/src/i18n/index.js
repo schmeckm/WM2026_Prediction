@@ -49,7 +49,7 @@ export function preprocessLocaleMessages(messages) {
 const i18n = createI18n({
   legacy: false,
   locale: getStoredLocale(),
-  fallbackLocale: DEFAULT_LOCALE,
+  fallbackLocale: ['en', DEFAULT_LOCALE],
   messages: {
     de: preprocessLocaleMessages(de),
   },

@@ -6,6 +6,7 @@
     <div class="layout-main">
       <Navbar @toggle-sidebar="toggleSidebar" />
       <main id="main-content" class="layout-content">
+        <ProfileCompletionBanner />
         <router-view />
       </main>
       <SystemStatusBar />
@@ -15,18 +16,25 @@
 </template>
 
 <script setup>
-import { onMounted, provide, ref } from 'vue';
+import { onMounted, provide, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Sidebar from '../components/Sidebar.vue';
 import Navbar from '../components/Navbar.vue';
 import BottomNav from '../components/BottomNav.vue';
 import SystemStatusBar from '../components/SystemStatusBar.vue';
+import ProfileCompletionBanner from '../components/ProfileCompletionBanner.vue';
 import { useNotificationStore } from '../stores/notificationStore';
 import { useAppSettingsStore } from '../stores/appSettingsStore';
+import { useAuthStore } from '../stores/authStore';
 import { useAdminNavLinks } from '../composables/useAdminNav';
 import { useUserNavLinks } from '../composables/useUserNav';
+import { useProfileCompletion } from '../composables/useProfileCompletion';
+import { useToast } from '../composables/useToast';
 
 const { t } = useI18n();
+const authStore = useAuthStore();
+const { needsCompletion } = useProfileCompletion();
+const toast = useToast();
 const notificationStore = useNotificationStore();
 const appSettings = useAppSettingsStore();
 const adminLinks = useAdminNavLinks();
@@ -34,10 +42,22 @@ const userLinks = useUserNavLinks();
 const sidebarRef = ref(null);
 const sidebarOpen = ref(false);
 
+function showProfileLoginReminder() {
+  if (!authStore.profileLoginReminderDue || !needsCompletion.value) return;
+  toast.warning(t('profile.completionReminder'));
+  authStore.profileLoginReminderDue = false;
+}
+
 onMounted(() => {
   notificationStore.initSocketListener();
   appSettings.load();
+  showProfileLoginReminder();
 });
+
+watch(
+  () => [authStore.profileLoginReminderDue, needsCompletion.value],
+  () => showProfileLoginReminder(),
+);
 
 function toggleSidebar() {
   sidebarOpen.value = sidebarRef.value?.toggle() ?? false;
