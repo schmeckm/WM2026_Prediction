@@ -33,7 +33,10 @@
     "optional": "optionnel",
     "required": "Obligatoire",
     "retry": "Réessayer",
-    "tooManyRequests": "Trop de requêtes. Veuillez patienter et réessayer."
+    "admin": "Admin",
+    "user": "Utilisateur",
+    "tooManyRequests": "Trop de requêtes. Veuillez patienter et réessayer.",
+    "skipToContent": "Aller au contenu"
   },
   "nav": {
     "navigation": "Navigation",
@@ -48,6 +51,7 @@
     "bonus": "Questions Bonus",
     "aiCoach": "Coach IA",
     "leaderboard": "Classement",
+    "prizes": "Prix",
     "teamRanking": "Classement par Équipe",
     "statistics": "Statistiques",
     "notifications": "Notifications",
@@ -63,6 +67,7 @@
     "results": "Gestion des Résultats",
     "predictions": "Aperçu des Pronostics",
     "scoringRules": "Règles de Points",
+    "prizesAdmin": "Gestion des prix",
     "csvImport": "Import CSV",
     "auditLog": "Journal d'Audit",
     "dataBackup": "Sauvegarde des données",
@@ -159,7 +164,12 @@
     "resendVerification": "Renvoyer l'e-mail de confirmation",
     "resendingVerification": "Envoi…",
     "verificationEmailSent": "Si un compte existe, un e-mail de confirmation a été envoyé.",
-    "resendVerificationFailed": "Impossible d'envoyer l'e-mail."
+    "resendVerificationFailed": "Impossible d'envoyer l'e-mail.",
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter."
+  },
+  "errors": {
+    "notFound": "Page introuvable.",
+    "backToDashboard": "Retour au tableau de bord"
   },
   "systemHealth": {
     "title": "État du système",
@@ -542,6 +552,13 @@
       "knockout": "Phase à élimination"
     }
   },
+  "prizes": {
+    "title": "Prix",
+    "subtitle": "Ce que remportent les meilleurs pronostiqueurs à la fin du tournoi.",
+    "place": "{rank}e place",
+    "disabled": "La liste des prix n'est pas disponible pour le moment.",
+    "empty": "Aucun prix n'a encore été configuré."
+  },
   "teamRanking": {
     "title": "Classement par Équipe",
     "team": "Équipe",
@@ -549,7 +566,8 @@
     "totalPoints": "Points totaux",
     "avgPoints": "Pts moyens",
     "exactTips": "Pronostics exacts",
-    "empty": "Aucune équipe disponible."
+    "empty": "Aucune équipe disponible.",
+    "loadFailed": "Impossible de charger le classement par équipe."
   },
   "bonus": {
     "title": "Questions Bonus",
@@ -671,7 +689,8 @@
     "markAllRead": "Tout marquer lu",
     "markAllReadLong": "Tout marquer comme lu",
     "bellLabel": "Notifications",
-    "toggleDropdown": "Afficher ou masquer les notifications"
+    "toggleDropdown": "Afficher ou masquer les notifications",
+    "loadFailed": "Impossible de charger les notifications."
   },
   "display": {
     "subtitle": "Classement en direct",
@@ -722,6 +741,36 @@
         "csvImport": "Quelles données pourraient manquer après l'import CSV ?",
         "reminderText": "Crée un texte de rappel amical pour les pronostics manquants.",
         "bonusSuggestions": "Suggère 5 questions bonus adaptées à la Coupe du Monde 2026."
+      },
+      "bonusSuggestions": {
+        "generate": "🤖 Générer des suggestions IA",
+        "generating": "Génération...",
+        "apply": "Appliquer",
+        "unavailable": "Les suggestions IA ne sont pas disponibles."
+      },
+      "reminderText": {
+        "hintIntro": "Créez un texte personnalisé pour les rappels de pronostics. Variables :",
+        "generate": "🤖 Générer un texte IA",
+        "generating": "Génération...",
+        "saveTemplate": "Enregistrer le modèle",
+        "saving": "Enregistrement...",
+        "sendWithText": "Envoyer avec ce texte",
+        "sending": "Envoi...",
+        "subject": "Objet",
+        "emailBody": "Texte de l'e-mail",
+        "notificationText": "Notification in-app",
+        "subjectPlaceholder": "p. ex. {{appTitle}} – encore {{missingCount}} pronostics en attente",
+        "emailBodyPlaceholder": "Bonjour {{firstName}}, il vous reste {{missingCount}} pronostics ouverts...",
+        "notificationPlaceholder": "Encore {{missingCount}} pronostics à soumettre !",
+        "generatedMessage": "Texte IA généré – veuillez vérifier puis enregistrer ou envoyer.",
+        "savedMessage": "Modèle de rappel enregistré.",
+        "unavailable": "Le rappel IA n'est pas disponible.",
+        "fillRequired": "Veuillez remplir l'objet et le texte de l'e-mail (tous deux requis).",
+        "disabled": "Les rappels sont désactivés.",
+        "noRecipients": "Aucun e-mail envoyé – pas de pronostics manquants ou pas de destinataires.",
+        "sentMessage": "{count} rappels envoyés.",
+        "saveFailed": "Impossible d'enregistrer le modèle.",
+        "sendFailed": "Impossible d'envoyer les rappels."
       }
     },
     "manualModeLegacy": "Mode CSV manuel",
@@ -934,6 +983,22 @@
       "exampleTendency": "Pronostic 1:0 = {points} pts (tendance)",
       "exampleWrong": "Pronostic 1:2 = {points} pts (incorrect)"
     },
+    "prizes": {
+      "title": "Gestion des prix",
+      "subtitle": "Configurez les prix pour les places 1 à 3 et rendez-les visibles pour tous les joueurs.",
+      "enabled": "Afficher la liste des prix aux joueurs",
+      "enabledHint": "Si désactivé, l'entrée du menu est masquée et la page est inaccessible.",
+      "place": "Place {rank}",
+      "save": "Enregistrer les prix",
+      "saved": "Prix enregistrés.",
+      "saveFailed": "Impossible d'enregistrer les prix.",
+      "valuePlaceholder": "p. ex. bon de 200 €",
+      "fields": {
+        "title": "Titre",
+        "value": "Prix / valeur",
+        "description": "Description"
+      }
+    },
     "bonus": {
       "title": "Questions bonus",
       "newQuestion": "Nouvelle question",
@@ -1083,6 +1148,16 @@
       "recalculate": "Recalculer les points",
       "recentErrors": "Erreurs récentes",
       "syncLogs": "Journaux de sync",
+      "logType": "Type",
+      "logStatus": "Statut",
+      "logProvider": "Fournisseur",
+      "logStarted": "Début",
+      "logCreated": "Créés",
+      "logUpdated": "Mis à jour",
+      "logSkipped": "Ignorés",
+      "logErrors": "Erreurs",
+      "logMessage": "Message",
+      "noLogs": "Aucun journal de sync.",
       "connectionSuccess": "Connexion réussie.",
       "connectionFailed": "Échec du test de connexion.",
       "fixturesSynced": "Calendrier synchronisé.",

@@ -329,6 +329,27 @@ a:hover {
 .layout-app {
   display: flex;
   min-height: 100vh;
+  position: relative;
+}
+
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 0.75rem;
+  z-index: 10000;
+  padding: 0.625rem 1rem;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: top 0.15s ease;
+}
+
+.skip-to-content:focus {
+  top: 0.75rem;
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 2px;
 }
 
 .layout-main {
@@ -360,7 +381,9 @@ a:hover {
   position: sticky;
   top: 0;
   height: 100vh;
-  overflow-y: auto;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
   border-right: 1px solid var(--sidebar-border);
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
 }
@@ -371,6 +394,7 @@ a:hover {
   min-height: var(--shell-height);
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .sidebar .app-brand-copy strong {
@@ -387,8 +411,16 @@ a:hover {
   box-shadow: none;
 }
 
-.sidebar-nav {
+.sidebar-scroll {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.sidebar-nav {
   padding: 0.625rem 0.5rem;
 }
 
@@ -455,11 +487,13 @@ a:hover {
 .sidebar-footer {
   padding: 0.875rem 1rem;
   border-top: 1px solid var(--sidebar-border);
+  flex-shrink: 0;
 }
 
 .sidebar-footer-links {
   padding: 0.5rem 0.5rem 0;
   border-top: 1px solid var(--sidebar-border);
+  flex-shrink: 0;
 }
 
 .sidebar-footer-name {
@@ -1333,6 +1367,12 @@ tbody tr:hover {
   gap: 1.5rem;
 }
 
+@media (max-width: 1024px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Filters */
 .filter-bar {
   display: flex;
@@ -1419,9 +1459,14 @@ tbody tr:hover {
 
   .sidebar {
     position: fixed;
+    top: 0;
+    bottom: 0;
     left: -100%;
     z-index: 999;
+    height: 100dvh;
+    max-height: 100dvh;
     transition: left 0.3s;
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 
   .sidebar.open {
@@ -1448,8 +1493,27 @@ tbody tr:hover {
     grid-template-columns: 1fr;
   }
 
-  .grid-2 {
-    grid-template-columns: 1fr;
+  .icon-btn {
+    width: 2.75rem;
+    height: 2.75rem;
+    min-height: 44px;
+  }
+
+  .btn-sm {
+    min-height: 44px;
+  }
+
+  .filter-btn {
+    min-height: 44px;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
   }
 
   .stats-grid {

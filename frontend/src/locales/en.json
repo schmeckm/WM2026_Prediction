@@ -33,7 +33,10 @@
     "optional": "optional",
     "required": "Required",
     "retry": "Try again",
-    "tooManyRequests": "Too many requests. Please wait a moment and try again."
+    "admin": "Admin",
+    "user": "User",
+    "tooManyRequests": "Too many requests. Please wait a moment and try again.",
+    "skipToContent": "Skip to content"
   },
   "nav": {
     "navigation": "Navigation",
@@ -48,6 +51,7 @@
     "bonus": "Bonus Questions",
     "aiCoach": "AI Coach",
     "leaderboard": "Leaderboard",
+    "prizes": "Prizes",
     "teamRanking": "Team Ranking",
     "statistics": "Statistics",
     "notifications": "Notifications",
@@ -64,6 +68,7 @@
     "predictions": "Prediction Overview",
     "favorites": "Favorites Overview",
     "scoringRules": "Scoring Rules",
+    "prizesAdmin": "Prize Management",
     "csvImport": "CSV Import",
     "auditLog": "Audit Log",
     "dataBackup": "Data Backup",
@@ -162,7 +167,12 @@
     "resendVerification": "Resend verification email",
     "resendingVerification": "Sending…",
     "verificationEmailSent": "If an account exists, a verification email was sent.",
-    "resendVerificationFailed": "Could not send email."
+    "resendVerificationFailed": "Could not send email.",
+    "sessionExpired": "Your session has expired. Please sign in again."
+  },
+  "errors": {
+    "notFound": "Page not found.",
+    "backToDashboard": "Back to dashboard"
   },
   "systemHealth": {
     "title": "System status",
@@ -559,6 +569,13 @@
       "knockout": "Knockout stage"
     }
   },
+  "prizes": {
+    "title": "Prizes",
+    "subtitle": "What the top predictors win at the end of the tournament.",
+    "place": "{rank} place",
+    "disabled": "The prize list is currently unavailable.",
+    "empty": "No prizes have been configured yet."
+  },
   "teamRanking": {
     "title": "Team Ranking",
     "team": "Team",
@@ -566,7 +583,8 @@
     "totalPoints": "Total points",
     "avgPoints": "Avg points",
     "exactTips": "Exact predictions",
-    "empty": "No teams available."
+    "empty": "No teams available.",
+    "loadFailed": "Could not load team ranking."
   },
   "bonus": {
     "title": "Bonus Questions",
@@ -688,7 +706,8 @@
     "markAllRead": "Mark all read",
     "markAllReadLong": "Mark all as read",
     "bellLabel": "Notifications",
-    "toggleDropdown": "Toggle notifications panel"
+    "toggleDropdown": "Toggle notifications panel",
+    "loadFailed": "Could not load notifications."
   },
   "display": {
     "subtitle": "Live leaderboard",
@@ -934,6 +953,22 @@
       "exampleTendency": "Prediction 1:0 = {points} pts (tendency)",
       "exampleWrong": "Prediction 1:2 = {points} pts (wrong)"
     },
+    "prizes": {
+      "title": "Prize management",
+      "subtitle": "Configure prizes for places 1–3 and make them visible to all players.",
+      "enabled": "Show prize list to players",
+      "enabledHint": "When disabled, the menu item is hidden and the page is unavailable.",
+      "place": "Place {rank}",
+      "save": "Save prizes",
+      "saved": "Prizes saved.",
+      "saveFailed": "Could not save prizes.",
+      "valuePlaceholder": "e.g. €200 voucher",
+      "fields": {
+        "title": "Title",
+        "value": "Prize / value",
+        "description": "Description"
+      }
+    },
     "import": {
       "title": "CSV import",
       "defaultModeTitle": "Default operating mode",
@@ -981,6 +1016,16 @@
       "recalculate": "Recalculate points",
       "recentErrors": "Recent sync errors",
       "syncLogs": "Sync logs",
+      "logType": "Type",
+      "logStatus": "Status",
+      "logProvider": "Provider",
+      "logStarted": "Started",
+      "logCreated": "Created",
+      "logUpdated": "Updated",
+      "logSkipped": "Skipped",
+      "logErrors": "Errors",
+      "logMessage": "Message",
+      "noLogs": "No sync logs yet.",
       "connectionSuccess": "Connection successful.",
       "connectionFailed": "Connection test failed.",
       "fixturesSynced": "Fixtures synchronized.",
@@ -1200,6 +1245,36 @@
         "csvImport": "What data might be missing after the CSV import?",
         "reminderText": "Create a friendly reminder text for missing tips.",
         "bonusSuggestions": "Suggest 5 suitable bonus questions for World Cup 2026."
+      },
+      "bonusSuggestions": {
+        "generate": "🤖 Generate AI suggestions",
+        "generating": "Generating...",
+        "apply": "Apply",
+        "unavailable": "AI suggestions are not available."
+      },
+      "reminderText": {
+        "hintIntro": "Create custom text for tip reminders. Placeholders:",
+        "generate": "🤖 Generate AI text",
+        "generating": "Generating...",
+        "saveTemplate": "Save template",
+        "saving": "Saving...",
+        "sendWithText": "Send with this text",
+        "sending": "Sending...",
+        "subject": "Subject",
+        "emailBody": "Email body",
+        "notificationText": "In-app notification",
+        "subjectPlaceholder": "e.g. {{appTitle}} – {{missingCount}} tips still open",
+        "emailBodyPlaceholder": "Hello {{firstName}}, you still have {{missingCount}} open tips...",
+        "notificationPlaceholder": "Still {{missingCount}} tips to submit!",
+        "generatedMessage": "AI text generated – please review and save or send.",
+        "savedMessage": "Reminder template saved.",
+        "unavailable": "AI reminder is not available.",
+        "fillRequired": "Please fill in subject and email body (both required).",
+        "disabled": "Reminders are disabled.",
+        "noRecipients": "No emails sent – no missing tips or no recipients.",
+        "sentMessage": "{count} reminders sent.",
+        "saveFailed": "Could not save template.",
+        "sendFailed": "Could not send reminders."
       }
     },
     "manualModeLegacy": "Manual CSV mode",

@@ -1,19 +1,19 @@
 <template>
   <div class="reminder-generator">
-    <p class="hint text-muted" v-pre>
-      Erstellen Sie einen individuellen Text für Tipp-Erinnerungen. Platzhalter:
-      {{firstName}}, {{missingCount}}, {{matchList}}, {{tipLink}}, {{appTitle}}
+    <p class="hint text-muted">
+      {{ t('adminPages.ai.reminderText.hintIntro') }}
+      <span v-pre>{{firstName}}, {{missingCount}}, {{matchList}}, {{tipLink}}, {{appTitle}}</span>
     </p>
 
     <div class="btn-group mb-2">
       <button class="btn btn-accent btn-sm" :disabled="loading" @click="generate">
-        {{ loading ? 'Generiere...' : '🤖 KI-Text generieren' }}
+        {{ loading ? t('adminPages.ai.reminderText.generating') : t('adminPages.ai.reminderText.generate') }}
       </button>
       <button class="btn btn-secondary btn-sm" :disabled="saving || !hasContent" @click="saveTemplate">
-        {{ saving ? 'Speichere...' : 'Vorlage speichern' }}
+        {{ saving ? t('adminPages.ai.reminderText.saving') : t('adminPages.ai.reminderText.saveTemplate') }}
       </button>
       <button class="btn btn-primary btn-sm" :disabled="sending || !hasContent" @click="sendWithText">
-        {{ sending ? 'Sende...' : 'Mit diesem Text senden' }}
+        {{ sending ? t('adminPages.ai.reminderText.sending') : t('adminPages.ai.reminderText.sendWithText') }}
       </button>
     </div>
 
@@ -22,16 +22,16 @@
 
     <div class="result-card">
       <div class="form-group">
-        <label>Betreff</label>
-        <input v-model="form.subject" class="form-control" placeholder="z. B. {{appTitle}} – noch {{missingCount}} Tipps offen" />
+        <label>{{ t('adminPages.ai.reminderText.subject') }}</label>
+        <input v-model="form.subject" class="form-control" :placeholder="t('adminPages.ai.reminderText.subjectPlaceholder')" />
       </div>
       <div class="form-group">
-        <label>E-Mail-Text</label>
-        <textarea v-model="form.emailBody" class="form-control" rows="6" placeholder="Hallo {{firstName}}, Sie haben noch {{missingCount}} offene Tipps..." />
+        <label>{{ t('adminPages.ai.reminderText.emailBody') }}</label>
+        <textarea v-model="form.emailBody" class="form-control" rows="6" :placeholder="t('adminPages.ai.reminderText.emailBodyPlaceholder')" />
       </div>
       <div class="form-group">
-        <label>In-App-Benachrichtigung</label>
-        <input v-model="form.notificationText" class="form-control" placeholder="Noch {{missingCount}} Tipps abgeben!" />
+        <label>{{ t('adminPages.ai.reminderText.notificationText') }}</label>
+        <input v-model="form.notificationText" class="form-control" :placeholder="t('adminPages.ai.reminderText.notificationPlaceholder')" />
       </div>
     </div>
   </div>
@@ -39,6 +39,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import AlertMessage from './AlertMessage.vue';
 
@@ -48,6 +49,7 @@ const props = defineProps({
 
 const emit = defineEmits(['sent', 'saved']);
 
+const { t } = useI18n();
 const loading = ref(false);
 const saving = ref(false);
 const sending = ref(false);
@@ -82,9 +84,9 @@ async function generate() {
     form.subject = data.subject || form.subject;
     form.emailBody = data.emailBody || form.emailBody;
     form.notificationText = data.notificationText || form.notificationText;
-    message.value = 'KI-Text generiert – bitte prüfen und speichern oder senden.';
+    message.value = t('adminPages.ai.reminderText.generatedMessage');
   } catch (err) {
-    error.value = err.response?.data?.error || 'KI-Reminder nicht verfügbar.';
+    error.value = err.response?.data?.error || t('adminPages.ai.reminderText.unavailable');
   } finally {
     loading.value = false;
   }
@@ -100,10 +102,10 @@ async function saveTemplate() {
       reminderEmailBody: form.emailBody,
       reminderNotificationText: form.notificationText,
     });
-    message.value = 'Erinnerungs-Vorlage gespeichert.';
+    message.value = t('adminPages.ai.reminderText.savedMessage');
     emit('saved', data);
   } catch (err) {
-    error.value = err.response?.data?.error || err.message || 'Vorlage konnte nicht gespeichert werden.';
+    error.value = err.response?.data?.error || err.message || t('adminPages.ai.reminderText.saveFailed');
   } finally {
     saving.value = false;
   }
@@ -111,7 +113,7 @@ async function saveTemplate() {
 
 async function sendWithText() {
   if (!form.subject.trim() || !form.emailBody.trim()) {
-    error.value = 'Bitte Betreff und E-Mail-Text ausfüllen (beides erforderlich).';
+    error.value = t('adminPages.ai.reminderText.fillRequired');
     return;
   }
 
@@ -132,18 +134,18 @@ async function sendWithText() {
     });
 
     if (data.skipped) {
-      error.value = data.message || 'Erinnerungen sind deaktiviert.';
+      error.value = data.message || t('adminPages.ai.reminderText.disabled');
       return;
     }
     if (data.sent === 0) {
-      error.value = data.message || 'Keine E-Mails gesendet – keine fehlenden Tipps oder keine Empfänger.';
+      error.value = data.message || t('adminPages.ai.reminderText.noRecipients');
       return;
     }
 
-    message.value = data.message || `${data.sent} Erinnerungen gesendet.`;
+    message.value = data.message || t('adminPages.ai.reminderText.sentMessage', { count: data.sent });
     emit('sent', data);
   } catch (err) {
-    error.value = err.response?.data?.error || err.message || 'Erinnerungen konnten nicht gesendet werden.';
+    error.value = err.response?.data?.error || err.message || t('adminPages.ai.reminderText.sendFailed');
   } finally {
     sending.value = false;
   }

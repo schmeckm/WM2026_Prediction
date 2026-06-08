@@ -4,6 +4,13 @@ const WEAK_JWT_SECRETS = new Set([
   'change-me',
   'secret',
   'test-jwt-secret-for-integration-tests',
+  'changeme-set-a-long-random-jwt-secret-in-portainer',
+]);
+
+const WEAK_DB_PASSWORDS = new Set([
+  '',
+  'changeme-set-in-portainer',
+  'postgres',
 ]);
 
 function validateEnv() {
@@ -25,6 +32,9 @@ function validateEnv() {
     for (const key of ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD']) {
       if (!process.env[key]) errors.push(`${key} is required when DB_DIALECT=postgres.`);
     }
+    if (isProduction && WEAK_DB_PASSWORDS.has(process.env.DB_PASSWORD || '')) {
+      errors.push('DB_PASSWORD must be changed from the default value in production.');
+    }
   } else if ((process.env.DB_DIALECT || 'sqlite') === 'sqlite' && isProduction) {
     errors.push('DB_DIALECT=sqlite is not allowed in production. Use DB_DIALECT=postgres.');
   }
@@ -32,6 +42,14 @@ function validateEnv() {
   const syncEnabled = process.env.FOOTBALL_API_SYNC_ENABLED !== 'false';
   if (syncEnabled && !process.env.FOOTBALL_API_KEY && isProduction) {
     warnings.push('FOOTBALL_API_KEY is not set while API sync is enabled.');
+  }
+
+  if (isProduction && !process.env.APP_URL) {
+    warnings.push('APP_URL is not set – email links and OAuth redirects may be wrong.');
+  }
+
+  if (isProduction && (!process.env.CORS_ORIGIN || process.env.CORS_ORIGIN === '*')) {
+    errors.push('CORS_ORIGIN must be set to an explicit origin in production (not *).');
   }
 
   if (isProduction && !process.env.SENTRY_DSN) {
@@ -47,4 +65,4 @@ function validateEnv() {
   }
 }
 
-module.exports = { validateEnv, WEAK_JWT_SECRETS };
+module.exports = { validateEnv, WEAK_JWT_SECRETS, WEAK_DB_PASSWORDS };

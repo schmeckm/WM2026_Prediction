@@ -18,6 +18,7 @@ export function useAdminNavLinks() {
     { to: '/admin/predictions', label: t('nav.predictions'), icon: 'clipboard' },
     { to: '/admin/favorites', label: t('nav.favorites'), icon: 'star' },
     { to: '/admin/scoring-rules', label: t('nav.scoringRules'), icon: 'award' },
+    { to: '/admin/prizes', label: t('nav.prizesAdmin'), icon: 'trophy' },
     { to: '/admin/ai-assistant', label: t('nav.aiAssistant'), icon: 'bot' },
     { to: '/admin/statistics', label: t('nav.statistics'), icon: 'chart' },
     { to: '/admin/notifications', label: t('nav.notifications'), icon: 'bell' },

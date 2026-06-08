@@ -26,6 +26,12 @@ const DEFAULT_SETTINGS = {
   requireEmailVerification: true,
   includeAdminsInLeaderboard: false,
   displayModeEnabled: true,
+  prizesEnabled: false,
+  prizes: [
+    { rank: 1, title: '1. Platz', description: '', value: '' },
+    { rank: 2, title: '2. Platz', description: '', value: '' },
+    { rank: 3, title: '3. Platz', description: '', value: '' },
+  ],
 };
 
 const PUBLIC_SETTING_KEYS = new Set([
@@ -38,7 +44,22 @@ const PUBLIC_SETTING_KEYS = new Set([
   'tournamentStartDate',
   'tournamentEndDate',
   'defaultTimezone',
+  'prizesEnabled',
+  'prizes',
 ]);
+
+function normalizePrizes(prizes) {
+  if (!Array.isArray(prizes)) return DEFAULT_SETTINGS.prizes;
+  return [1, 2, 3].map((rank) => {
+    const entry = prizes.find((p) => Number(p.rank) === rank) || {};
+    return {
+      rank,
+      title: String(entry.title || '').trim().slice(0, 100),
+      description: String(entry.description || '').trim().slice(0, 500),
+      value: String(entry.value || '').trim().slice(0, 100),
+    };
+  });
+}
 
 async function getSetting(key, defaultValue = null) {
   const setting = await Setting.findOne({ where: { key } });
@@ -123,7 +144,7 @@ async function updateSettings(updates) {
 
   for (const [key, value] of Object.entries(updates || {})) {
     if (allowedKeys.includes(key)) {
-      filtered[key] = value;
+      filtered[key] = key === 'prizes' ? normalizePrizes(value) : value;
     } else {
       rejected.push(key);
     }

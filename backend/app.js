@@ -80,7 +80,7 @@ app.use(helmet({
 
 app.use(cors(getCorsOptions()));
 app.use(express.json({ limit: '100kb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 
 if (process.env.NODE_ENV !== 'test') {
   app.use(requestLogger);

@@ -24,7 +24,12 @@
             :key="entry.userId"
             :class="{ 'leaderboard-row-current': entry.userId === currentUserId }"
           >
-            <td :class="rankClass(entry.rank)">{{ entry.rank }}</td>
+            <td :class="rankClass(entry.rank)">
+              <span class="rank-cell">
+                <RankTrophyIcon v-if="showRankTrophy(entry.rank)" :rank="entry.rank" />
+                <span>{{ entry.rank }}</span>
+              </span>
+            </td>
             <td v-if="showMovement">
               <span v-if="entry.rankMovement > 0" class="rank-up">▲{{ entry.rankMovement }}</span>
               <span v-else-if="entry.rankMovement < 0" class="rank-down">▼{{ Math.abs(entry.rankMovement) }}</span>
@@ -67,7 +72,12 @@
         :key="`card-${entry.userId}`"
         :class="['leaderboard-card', { 'leaderboard-card-current': entry.userId === currentUserId }]"
       >
-        <div class="leaderboard-card-rank" :class="rankClass(entry.rank)">#{{ entry.rank }}</div>
+        <div class="leaderboard-card-rank" :class="rankClass(entry.rank)">
+          <span class="rank-cell">
+            <RankTrophyIcon v-if="showRankTrophy(entry.rank)" :rank="entry.rank" />
+            <span>#{{ entry.rank }}</span>
+          </span>
+        </div>
         <div class="leaderboard-card-body">
           <div class="leaderboard-name-cell">
             <UserAvatar
@@ -96,6 +106,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFormatters } from '../composables/useFormatters';
+import RankTrophyIcon from './RankTrophyIcon.vue';
 import UserAvatar from './UserAvatar.vue';
 
 const props = defineProps({
@@ -115,12 +126,24 @@ const colspan = computed(() => {
 });
 
 function rankClass(rank) {
-  if (rank <= 3) return `rank-${rank}`;
+  const n = Number(rank);
+  if (n >= 1 && n <= 3) return `rank-${n}`;
   return '';
+}
+
+function showRankTrophy(rank) {
+  const n = Number(rank);
+  return n >= 1 && n <= 3;
 }
 </script>
 
 <style scoped>
+.rank-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .leaderboard-name-cell {
   display: flex;
   align-items: center;

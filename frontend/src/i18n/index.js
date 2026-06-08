@@ -1,12 +1,17 @@
 import { createI18n } from 'vue-i18n';
 import de from '../locales/de.json';
-import en from '../locales/en.json';
-import es from '../locales/es.json';
-import fr from '../locales/fr.json';
 
 export const SUPPORTED_LOCALES = ['de', 'en', 'es', 'fr'];
 export const DEFAULT_LOCALE = 'de';
 export const LOCALE_STORAGE_KEY = 'locale';
+
+const localeLoaders = {
+  en: () => import('../locales/en.json'),
+  es: () => import('../locales/es.json'),
+  fr: () => import('../locales/fr.json'),
+};
+
+const loadedLocales = new Set([DEFAULT_LOCALE]);
 
 export function normalizeLocale(locale) {
   if (!locale) return DEFAULT_LOCALE;
@@ -47,10 +52,24 @@ const i18n = createI18n({
   fallbackLocale: DEFAULT_LOCALE,
   messages: {
     de: preprocessLocaleMessages(de),
-    en: preprocessLocaleMessages(en),
-    es: preprocessLocaleMessages(es),
-    fr: preprocessLocaleMessages(fr),
   },
 });
+
+export async function loadLocaleMessages(locale) {
+  const normalized = normalizeLocale(locale);
+  if (loadedLocales.has(normalized)) {
+    return normalized;
+  }
+
+  const loader = localeLoaders[normalized];
+  if (!loader) {
+    return DEFAULT_LOCALE;
+  }
+
+  const mod = await loader();
+  i18n.global.setLocaleMessage(normalized, preprocessLocaleMessages(mod.default));
+  loadedLocales.add(normalized);
+  return normalized;
+}
 
 export default i18n;

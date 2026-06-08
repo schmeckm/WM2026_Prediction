@@ -233,6 +233,31 @@ describe('Settings access control', { concurrency: 1 }, () => {
     assert.equal(res.body.evilKey, undefined);
   });
 
+  test('Admin can configure prizes for places 1-3', async () => {
+    const res = await api.put('/api/admin/settings')
+      .set('Authorization', `Bearer ${adminTokenVal}`)
+      .send({
+        prizesEnabled: true,
+        prizes: [
+          { rank: 1, title: 'Gold', description: 'Main prize', value: '200 EUR' },
+          { rank: 2, title: 'Silver', value: '100 EUR' },
+        ],
+      });
+    assert.equal(res.status, 200);
+    assert.equal(res.body.prizesEnabled, true);
+    assert.equal(res.body.prizes.length, 3);
+    assert.equal(res.body.prizes[0].title, 'Gold');
+    assert.equal(res.body.prizes[1].value, '100 EUR');
+    assert.equal(res.body.prizes[2].rank, 3);
+
+    const publicRes = await api.get('/api/settings')
+      .set('Authorization', `Bearer ${userToken}`);
+    assert.equal(publicRes.status, 200);
+    assert.equal(publicRes.body.prizesEnabled, true);
+    assert.equal(publicRes.body.prizes[0].title, 'Gold');
+    assert.equal(publicRes.body.apiSyncEnabled, undefined);
+  });
+
   test('Admin favorites overview returns aggregated profile picks', async () => {
     const { User } = require('../../models');
     await User.update({

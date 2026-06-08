@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
       entityType: req.query.entityType,
       fromDate: req.query.fromDate,
       toDate: req.query.toDate,
-      limit: parseInt(req.query.limit || '100', 10),
+      limit: Math.min(parseInt(req.query.limit || '100', 10), 500),
       offset: parseInt(req.query.offset || '0', 10),
     });
     res.json(result);

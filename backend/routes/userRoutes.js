@@ -67,6 +67,11 @@ router.post('/', adminMiddleware, async (req, res) => {
       return sendError(res, req, 400, 'errors.requiredFields');
     }
 
+    const passwordCheck = validatePassword(password);
+    if (!passwordCheck.valid) {
+      return sendError(res, req, 400, passwordCheck.errorKey);
+    }
+
     const existing = await User.findOne({ where: { email: email.toLowerCase().trim() } });
     if (existing) {
       return sendError(res, req, 409, 'errors.emailTaken');

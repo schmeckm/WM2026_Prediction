@@ -1,7 +1,7 @@
 <template>
   <div class="bonus-suggestions">
     <button class="btn btn-accent btn-sm" :disabled="loading" @click="generate">
-      {{ loading ? 'Generiere...' : '🤖 KI-Vorschläge generieren' }}
+      {{ loading ? t('adminPages.ai.bonusSuggestions.generating') : t('adminPages.ai.bonusSuggestions.generate') }}
     </button>
     <AlertMessage v-if="error" :message="error" type="error" />
     <div v-if="suggestions.length" class="suggestions-list mt-2">
@@ -9,10 +9,12 @@
         <strong>{{ s.questionText }}</strong>
         <div class="meta">
           <span class="badge badge-info">{{ s.questionType }}</span>
-          <span class="badge badge-success">{{ s.suggestedPoints || 10 }} Pkt.</span>
+          <span class="badge badge-success">{{ s.suggestedPoints || 10 }} {{ t('bonus.pointsShort') }}</span>
         </div>
         <div v-if="s.options" class="options">{{ s.options.join(', ') }}</div>
-        <button class="btn btn-secondary btn-sm mt-1" @click="$emit('use', s)">Übernehmen</button>
+        <button class="btn btn-secondary btn-sm mt-1" @click="$emit('use', s)">
+          {{ t('adminPages.ai.bonusSuggestions.apply') }}
+        </button>
       </div>
     </div>
   </div>
@@ -20,11 +22,13 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import AlertMessage from './AlertMessage.vue';
 
 defineEmits(['use']);
 
+const { t } = useI18n();
 const loading = ref(false);
 const error = ref('');
 const suggestions = ref([]);
@@ -36,7 +40,7 @@ async function generate() {
     const { data } = await api.post('/admin/ai/bonus-question-suggestions', { numberOfQuestions: 5 });
     suggestions.value = data.suggestions || [];
   } catch (err) {
-    error.value = err.response?.data?.error || 'KI-Vorschläge nicht verfügbar.';
+    error.value = err.response?.data?.error || t('adminPages.ai.bonusSuggestions.unavailable');
   } finally {
     loading.value = false;
   }

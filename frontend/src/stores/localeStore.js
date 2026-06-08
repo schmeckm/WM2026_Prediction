@@ -1,6 +1,6 @@
 import { ref, watch } from 'vue';
 import { defineStore } from 'pinia';
-import i18n, { getStoredLocale, setStoredLocale, normalizeLocale } from '../i18n';
+import i18n, { getStoredLocale, setStoredLocale, normalizeLocale, loadLocaleMessages } from '../i18n';
 import api from '../services/api';
 import { useAuthStore } from './authStore';
 
@@ -16,7 +16,8 @@ export const useLocaleStore = defineStore('locale', () => {
   }
 
   async function setLocale(code, { persistProfile = true, userId = null } = {}) {
-    const normalized = applyLocale(code);
+    const normalized = await loadLocaleMessages(code);
+    applyLocale(normalized);
     if (persistProfile && userId) {
       try {
         const { data } = await api.put(`/users/${userId}`, { language: normalized });
@@ -30,7 +31,7 @@ export const useLocaleStore = defineStore('locale', () => {
 
   function syncFromUser(user) {
     if (user?.language) {
-      applyLocale(user.language);
+      loadLocaleMessages(user.language).then((normalized) => applyLocale(normalized));
     }
   }
 

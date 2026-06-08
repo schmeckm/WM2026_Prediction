@@ -33,7 +33,10 @@
     "optional": "optional",
     "required": "Pflichtfeld",
     "retry": "Erneut versuchen",
-    "tooManyRequests": "Zu viele Anfragen. Bitte kurz warten und erneut versuchen."
+    "admin": "Admin",
+    "user": "Benutzer",
+    "tooManyRequests": "Zu viele Anfragen. Bitte kurz warten und erneut versuchen.",
+    "skipToContent": "Zum Inhalt springen"
   },
   "nav": {
     "navigation": "Navigation",
@@ -48,6 +51,7 @@
     "bonus": "Bonusfragen",
     "aiCoach": "KI Coach",
     "leaderboard": "Hitliste",
+    "prizes": "Preise",
     "teamRanking": "Teamwertung",
     "statistics": "Statistiken",
     "notifications": "Benachrichtigungen",
@@ -64,6 +68,7 @@
     "predictions": "Tippübersicht",
     "favorites": "Favoriten-Übersicht",
     "scoringRules": "Punkte-Regeln",
+    "prizesAdmin": "Preisverwaltung",
     "csvImport": "CSV Import",
     "auditLog": "Audit Log",
     "dataBackup": "Datensicherung",
@@ -575,6 +580,13 @@
       "knockout": "K.o.-Phase"
     }
   },
+  "prizes": {
+    "title": "Preise",
+    "subtitle": "Das gibt es für die besten Tipper am Ende des Turniers.",
+    "place": "{rank}. Platz",
+    "disabled": "Die Preisliste ist derzeit nicht verfügbar.",
+    "empty": "Es wurden noch keine Preise hinterlegt."
+  },
   "teamRanking": {
     "title": "Teamwertung",
     "team": "Team",
@@ -582,7 +594,8 @@
     "totalPoints": "Gesamtpunkte",
     "avgPoints": "Ø Punkte",
     "exactTips": "Exakte Tipps",
-    "empty": "Keine Teams vorhanden."
+    "empty": "Keine Teams vorhanden.",
+    "loadFailed": "Teamwertung konnte nicht geladen werden."
   },
   "bonus": {
     "title": "Bonusfragen",
@@ -704,7 +717,8 @@
     "markAllRead": "Alle gelesen",
     "markAllReadLong": "Alle als gelesen markieren",
     "bellLabel": "Benachrichtigungen",
-    "toggleDropdown": "Benachrichtigungen ein-/ausblenden"
+    "toggleDropdown": "Benachrichtigungen ein-/ausblenden",
+    "loadFailed": "Benachrichtigungen konnten nicht geladen werden."
   },
   "statistics": {
     "title": "Statistiken",
@@ -944,6 +958,22 @@
       "exampleTendency": "Tipp 1:0 = {points} Pkt. (Tendenz)",
       "exampleWrong": "Tipp 1:2 = {points} Pkt. (falsch)"
     },
+    "prizes": {
+      "title": "Preisverwaltung",
+      "subtitle": "Preise für Platz 1–3 festlegen und für alle Spieler sichtbar schalten.",
+      "enabled": "Preisliste für Spieler anzeigen",
+      "enabledHint": "Wenn deaktiviert, ist der Menüpunkt ausgeblendet und die Seite nicht erreichbar.",
+      "place": "Platz {rank}",
+      "save": "Preise speichern",
+      "saved": "Preise gespeichert.",
+      "saveFailed": "Preise konnten nicht gespeichert werden.",
+      "valuePlaceholder": "z. B. 200 € Gutschein",
+      "fields": {
+        "title": "Titel",
+        "value": "Preis / Wert",
+        "description": "Beschreibung"
+      }
+    },
     "import": {
       "title": "CSV Import",
       "defaultModeTitle": "Standard-Betriebsmodus",
@@ -991,6 +1021,16 @@
       "recalculate": "Punkte neu berechnen",
       "recentErrors": "Letzte Sync-Fehler",
       "syncLogs": "Sync-Logs",
+      "logType": "Typ",
+      "logStatus": "Status",
+      "logProvider": "Provider",
+      "logStarted": "Start",
+      "logCreated": "Erstellt",
+      "logUpdated": "Aktualisiert",
+      "logSkipped": "Übersprungen",
+      "logErrors": "Fehler",
+      "logMessage": "Meldung",
+      "noLogs": "Keine Sync-Logs vorhanden.",
       "connectionSuccess": "Verbindung erfolgreich.",
       "connectionFailed": "Verbindungstest fehlgeschlagen.",
       "fixturesSynced": "Spielplan synchronisiert.",
@@ -1210,6 +1250,36 @@
         "csvImport": "Welche Daten könnten nach dem CSV-Import fehlen?",
         "reminderText": "Erstelle einen freundlichen Reminder-Text für fehlende Tipps.",
         "bonusSuggestions": "Schlage 5 passende Bonusfragen für die WM 2026 vor."
+      },
+      "bonusSuggestions": {
+        "generate": "🤖 KI-Vorschläge generieren",
+        "generating": "Generiere...",
+        "apply": "Übernehmen",
+        "unavailable": "KI-Vorschläge nicht verfügbar."
+      },
+      "reminderText": {
+        "hintIntro": "Erstellen Sie einen individuellen Text für Tipp-Erinnerungen. Platzhalter:",
+        "generate": "🤖 KI-Text generieren",
+        "generating": "Generiere...",
+        "saveTemplate": "Vorlage speichern",
+        "saving": "Speichere...",
+        "sendWithText": "Mit diesem Text senden",
+        "sending": "Sende...",
+        "subject": "Betreff",
+        "emailBody": "E-Mail-Text",
+        "notificationText": "In-App-Benachrichtigung",
+        "subjectPlaceholder": "z. B. {{appTitle}} – noch {{missingCount}} Tipps offen",
+        "emailBodyPlaceholder": "Hallo {{firstName}}, Sie haben noch {{missingCount}} offene Tipps...",
+        "notificationPlaceholder": "Noch {{missingCount}} Tipps abgeben!",
+        "generatedMessage": "KI-Text generiert – bitte prüfen und speichern oder senden.",
+        "savedMessage": "Erinnerungs-Vorlage gespeichert.",
+        "unavailable": "KI-Reminder nicht verfügbar.",
+        "fillRequired": "Bitte Betreff und E-Mail-Text ausfüllen (beides erforderlich).",
+        "disabled": "Erinnerungen sind deaktiviert.",
+        "noRecipients": "Keine E-Mails gesendet – keine fehlenden Tipps oder keine Empfänger.",
+        "sentMessage": "{count} Erinnerungen gesendet.",
+        "saveFailed": "Vorlage konnte nicht gespeichert werden.",
+        "sendFailed": "Erinnerungen konnten nicht gesendet werden."
       }
     },
     "manualModeLegacy": "Manueller CSV-Modus",

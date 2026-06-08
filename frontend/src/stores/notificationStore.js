@@ -6,6 +6,7 @@ import { onSocketEvent, connectSocket } from '../services/socket';
 export const useNotificationStore = defineStore('notifications', () => {
   const notifications = ref([]);
   const unreadCount = ref(0);
+  let socketUnsub = null;
 
   async function fetchNotifications() {
     const { data } = await api.get('/notifications');
@@ -29,8 +30,9 @@ export const useNotificationStore = defineStore('notifications', () => {
   }
 
   function initSocketListener() {
+    if (socketUnsub) return;
     connectSocket();
-    onSocketEvent('notification', (notification) => {
+    socketUnsub = onSocketEvent('notification', (notification) => {
       notifications.value.unshift(notification);
       unreadCount.value++;
     });

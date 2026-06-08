@@ -4,6 +4,16 @@ const path = require('path');
 const multer = require('multer');
 const { sendError, translate } = require('../utils/apiResponse');
 const { Team, User } = require('../models');
+
+const SAFE_USER_ATTRIBUTES = {
+  exclude: [
+    'password',
+    'emailVerificationToken',
+    'emailVerificationExpires',
+    'passwordResetToken',
+    'passwordResetExpires',
+  ],
+};
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 const {
@@ -148,12 +158,14 @@ router.delete('/:id/image', authMiddleware, adminMiddleware, async (req, res) =>
 router.get('/:id', authMiddleware, async (req, res) => {
   try {
     const team = await Team.findByPk(req.params.id, {
-      include: [{ model: User, as: 'users' }],
+      include: [{ model: User, as: 'users', attributes: SAFE_USER_ATTRIBUTES }],
     });
     if (!team) {
       return sendError(res, req, 404, 'errors.teamNotFound');
     }
-    res.json(team);
+    const payload = team.toJSON();
+    payload.users = (payload.users || []).map((user) => User.build(user).toSafeJSON());
+    res.json(payload);
   } catch (error) {
     sendError(res, req, 500, 'errors.teamLoadFailed');
   }

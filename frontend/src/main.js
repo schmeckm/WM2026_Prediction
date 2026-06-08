@@ -3,7 +3,7 @@ import { createPinia } from 'pinia';
 import { registerSW } from 'virtual:pwa-register';
 import App from './App.vue';
 import router from './router';
-import i18n from './i18n';
+import i18n, { getStoredLocale, loadLocaleMessages } from './i18n';
 import './styles/main.css';
 import { useThemeStore } from './stores/themeStore';
 import { initSentry } from './sentry';
@@ -50,12 +50,20 @@ router.onError((error) => {
   }
 });
 
-const app = createApp(App);
-const pinia = createPinia();
-initSentry(app, router);
-app.use(pinia);
-app.use(i18n);
-app.use(router);
-useThemeStore().initTheme();
-app.mount('#app');
-sessionStorage.removeItem(CHUNK_RELOAD_KEY);
+async function bootstrap() {
+  const storedLocale = getStoredLocale();
+  await loadLocaleMessages(storedLocale);
+  i18n.global.locale.value = storedLocale;
+
+  const app = createApp(App);
+  const pinia = createPinia();
+  initSentry(app, router);
+  app.use(pinia);
+  app.use(i18n);
+  app.use(router);
+  useThemeStore().initTheme();
+  app.mount('#app');
+  sessionStorage.removeItem(CHUNK_RELOAD_KEY);
+}
+
+bootstrap();

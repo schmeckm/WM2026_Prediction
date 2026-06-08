@@ -30,6 +30,7 @@ function ensureBackupDir() {
 
 function sanitizeUser(user) {
   const data = user.toJSON ? user.toJSON() : { ...user };
+  delete data.password;
   USER_TOKEN_FIELDS.forEach((field) => delete data[field]);
   if (user.team?.name) data.teamName = user.team.name;
   return data;

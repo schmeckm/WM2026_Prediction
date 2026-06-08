@@ -2,7 +2,7 @@
   <div class="display-mode">
     <header class="display-header">
       <div>
-        <h1>{{ appTitle }}</h1>
+        <h1>{{ t('brand.title') }}</h1>
         <p class="display-subtitle">{{ t('display.subtitle') }}</p>
       </div>
       <span class="display-updated">{{ t('display.updated') }}: {{ formatTime(lastUpdated) }}</span>
@@ -51,7 +51,6 @@ import {
 const { t } = useI18n();
 const { formatTime } = useFormatters();
 
-const appTitle = ref('WM 2026 Tippspiel');
 const leaderboard = ref([]);
 const matches = ref([]);
 const lastUpdated = ref(new Date());

@@ -77,7 +77,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import { onSocketEvent } from '../services/socket';
@@ -130,6 +130,27 @@ const lockWarning = computed(() => {
   return t('matches.lockWarningSoon', { count: urgent.length });
 });
 
+const needsLockTimer = computed(() =>
+  matches.value.some((match) => {
+    if (!match.canPredict) return false;
+    const kickoff = new Date(match.kickoffTime).getTime();
+    const remaining = kickoff - now.value;
+    return remaining > 0 && remaining <= LOCK_WARNING_MS + 60_000;
+  }),
+);
+
+function syncLockTimer() {
+  if (needsLockTimer.value && !lockTimer) {
+    now.value = Date.now();
+    lockTimer = setInterval(() => {
+      now.value = Date.now();
+    }, 1000);
+  } else if (!needsLockTimer.value && lockTimer) {
+    clearInterval(lockTimer);
+    lockTimer = null;
+  }
+}
+
 function setViewMode(mode) {
   viewMode.value = mode;
   localStorage.setItem(VIEW_MODE_KEY, mode);
@@ -140,6 +161,7 @@ function updateMatch(updated) {
   if (idx >= 0) {
     const existing = matches.value[idx];
     matches.value[idx] = { ...existing, ...updated, prediction: existing.prediction };
+    syncLockTimer();
   }
 }
 
@@ -161,6 +183,7 @@ async function loadMatches() {
     if (activeGroup.value) params.groupName = activeGroup.value;
     const { data } = await api.get('/matches', { params });
     matches.value = data;
+    syncLockTimer();
   } catch (err) {
     error.value = err.response?.data?.error || t('matches.loadFailed');
   } finally {
@@ -179,14 +202,13 @@ onMounted(async () => {
     localStorage.setItem(VIEW_MODE_KEY, 'cards');
   }
 
-  lockTimer = setInterval(() => {
-    now.value = Date.now();
-  }, 1000);
-
   await loadGroups();
   await loadMatches();
+  syncLockTimer();
   unsub = onSocketEvent('match:update', updateMatch);
 });
+
+watch(needsLockTimer, syncLockTimer);
 
 onUnmounted(() => {
   unsub?.();

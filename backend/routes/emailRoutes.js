@@ -24,7 +24,12 @@ router.get('/status', async (req, res) => {
 
 router.post('/send-test', async (req, res) => {
   try {
-    const to = req.body.to || req.user.email;
+    const requestedTo = typeof req.body.to === 'string' ? req.body.to.trim().toLowerCase() : '';
+    const adminEmail = req.user.email?.toLowerCase?.() || '';
+    if (requestedTo && requestedTo !== adminEmail) {
+      return sendError(res, req, 403, 'errors.accessDenied');
+    }
+    const to = adminEmail;
     const locale = resolveUserEmailLocale(req.user, req.locale);
     const result = await emailService.sendEmail({
       to,

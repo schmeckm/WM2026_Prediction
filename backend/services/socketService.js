@@ -1,8 +1,36 @@
 let io = null;
 
+async function authenticateSocket(socket) {
+  const { verifyToken } = require('../utils/jwtUtils');
+  const { isTokenBlacklisted } = require('./tokenBlacklistService');
+  const { User } = require('../models');
+
+  const token = socket.handshake.auth?.token
+    || socket.handshake.query?.token;
+  const decoded = verifyToken(token);
+  if (!decoded?.userId) {
+    socket.authenticated = false;
+    return;
+  }
+
+  if (await isTokenBlacklisted(token)) {
+    socket.authenticated = false;
+    return;
+  }
+
+  const user = await User.findByPk(decoded.userId, { attributes: ['id', 'role'] });
+  if (!user) {
+    socket.authenticated = false;
+    return;
+  }
+
+  socket.userId = user.id;
+  socket.userRole = user.role;
+  socket.authenticated = true;
+}
+
 function init(server, options = {}) {
   const { Server } = require('socket.io');
-  const { verifyToken } = require('../utils/jwtUtils');
   const { getSocketCorsOrigin } = require('../config/corsConfig');
 
   io = new Server(server, {
@@ -13,18 +41,13 @@ function init(server, options = {}) {
     },
   });
 
-  io.use((socket, next) => {
-    const token = socket.handshake.auth?.token
-      || socket.handshake.query?.token;
-    const decoded = verifyToken(token);
-    if (decoded?.userId) {
-      socket.userId = decoded.userId;
-      socket.userRole = decoded.role;
-      socket.authenticated = true;
-    } else {
-      socket.authenticated = false;
+  io.use(async (socket, next) => {
+    try {
+      await authenticateSocket(socket);
+      next();
+    } catch (error) {
+      next(error);
     }
-    next();
   });
 
   io.on('connection', (socket) => {

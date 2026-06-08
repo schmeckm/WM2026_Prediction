@@ -46,4 +46,15 @@ export default defineConfig({
     environment: 'jsdom',
     include: ['src/**/*.test.js'],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'chart.js': ['chart.js'],
+          sentry: ['@sentry/vue'],
+          'socket.io-client': ['socket.io-client'],
+        },
+      },
+    },
+  },
 });

@@ -3,24 +3,11 @@
     <div class="sidebar-brand">
       <AppBrandMark compact />
     </div>
-    <nav class="sidebar-nav">
-      <div v-if="!adminMode" class="sidebar-section">{{ t('nav.navigation') }}</div>
-      <router-link
-        v-for="link in links"
-        :key="link.to"
-        :to="link.to"
-        class="sidebar-link"
-        active-class="active"
-        @click="close"
-      >
-        <span class="icon"><NavIcon :name="link.icon" /></span>
-        {{ link.label }}
-      </router-link>
-
-      <template v-if="!adminMode && authStore.isAdmin && adminLinks">
-        <div class="sidebar-section">{{ t('nav.administration') }}</div>
+    <div class="sidebar-scroll">
+      <nav class="sidebar-nav">
+        <div v-if="!adminMode" class="sidebar-section">{{ t('nav.navigation') }}</div>
         <router-link
-          v-for="link in adminLinks"
+          v-for="link in links"
           :key="link.to"
           :to="link.to"
           class="sidebar-link"
@@ -30,13 +17,28 @@
           <span class="icon"><NavIcon :name="link.icon" /></span>
           {{ link.label }}
         </router-link>
-      </template>
-    </nav>
-    <div v-if="!adminMode" class="sidebar-footer-links">
-      <router-link to="/help" class="sidebar-link" active-class="active" @click="close">
-        <span class="icon"><NavIcon name="help" /></span>
-        {{ t('help.nav') }}
-      </router-link>
+
+        <template v-if="!adminMode && authStore.isAdmin && adminLinks">
+          <div class="sidebar-section">{{ t('nav.administration') }}</div>
+          <router-link
+            v-for="link in adminLinks"
+            :key="link.to"
+            :to="link.to"
+            class="sidebar-link"
+            active-class="active"
+            @click="close"
+          >
+            <span class="icon"><NavIcon :name="link.icon" /></span>
+            {{ link.label }}
+          </router-link>
+        </template>
+      </nav>
+      <div v-if="!adminMode" class="sidebar-footer-links">
+        <router-link to="/help" class="sidebar-link" active-class="active" @click="close">
+          <span class="icon"><NavIcon name="help" /></span>
+          {{ t('help.nav') }}
+        </router-link>
+      </div>
     </div>
     <div class="sidebar-footer">
       <div class="sidebar-footer-name">{{ authStore.fullName }}</div>

@@ -4,8 +4,12 @@
     <div
       v-for="n in store.notifications"
       :key="n.id"
+      role="button"
+      tabindex="0"
       :class="['notification-item', { unread: !n.isRead }]"
       @click="handleClick(n)"
+      @keydown.enter.prevent="handleClick(n)"
+      @keydown.space.prevent="handleClick(n)"
     >
       <div class="notification-title">{{ n.title }}</div>
       <div class="notification-message">{{ n.message }}</div>
@@ -46,6 +50,10 @@ async function handleClick(n) {
 }
 
 .notification-item:hover { background: var(--color-bg); }
+.notification-item:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
 .notification-item.unread { background: var(--color-primary-soft); border-left: 3px solid var(--color-primary); }
 .notification-title { font-weight: 600; font-size: 0.85rem; }
 .notification-message { font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.25rem; }

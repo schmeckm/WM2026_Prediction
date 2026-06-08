@@ -11,6 +11,7 @@ const socketService = require('../services/socketService');
 const { isMatchEditable } = require('../services/matchLockService');
 const { attachStadiumImage, attachStadiumImages } = require('../services/matchPresentationService');
 const { getGroupStandings } = require('../services/groupStandingsService');
+const { validatePredictionScores } = require('../utils/predictionValidation');
 
 const router = express.Router();
 
@@ -188,9 +189,14 @@ router.post('/:id/result', authMiddleware, adminMiddleware, async (req, res) => 
       return sendError(res, req, 400, 'errors.scoresRequired');
     }
 
+    const scoreValidation = validatePredictionScores(homeScore, awayScore);
+    if (!scoreValidation.ok) {
+      return sendError(res, req, 400, scoreValidation.error, scoreValidation.meta);
+    }
+
     await applyFinishedMatchUpdate(match, {
-      homeScore: parseInt(homeScore, 10),
-      awayScore: parseInt(awayScore, 10),
+      homeScore: scoreValidation.predictedHomeScore,
+      awayScore: scoreValidation.predictedAwayScore,
       status: 'finished',
       isManuallyLocked: true,
       isApiManaged: false,
