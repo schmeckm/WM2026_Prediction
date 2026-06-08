@@ -26,7 +26,7 @@
           </thead>
           <tbody>
             <tr v-for="q in questions" :key="q.id">
-              <td>{{ q.questionText }}</td>
+              <td>{{ bonusQuestionText(q) }}</td>
               <td>{{ typeLabel(q.questionType) }}</td>
               <td>{{ q.points }}</td>
               <td>{{ q.status }}</td>
@@ -96,7 +96,7 @@
                 </div>
               </template>
               <template v-else>
-                <p>{{ resolvingQuestion?.questionText }}</p>
+                <p>{{ resolvingQuestion ? bonusQuestionText(resolvingQuestion) : '' }}</p>
 
                 <div v-if="resolvingQuestion?.questionType === 'favorite_team_progress'" class="resolve-hint">
                   <p class="text-muted">{{ t('adminPages.bonus.progressResolveHint') }}</p>
@@ -190,8 +190,10 @@ import AlertMessage from '../../components/AlertMessage.vue';
 import AIBonusQuestionSuggestions from '../../components/AIBonusQuestionSuggestions.vue';
 import ConfirmModal from '../../components/ConfirmModal.vue';
 import { useConfirmModal } from '../../composables/useConfirmModal';
+import { useBonusQuestionText } from '../../composables/useBonusQuestionText';
 
 const { t, locale } = useI18n();
+const { bonusQuestionText } = useBonusQuestionText();
 const { confirmState, openConfirm, closeConfirm, onConfirm } = useConfirmModal();
 
 const questions = ref([]);

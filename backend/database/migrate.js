@@ -78,6 +78,8 @@ async function runMigrations(sequelize) {
     console.log('Migration: PlayerImages.countryCode auf VARCHAR(64) erweitert.');
   }
 
+  await widenPlayerImageTextColumns(queryInterface, playerImageTableInfo);
+
   await fixPlayerImagesUniqueIndexes(sequelize, queryInterface, playerImageTableInfo);
 
   let aiCommentaryTableInfo;
@@ -109,6 +111,27 @@ async function runMigrations(sequelize) {
   await ensureIndexes(queryInterface);
 }
 
+function isBoundedVarcharColumn(columnInfo) {
+  const type = String(columnInfo?.type || '').toLowerCase();
+  if (type.includes('text')) return false;
+  return /varchar|character varying|string/i.test(type);
+}
+
+async function widenPlayerImageTextColumns(queryInterface, tableInfo) {
+  const textColumns = [
+    { name: 'imageUrl', spec: { type: DataTypes.TEXT, allowNull: true } },
+    { name: 'sourceId', spec: { type: DataTypes.TEXT, allowNull: true } },
+  ];
+
+  for (const column of textColumns) {
+    const current = tableInfo[column.name];
+    if (!current || !isBoundedVarcharColumn(current)) continue;
+    await queryInterface.changeColumn('PlayerImages', column.name, column.spec);
+    console.log(`Migration: PlayerImages.${column.name} auf TEXT erweitert.`);
+    tableInfo[column.name] = column.spec;
+  }
+}
+
 async function fixPlayerImagesUniqueIndexes(sequelize, queryInterface, tableInfo) {
   const hasColumnUnique = tableInfo.playerName?.unique || tableInfo.teamName?.unique;
   if (!hasColumnUnique) return;
@@ -121,9 +144,9 @@ async function fixPlayerImagesUniqueIndexes(sequelize, queryInterface, tableInfo
         playerName VARCHAR(255) NOT NULL,
         teamName VARCHAR(255),
         countryCode VARCHAR(64),
-        imageUrl VARCHAR(255),
-        source VARCHAR(255) NOT NULL DEFAULT 'placeholder',
-        sourceId VARCHAR(255),
+        imageUrl TEXT,
+        source VARCHAR(64) NOT NULL DEFAULT 'placeholder',
+        sourceId TEXT,
         licenseInfo TEXT,
         attributionText TEXT,
         lastCheckedAt DATETIME,

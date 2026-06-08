@@ -648,6 +648,13 @@
     "searchPlayer": "Buscar jugador…",
     "favoriteTeamProgressQuestion": "¿Hasta dónde llegará {team}?",
     "favoriteTeamProgressFallback": "¿Hasta dónde llegará tu selección favorita?",
+    "defaultQuestions": {
+      "champion": "¿Quién será campeón del mundo?",
+      "runner_up": "¿Quién será subcampeón?",
+      "third_place": "¿Quién quedará tercero?",
+      "top_scorer": "¿Quién será el máximo goleador?",
+      "team_progress": "¿Hasta dónde llegará {team}?"
+    },
     "favoriteTeamRequired": "Elige primero tu selección favorita en el perfil.",
     "goToProfile": "Ir al perfil",
     "progress": {

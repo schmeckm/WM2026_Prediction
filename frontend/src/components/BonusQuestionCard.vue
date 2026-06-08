@@ -110,6 +110,7 @@ import api from '../services/api';
 import { useAuthStore } from '../stores/authStore';
 import { useFootballTeamStore } from '../stores/footballTeamStore';
 import TeamFlag from './TeamFlag.vue';
+import { useBonusQuestionText } from '../composables/useBonusQuestionText';
 
 const props = defineProps({
   question: { type: Object, required: true },
@@ -117,6 +118,7 @@ const props = defineProps({
 
 const emit = defineEmits(['saved']);
 const { t, locale } = useI18n();
+const { bonusQuestionText } = useBonusQuestionText();
 const authStore = useAuthStore();
 const footballTeamStore = useFootballTeamStore();
 
@@ -170,15 +172,9 @@ const isChoiceQuestion = computed(() => (
   || props.question.questionType === 'favorite_team_progress'
 ));
 
-const displayQuestionText = computed(() => {
-  if (props.question.questionType === 'favorite_team_progress') {
-    if (!favoriteTeamName.value) {
-      return t('bonus.favoriteTeamProgressFallback');
-    }
-    return t('bonus.favoriteTeamProgressQuestion', { team: favoriteTeamName.value });
-  }
-  return props.question.questionText;
-});
+const displayQuestionText = computed(() => bonusQuestionText(props.question, {
+  team: favoriteTeamName.value || undefined,
+}));
 
 const statusLabel = computed(() => {
   const map = {

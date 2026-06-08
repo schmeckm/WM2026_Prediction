@@ -686,6 +686,13 @@
     "searchPlayer": "Spieler suchen…",
     "favoriteTeamProgressQuestion": "Wie weit kommt {team}?",
     "favoriteTeamProgressFallback": "Wie weit kommt dein Lieblingsteam?",
+    "defaultQuestions": {
+      "champion": "Wer wird Weltmeister?",
+      "runner_up": "Wer wird Vize-Weltmeister?",
+      "third_place": "Wer wird Dritter?",
+      "top_scorer": "Wer wird Torschützenkönig?",
+      "team_progress": "Wie weit kommt {team}?"
+    },
     "favoriteTeamRequired": "Bitte wähle zuerst dein Lieblingsteam im Profil.",
     "goToProfile": "Zum Profil",
     "progress": {

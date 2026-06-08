@@ -1,7 +1,7 @@
 <template>
   <div class="bonus-suggestions">
     <button class="btn btn-accent btn-sm" :disabled="loading" @click="generate">
-      {{ loading ? t('adminPages.ai.bonusSuggestions.generating') : t('adminPages.ai.bonusSuggestions.generate') }}
+      {{ loading ? t('admin.ai.bonusSuggestions.generating') : t('admin.ai.bonusSuggestions.generate') }}
     </button>
     <AlertMessage v-if="error" :message="error" type="error" />
     <div v-if="suggestions.length" class="suggestions-list mt-2">
@@ -13,7 +13,7 @@
         </div>
         <div v-if="s.options" class="options">{{ s.options.join(', ') }}</div>
         <button class="btn btn-secondary btn-sm mt-1" @click="$emit('use', s)">
-          {{ t('adminPages.ai.bonusSuggestions.apply') }}
+          {{ t('admin.ai.bonusSuggestions.apply') }}
         </button>
       </div>
     </div>
@@ -40,7 +40,7 @@ async function generate() {
     const { data } = await api.post('/admin/ai/bonus-question-suggestions', { numberOfQuestions: 5 });
     suggestions.value = data.suggestions || [];
   } catch (err) {
-    error.value = err.response?.data?.error || t('adminPages.ai.bonusSuggestions.unavailable');
+    error.value = err.response?.data?.error || t('admin.ai.bonusSuggestions.unavailable');
   } finally {
     loading.value = false;
   }

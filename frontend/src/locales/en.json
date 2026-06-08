@@ -675,6 +675,13 @@
     "searchPlayer": "Search player…",
     "favoriteTeamProgressQuestion": "How far will {team} get?",
     "favoriteTeamProgressFallback": "How far will your favorite team get?",
+    "defaultQuestions": {
+      "champion": "Who will be world champion?",
+      "runner_up": "Who will be runner-up?",
+      "third_place": "Who will finish third?",
+      "top_scorer": "Who will be top scorer?",
+      "team_progress": "How far will {team} get?"
+    },
     "favoriteTeamRequired": "Please select your favorite team in your profile first.",
     "goToProfile": "Go to profile",
     "progress": {

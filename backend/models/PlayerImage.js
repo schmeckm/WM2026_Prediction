@@ -20,16 +20,16 @@ const PlayerImage = sequelize.define('PlayerImage', {
     allowNull: true,
   },
   imageUrl: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true,
   },
   source: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING(64),
     allowNull: false,
     defaultValue: 'placeholder',
   },
   sourceId: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true,
   },
   licenseInfo: {
