@@ -1,7 +1,7 @@
 const express = require('express');
 const { sendError, translate } = require('../utils/apiResponse');
 const { Op } = require('sequelize');
-const { Match, Prediction } = require('../models');
+const { Match, Prediction, User, Team } = require('../models');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 const { applyFinishedMatchUpdate } = require('../services/resultSyncService');
@@ -91,6 +91,27 @@ router.get('/', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error(error);
     sendError(res, req, 500, 'errors.matchesLoadFailed');
+  }
+});
+
+router.get('/:id/predictions', authMiddleware, async (req, res) => {
+  try {
+    const match = await Match.findByPk(req.params.id);
+    if (!match) {
+      return sendError(res, req, 404, 'errors.matchNotFound');
+    }
+    const { sanitizePredictionsForViewer } = require('../services/predictionVisibilityService');
+    const predictions = await Prediction.findAll({
+      where: { matchId: match.id },
+      include: [
+        { model: User, as: 'user', attributes: ['id', 'firstName', 'lastName'], include: [{ model: Team, as: 'team', attributes: ['id', 'name'] }] },
+        { model: Match, as: 'match' },
+      ],
+      order: [['submittedAt', 'ASC']],
+    });
+    res.json(await sanitizePredictionsForViewer(predictions, req.user));
+  } catch (error) {
+    sendError(res, req, 500, 'errors.predictionsLoadFailed');
   }
 });
 

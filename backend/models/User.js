@@ -101,6 +101,15 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(16),
     allowNull: true,
   },
+  totpEnabled: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  totpSecret: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 }, {
   hooks: {
     beforeCreate: async (user) => {
@@ -128,8 +137,10 @@ User.prototype.toSafeJSON = function () {
     emailVerificationExpires,
     passwordResetToken,
     passwordResetExpires,
+    totpSecret,
     ...safe
   } = this.toJSON();
+  safe.totpEnabled = !!safe.totpEnabled;
   safe.imageUrl = withImageCacheBuster(safe.imageUrl, safe.updatedAt);
   return safe;
 };

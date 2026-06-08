@@ -5,9 +5,9 @@
       <span class="text-muted">{{ t('groupStandings.subtitle') }}</span>
     </div>
 
-    <AlertMessage v-if="error" :message="error" type="error" />
+    <ErrorState v-if="error" :message="error" @retry="loadStandings" />
 
-    <LoadingSpinner v-if="loading && !groups.length" />
+    <LoadingSpinner v-else-if="loading && !groups.length" />
 
     <div v-else-if="groups.length === 0" class="empty-state">
       <p>{{ t('groupStandings.empty') }}</p>
@@ -73,7 +73,7 @@ import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import { onSocketEvent } from '../services/socket';
 import { useFormatters } from '../composables/useFormatters';
-import AlertMessage from '../components/AlertMessage.vue';
+import ErrorState from '../components/ErrorState.vue';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import GroupStandingsTable from '../components/GroupStandingsTable.vue';
 import GroupNextMatches from '../components/GroupNextMatches.vue';

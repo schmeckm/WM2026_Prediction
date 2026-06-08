@@ -6,7 +6,7 @@
     </div>
 
     <LoadingSpinner v-if="loading" />
-    <AlertMessage v-else-if="error" :message="error" type="error" />
+    <ErrorState v-else-if="error" :message="error" @retry="loadNotifications" />
 
     <div v-else class="card"><div class="card-body"><NotificationList /></div></div>
   </div>
@@ -18,14 +18,16 @@ import { useI18n } from 'vue-i18n';
 import { useNotificationStore } from '../stores/notificationStore';
 import NotificationList from '../components/NotificationList.vue';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
-import AlertMessage from '../components/AlertMessage.vue';
+import ErrorState from '../components/ErrorState.vue';
 
 const { t } = useI18n();
 const store = useNotificationStore();
 const loading = ref(true);
 const error = ref('');
 
-onMounted(async () => {
+async function loadNotifications() {
+  loading.value = true;
+  error.value = '';
   try {
     await store.fetchNotifications();
   } catch (err) {
@@ -33,7 +35,9 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
-});
+}
+
+onMounted(loadNotifications);
 </script>
 
 <style scoped>

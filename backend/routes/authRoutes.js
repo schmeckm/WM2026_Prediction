@@ -10,6 +10,18 @@ const { generateToken, expiresInHours } = require('../services/authTokenService'
 const { sendVerificationEmail, sendPasswordResetEmail } = require('../services/authEmailService');
 const emailService = require('../services/emailService');
 const { blacklistToken } = require('../services/tokenBlacklistService');
+const {
+  issueTokenPair,
+  rotateRefreshToken,
+  revokeRefreshToken,
+  revokeAllRefreshTokensForUser,
+} = require('../services/refreshTokenService');
+const {
+  setupTwoFactor,
+  enableTwoFactor,
+  disableTwoFactor,
+  verifyLoginTotp,
+} = require('../services/twoFactorService');
 const { validatePassword } = require('../utils/passwordValidation');
 const { authLimiter } = require('../middleware/rateLimiter');
 const {
@@ -35,12 +47,18 @@ async function isRegistrationOpen() {
   return getSetting('registrationEnabled', true);
 }
 
-function issueToken(user) {
-  return jwt.sign(
-    { userId: user.id, role: user.role },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' },
-  );
+async function issueAuthResponse(user) {
+  const tokens = await issueTokenPair(user);
+  return {
+    token: tokens.token,
+    refreshToken: tokens.refreshToken,
+    user: user.toSafeJSON(),
+  };
+}
+
+async function issueAccessOnly(user) {
+  const { issueAccessToken } = require('../services/refreshTokenService');
+  return issueAccessToken(user);
 }
 
 function redirectWithSsoError(res, errorKey) {
@@ -102,13 +120,13 @@ router.get('/google/callback', async (req, res) => {
       return redirectWithSsoError(res, 'sso_domain_not_allowed');
     }
 
-    const result = await findOrCreateSsoUser(profile, issueToken);
+    const result = await findOrCreateSsoUser(profile, issueAccessOnly);
 
     if (result.error) {
       return redirectWithSsoError(res, result.error);
     }
 
-    const exchangeCode = createExchangeCode(result);
+    const exchangeCode = await createExchangeCode(result);
     if (result.requiresTeam) {
       return res.redirect(`${getAppUrl()}/auth/complete-registration?code=${exchangeCode}`);
     }
@@ -126,7 +144,7 @@ router.post('/exchange', sensitiveAuthLimiter, async (req, res) => {
       return sendError(res, req, 400, 'errors.ssoInvalidCode');
     }
 
-    const data = consumeExchangeCode(code);
+    const data = await consumeExchangeCode(code);
     if (!data) {
       return sendError(res, req, 400, 'errors.ssoInvalidCode');
     }
@@ -144,10 +162,13 @@ router.post('/exchange', sensitiveAuthLimiter, async (req, res) => {
       return sendError(res, req, 400, 'errors.ssoTeamRequired');
     }
 
+    const user = await User.findByPk(data.user.id, {
+      include: [{ model: Team, as: 'team' }],
+    });
+    const auth = await issueAuthResponse(user);
     res.json({
       message: translate(req, 'messages.loginSuccess'),
-      token: data.token,
-      user: data.user,
+      ...auth,
     });
   } catch (error) {
     console.error('SSO exchange error:', error);
@@ -155,20 +176,21 @@ router.post('/exchange', sensitiveAuthLimiter, async (req, res) => {
   }
 });
 
-router.get('/sso-pending', async (req, res) => {
+router.post('/sso-pending', sensitiveAuthLimiter, async (req, res) => {
   try {
-    const { code } = req.query;
+    const { code } = req.body;
     if (!code) {
       return sendError(res, req, 400, 'errors.ssoInvalidCode');
     }
 
-    const data = peekExchangeCode(code);
+    const data = await peekExchangeCode(code);
     if (!data?.requiresTeam || !data.pending) {
       return sendError(res, req, 400, 'errors.ssoInvalidCode');
     }
 
+    const { maskEmail } = require('../utils/maskEmail');
     res.json({
-      email: data.pending.email,
+      email: maskEmail(data.pending.email),
       firstName: data.pending.firstName,
       lastName: data.pending.lastName,
     });
@@ -184,7 +206,7 @@ router.post('/complete-sso', sensitiveAuthLimiter, async (req, res) => {
       return sendError(res, req, 400, 'errors.ssoInvalidCode');
     }
 
-    const result = await completeSsoRegistration(code, teamId, issueToken);
+    const result = await completeSsoRegistration(code, teamId, issueAccessOnly);
 
     const errorMap = {
       invalid_code: 'errors.ssoInvalidCode',
@@ -198,10 +220,13 @@ router.post('/complete-sso', sensitiveAuthLimiter, async (req, res) => {
       return sendError(res, req, 400, errorMap[result.error] || 'errors.ssoFailed');
     }
 
+    const user = await User.findByPk(result.user.id, {
+      include: [{ model: Team, as: 'team' }],
+    });
+    const auth = await issueAuthResponse(user);
     res.json({
       message: translate(req, 'messages.loginSuccess'),
-      token: result.token,
-      user: result.user,
+      ...auth,
     });
   } catch (error) {
     console.error('SSO complete error:', error);
@@ -271,7 +296,7 @@ router.post('/register', sensitiveAuthLimiter, async (req, res) => {
       const result = await sendVerificationEmail(user, verificationToken);
       emailSent = !result.mock;
       if (result.mock) {
-        console.log(`[Email mock] Verifizierung für ${user.email}: ${process.env.APP_URL || 'http://localhost:5173'}/verify-email?token=${verificationToken}`);
+        console.warn(`[Email mock] Verification email queued for ${user.email} (token redacted)`);
       }
     }
 
@@ -287,13 +312,12 @@ router.post('/register', sensitiveAuthLimiter, async (req, res) => {
     const userWithTeam = await User.findByPk(user.id, {
       include: [{ model: Team, as: 'team' }],
     });
-    const token = issueToken(user);
+    const auth = await issueAuthResponse(userWithTeam);
 
     res.status(201).json({
       message: translate(req, 'messages.registrationSuccess'),
       requiresVerification: false,
-      token,
-      user: userWithTeam.toSafeJSON(),
+      ...auth,
     });
   } catch (error) {
     console.error('Register error:', error);
@@ -303,7 +327,7 @@ router.post('/register', sensitiveAuthLimiter, async (req, res) => {
 
 router.post('/login', sensitiveAuthLimiter, async (req, res) => {
   try {
-    const { email, password, language } = req.body;
+    const { email, password, language, totpCode } = req.body;
 
     if (!email || !password) {
       return sendError(res, req, 400, 'errors.loginFieldsRequired');
@@ -332,6 +356,18 @@ router.post('/login', sensitiveAuthLimiter, async (req, res) => {
       return sendError(res, req, 403, 'errors.emailNotVerified');
     }
 
+    if (user.totpEnabled) {
+      if (!totpCode) {
+        return res.status(403).json({
+          error: translate(req, 'errors.totpRequired'),
+          requiresTotp: true,
+        });
+      }
+      if (!await verifyLoginTotp(user, totpCode)) {
+        return sendError(res, req, 401, 'errors.invalidTotp');
+      }
+    }
+
     if (language) {
       const locale = normalizeLocale(language);
       if (normalizeLocale(user.language) !== locale) {
@@ -339,12 +375,11 @@ router.post('/login', sensitiveAuthLimiter, async (req, res) => {
       }
     }
 
-    const token = issueToken(user);
+    const auth = await issueAuthResponse(user);
 
     res.json({
       message: translate(req, 'messages.loginSuccess'),
-      token,
-      user: user.toSafeJSON(),
+      ...auth,
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -377,12 +412,11 @@ router.post('/verify-email', sensitiveAuthLimiter, async (req, res) => {
       emailVerificationExpires: null,
     });
 
-    const jwtToken = issueToken(user);
+    const auth = await issueAuthResponse(user);
 
     res.json({
       message: translate(req, 'messages.emailVerified'),
-      token: jwtToken,
-      user: user.toSafeJSON(),
+      ...auth,
     });
   } catch (error) {
     console.error('Verify email error:', error);
@@ -415,7 +449,7 @@ router.post('/resend-verification', sensitiveAuthLimiter, async (req, res) => {
 
     const result = await sendVerificationEmail(user, token, locale);
     if (result.mock) {
-      console.log(`[Email mock] Verifizierung erneut: ${process.env.APP_URL || 'http://localhost:5173'}/verify-email?token=${token}`);
+      console.warn(`[Email mock] Resend verification queued for ${user.email} (token redacted)`);
     }
 
     res.json({
@@ -448,7 +482,7 @@ router.post('/forgot-password', sensitiveAuthLimiter, async (req, res) => {
       await user.update(updates);
       const result = await sendPasswordResetEmail(user, token, locale);
       if (result.mock) {
-        console.log(`[Email mock] Passwort-Reset: ${process.env.APP_URL || 'http://localhost:5173'}/reset-password?token=${token}`);
+        console.warn(`[Email mock] Password reset queued for ${user.email} (token redacted)`);
       }
     }
 
@@ -496,6 +530,24 @@ router.get('/me', authMiddleware, async (req, res) => {
   res.json({ user: req.user.toSafeJSON() });
 });
 
+router.post('/refresh', sensitiveAuthLimiter, async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    const result = await rotateRefreshToken(refreshToken);
+    if (result.error) {
+      return sendError(res, req, 401, 'errors.invalidRefreshToken');
+    }
+    res.json({
+      message: translate(req, 'messages.loginSuccess'),
+      token: result.token,
+      refreshToken: result.refreshToken,
+      user: result.user.toSafeJSON(),
+    });
+  } catch (error) {
+    sendError(res, req, 500, 'errors.loginFailed');
+  }
+});
+
 router.post('/logout', authMiddleware, async (req, res) => {
   try {
     const authHeader = req.headers.authorization || '';
@@ -505,9 +557,52 @@ router.post('/logout', authMiddleware, async (req, res) => {
       const expMs = decoded?.exp ? decoded.exp * 1000 : Date.now() + 7 * 24 * 60 * 60 * 1000;
       await blacklistToken(token, expMs);
     }
+    if (req.body?.refreshToken) {
+      await revokeRefreshToken(req.body.refreshToken);
+    } else {
+      await revokeAllRefreshTokensForUser(req.user.id);
+    }
     res.json({ message: translate(req, 'messages.logoutSuccess') });
   } catch (error) {
     sendError(res, req, 500, 'errors.logoutFailed');
+  }
+});
+
+router.post('/2fa/setup', authMiddleware, async (req, res) => {
+  try {
+    const setup = await setupTwoFactor(req.user.id);
+    if (!setup) return sendError(res, req, 404, 'errors.userNotFound');
+    res.json(setup);
+  } catch (error) {
+    sendError(res, req, 500, 'errors.internalServer');
+  }
+});
+
+router.post('/2fa/enable', authMiddleware, async (req, res) => {
+  try {
+    const { code } = req.body;
+    const result = await enableTwoFactor(req.user.id, code);
+    if (result.error === 'invalid_code') {
+      return sendError(res, req, 400, 'errors.invalidTotp');
+    }
+    if (result.error) return sendError(res, req, 400, 'errors.requiredFields');
+    res.json({ message: translate(req, 'messages.totpEnabled') });
+  } catch (error) {
+    sendError(res, req, 500, 'errors.internalServer');
+  }
+});
+
+router.post('/2fa/disable', authMiddleware, async (req, res) => {
+  try {
+    const { code } = req.body;
+    const result = await disableTwoFactor(req.user.id, code);
+    if (result.error === 'invalid_code') {
+      return sendError(res, req, 400, 'errors.invalidTotp');
+    }
+    if (result.error) return sendError(res, req, 400, 'errors.totpNotEnabled');
+    res.json({ message: translate(req, 'messages.totpDisabled') });
+  } catch (error) {
+    sendError(res, req, 500, 'errors.internalServer');
   }
 });
 

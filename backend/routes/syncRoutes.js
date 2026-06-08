@@ -26,9 +26,16 @@ const router = express.Router();
 
 router.use(authMiddleware, adminMiddleware);
 
-function handleSyncError(error, res) {
+function handleSyncError(error, res, req) {
   const status = error.code === 'NO_API_KEY' ? 503 : 500;
-  res.status(status).json({ error: error.message, code: error.code });
+  const isProduction = process.env.NODE_ENV === 'production';
+  const { translate } = require('../utils/apiResponse');
+  res.status(status).json({
+    error: isProduction
+      ? translate(req, 'errors.syncFailed')
+      : (error.message || translate(req, 'errors.syncFailed')),
+    code: error.code,
+  });
 }
 
 router.get('/status', async (req, res) => {
@@ -71,7 +78,7 @@ router.post('/test-connection', async (req, res) => {
     const result = await footballProviderService.testConnection();
     res.json(result);
   } catch (error) {
-    handleSyncError(error, res);
+    handleSyncError(error, res, req);
   }
 });
 
@@ -88,7 +95,7 @@ router.post('/fixtures', async (req, res) => {
     const result = await syncFixtures({ userId: req.user.id, req });
     res.json(result);
   } catch (error) {
-    handleSyncError(error, res);
+    handleSyncError(error, res, req);
   }
 });
 
@@ -97,7 +104,7 @@ router.post('/official-schedule', async (req, res) => {
     const result = await syncOfficialWm2026Schedule({ userId: req.user.id, req });
     res.json(result);
   } catch (error) {
-    handleSyncError(error, res);
+    handleSyncError(error, res, req);
   }
 });
 
@@ -106,7 +113,7 @@ router.post('/results', async (req, res) => {
     const result = await syncResults({ userId: req.user.id, req });
     res.json(result);
   } catch (error) {
-    handleSyncError(error, res);
+    handleSyncError(error, res, req);
   }
 });
 
@@ -119,7 +126,7 @@ router.post('/live-scores', async (req, res) => {
     const result = await syncLiveScores({ userId: req.user.id, req });
     res.json(result);
   } catch (error) {
-    handleSyncError(error, res);
+    handleSyncError(error, res, req);
   }
 });
 
@@ -128,7 +135,7 @@ router.post('/enrich-venues', async (req, res) => {
     const theSportsDbResult = await enrichMatchVenuesFromTheSportsDb();
     res.json(theSportsDbResult);
   } catch (error) {
-    handleSyncError(error, res);
+    handleSyncError(error, res, req);
   }
 });
 
@@ -137,7 +144,7 @@ router.post('/enrich-venue-cities', async (req, res) => {
     const result = await enrichCitiesFromWm2026Lookup();
     res.json(result);
   } catch (error) {
-    handleSyncError(error, res);
+    handleSyncError(error, res, req);
   }
 });
 

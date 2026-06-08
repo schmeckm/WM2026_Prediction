@@ -8,6 +8,12 @@
     <LoadingSpinner v-if="loading" />
 
     <ErrorState
+      v-else-if="error"
+      :message="error"
+      @retry="loadPrizes"
+    />
+
+    <ErrorState
       v-else-if="!prizesEnabled"
       :message="t('prizes.disabled')"
       :showRetry="false"
@@ -27,6 +33,12 @@
           <RankTrophyIcon :rank="prize.rank" class="prize-trophy" />
           <span class="prize-rank">{{ t('prizes.place', { rank: prize.rank }) }}</span>
         </div>
+        <img
+          v-if="prize.imageUrl"
+          :src="prize.imageUrl"
+          :alt="prize.title || t('prizes.place', { rank: prize.rank })"
+          class="prize-image"
+        />
         <h2 class="prize-title">{{ prize.title || t('prizes.place', { rank: prize.rank }) }}</h2>
         <p v-if="prize.value" class="prize-value">{{ prize.value }}</p>
         <p v-if="prize.description" class="prize-description">{{ prize.description }}</p>
@@ -48,25 +60,32 @@ const { t } = useI18n();
 const appSettings = useAppSettingsStore();
 
 const loading = ref(true);
+const error = ref('');
 const prizesEnabled = ref(false);
 const prizes = ref([]);
 
 const visiblePrizes = computed(() =>
   [...prizes.value]
-    .filter((p) => p.title || p.description || p.value)
+    .filter((p) => p.title || p.description || p.value || p.imageUrl)
     .sort((a, b) => a.rank - b.rank),
 );
 
-onMounted(async () => {
+async function loadPrizes() {
+  loading.value = true;
+  error.value = '';
   try {
     const { data } = await api.get('/settings');
     prizesEnabled.value = !!data.prizesEnabled;
     prizes.value = Array.isArray(data.prizes) ? data.prizes : [];
     appSettings.applySettings(data);
+  } catch (err) {
+    error.value = err.response?.data?.error || t('prizes.loadFailed');
   } finally {
     loading.value = false;
   }
-});
+}
+
+onMounted(loadPrizes);
 </script>
 
 <style scoped>
@@ -132,6 +151,14 @@ onMounted(async () => {
 .prize-title {
   font-size: 1.15rem;
   margin: 0;
+}
+
+.prize-image {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
 }
 
 .prize-value {

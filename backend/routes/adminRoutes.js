@@ -108,6 +108,7 @@ router.post('/recalculate-points', async (req, res) => {
 
 router.get('/predictions', async (req, res) => {
   try {
+    const { sanitizePredictionsForViewer } = require('../services/predictionVisibilityService');
     const predictions = await Prediction.findAll({
       include: [
         { model: User, as: 'user', include: [{ model: Team, as: 'team' }] },
@@ -115,7 +116,7 @@ router.get('/predictions', async (req, res) => {
       ],
       order: [['submittedAt', 'DESC']],
     });
-    res.json(predictions);
+    res.json(await sanitizePredictionsForViewer(predictions, req.user, { alwaysAllow: true }));
   } catch (error) {
     sendError(res, req, 500, 'errors.predictionsLoadFailed');
   }
@@ -123,6 +124,7 @@ router.get('/predictions', async (req, res) => {
 
 router.get('/predictions/match/:matchId', async (req, res) => {
   try {
+    const { sanitizePredictionsForViewer } = require('../services/predictionVisibilityService');
     const predictions = await Prediction.findAll({
       where: { matchId: req.params.matchId },
       include: [
@@ -130,7 +132,7 @@ router.get('/predictions/match/:matchId', async (req, res) => {
         { model: Match, as: 'match' },
       ],
     });
-    res.json(predictions);
+    res.json(await sanitizePredictionsForViewer(predictions, req.user, { alwaysAllow: true }));
   } catch (error) {
     sendError(res, req, 500, 'errors.predictionsLoadFailed');
   }
@@ -138,12 +140,13 @@ router.get('/predictions/match/:matchId', async (req, res) => {
 
 router.get('/predictions/user/:userId', async (req, res) => {
   try {
+    const { sanitizePredictionsForViewer } = require('../services/predictionVisibilityService');
     const predictions = await Prediction.findAll({
       where: { userId: req.params.userId },
       include: [{ model: Match, as: 'match' }],
       order: [[{ model: Match, as: 'match' }, 'kickoffTime', 'ASC']],
     });
-    res.json(predictions);
+    res.json(await sanitizePredictionsForViewer(predictions, req.user, { alwaysAllow: true }));
   } catch (error) {
     sendError(res, req, 500, 'errors.predictionsLoadFailed');
   }
@@ -151,13 +154,19 @@ router.get('/predictions/user/:userId', async (req, res) => {
 
 router.post('/notifications/send', async (req, res) => {
   try {
-    const { userId, title, message, type, link } = req.body;
+    const { validateNotificationPayload } = require('../utils/notificationValidation');
+    const validation = validateNotificationPayload(req.body);
+    if (!validation.valid) {
+      return sendError(res, req, 400, 'errors.requiredFields');
+    }
+
+    const { userId, title, message, type, link } = validation.sanitized;
     if (userId) {
       await notificationService.createNotification({ userId, title, message, type, link });
     } else {
       const users = await User.findAll({ where: { role: 'user' } });
       await notificationService.createBulkNotifications(
-        users.map((u) => ({ userId: u.id, title, message, type: type || 'info', link }))
+        users.map((u) => ({ userId: u.id, title, message, type, link })),
       );
     }
     res.json({ message: 'Benachrichtigung(en) gesendet.' });

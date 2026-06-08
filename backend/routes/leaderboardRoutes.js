@@ -2,13 +2,20 @@ const express = require('express');
 const { sendError, translate } = require('../utils/apiResponse');
 const { getLeaderboard, getTeamRanking, exportLeaderboardCsv } = require('../services/leaderboardService');
 const authMiddleware = require('../middleware/authMiddleware');
+const optionalAuthMiddleware = require('../middleware/optionalAuthMiddleware');
+const { getSetting } = require('../services/settingsService');
 
 const router = express.Router();
 
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', optionalAuthMiddleware, async (req, res) => {
   try {
+    const leaderboardPublic = await getSetting('leaderboardPublic', false);
+    if (!req.user && !leaderboardPublic) {
+      return sendError(res, req, 401, 'errors.notAuthenticated');
+    }
+
     const { filter, teamId, sortBy } = req.query;
-    const includeEmail = req.user.role === 'admin';
+    const includeEmail = req.user?.role === 'admin';
     const leaderboard = await getLeaderboard({
       filter: filter || 'overall',
       teamId: teamId ? parseInt(teamId, 10) : null,

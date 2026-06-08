@@ -52,7 +52,7 @@
     </div>
 
     <LoadingSpinner v-if="loading" />
-    <AlertMessage v-else-if="error" :message="error" type="error" inline />
+    <ErrorState v-else-if="error" :message="error" @retry="loadMatches" />
 
     <template v-else>
       <div v-if="viewMode === 'cards'">
@@ -84,7 +84,7 @@ import { onSocketEvent } from '../services/socket';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import MatchCard from '../components/MatchCard.vue';
 import MatchTable from '../components/MatchTable.vue';
-import AlertMessage from '../components/AlertMessage.vue';
+import ErrorState from '../components/ErrorState.vue';
 
 const { t } = useI18n();
 const VIEW_MODE_KEY = 'matches-view-mode';

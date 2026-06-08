@@ -54,6 +54,11 @@
     "teamImageRequired": "Please select an image.",
     "teamImageUploadFailed": "Team image could not be uploaded.",
     "teamImageDeleteFailed": "Team image could not be removed.",
+    "prizeRankInvalid": "Invalid prize rank. Only places 1–3 are allowed.",
+    "prizeImageInvalid": "Invalid image. Allowed: JPG, PNG, WebP, GIF (max. 2 MB).",
+    "prizeImageRequired": "Please select an image.",
+    "prizeImageUploadFailed": "Prize image could not be uploaded.",
+    "prizeImageDeleteFailed": "Prize image could not be removed.",
     "userImageInvalid": "Invalid profile image. Allowed: JPG, PNG, WebP, GIF (max. 2 MB).",
     "userImageRequired": "Please select a profile image.",
     "userImageUploadFailed": "Profile image could not be uploaded.",
@@ -176,7 +181,11 @@
     "verificationFailed": "Email verification failed.",
     "passwordResetFailed": "Password reset failed.",
     "invalidResetToken": "Invalid or expired reset link.",
-    "passwordResetFieldsRequired": "Token and new password are required."
+    "passwordResetFieldsRequired": "Token and new password are required.",
+    "totpRequired": "Two-factor authentication code required.",
+    "invalidTotp": "Invalid authentication code.",
+    "invalidRefreshToken": "Invalid or expired refresh token.",
+    "totpNotEnabled": "Two-factor authentication is not enabled."
   },
   "messages": {
     "registrationSuccess": "Registration successful.",
@@ -187,6 +196,8 @@
     "passwordResetSuccess": "Password changed successfully. You can now sign in.",
     "loginSuccess": "Login successful.",
     "logoutSuccess": "Logged out successfully.",
+    "totpEnabled": "Two-factor authentication enabled.",
+    "totpDisabled": "Two-factor authentication disabled.",
     "userDeleted": "User deleted.",
     "accountDeleted": "Your account and all related data have been deleted.",
     "teamDeleted": "Team deleted.",

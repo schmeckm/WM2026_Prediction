@@ -23,6 +23,7 @@ const {
   deleteTeamImageFiles,
   ALLOWED_EXTENSIONS,
 } = require('../services/teamImageService');
+const { validateImageFile } = require('../utils/fileValidation');
 
 const router = express.Router();
 
@@ -119,6 +120,12 @@ router.post(
 
       if (!req.file) {
         return sendError(res, req, 400, 'errors.teamImageRequired');
+      }
+
+      const imageCheck = validateImageFile(req.file);
+      if (!imageCheck.ok) {
+        fs.unlinkSync(req.file.path);
+        return sendError(res, req, 400, 'errors.teamImageInvalid');
       }
 
       const ext = path.extname(req.file.filename).toLowerCase();

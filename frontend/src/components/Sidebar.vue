@@ -4,7 +4,7 @@
       <AppBrandMark compact />
     </div>
     <div class="sidebar-scroll">
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav" :aria-label="adminMode ? t('nav.administration') : t('nav.navigation')">
         <div v-if="!adminMode" class="sidebar-section">{{ t('nav.navigation') }}</div>
         <router-link
           v-for="link in links"

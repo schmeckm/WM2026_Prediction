@@ -28,9 +28,9 @@ const DEFAULT_SETTINGS = {
   displayModeEnabled: true,
   prizesEnabled: false,
   prizes: [
-    { rank: 1, title: '1. Platz', description: '', value: '' },
-    { rank: 2, title: '2. Platz', description: '', value: '' },
-    { rank: 3, title: '3. Platz', description: '', value: '' },
+    { rank: 1, title: '1. Platz', description: '', value: '', imageUrl: '' },
+    { rank: 2, title: '2. Platz', description: '', value: '', imageUrl: '' },
+    { rank: 3, title: '3. Platz', description: '', value: '', imageUrl: '' },
   ],
 };
 
@@ -46,7 +46,17 @@ const PUBLIC_SETTING_KEYS = new Set([
   'defaultTimezone',
   'prizesEnabled',
   'prizes',
+  'leaderboardPublic',
+  'showPredictionsBeforeKickoff',
+  'showPredictionsAfterKickoff',
 ]);
+
+function sanitizePrizeImageUrl(url) {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (!/^\/uploads\/prizes\/prize-[123]\.(jpg|jpeg|png|webp|gif)$/i.test(trimmed)) return '';
+  return trimmed.slice(0, 255);
+}
 
 function normalizePrizes(prizes) {
   if (!Array.isArray(prizes)) return DEFAULT_SETTINGS.prizes;
@@ -57,6 +67,7 @@ function normalizePrizes(prizes) {
       title: String(entry.title || '').trim().slice(0, 100),
       description: String(entry.description || '').trim().slice(0, 500),
       value: String(entry.value || '').trim().slice(0, 100),
+      imageUrl: sanitizePrizeImageUrl(entry.imageUrl),
     };
   });
 }
@@ -142,12 +153,24 @@ async function updateSettings(updates) {
   const filtered = {};
   const rejected = [];
 
+  const booleanKeys = new Set([
+    'registrationEnabled', 'showPredictionsBeforeKickoff', 'showPredictionsAfterKickoff',
+    'apiSyncEnabled', 'resultSyncEnabled', 'emailRemindersEnabled', 'leaderboardPublic',
+    'bonusQuestionsEnabled', 'liveScoresEnabled', 'openRegistration', 'adminSyncErrorEmails',
+    'requireTeamOnRegistration', 'requireEmailVerification', 'includeAdminsInLeaderboard',
+    'displayModeEnabled', 'prizesEnabled',
+  ]);
+
   for (const [key, value] of Object.entries(updates || {})) {
-    if (allowedKeys.includes(key)) {
-      filtered[key] = key === 'prizes' ? normalizePrizes(value) : value;
-    } else {
+    if (!allowedKeys.includes(key)) {
       rejected.push(key);
+      continue;
     }
+    if (booleanKeys.has(key) && typeof value !== 'boolean') {
+      rejected.push(key);
+      continue;
+    }
+    filtered[key] = key === 'prizes' ? normalizePrizes(value) : value;
   }
 
   for (const [key, value] of Object.entries(filtered)) {
@@ -179,4 +202,6 @@ module.exports = {
   getPublicSettings,
   updateSettings,
   seedDefaultSettings,
+  normalizePrizes,
+  sanitizePrizeImageUrl,
 };

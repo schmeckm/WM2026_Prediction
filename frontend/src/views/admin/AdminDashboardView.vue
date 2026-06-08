@@ -10,6 +10,7 @@
     <AlertMessage v-if="message" :message="message" type="success" />
 
     <LoadingSpinner v-if="loading" />
+    <ErrorState v-else-if="loadError" :message="loadError" @retry="loadDashboard" />
 
     <template v-else>
       <AdminManualModeBanner
@@ -57,11 +58,13 @@ import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
 import LeaderboardTable from '../../components/LeaderboardTable.vue';
 import AlertMessage from '../../components/AlertMessage.vue';
+import ErrorState from '../../components/ErrorState.vue';
 import AdminManualModeBanner from '../../components/AdminManualModeBanner.vue';
 
 const { t } = useI18n();
 
 const loading = ref(true);
+const loadError = ref('');
 const recalculating = ref(false);
 const message = ref('');
 const stats = ref({});
@@ -70,6 +73,7 @@ const includeAdminsInLeaderboard = ref(false);
 
 async function loadDashboard() {
   loading.value = true;
+  loadError.value = '';
   try {
     const [dashboardRes, syncRes, settingsRes] = await Promise.all([
       api.get('/admin/dashboard'),
@@ -82,6 +86,8 @@ async function loadDashboard() {
       statusMessage: syncRes.data.statusMessage,
     };
     includeAdminsInLeaderboard.value = !!settingsRes.data.includeAdminsInLeaderboard;
+  } catch (err) {
+    loadError.value = err.response?.data?.error || t('dashboard.loadFailed');
   } finally {
     loading.value = false;
   }

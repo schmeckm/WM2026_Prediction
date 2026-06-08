@@ -39,9 +39,9 @@ async function getUserStatistics(userId) {
   if (!user) return null;
 
   const scoringRules = await getScoringRules();
-  const entry = await buildUserLeaderboardEntry(user, scoringRules);
   const leaderboard = await require('./leaderboardService').getLeaderboard();
   const rankEntry = leaderboard.find((e) => e.userId === userId);
+  const entry = rankEntry || await buildUserLeaderboardEntry(user, scoringRules);
 
   const snapshots = await LeaderboardSnapshot.findAll({
     where: { userId },

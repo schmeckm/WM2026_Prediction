@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import axios from 'axios';
 import api from '../services/api';
 import { getStoredLocale, normalizeLocale, setStoredLocale } from '../i18n';
 import { useLocaleStore } from './localeStore';
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token') || null);
+  const refreshToken = ref(localStorage.getItem('refreshToken') || null);
   const user = ref(JSON.parse(localStorage.getItem('user') || 'null'));
   const profileImageCache = ref(0);
 
@@ -21,12 +21,16 @@ export const useAuthStore = defineStore('auth', () => {
     profileImageCache.value = Date.now();
   }
 
-  function setAuth(newToken, newUser) {
+  function setAuth(newToken, newUser, newRefreshToken = null) {
     token.value = newToken;
     user.value = newUser;
     profileImageCache.value = newUser?.imageUrl ? Date.now() : 0;
     localStorage.setItem('token', newToken);
     localStorage.setItem('user', JSON.stringify(newUser));
+    if (newRefreshToken) {
+      refreshToken.value = newRefreshToken;
+      localStorage.setItem('refreshToken', newRefreshToken);
+    }
 
     const localeStore = useLocaleStore();
     const userLocale = normalizeLocale(newUser?.language || getStoredLocale());
@@ -36,9 +40,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   function clearLocalAuth() {
     token.value = null;
+    refreshToken.value = null;
     user.value = null;
     profileImageCache.value = 0;
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
   }
 
@@ -48,10 +54,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logoutAsync() {
     const currentToken = token.value;
+    const currentRefreshToken = refreshToken.value;
     clearLocalAuth();
     if (currentToken) {
       try {
-        await axios.post('/api/auth/logout', {}, {
+        await api.post('/auth/logout', { refreshToken: currentRefreshToken }, {
           headers: { Authorization: `Bearer ${currentToken}` },
         });
       } catch {
@@ -60,16 +67,16 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function login(email, password) {
-    const { data } = await api.post('/auth/login', { email, password });
-    setAuth(data.token, data.user);
+  async function login(email, password, totpCode = null) {
+    const { data } = await api.post('/auth/login', { email, password, totpCode });
+    setAuth(data.token, data.user, data.refreshToken);
     return data;
   }
 
   async function register(formData) {
     const { data } = await api.post('/auth/register', formData);
     if (!data.requiresVerification && data.token) {
-      setAuth(data.token, data.user);
+      setAuth(data.token, data.user, data.refreshToken);
     }
     return data;
   }
@@ -81,7 +88,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function verifyEmail(token) {
     const { data } = await api.post('/auth/verify-email', { token });
-    setAuth(data.token, data.user);
+    setAuth(data.token, data.user, data.refreshToken);
     return data;
   }
 
@@ -139,18 +146,36 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function exchangeSsoCode(code) {
     const { data } = await api.post('/auth/exchange', { code });
-    setAuth(data.token, data.user);
+    setAuth(data.token, data.user, data.refreshToken);
     return data;
   }
 
   async function completeSsoRegistration(code, teamId) {
     const { data } = await api.post('/auth/complete-sso', { code, teamId });
-    setAuth(data.token, data.user);
+    setAuth(data.token, data.user, data.refreshToken);
+    return data;
+  }
+
+  async function setupTwoFactor() {
+    const { data } = await api.post('/auth/2fa/setup');
+    return data;
+  }
+
+  async function enableTwoFactor(code) {
+    const { data } = await api.post('/auth/2fa/enable', { code });
+    await fetchMe();
+    return data;
+  }
+
+  async function disableTwoFactor(code) {
+    const { data } = await api.post('/auth/2fa/disable', { code });
+    await fetchMe();
     return data;
   }
 
   return {
     token,
+    refreshToken,
     user,
     profileImageCache,
     isAuthenticated,
@@ -173,5 +198,8 @@ export const useAuthStore = defineStore('auth', () => {
     loginWithGoogle,
     exchangeSsoCode,
     completeSsoRegistration,
+    setupTwoFactor,
+    enableTwoFactor,
+    disableTwoFactor,
   };
 });

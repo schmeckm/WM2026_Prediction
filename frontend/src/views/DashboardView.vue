@@ -6,7 +6,7 @@
     </div>
 
     <LoadingSpinner v-if="loading" />
-    <AlertMessage v-else-if="error" :message="error" type="error" inline />
+    <ErrorState v-else-if="error" :message="error" @retry="loadDashboardData" />
 
     <template v-else>
       <AIInsightCard />
@@ -76,7 +76,7 @@ import MatchCard from '../components/MatchCard.vue';
 import LeaderboardTable from '../components/LeaderboardTable.vue';
 import AIInsightCard from '../components/AIInsightCard.vue';
 import TeamDashboardCard from '../components/TeamDashboardCard.vue';
-import AlertMessage from '../components/AlertMessage.vue';
+import ErrorState from '../components/ErrorState.vue';
 import { onSocketEvent } from '../services/socket';
 import { useFormatters } from '../composables/useFormatters';
 

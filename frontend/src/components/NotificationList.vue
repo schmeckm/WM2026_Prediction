@@ -6,6 +6,7 @@
       :key="n.id"
       role="button"
       tabindex="0"
+      :aria-label="`${n.title}: ${n.message}`"
       :class="['notification-item', { unread: !n.isRead }]"
       @click="handleClick(n)"
       @keydown.enter.prevent="handleClick(n)"

@@ -38,7 +38,7 @@ async function start() {
     const { ensureBootstrapAdmin } = require('./services/bootstrapAdminService');
     await ensureBootstrapAdmin();
 
-    socketService.init(server, { corsOrigin: getSocketCorsOrigin() });
+    await socketService.init(server, { corsOrigin: getSocketCorsOrigin() });
     startScheduler();
 
     server.listen(PORT, () => {

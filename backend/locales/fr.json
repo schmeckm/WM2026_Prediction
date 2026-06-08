@@ -54,6 +54,11 @@
     "teamImageRequired": "Veuillez sélectionner une image.",
     "teamImageUploadFailed": "Impossible de téléverser l'image de l'équipe.",
     "teamImageDeleteFailed": "Impossible de supprimer l'image de l'équipe.",
+    "prizeRankInvalid": "Place de prix invalide. Seules les places 1 à 3 sont autorisées.",
+    "prizeImageInvalid": "Image invalide. Autorisé : JPG, PNG, WebP, GIF (max. 2 Mo).",
+    "prizeImageRequired": "Veuillez sélectionner une image.",
+    "prizeImageUploadFailed": "Impossible de téléverser l'image du prix.",
+    "prizeImageDeleteFailed": "Impossible de supprimer l'image du prix.",
     "userImageInvalid": "Image de profil invalide. Autorisé : JPG, PNG, WebP, GIF (max. 2 Mo).",
     "userImageRequired": "Veuillez sélectionner une image de profil.",
     "userImageUploadFailed": "Impossible de téléverser l'image de profil.",
@@ -176,7 +181,11 @@
     "verificationFailed": "Échec de la confirmation de l'e-mail.",
     "passwordResetFailed": "Échec de la réinitialisation du mot de passe.",
     "invalidResetToken": "Lien de réinitialisation invalide ou expiré.",
-    "passwordResetFieldsRequired": "Jeton et nouveau mot de passe requis."
+    "passwordResetFieldsRequired": "Jeton et nouveau mot de passe requis.",
+    "totpRequired": "Code d'authentification à deux facteurs requis.",
+    "invalidTotp": "Code d'authentification invalide.",
+    "invalidRefreshToken": "Jeton d'actualisation invalide ou expiré.",
+    "totpNotEnabled": "L'authentification à deux facteurs n'est pas activée."
   },
   "messages": {
     "registrationSuccess": "Inscription réussie.",
@@ -187,6 +196,8 @@
     "passwordResetSuccess": "Mot de passe modifié. Vous pouvez vous connecter.",
     "loginSuccess": "Connexion réussie.",
     "logoutSuccess": "Déconnexion réussie.",
+    "totpEnabled": "Authentification à deux facteurs activée.",
+    "totpDisabled": "Authentification à deux facteurs désactivée.",
     "userDeleted": "Utilisateur supprimé.",
     "accountDeleted": "Votre compte et toutes les données associées ont été supprimés.",
     "teamDeleted": "Équipe supprimée.",

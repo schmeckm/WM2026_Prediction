@@ -54,6 +54,11 @@
     "teamImageRequired": "Bitte ein Bild auswählen.",
     "teamImageUploadFailed": "Team-Bild konnte nicht hochgeladen werden.",
     "teamImageDeleteFailed": "Team-Bild konnte nicht entfernt werden.",
+    "prizeRankInvalid": "Ungültiger Preis-Platz. Erlaubt sind nur Platz 1–3.",
+    "prizeImageInvalid": "Ungültiges Bild. Erlaubt: JPG, PNG, WebP, GIF (max. 2 MB).",
+    "prizeImageRequired": "Bitte ein Bild auswählen.",
+    "prizeImageUploadFailed": "Preis-Bild konnte nicht hochgeladen werden.",
+    "prizeImageDeleteFailed": "Preis-Bild konnte nicht entfernt werden.",
     "userImageInvalid": "Ungültiges Profilbild. Erlaubt: JPG, PNG, WebP, GIF (max. 2 MB).",
     "userImageRequired": "Bitte ein Profilbild auswählen.",
     "userImageUploadFailed": "Profilbild konnte nicht hochgeladen werden.",
@@ -176,7 +181,11 @@
     "verificationFailed": "E-Mail-Bestätigung fehlgeschlagen.",
     "passwordResetFailed": "Passwort-Zurücksetzung fehlgeschlagen.",
     "invalidResetToken": "Ungültiger oder abgelaufener Reset-Link.",
-    "passwordResetFieldsRequired": "Token und neues Passwort erforderlich."
+    "passwordResetFieldsRequired": "Token und neues Passwort erforderlich.",
+    "totpRequired": "Zwei-Faktor-Authentifizierungscode erforderlich.",
+    "invalidTotp": "Ungültiger Authentifizierungscode.",
+    "invalidRefreshToken": "Ungültiger oder abgelaufener Refresh-Token.",
+    "totpNotEnabled": "Zwei-Faktor-Authentifizierung ist nicht aktiviert."
   },
   "messages": {
     "registrationSuccess": "Registrierung erfolgreich.",
@@ -187,6 +196,8 @@
     "passwordResetSuccess": "Passwort erfolgreich geändert. Sie können sich jetzt anmelden.",
     "loginSuccess": "Anmeldung erfolgreich.",
     "logoutSuccess": "Erfolgreich abgemeldet.",
+    "totpEnabled": "Zwei-Faktor-Authentifizierung aktiviert.",
+    "totpDisabled": "Zwei-Faktor-Authentifizierung deaktiviert.",
     "userDeleted": "Benutzer gelöscht.",
     "accountDeleted": "Ihr Konto und alle zugehörigen Daten wurden gelöscht.",
     "teamDeleted": "Team gelöscht.",

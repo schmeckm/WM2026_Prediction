@@ -71,7 +71,7 @@ onMounted(async () => {
 
   try {
     const [pendingRes, teamsRes] = await Promise.all([
-      api.get('/auth/sso-pending', { params: { code: ssoCode.value } }),
+      api.post('/auth/sso-pending', { code: ssoCode.value }),
       api.get('/teams'),
     ]);
     profile.value = pendingRes.data;

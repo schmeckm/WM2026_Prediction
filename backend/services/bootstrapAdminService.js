@@ -41,8 +41,9 @@ async function createOrPromoteAdmin({
   if (!normalizedEmail) {
     throw new Error('E-Mail ist erforderlich.');
   }
-  if (!password || password.length < 6) {
-    throw new Error('Passwort muss mindestens 6 Zeichen haben.');
+  const minLength = process.env.NODE_ENV === 'production' ? 10 : 6;
+  if (!password || password.length < minLength) {
+    throw new Error(`Passwort muss mindestens ${minLength} Zeichen haben.`);
   }
 
   const team = await resolveDefaultTeam();

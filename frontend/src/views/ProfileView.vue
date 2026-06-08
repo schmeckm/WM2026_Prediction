@@ -230,6 +230,80 @@
       </div>
     </div>
 
+    <div v-if="isLocalAccount" class="card profile-card">
+      <div class="card-body">
+        <h3 class="profile-section-title">{{ t('profile.twoFactorTitle') }}</h3>
+        <p class="text-muted profile-section-hint">{{ t('profile.twoFactorHint') }}</p>
+
+        <p v-if="authStore.user?.totpEnabled" class="profile-two-factor-status profile-two-factor-status--on">
+          {{ t('profile.twoFactorEnabled') }}
+        </p>
+        <p v-else class="profile-two-factor-status">
+          {{ t('profile.twoFactorDisabled') }}
+        </p>
+
+        <template v-if="!authStore.user?.totpEnabled">
+          <button
+            v-if="!twoFactorSetup"
+            type="button"
+            class="btn btn-secondary btn-sm"
+            :disabled="twoFactorBusy"
+            @click="startTwoFactorSetup"
+          >
+            {{ t('profile.twoFactorSetup') }}
+          </button>
+
+          <div v-else class="profile-two-factor-setup">
+            <p class="text-muted">{{ t('profile.twoFactorScanQr') }}</p>
+            <PageQrCode :url="twoFactorSetup.otpauthUrl" :label="t('profile.twoFactorScanQr')" :show-label="false" />
+            <p class="text-muted profile-two-factor-secret">
+              {{ t('profile.twoFactorManualSecret') }}
+              <code>{{ twoFactorSetup.secret }}</code>
+            </p>
+            <div class="form-group">
+              <label for="twoFactorEnableCode">{{ t('profile.twoFactorCode') }}</label>
+              <input
+                id="twoFactorEnableCode"
+                v-model="twoFactorEnableCode"
+                type="text"
+                class="form-control"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                maxlength="8"
+              />
+            </div>
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              :disabled="twoFactorBusy || !twoFactorEnableCode"
+              @click="confirmEnableTwoFactor"
+            >
+              {{ twoFactorBusy ? t('profile.twoFactorEnabling') : t('profile.twoFactorEnable') }}
+            </button>
+          </div>
+        </template>
+
+        <form v-else class="profile-two-factor-disable" @submit.prevent="confirmDisableTwoFactor">
+          <div class="form-group">
+            <label for="twoFactorDisableCode">{{ t('profile.twoFactorCode') }}</label>
+            <input
+              id="twoFactorDisableCode"
+              v-model="twoFactorDisableCode"
+              type="text"
+              class="form-control"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              maxlength="8"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-secondary btn-sm" :disabled="twoFactorBusy">
+            {{ twoFactorBusy ? t('profile.twoFactorDisabling') : t('profile.twoFactorDisable') }}
+          </button>
+        </form>
+      </div>
+    </div>
+
     <div class="card profile-card profile-session-card">
       <div class="card-body">
         <h3 class="profile-section-title">{{ t('nav.logout') }}</h3>
@@ -289,6 +363,7 @@ import AlertMessage from '../components/AlertMessage.vue';
 import LocalePicker from '../components/LocalePicker.vue';
 import UserAvatar from '../components/UserAvatar.vue';
 import ConfirmModal from '../components/ConfirmModal.vue';
+import PageQrCode from '../components/PageQrCode.vue';
 import { useConfirmModal } from '../composables/useConfirmModal';
 import { AVATAR_COLOR_OPTIONS, resolveAvatarColorStyle } from '../utils/avatarColors';
 import { AVATAR_FACE_OPTIONS } from '../utils/avatarFaces';
@@ -352,6 +427,10 @@ const isLocalAccount = computed(() => {
 const imageBusy = ref(false);
 const deletePassword = ref('');
 const deletingAccount = ref(false);
+const twoFactorSetup = ref(null);
+const twoFactorEnableCode = ref('');
+const twoFactorDisableCode = ref('');
+const twoFactorBusy = ref(false);
 
 function normalizeOptionalId(id) {
   if (id == null || id === '') return null;
@@ -526,6 +605,51 @@ async function handleDeleteAccount() {
     error.value = err.response?.data?.error || t('profile.deleteFailed');
   } finally {
     deletingAccount.value = false;
+  }
+}
+
+async function startTwoFactorSetup() {
+  twoFactorBusy.value = true;
+  error.value = '';
+  success.value = '';
+  try {
+    twoFactorSetup.value = await authStore.setupTwoFactor();
+    twoFactorEnableCode.value = '';
+  } catch (err) {
+    error.value = err.response?.data?.error || t('profile.twoFactorSetupFailed');
+  } finally {
+    twoFactorBusy.value = false;
+  }
+}
+
+async function confirmEnableTwoFactor() {
+  twoFactorBusy.value = true;
+  error.value = '';
+  success.value = '';
+  try {
+    const data = await authStore.enableTwoFactor(twoFactorEnableCode.value);
+    twoFactorSetup.value = null;
+    twoFactorEnableCode.value = '';
+    success.value = data.message || t('profile.twoFactorEnableSuccess');
+  } catch (err) {
+    error.value = err.response?.data?.error || t('profile.twoFactorEnableFailed');
+  } finally {
+    twoFactorBusy.value = false;
+  }
+}
+
+async function confirmDisableTwoFactor() {
+  twoFactorBusy.value = true;
+  error.value = '';
+  success.value = '';
+  try {
+    const data = await authStore.disableTwoFactor(twoFactorDisableCode.value);
+    twoFactorDisableCode.value = '';
+    success.value = data.message || t('profile.twoFactorDisableSuccess');
+  } catch (err) {
+    error.value = err.response?.data?.error || t('profile.twoFactorDisableFailed');
+  } finally {
+    twoFactorBusy.value = false;
   }
 }
 
@@ -855,5 +979,30 @@ async function handleSave() {
 
 .profile-danger-form {
   margin-top: 0.5rem;
+}
+
+.profile-two-factor-status {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+}
+
+.profile-two-factor-status--on {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.profile-two-factor-setup,
+.profile-two-factor-disable {
+  margin-top: 1rem;
+}
+
+.profile-two-factor-secret code {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-elevated, var(--color-primary-soft));
+  font-size: 0.8125rem;
+  word-break: break-all;
 }
 </style>

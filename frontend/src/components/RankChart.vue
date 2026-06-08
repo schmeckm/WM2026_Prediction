@@ -6,12 +6,12 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Line } from 'vue-chartjs';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { useFormatters } from '../composables/useFormatters';
 import { useThemeStore } from '../stores/themeStore';
 import { CHART_SECONDARY, CHART_SECONDARY_FILL, baseChartOptions, getChartPalette } from '../utils/chartTheme';
+import { registerChart } from '../utils/registerChart';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
+registerChart();
 
 const props = defineProps({
   data: { type: Array, default: () => [] },

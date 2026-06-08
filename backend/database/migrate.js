@@ -19,6 +19,8 @@ const USER_COLUMNS = [
   { name: 'avatarEmoji', spec: { type: DataTypes.STRING(16), allowNull: true } },
   { name: 'authProvider', spec: { type: DataTypes.STRING(16), allowNull: false, defaultValue: 'local' } },
   { name: 'providerId', spec: { type: DataTypes.STRING, allowNull: true } },
+  { name: 'totpEnabled', spec: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false } },
+  { name: 'totpSecret', spec: { type: DataTypes.STRING, allowNull: true } },
 ];
 
 async function runMigrations(sequelize) {

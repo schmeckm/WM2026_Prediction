@@ -15,6 +15,7 @@ const AICommentary = require('./AICommentary');
 const AIInteractionLog = require('./AIInteractionLog');
 const PlayerImage = require('./PlayerImage');
 const RevokedToken = require('./RevokedToken');
+const RefreshToken = require('./RefreshToken');
 
 Team.hasMany(User, { foreignKey: 'teamId', as: 'users', onDelete: 'SET NULL' });
 User.belongsTo(Team, { foreignKey: 'teamId', as: 'team', onDelete: 'SET NULL' });
@@ -48,6 +49,9 @@ AICommentary.belongsTo(Match, { foreignKey: 'matchId', as: 'match', onDelete: 'C
 User.hasMany(AIInteractionLog, { foreignKey: 'userId', as: 'aiInteractions', onDelete: 'SET NULL' });
 AIInteractionLog.belongsTo(User, { foreignKey: 'userId', as: 'user', onDelete: 'SET NULL' });
 
+User.hasMany(RefreshToken, { foreignKey: 'userId', as: 'refreshTokens', onDelete: 'CASCADE' });
+RefreshToken.belongsTo(User, { foreignKey: 'userId', as: 'user', onDelete: 'CASCADE' });
+
 module.exports = {
   sequelize,
   User,
@@ -66,4 +70,5 @@ module.exports = {
   AIInteractionLog,
   PlayerImage,
   RevokedToken,
+  RefreshToken,
 };

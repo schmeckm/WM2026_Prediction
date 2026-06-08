@@ -29,7 +29,7 @@ async function authenticateSocket(socket) {
   socket.authenticated = true;
 }
 
-function init(server, options = {}) {
+async function init(server, options = {}) {
   const { Server } = require('socket.io');
   const { getSocketCorsOrigin } = require('../config/corsConfig');
 
@@ -40,6 +40,19 @@ function init(server, options = {}) {
       credentials: true,
     },
   });
+
+  if (process.env.REDIS_URL) {
+    try {
+      const { createAdapter } = require('@socket.io/redis-adapter');
+      const Redis = require('ioredis');
+      const pubClient = new Redis(process.env.REDIS_URL, { maxRetriesPerRequest: 1 });
+      const subClient = pubClient.duplicate();
+      io.adapter(createAdapter(pubClient, subClient));
+      console.log('[Socket.IO] Redis adapter enabled.');
+    } catch (error) {
+      console.warn('[Socket.IO] Redis adapter unavailable:', error.message);
+    }
+  }
 
   io.use(async (socket, next) => {
     try {

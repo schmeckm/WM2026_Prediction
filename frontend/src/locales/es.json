@@ -46,6 +46,7 @@
     "dashboard": "Panel",
     "matches": "Partidos",
     "groupStandings": "Clasificación por grupos",
+    "tournamentBracket": "Cuadro del torneo",
     "nationalTeams": "Selecciones",
     "myPredictions": "Mis Pronósticos",
     "bonus": "Preguntas Bonus",
@@ -165,7 +166,10 @@
     "resendingVerification": "Enviando…",
     "verificationEmailSent": "Si existe una cuenta, se envió un correo de verificación.",
     "resendVerificationFailed": "No se pudo enviar el correo.",
-    "sessionExpired": "Su sesión ha expirado. Inicie sesión de nuevo."
+    "sessionExpired": "Su sesión ha expirado. Inicie sesión de nuevo.",
+    "totpCode": "Código de autenticación",
+    "totpCodePlaceholder": "Código de 6 dígitos",
+    "totpRequiredHint": "Introduzca el código de su aplicación de autenticación."
   },
   "errors": {
     "notFound": "Página no encontrada.",
@@ -247,7 +251,24 @@
       "nerd": "Nerd",
       "fire": "Fuego"
     },
-    "signOutHint": "Cierra sesión en este dispositivo."
+    "signOutHint": "Cierra sesión en este dispositivo.",
+    "twoFactorTitle": "Autenticación de dos factores",
+    "twoFactorHint": "Proteja su cuenta con un código de una aplicación de autenticación.",
+    "twoFactorEnabled": "La autenticación de dos factores está activada.",
+    "twoFactorDisabled": "La autenticación de dos factores no está activada.",
+    "twoFactorSetup": "Configurar autenticación de dos factores",
+    "twoFactorScanQr": "Escanee este código QR con su aplicación de autenticación e introduzca el código.",
+    "twoFactorManualSecret": "O introduzca este secreto manualmente:",
+    "twoFactorEnable": "Activar autenticación de dos factores",
+    "twoFactorDisable": "Desactivar autenticación de dos factores",
+    "twoFactorCode": "Código del autenticador",
+    "twoFactorEnabling": "Activando…",
+    "twoFactorDisabling": "Desactivando…",
+    "twoFactorEnableSuccess": "Autenticación de dos factores activada.",
+    "twoFactorDisableSuccess": "Autenticación de dos factores desactivada.",
+    "twoFactorSetupFailed": "No se pudo iniciar la configuración de dos factores.",
+    "twoFactorEnableFailed": "No se pudo activar la autenticación de dos factores.",
+    "twoFactorDisableFailed": "No se pudo desactivar la autenticación de dos factores."
   },
   "privacy": {
     "title": "Política de privacidad",
@@ -381,6 +402,26 @@
     "thirdPlaceRank": "Puesto entre terceros: {rank}",
     "thirdPlaceQualified": "clasif. probable",
     "winnerOfMatch": "Ganador partido {match}"
+  },
+  "tournamentBracket": {
+    "title": "Cuadro del torneo",
+    "subtitle": "Mundial 2026 – grupos, eliminatorias y recorrido del torneo",
+    "empty": "Aún no hay datos del torneo.",
+    "preliminary": "Vista preliminar – equipos y resultados se actualizan en vivo.",
+    "loadFailed": "No se pudo cargar el cuadro del torneo.",
+    "knockoutTitle": "Fase eliminatoria",
+    "knockoutSubtitle": "Desde octavos hasta la final – árbol de partidos conectado.",
+    "noKnockout": "Aún no hay datos de eliminatorias.",
+    "quarterFinals": "Cuartos de final",
+    "semiFinals": "Semifinales",
+    "final": "Final",
+    "thirdPlace": "Partido por el tercer puesto",
+    "loserOfMatch": "Perdedor partido {match}",
+    "fullscreen": "Pantalla completa",
+    "exitFullscreen": "Salir de pantalla completa",
+    "lastUpdated": "Actualizado",
+    "focusBracket": "Solo cuadro",
+    "showGroups": "Mostrar grupos"
   },
   "nationalTeams": {
     "title": "Selecciones y plantillas",
@@ -993,10 +1034,18 @@
       "saved": "Premios guardados.",
       "saveFailed": "No se pudieron guardar los premios.",
       "valuePlaceholder": "p. ej. vale de 200 €",
+      "uploadHint": "JPG, PNG, WebP o GIF, máx. 2 MB",
+      "removeImage": "Eliminar imagen",
+      "fileTooLarge": "La imagen es demasiado grande (máx. 2 MB).",
+      "imageUploaded": "Imagen del premio subida.",
+      "imageUploadFailed": "No se pudo subir la imagen.",
+      "imageRemoved": "Imagen del premio eliminada.",
+      "imageRemoveFailed": "No se pudo eliminar la imagen.",
       "fields": {
         "title": "Título",
         "value": "Premio / valor",
-        "description": "Descripción"
+        "description": "Descripción",
+        "image": "Imagen del premio"
       }
     },
     "bonus": {

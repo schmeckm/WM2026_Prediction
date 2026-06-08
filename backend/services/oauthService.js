@@ -10,11 +10,13 @@ const { normalizeLocale } = require('./i18nService');
 const { getAppUrl } = require('./authTokenService');
 const { importProfileImageFromUrl } = require('./userImageService');
 
+const temporaryStore = require('./temporaryStore');
+
 const STATE_TTL_MS = 10 * 60 * 1000;
 const EXCHANGE_TTL_MS = 5 * 60 * 1000;
 
-const pendingStates = new Map();
-const exchangeCodes = new Map();
+const STATE_PREFIX = 'oauth:state:';
+const EXCHANGE_PREFIX = 'oauth:exchange:';
 
 let googleClient = null;
 
@@ -52,41 +54,29 @@ async function getGoogleClient() {
 }
 
 function cleanupExpired() {
-  const now = Date.now();
-  for (const [key, val] of pendingStates) {
-    if (now - val.createdAt > STATE_TTL_MS) pendingStates.delete(key);
-  }
-  for (const [key, val] of exchangeCodes) {
-    if (now > val.expiresAt) exchangeCodes.delete(key);
-  }
+  temporaryStore.cleanupMemory(STATE_PREFIX);
+  temporaryStore.cleanupMemory(EXCHANGE_PREFIX);
 }
 
-function createExchangeCode(data) {
+async function createExchangeCode(data) {
   cleanupExpired();
   const code = crypto.randomBytes(32).toString('hex');
-  exchangeCodes.set(code, { data, expiresAt: Date.now() + EXCHANGE_TTL_MS });
+  await temporaryStore.set(`${EXCHANGE_PREFIX}${code}`, data, EXCHANGE_TTL_MS);
   return code;
 }
 
-function consumeExchangeCode(code) {
+async function consumeExchangeCode(code) {
   cleanupExpired();
-  const entry = exchangeCodes.get(code);
-  if (!entry || Date.now() > entry.expiresAt) {
-    exchangeCodes.delete(code);
-    return null;
-  }
-  exchangeCodes.delete(code);
-  return entry.data;
+  const key = `${EXCHANGE_PREFIX}${code}`;
+  const data = await temporaryStore.get(key);
+  if (!data) return null;
+  await temporaryStore.del(key);
+  return data;
 }
 
-function peekExchangeCode(code) {
+async function peekExchangeCode(code) {
   cleanupExpired();
-  const entry = exchangeCodes.get(code);
-  if (!entry || Date.now() > entry.expiresAt) {
-    exchangeCodes.delete(code);
-    return null;
-  }
-  return entry.data;
+  return temporaryStore.get(`${EXCHANGE_PREFIX}${code}`);
 }
 
 function getAllowedEmailDomains() {
@@ -109,11 +99,11 @@ async function startGoogleAuth(language) {
   const codeChallenge = generators.codeChallenge(codeVerifier);
   const state = generators.state();
 
-  pendingStates.set(state, {
+  await temporaryStore.set(`${STATE_PREFIX}${state}`, {
     codeVerifier,
     createdAt: Date.now(),
     language: normalizeLocale(language),
-  });
+  }, STATE_TTL_MS);
 
   return client.authorizationUrl({
     scope: 'openid email profile',
@@ -162,8 +152,9 @@ async function fetchGoogleUserProfile(accessToken) {
 }
 
 async function handleGoogleCallback(code, state) {
-  const pending = pendingStates.get(state);
-  pendingStates.delete(state);
+  const stateKey = `${STATE_PREFIX}${state}`;
+  const pending = await temporaryStore.get(stateKey);
+  await temporaryStore.del(stateKey);
   if (!pending) throw new Error('INVALID_STATE');
 
   const tokens = await exchangeGoogleTokens(code, pending.codeVerifier);
@@ -247,7 +238,7 @@ async function findOrCreateSsoUser(profile, issueToken) {
     const fresh = await User.findByPk(user.id, {
       include: [{ model: Team, as: 'team' }],
     });
-    return { token: issueToken(fresh), user: fresh.toSafeJSON() };
+    return { token: await Promise.resolve(issueToken(fresh)), user: fresh.toSafeJSON() };
   }
 
   const registrationOpen = await getSetting('registrationEnabled', true);
@@ -278,11 +269,11 @@ async function findOrCreateSsoUser(profile, issueToken) {
     include: [{ model: Team, as: 'team' }],
   });
 
-  return { token: issueToken(newUser), user: userWithTeam.toSafeJSON() };
+  return { token: await Promise.resolve(issueToken(newUser)), user: userWithTeam.toSafeJSON() };
 }
 
 async function completeSsoRegistration(code, teamId, issueToken) {
-  const data = consumeExchangeCode(code);
+  const data = await consumeExchangeCode(code);
   if (!data?.requiresTeam || !data.pending) {
     return { error: 'invalid_code' };
   }
@@ -306,7 +297,7 @@ async function completeSsoRegistration(code, teamId, issueToken) {
     const userWithTeam = await User.findByPk(user.id, {
       include: [{ model: Team, as: 'team' }],
     });
-    return { token: issueToken(userWithTeam), user: userWithTeam.toSafeJSON() };
+    return { token: await Promise.resolve(issueToken(userWithTeam)), user: userWithTeam.toSafeJSON() };
   }
 
   const existing = await User.findOne({ where: { email: pending.email } });
@@ -327,7 +318,7 @@ async function completeSsoRegistration(code, teamId, issueToken) {
     const userWithTeam = await User.findByPk(existing.id, {
       include: [{ model: Team, as: 'team' }],
     });
-    return { token: issueToken(existing), user: userWithTeam.toSafeJSON() };
+    return { token: await Promise.resolve(issueToken(existing)), user: userWithTeam.toSafeJSON() };
   }
 
   const registrationOpen = await getSetting('registrationEnabled', true);
@@ -354,14 +345,15 @@ async function completeSsoRegistration(code, teamId, issueToken) {
     include: [{ model: Team, as: 'team' }],
   });
 
-  return { token: issueToken(newUser), user: userWithTeam.toSafeJSON() };
+  return { token: await Promise.resolve(issueToken(newUser)), user: userWithTeam.toSafeJSON() };
 }
 
 function resetOAuthStateForTests() {
-  pendingStates.clear();
-  exchangeCodes.clear();
+  temporaryStore.resetForTests();
   googleClient = null;
 }
+
+setInterval(cleanupExpired, 5 * 60 * 1000).unref?.();
 
 module.exports = {
   isGoogleEnabled,

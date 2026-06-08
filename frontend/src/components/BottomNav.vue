@@ -23,21 +23,16 @@
 </template>
 
 <script setup>
-import { computed, inject } from 'vue';
+import { inject } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import NavIcon from './NavIcon.vue';
+import { useBottomNavLinks } from '../composables/useUserNav';
 
 const { t } = useI18n();
 const route = useRoute();
 const toggleSidebar = inject('toggleSidebar', () => {});
-
-const items = computed(() => [
-  { to: '/dashboard', label: t('nav.dashboard'), icon: 'home' },
-  { to: '/matches', label: t('nav.matches'), icon: 'matches' },
-  { to: '/my-predictions', label: t('nav.myPredictions'), icon: 'edit' },
-  { to: '/leaderboard', label: t('nav.leaderboard'), icon: 'trophy' },
-]);
+const items = useBottomNavLinks();
 
 function isActive(path) {
   return route.path === path || route.path.startsWith(`${path}/`);

@@ -46,6 +46,7 @@
     "dashboard": "Dashboard",
     "matches": "Matches",
     "groupStandings": "Group standings",
+    "tournamentBracket": "Tournament bracket",
     "nationalTeams": "National teams",
     "myPredictions": "My Predictions",
     "bonus": "Bonus Questions",
@@ -168,7 +169,10 @@
     "resendingVerification": "Sending…",
     "verificationEmailSent": "If an account exists, a verification email was sent.",
     "resendVerificationFailed": "Could not send email.",
-    "sessionExpired": "Your session has expired. Please sign in again."
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "totpCode": "Authentication code",
+    "totpCodePlaceholder": "6-digit code",
+    "totpRequiredHint": "Enter the code from your authenticator app."
   },
   "errors": {
     "notFound": "Page not found.",
@@ -254,6 +258,23 @@
     },
     "dangerZoneTitle": "Delete account",
     "signOutHint": "Sign out on this device.",
+    "twoFactorTitle": "Two-factor authentication",
+    "twoFactorHint": "Protect your account with a code from an authenticator app.",
+    "twoFactorEnabled": "Two-factor authentication is enabled.",
+    "twoFactorDisabled": "Two-factor authentication is not enabled.",
+    "twoFactorSetup": "Set up two-factor authentication",
+    "twoFactorScanQr": "Scan this QR code with your authenticator app, then enter the code below.",
+    "twoFactorManualSecret": "Or enter this secret manually:",
+    "twoFactorEnable": "Enable two-factor authentication",
+    "twoFactorDisable": "Disable two-factor authentication",
+    "twoFactorCode": "Authenticator code",
+    "twoFactorEnabling": "Enabling…",
+    "twoFactorDisabling": "Disabling…",
+    "twoFactorEnableSuccess": "Two-factor authentication enabled.",
+    "twoFactorDisableSuccess": "Two-factor authentication disabled.",
+    "twoFactorSetupFailed": "Could not start two-factor setup.",
+    "twoFactorEnableFailed": "Could not enable two-factor authentication.",
+    "twoFactorDisableFailed": "Could not disable two-factor authentication.",
     "dangerZoneHint": "This action is permanent. Your profile, all predictions, bonus answers, notifications and statistics will be deleted irreversibly.",
     "deletePassword": "Current password to confirm",
     "deletePasswordHint": "For security, please enter your password.",
@@ -396,6 +417,26 @@
     "thirdPlaceRank": "Rank among third place: {rank}",
     "thirdPlaceQualified": "proj. qualified",
     "winnerOfMatch": "Winner match {match}"
+  },
+  "tournamentBracket": {
+    "title": "Tournament bracket",
+    "subtitle": "World Cup 2026 – groups, knockout rounds and tournament path",
+    "empty": "No tournament data available yet.",
+    "preliminary": "Preliminary view – teams and results update live.",
+    "loadFailed": "Could not load tournament bracket.",
+    "knockoutTitle": "Knockout stage",
+    "knockoutSubtitle": "From the Round of 16 to the Final – connected bracket tree.",
+    "noKnockout": "No knockout data yet.",
+    "quarterFinals": "Quarter-finals",
+    "semiFinals": "Semi-finals",
+    "final": "Final",
+    "thirdPlace": "Third-place match",
+    "loserOfMatch": "Loser match {match}",
+    "fullscreen": "Full screen",
+    "exitFullscreen": "Exit full screen",
+    "lastUpdated": "Updated",
+    "focusBracket": "Bracket only",
+    "showGroups": "Show groups"
   },
   "nationalTeams": {
     "title": "National teams & squads",
@@ -574,7 +615,8 @@
     "subtitle": "What the top predictors win at the end of the tournament.",
     "place": "{rank} place",
     "disabled": "The prize list is currently unavailable.",
-    "empty": "No prizes have been configured yet."
+    "empty": "No prizes have been configured yet.",
+    "loadFailed": "Could not load prizes."
   },
   "teamRanking": {
     "title": "Team Ranking",
@@ -736,6 +778,7 @@
       "title": "Admin dashboard",
       "recalculate": "Recalculate points",
       "recalculating": "Calculating...",
+      "loadFailed": "Could not load admin dashboard.",
       "top10": "Top 10 leaderboard",
       "stats": {
         "users": "Users",
@@ -963,10 +1006,18 @@
       "saved": "Prizes saved.",
       "saveFailed": "Could not save prizes.",
       "valuePlaceholder": "e.g. €200 voucher",
+      "uploadHint": "JPG, PNG, WebP or GIF, max. 2 MB",
+      "removeImage": "Remove image",
+      "fileTooLarge": "Image is too large (max. 2 MB).",
+      "imageUploaded": "Prize image uploaded.",
+      "imageUploadFailed": "Could not upload image.",
+      "imageRemoved": "Prize image removed.",
+      "imageRemoveFailed": "Could not remove image.",
       "fields": {
         "title": "Title",
         "value": "Prize / value",
-        "description": "Description"
+        "description": "Description",
+        "image": "Prize image"
       }
     },
     "import": {

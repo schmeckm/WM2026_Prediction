@@ -27,7 +27,19 @@ const WM2026_KNOCKOUT_BRACKET = [
   { stage: 'LAST_16', matchNumber: 94, home: 'W81', away: 'W82' },
   { stage: 'LAST_16', matchNumber: 95, home: 'W86', away: 'W88' },
   { stage: 'LAST_16', matchNumber: 96, home: 'W85', away: 'W87' },
+  { stage: 'QUARTER_FINALS', matchNumber: 97, home: 'W89', away: 'W90' },
+  { stage: 'QUARTER_FINALS', matchNumber: 98, home: 'W93', away: 'W94' },
+  { stage: 'QUARTER_FINALS', matchNumber: 99, home: 'W91', away: 'W92' },
+  { stage: 'QUARTER_FINALS', matchNumber: 100, home: 'W95', away: 'W96' },
+  { stage: 'SEMI_FINALS', matchNumber: 101, home: 'W97', away: 'W99' },
+  { stage: 'SEMI_FINALS', matchNumber: 102, home: 'W98', away: 'W100' },
+  { stage: 'THIRD_PLACE', matchNumber: 103, home: 'L101', away: 'L102' },
+  { stage: 'FINAL', matchNumber: 104, home: 'W101', away: 'W102' },
 ];
+
+/** Leaf order per bracket half (for tree layout). */
+const BRACKET_LEFT_R32_ORDER = [73, 74, 75, 76, 77, 78, 79, 80];
+const BRACKET_RIGHT_R32_ORDER = [81, 82, 83, 84, 85, 86, 87, 88];
 
 const GROUP_POSITION_OUTLOOK = {
   A: { 1: { matchNumber: 79, opponentSlot: '3_CEFHI' }, 2: { matchNumber: 73, opponentSlot: '2B' } },
@@ -47,4 +59,6 @@ const GROUP_POSITION_OUTLOOK = {
 module.exports = {
   WM2026_KNOCKOUT_BRACKET,
   GROUP_POSITION_OUTLOOK,
+  BRACKET_LEFT_R32_ORDER,
+  BRACKET_RIGHT_R32_ORDER,
 };

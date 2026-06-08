@@ -65,6 +65,22 @@
         </div>
       </div>
 
+      <div v-if="showTotp" class="auth-immersive-field">
+        <label for="totpCode">{{ t('auth.totpCode') }}</label>
+        <input
+          id="totpCode"
+          v-model="totpCode"
+          type="text"
+          class="auth-immersive-input"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          maxlength="8"
+          required
+          :placeholder="t('auth.totpCodePlaceholder')"
+        />
+        <p class="auth-totp-hint">{{ t('auth.totpRequiredHint') }}</p>
+      </div>
+
       <label class="auth-immersive-remember">
         <input v-model="rememberMe" type="checkbox" />
         <span>{{ t('auth.rememberMe') }}</span>
@@ -133,6 +149,8 @@ const showResendVerification = ref(false);
 const resending = ref(false);
 const resendMessage = ref('');
 const pageUrl = ref('');
+const showTotp = ref(false);
+const totpCode = ref('');
 
 onMounted(async () => {
   pageUrl.value = `${globalThis.location.origin}/login`;
@@ -163,7 +181,7 @@ async function handleLogin() {
   showResendVerification.value = false;
   resendMessage.value = '';
   try {
-    await authStore.login(email.value, password.value);
+    await authStore.login(email.value, password.value, showTotp.value ? totpCode.value : null);
     if (rememberMe.value) {
       localStorage.setItem(REMEMBER_EMAIL_KEY, email.value);
     } else {
@@ -171,6 +189,11 @@ async function handleLogin() {
     }
     router.push(authStore.isAdmin ? '/admin' : '/dashboard');
   } catch (err) {
+    if (err.response?.data?.requiresTotp) {
+      showTotp.value = true;
+      error.value = err.response?.data?.error || t('auth.totpRequiredHint');
+      return;
+    }
     error.value = err.response?.data?.error || t('auth.loginFailed');
     if (err.response?.status === 403) {
       showResendVerification.value = true;
@@ -205,5 +228,11 @@ async function handleResendVerification() {
 
 .auth-login-footer p {
   margin: 0;
+}
+
+.auth-totp-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
 }
 </style>

@@ -9,6 +9,26 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+let refreshPromise = null;
+
+async function tryRefreshToken() {
+  const authStore = useAuthStore();
+  if (!authStore.refreshToken) return false;
+
+  if (!refreshPromise) {
+    refreshPromise = axios.post('/api/auth/refresh', {
+      refreshToken: authStore.refreshToken,
+    }).then((response) => {
+      authStore.setAuth(response.data.token, response.data.user, response.data.refreshToken);
+      return true;
+    }).catch(() => false).finally(() => {
+      refreshPromise = null;
+    });
+  }
+
+  return refreshPromise;
+}
+
 api.interceptors.request.use((config) => {
   const authStore = useAuthStore();
   if (authStore.token) {
@@ -19,7 +39,6 @@ api.interceptors.request.use((config) => {
 
   const isFormData = typeof FormData !== 'undefined' && config.data instanceof FormData;
   if (isFormData) {
-    // Let the browser set multipart boundary; default application/json breaks file uploads.
     delete config.headers['Content-Type'];
   } else if (config.method === 'get') {
     config.params = { ...config.params, lang: locale };
@@ -29,31 +48,40 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 429) {
       const toastStore = useToastStore();
       toastStore.warning(i18n.global.t('common.tooManyRequests'));
     }
-    if (error.response?.status === 401) {
-      const requestUrl = error.config?.url || '';
-      const isAuthRequest = /\/auth\/(login|register)(\/|$|\?)/.test(requestUrl);
-      if (!isAuthRequest) {
+
+    const originalRequest = error.config;
+    const requestUrl = originalRequest?.url || '';
+    const isAuthRequest = /\/auth\/(login|register|refresh)(\/|$|\?)/.test(requestUrl);
+
+    if (error.response?.status === 401 && !isAuthRequest && !originalRequest?._retry) {
+      originalRequest._retry = true;
+      const refreshed = await tryRefreshToken();
+      if (refreshed) {
         const authStore = useAuthStore();
-        const errorText = error.response?.data?.error || '';
-        const isSessionExpired = /session|expired|abgelaufen|Sitzung|sesión|session/i.test(errorText);
-        if (isSessionExpired) {
-          const toastStore = useToastStore();
-          const message = i18n.global.t('auth.sessionExpired');
-          toastStore.warning(message);
-        }
-        authStore.logout();
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login';
-        }
+        originalRequest.headers.Authorization = `Bearer ${authStore.token}`;
+        return api(originalRequest);
+      }
+
+      const authStore = useAuthStore();
+      const errorText = error.response?.data?.error || '';
+      const isSessionExpired = /session|expired|abgelaufen|Sitzung|sesión|invalidToken|refresh/i.test(errorText);
+      if (isSessionExpired) {
+        const toastStore = useToastStore();
+        toastStore.warning(i18n.global.t('auth.sessionExpired'));
+      }
+      authStore.logout();
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
       }
     }
+
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

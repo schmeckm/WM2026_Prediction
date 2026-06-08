@@ -1407,7 +1407,7 @@ tbody tr:hover {
   padding: 0.5rem 0.15rem;
   color: var(--color-text-muted);
   text-decoration: none;
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   transition: color 0.15s ease;
   min-height: var(--bottom-nav-height);
@@ -1542,7 +1542,15 @@ tbody tr:hover {
     margin-bottom: var(--bottom-nav-height);
   }
 
+  .layout-main:has(.admin-bottom-nav) .system-status-bar {
+    margin-bottom: var(--bottom-nav-height);
+  }
+
   .layout-content {
+    padding-bottom: calc(var(--bottom-nav-height) + var(--system-status-bar-height) + 1rem);
+  }
+
+  .layout-main:has(.admin-bottom-nav) .layout-content {
     padding-bottom: calc(var(--bottom-nav-height) + var(--system-status-bar-height) + 1rem);
   }
 

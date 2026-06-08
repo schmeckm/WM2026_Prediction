@@ -258,6 +258,25 @@ describe('Settings access control', { concurrency: 1 }, () => {
     assert.equal(publicRes.body.apiSyncEnabled, undefined);
   });
 
+  test('Admin can upload prize image for rank 1', async () => {
+    const pngBuffer = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      'base64',
+    );
+
+    const res = await api.post('/api/admin/prizes/1/image')
+      .set('Authorization', `Bearer ${adminTokenVal}`)
+      .attach('image', pngBuffer, { filename: 'prize.png', contentType: 'image/png' });
+
+    assert.equal(res.status, 200);
+    assert.match(res.body.prizes[0].imageUrl, /^\/uploads\/prizes\/prize-1\.png$/);
+
+    const deleteRes = await api.delete('/api/admin/prizes/1/image')
+      .set('Authorization', `Bearer ${adminTokenVal}`);
+    assert.equal(deleteRes.status, 200);
+    assert.equal(deleteRes.body.prizes[0].imageUrl, '');
+  });
+
   test('Admin favorites overview returns aggregated profile picks', async () => {
     const { User } = require('../../models');
     await User.update({

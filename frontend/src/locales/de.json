@@ -46,6 +46,7 @@
     "dashboard": "Dashboard",
     "matches": "Spiele",
     "groupStandings": "Gruppentabellen",
+    "tournamentBracket": "Spielbaum",
     "nationalTeams": "Nationalteams",
     "myPredictions": "Meine Tipps",
     "bonus": "Bonusfragen",
@@ -168,7 +169,10 @@
     "resendingVerification": "Sende…",
     "verificationEmailSent": "Falls ein Konto existiert, wurde eine Bestätigungs-E-Mail gesendet.",
     "resendVerificationFailed": "E-Mail konnte nicht gesendet werden.",
-    "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an."
+    "sessionExpired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+    "totpCode": "Authentifizierungscode",
+    "totpCodePlaceholder": "6-stelliger Code",
+    "totpRequiredHint": "Geben Sie den Code aus Ihrer Authenticator-App ein."
   },
   "errors": {
     "notFound": "Seite nicht gefunden.",
@@ -260,6 +264,23 @@
     },
     "dangerZoneTitle": "Konto löschen",
     "signOutHint": "Melden Sie sich auf diesem Gerät ab.",
+    "twoFactorTitle": "Zwei-Faktor-Authentifizierung",
+    "twoFactorHint": "Schützen Sie Ihr Konto mit einem Code aus einer Authenticator-App.",
+    "twoFactorEnabled": "Zwei-Faktor-Authentifizierung ist aktiviert.",
+    "twoFactorDisabled": "Zwei-Faktor-Authentifizierung ist nicht aktiviert.",
+    "twoFactorSetup": "Zwei-Faktor-Authentifizierung einrichten",
+    "twoFactorScanQr": "Scannen Sie diesen QR-Code mit Ihrer Authenticator-App und geben Sie den Code ein.",
+    "twoFactorManualSecret": "Oder geben Sie dieses Geheimnis manuell ein:",
+    "twoFactorEnable": "Zwei-Faktor-Authentifizierung aktivieren",
+    "twoFactorDisable": "Zwei-Faktor-Authentifizierung deaktivieren",
+    "twoFactorCode": "Authenticator-Code",
+    "twoFactorEnabling": "Aktiviere…",
+    "twoFactorDisabling": "Deaktiviere…",
+    "twoFactorEnableSuccess": "Zwei-Faktor-Authentifizierung aktiviert.",
+    "twoFactorDisableSuccess": "Zwei-Faktor-Authentifizierung deaktiviert.",
+    "twoFactorSetupFailed": "Einrichtung der Zwei-Faktor-Authentifizierung fehlgeschlagen.",
+    "twoFactorEnableFailed": "Zwei-Faktor-Authentifizierung konnte nicht aktiviert werden.",
+    "twoFactorDisableFailed": "Zwei-Faktor-Authentifizierung konnte nicht deaktiviert werden.",
     "dangerZoneHint": "Diese Aktion ist endgültig. Es werden Ihr Profil, alle Tipps, Bonusantworten, Benachrichtigungen und Statistiken unwiderruflich gelöscht.",
     "deletePassword": "Aktuelles Passwort zur Bestätigung",
     "deletePasswordHint": "Zur Sicherheit geben Sie bitte Ihr Passwort ein.",
@@ -402,6 +423,26 @@
     "thirdPlaceRank": "Rang unter den Dritten: {rank}",
     "thirdPlaceQualified": "vorauss. qualifiziert",
     "winnerOfMatch": "Sieger Spiel {match}"
+  },
+  "tournamentBracket": {
+    "title": "Spielbaum",
+    "subtitle": "WM 2026 – Gruppen, K.-o.-Runden und Turnierverlauf",
+    "empty": "Noch keine Turnierdaten verfügbar.",
+    "preliminary": "Vorläufige Darstellung – Teams und Ergebnisse werden live aktualisiert.",
+    "loadFailed": "Spielbaum konnte nicht geladen werden.",
+    "knockoutTitle": "K.-o.-Phase",
+    "knockoutSubtitle": "Vom Achtelfinale bis zum Finale – mit Verbindungslinien im Turnierbaum.",
+    "noKnockout": "Noch keine K.-o.-Daten.",
+    "quarterFinals": "Viertelfinale",
+    "semiFinals": "Halbfinale",
+    "final": "Finale",
+    "thirdPlace": "Spiel um Platz 3",
+    "loserOfMatch": "Verlierer Spiel {match}",
+    "fullscreen": "Vollbild",
+    "exitFullscreen": "Vollbild beenden",
+    "lastUpdated": "Aktualisiert",
+    "focusBracket": "Nur Spielbaum",
+    "showGroups": "Gruppen zeigen"
   },
   "nationalTeams": {
     "title": "Nationalteams & Kader",
@@ -585,7 +626,8 @@
     "subtitle": "Das gibt es für die besten Tipper am Ende des Turniers.",
     "place": "{rank}. Platz",
     "disabled": "Die Preisliste ist derzeit nicht verfügbar.",
-    "empty": "Es wurden noch keine Preise hinterlegt."
+    "empty": "Es wurden noch keine Preise hinterlegt.",
+    "loadFailed": "Preise konnten nicht geladen werden."
   },
   "teamRanking": {
     "title": "Teamwertung",
@@ -741,6 +783,7 @@
       "title": "Admin Dashboard",
       "recalculate": "Punkte neu berechnen",
       "recalculating": "Berechne...",
+      "loadFailed": "Admin-Dashboard konnte nicht geladen werden.",
       "top10": "Top 10 Hitliste",
       "stats": {
         "users": "Benutzer",
@@ -968,10 +1011,18 @@
       "saved": "Preise gespeichert.",
       "saveFailed": "Preise konnten nicht gespeichert werden.",
       "valuePlaceholder": "z. B. 200 € Gutschein",
+      "uploadHint": "JPG, PNG, WebP oder GIF, max. 2 MB",
+      "removeImage": "Bild entfernen",
+      "fileTooLarge": "Bild ist zu groß (max. 2 MB).",
+      "imageUploaded": "Preis-Bild hochgeladen.",
+      "imageUploadFailed": "Bild konnte nicht hochgeladen werden.",
+      "imageRemoved": "Preis-Bild entfernt.",
+      "imageRemoveFailed": "Bild konnte nicht entfernt werden.",
       "fields": {
         "title": "Titel",
         "value": "Preis / Wert",
-        "description": "Beschreibung"
+        "description": "Beschreibung",
+        "image": "Preis-Bild"
       }
     },
     "import": {

@@ -4,8 +4,10 @@ const { getSetting } = require('../services/settingsService');
 const { getLeaderboard } = require('../services/leaderboardService');
 const { Match } = require('../models');
 const { Op } = require('sequelize');
+const displayAccessMiddleware = require('../middleware/displayAccessMiddleware');
 
 const router = express.Router();
+router.use(displayAccessMiddleware);
 
 async function assertDisplayEnabled(req, res) {
   const enabled = await getSetting('displayModeEnabled', true);

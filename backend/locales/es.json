@@ -54,6 +54,11 @@
     "teamImageRequired": "Seleccione una imagen.",
     "teamImageUploadFailed": "No se pudo subir la imagen del equipo.",
     "teamImageDeleteFailed": "No se pudo eliminar la imagen del equipo.",
+    "prizeRankInvalid": "Puesto de premio no válido. Solo se permiten los puestos 1–3.",
+    "prizeImageInvalid": "Imagen no válida. Permitido: JPG, PNG, WebP, GIF (máx. 2 MB).",
+    "prizeImageRequired": "Selecciona una imagen.",
+    "prizeImageUploadFailed": "No se pudo subir la imagen del premio.",
+    "prizeImageDeleteFailed": "No se pudo eliminar la imagen del premio.",
     "userImageInvalid": "Imagen de perfil no válida. Permitido: JPG, PNG, WebP, GIF (máx. 2 MB).",
     "userImageRequired": "Seleccione una imagen de perfil.",
     "userImageUploadFailed": "No se pudo subir la imagen de perfil.",
@@ -176,7 +181,11 @@
     "verificationFailed": "Verificación de correo fallida.",
     "passwordResetFailed": "Restablecimiento de contraseña fallido.",
     "invalidResetToken": "Enlace de restablecimiento inválido o expirado.",
-    "passwordResetFieldsRequired": "Token y nueva contraseña son obligatorios."
+    "passwordResetFieldsRequired": "Token y nueva contraseña son obligatorios.",
+    "totpRequired": "Se requiere código de autenticación de dos factores.",
+    "invalidTotp": "Código de autenticación no válido.",
+    "invalidRefreshToken": "Token de actualización no válido o expirado.",
+    "totpNotEnabled": "La autenticación de dos factores no está activada."
   },
   "messages": {
     "registrationSuccess": "Registro exitoso.",
@@ -187,6 +196,8 @@
     "passwordResetSuccess": "Contraseña cambiada. Ya puede iniciar sesión.",
     "loginSuccess": "Inicio de sesión exitoso.",
     "logoutSuccess": "Sesión cerrada correctamente.",
+    "totpEnabled": "Autenticación de dos factores activada.",
+    "totpDisabled": "Autenticación de dos factores desactivada.",
     "userDeleted": "Usuario eliminado.",
     "accountDeleted": "Su cuenta y todos los datos relacionados han sido eliminados.",
     "teamDeleted": "Equipo eliminado.",

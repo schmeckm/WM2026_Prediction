@@ -39,7 +39,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import axios from 'axios';
+import api from '../services/api';
 import LeaderboardTable from '../components/LeaderboardTable.vue';
 import { useFormatters } from '../composables/useFormatters';
 import {
@@ -61,8 +61,8 @@ let unsubLeaderboard = null;
 async function loadDisplay() {
   try {
     const [lbRes, matchRes] = await Promise.all([
-      axios.get('/api/display/leaderboard'),
-      axios.get('/api/display/live-matches'),
+      api.get('/display/leaderboard'),
+      api.get('/display/live-matches'),
     ]);
     leaderboard.value = lbRes.data.entries || [];
     matches.value = matchRes.data.matches || [];

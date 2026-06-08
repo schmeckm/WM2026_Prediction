@@ -63,6 +63,7 @@ const routes = [
       { path: 'dashboard', name: 'Dashboard', component: () => import('../views/DashboardView.vue') },
       { path: 'matches', name: 'Matches', component: () => import('../views/MatchesView.vue') },
       { path: 'group-standings', name: 'GroupStandings', component: () => import('../views/GroupStandingsView.vue') },
+      { path: 'tournament-bracket', name: 'TournamentBracket', component: () => import('../views/TournamentBracketView.vue') },
       { path: 'national-teams', name: 'NationalTeams', component: () => import('../views/NationalTeamsView.vue') },
       { path: 'my-predictions', name: 'MyPredictions', component: () => import('../views/MyPredictionsView.vue') },
       { path: 'leaderboard', name: 'Leaderboard', component: () => import('../views/LeaderboardView.vue') },
@@ -126,6 +127,12 @@ router.beforeEach((to, from, next) => {
   } else disconnectSocket();
 
   next();
+});
+
+router.afterEach((to) => {
+  const baseTitle = 'WM 2026 Tippspiel';
+  const routeTitle = to.meta?.title;
+  document.title = routeTitle ? `${routeTitle} · ${baseTitle}` : baseTitle;
 });
 
 export default router;

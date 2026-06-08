@@ -11,6 +11,7 @@ const fs = require('fs');
 const { sequelize } = require('./models');
 
 const requestLogger = require('./middleware/requestLogger');
+const requestIdMiddleware = require('./middleware/requestIdMiddleware');
 const { apiLimiter, leaderboardLimiter, displayLimiter, publicReadLimiter } = require('./middleware/rateLimiter');
 const { seedDefaultSettings } = require('./services/settingsService');
 const { isAiEnabled, isApiKeyConfigured, getAiConfig } = require('./services/llmService');
@@ -37,10 +38,13 @@ const footballRoutes = require('./routes/footballRoutes');
 const playerImageRoutes = require('./routes/playerImageRoutes');
 const adminPlayerImageRoutes = require('./routes/adminPlayerImageRoutes');
 const displayRoutes = require('./routes/displayRoutes');
+const prizeRoutes = require('./routes/prizeRoutes');
 const authMiddleware = require('./middleware/authMiddleware');
 const adminMiddleware = require('./middleware/adminMiddleware');
 const { localeMiddleware } = require('./middleware/localeMiddleware');
 const { translate } = require('./utils/apiResponse');
+const { mountApiRoutes } = require('./utils/mountApiRoutes');
+const { metricsMiddleware, metricsHandler } = require('./middleware/metricsMiddleware');
 
 const app = express();
 
@@ -63,6 +67,8 @@ const userUploadsDir = path.join(uploadsDir, 'users');
 if (!fs.existsSync(userUploadsDir)) fs.mkdirSync(userUploadsDir, { recursive: true });
 const playerUploadsDir = path.join(uploadsDir, 'players');
 if (!fs.existsSync(playerUploadsDir)) fs.mkdirSync(playerUploadsDir, { recursive: true });
+const prizeUploadsDir = path.join(uploadsDir, 'prizes');
+if (!fs.existsSync(prizeUploadsDir)) fs.mkdirSync(prizeUploadsDir, { recursive: true });
 
 app.use('/uploads', express.static(uploadsDir, {
   etag: false,
@@ -70,11 +76,18 @@ app.use('/uploads', express.static(uploadsDir, {
   maxAge: 0,
   setHeaders(res) {
     res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
   },
 }));
 
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'none'"],
+      frameAncestors: ["'none'"],
+      baseUri: ["'none'"],
+    },
+  },
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 
@@ -83,12 +96,23 @@ app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 
 if (process.env.NODE_ENV !== 'test') {
+  app.use(requestIdMiddleware);
+  app.use(metricsMiddleware);
   app.use(requestLogger);
 }
 
-app.use('/api', localeMiddleware);
+app.use(['/api', '/api/v1'], localeMiddleware);
 
 app.get('/api/health', async (req, res) => {
+  try {
+    await sequelize.authenticate();
+    res.json({ status: 'ok', version: getAppVersion() });
+  } catch (error) {
+    res.status(503).json({ status: 'error' });
+  }
+});
+
+app.get('/api/health/detailed', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     await sequelize.authenticate();
     const aiEnabled = isAiEnabled();
@@ -113,33 +137,47 @@ app.get('/api/health', async (req, res) => {
 
 if (process.env.NODE_ENV !== 'test') {
   app.use('/api', apiLimiter);
+  app.use('/api/v1', apiLimiter);
 }
 
-app.use('/api/auth', authRoutes);
+app.get('/api/metrics', authMiddleware, adminMiddleware, metricsHandler);
+app.get('/api/v1/metrics', authMiddleware, adminMiddleware, metricsHandler);
 
-app.use('/api/users', userRoutes);
-app.use('/api/teams', publicReadLimiter, teamRoutes);
-app.use('/api/matches', matchRoutes);
-app.use('/api/predictions', predictionRoutes);
-app.use('/api/leaderboard', leaderboardLimiter, leaderboardRoutes);
-app.use('/api/scoring-rules', scoringRuleRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/admin/sync', syncRoutes);
-app.use('/api/bonus-questions', bonusRoutes);
-app.use('/api/admin/bonus-questions', bonusAdminRoutes);
-app.use('/api/statistics', statisticsRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/admin/audit-log', auditRoutes);
-app.use('/api/admin/email', emailRoutes);
-app.use('/api/settings', settingsRoutes);
-app.put('/api/admin/settings', authMiddleware, adminMiddleware, settingsRoutes.updateSettings);
-app.use('/api/admin/system', systemRoutes);
-app.use('/api/ai', aiRoutes);
-app.use('/api/football', footballRoutes);
-app.use('/api/player-images', playerImageRoutes);
-app.use('/api/admin/player-images', adminPlayerImageRoutes);
-app.use('/api/display', displayLimiter, displayRoutes);
-app.use('/api/admin/ai', adminAiRoutes);
+const apiRouteBundle = {
+  authRoutes,
+  userRoutes,
+  teamRoutes,
+  matchRoutes,
+  predictionRoutes,
+  leaderboardRoutes,
+  scoringRuleRoutes,
+  adminRoutes,
+  syncRoutes,
+  bonusRoutes,
+  bonusAdminRoutes,
+  statisticsRoutes,
+  notificationRoutes,
+  auditRoutes,
+  emailRoutes,
+  settingsRoutes,
+  systemRoutes,
+  aiRoutes,
+  footballRoutes,
+  playerImageRoutes,
+  adminPlayerImageRoutes,
+  displayRoutes,
+  prizeRoutes,
+  adminAiRoutes,
+  authMiddleware,
+  adminMiddleware,
+  settingsUpdateHandler: settingsRoutes.updateSettings,
+  publicReadLimiter,
+  leaderboardLimiter,
+  displayLimiter,
+};
+
+mountApiRoutes(app, '/api', apiRouteBundle);
+mountApiRoutes(app, '/api/v1', apiRouteBundle);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -180,7 +218,11 @@ async function initDatabase(options = {}) {
   const { runMigrations } = require('./database/migrate');
   // Safe sync: erstellt fehlende Tabellen, löscht/ändert keine bestehenden Daten.
   // Neue Spalten werden über database/migrate.js ergänzt.
-  await sequelize.sync({ force: force && (allowForce || process.env.NODE_ENV === 'test') });
+  const shouldSync = process.env.NODE_ENV !== 'production'
+    || force && (allowForce || process.env.NODE_ENV === 'test');
+  if (shouldSync) {
+    await sequelize.sync({ force: force && (allowForce || process.env.NODE_ENV === 'test') });
+  }
   await runMigrations(sequelize);
 
   if (sequelize.getDialect() === 'sqlite') {

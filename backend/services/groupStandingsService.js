@@ -117,11 +117,12 @@ function buildGroupStandingsFromMatches(matches) {
     }
 
     const table = sortStandings([...groupData.teams.values()]);
-    const nextMatches = groupData.matches
-      .filter(isUpcomingMatch)
+    const sortedMatches = groupData.matches
       .sort((a, b) => new Date(a.kickoffTime) - new Date(b.kickoffTime))
-      .slice(0, 3)
       .map(normalizeMatchSummary);
+    const nextMatches = sortedMatches
+      .filter(isUpcomingMatch)
+      .slice(0, 3);
 
     result.push({
       group: groupData.group,
@@ -129,6 +130,7 @@ function buildGroupStandingsFromMatches(matches) {
       stage: 'GROUP_STAGE',
       table,
       nextMatches,
+      allMatches: sortedMatches,
     });
   }
 
@@ -171,8 +173,15 @@ function getKnockoutWinner(match) {
   return null;
 }
 
+function getKnockoutLoser(match) {
+  if (!isFinishedGroupMatch(match)) return null;
+  if (match.homeScore > match.awayScore) return match.awayTeam;
+  if (match.awayScore > match.homeScore) return match.homeTeam;
+  return null;
+}
+
 function resolveSlot(slot, standingsByGroup, knockoutByNumber, thirdPlaceRanking, depth = 0) {
-  if (!slot || depth > 6) {
+  if (!slot || depth > 10) {
     return { team: null, label: slot, resolved: false, projected: false };
   }
 
@@ -209,6 +218,16 @@ function resolveSlot(slot, standingsByGroup, knockoutByNumber, thirdPlaceRanking
         qualified: entry.thirdPlaceQualified,
       })),
     };
+  }
+
+  if (slot.startsWith('L')) {
+    const matchNumber = parseInt(slot.slice(1), 10);
+    const finished = knockoutByNumber.get(matchNumber);
+    const loser = finished ? getKnockoutLoser(finished) : null;
+    if (loser) {
+      return { team: loser, label: slot, resolved: true, projected: false };
+    }
+    return { team: null, label: slot, resolved: false, projected: false };
   }
 
   if (slot.startsWith('W')) {

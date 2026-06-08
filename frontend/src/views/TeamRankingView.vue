@@ -5,7 +5,7 @@
     </div>
 
     <LoadingSpinner v-if="loading" />
-    <AlertMessage v-else-if="error" :message="error" type="error" />
+    <ErrorState v-else-if="error" :message="error" @retry="loadRanking" />
 
     <div v-else class="card">
       <div class="card-body">
@@ -75,7 +75,7 @@ import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
-import AlertMessage from '../components/AlertMessage.vue';
+import ErrorState from '../components/ErrorState.vue';
 import RankTrophyIcon from '../components/RankTrophyIcon.vue';
 import TeamAvatar from '../components/TeamAvatar.vue';
 import { useFormatters } from '../composables/useFormatters';
@@ -98,7 +98,9 @@ function showRankTrophy(rank) {
   return n >= 1 && n <= 3;
 }
 
-onMounted(async () => {
+async function loadRanking() {
+  loading.value = true;
+  error.value = '';
   try {
     const { data } = await api.get('/leaderboard/team-ranking');
     ranking.value = data;
@@ -107,7 +109,9 @@ onMounted(async () => {
   } finally {
     loading.value = false;
   }
-});
+}
+
+onMounted(loadRanking);
 </script>
 
 <style scoped>

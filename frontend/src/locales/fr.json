@@ -46,6 +46,7 @@
     "dashboard": "Tableau de bord",
     "matches": "Matchs",
     "groupStandings": "Classements par groupe",
+    "tournamentBracket": "Arbre du tournoi",
     "nationalTeams": "Équipes nationales",
     "myPredictions": "Mes Pronostics",
     "bonus": "Questions Bonus",
@@ -165,7 +166,10 @@
     "resendingVerification": "Envoi…",
     "verificationEmailSent": "Si un compte existe, un e-mail de confirmation a été envoyé.",
     "resendVerificationFailed": "Impossible d'envoyer l'e-mail.",
-    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter."
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "totpCode": "Code d'authentification",
+    "totpCodePlaceholder": "Code à 6 chiffres",
+    "totpRequiredHint": "Saisissez le code de votre application d'authentification."
   },
   "errors": {
     "notFound": "Page introuvable.",
@@ -247,7 +251,24 @@
       "nerd": "Nerd",
       "fire": "Feu"
     },
-    "signOutHint": "Déconnectez-vous sur cet appareil."
+    "signOutHint": "Déconnectez-vous sur cet appareil.",
+    "twoFactorTitle": "Authentification à deux facteurs",
+    "twoFactorHint": "Protégez votre compte avec un code d'une application d'authentification.",
+    "twoFactorEnabled": "L'authentification à deux facteurs est activée.",
+    "twoFactorDisabled": "L'authentification à deux facteurs n'est pas activée.",
+    "twoFactorSetup": "Configurer l'authentification à deux facteurs",
+    "twoFactorScanQr": "Scannez ce code QR avec votre application d'authentification, puis saisissez le code.",
+    "twoFactorManualSecret": "Ou saisissez ce secret manuellement :",
+    "twoFactorEnable": "Activer l'authentification à deux facteurs",
+    "twoFactorDisable": "Désactiver l'authentification à deux facteurs",
+    "twoFactorCode": "Code d'authentification",
+    "twoFactorEnabling": "Activation…",
+    "twoFactorDisabling": "Désactivation…",
+    "twoFactorEnableSuccess": "Authentification à deux facteurs activée.",
+    "twoFactorDisableSuccess": "Authentification à deux facteurs désactivée.",
+    "twoFactorSetupFailed": "Impossible de démarrer la configuration à deux facteurs.",
+    "twoFactorEnableFailed": "Impossible d'activer l'authentification à deux facteurs.",
+    "twoFactorDisableFailed": "Impossible de désactiver l'authentification à deux facteurs."
   },
   "privacy": {
     "title": "Politique de confidentialité",
@@ -381,6 +402,26 @@
     "thirdPlaceRank": "Rang parmi les 3e : {rank}",
     "thirdPlaceQualified": "qualif. probable",
     "winnerOfMatch": "Vainqueur match {match}"
+  },
+  "tournamentBracket": {
+    "title": "Arbre du tournoi",
+    "subtitle": "CM 2026 – groupes, phases à élimination et parcours du tournoi",
+    "empty": "Pas encore de données du tournoi.",
+    "preliminary": "Vue préliminaire – équipes et résultats mis à jour en direct.",
+    "loadFailed": "Impossible de charger l'arbre du tournoi.",
+    "knockoutTitle": "Phase à élimination",
+    "knockoutSubtitle": "Des huitièmes à la finale – arbre de matchs connecté.",
+    "noKnockout": "Pas encore de données d'élimination.",
+    "quarterFinals": "Quarts de finale",
+    "semiFinals": "Demi-finales",
+    "final": "Finale",
+    "thirdPlace": "Match pour la 3e place",
+    "loserOfMatch": "Perdant match {match}",
+    "fullscreen": "Plein écran",
+    "exitFullscreen": "Quitter le plein écran",
+    "lastUpdated": "Mis à jour",
+    "focusBracket": "Arbre seul",
+    "showGroups": "Afficher les groupes"
   },
   "nationalTeams": {
     "title": "Équipes nationales & effectifs",
@@ -993,10 +1034,18 @@
       "saved": "Prix enregistrés.",
       "saveFailed": "Impossible d'enregistrer les prix.",
       "valuePlaceholder": "p. ex. bon de 200 €",
+      "uploadHint": "JPG, PNG, WebP ou GIF, max. 2 Mo",
+      "removeImage": "Supprimer l'image",
+      "fileTooLarge": "L'image est trop grande (max. 2 Mo).",
+      "imageUploaded": "Image du prix téléversée.",
+      "imageUploadFailed": "Impossible de téléverser l'image.",
+      "imageRemoved": "Image du prix supprimée.",
+      "imageRemoveFailed": "Impossible de supprimer l'image.",
       "fields": {
         "title": "Titre",
         "value": "Prix / valeur",
-        "description": "Description"
+        "description": "Description",
+        "image": "Image du prix"
       }
     },
     "bonus": {

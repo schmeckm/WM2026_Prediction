@@ -1,8 +1,10 @@
 const crypto = require('crypto');
 const { Op } = require('sequelize');
 const { RevokedToken } = require('../models');
+const { redisGet, redisSet, redisDel } = require('./redisClient');
 
 const memoryCache = new Map();
+const REDIS_PREFIX = 'jwt:blacklist:';
 const CLEANUP_INTERVAL_MS = 15 * 60 * 1000;
 
 function tokenHash(token) {
@@ -32,6 +34,8 @@ async function blacklistToken(token, expiresAtMs) {
   const expMs = expiresAtMs || Date.now() + 7 * 24 * 60 * 60 * 1000;
   const hash = tokenHash(token);
   cacheToken(hash, expMs);
+  const ttlMs = Math.max(1000, expMs - Date.now());
+  await redisSet(`${REDIS_PREFIX}${hash}`, '1', ttlMs);
 
   await RevokedToken.upsert({
     tokenHash: hash,
@@ -53,6 +57,11 @@ async function isTokenBlacklisted(token) {
     }
   }
 
+  const redisHit = await redisGet(`${REDIS_PREFIX}${hash}`);
+  if (redisHit) {
+    return true;
+  }
+
   const row = await RevokedToken.findOne({ where: { tokenHash: hash } });
   if (!row) return false;
 
@@ -61,7 +70,10 @@ async function isTokenBlacklisted(token) {
     return false;
   }
 
-  cacheToken(hash, row.expiresAt.getTime());
+  const expMs = row.expiresAt.getTime();
+  cacheToken(hash, expMs);
+  const ttlMs = Math.max(1000, expMs - Date.now());
+  await redisSet(`${REDIS_PREFIX}${hash}`, '1', ttlMs);
   return true;
 }
 

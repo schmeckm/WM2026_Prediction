@@ -57,12 +57,17 @@ async function bootstrap() {
 
   const app = createApp(App);
   const pinia = createPinia();
-  initSentry(app, router);
   app.use(pinia);
   app.use(i18n);
   app.use(router);
   useThemeStore().initTheme();
   app.mount('#app');
+
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => initSentry(app, router));
+  } else {
+    setTimeout(() => initSentry(app, router), 0);
+  }
   sessionStorage.removeItem(CHUNK_RELOAD_KEY);
 }
 

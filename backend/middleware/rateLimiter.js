@@ -1,6 +1,15 @@
 const rateLimit = require('express-rate-limit');
+const { createRateLimitStore } = require('./redisRateLimitStore');
 
-const authLimiter = rateLimit({
+function buildLimiter(options) {
+  const store = createRateLimitStore(options.windowMs);
+  return rateLimit({
+    ...options,
+    ...(store ? { store, passOnStoreError: true } : {}),
+  });
+}
+
+const authLimiter = buildLimiter({
   windowMs: 15 * 60 * 1000,
   max: 50,
   skipSuccessfulRequests: true,
@@ -9,7 +18,7 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-const apiLimiter = rateLimit({
+const apiLimiter = buildLimiter({
   windowMs: 1 * 60 * 1000,
   max: 300,
   skip: (req) => req.path === '/health',
@@ -18,7 +27,7 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-const leaderboardLimiter = rateLimit({
+const leaderboardLimiter = buildLimiter({
   windowMs: 1 * 60 * 1000,
   max: 60,
   message: { error: 'Zu viele Hitlisten-Anfragen. Bitte kurz warten.' },
@@ -26,7 +35,7 @@ const leaderboardLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-const displayLimiter = rateLimit({
+const displayLimiter = buildLimiter({
   windowMs: 1 * 60 * 1000,
   max: 30,
   message: { error: 'Display-Modus: Rate limit erreicht.' },
@@ -34,7 +43,7 @@ const displayLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-const publicReadLimiter = rateLimit({
+const publicReadLimiter = buildLimiter({
   windowMs: 1 * 60 * 1000,
   max: 120,
   message: { error: 'Zu viele Anfragen. Bitte versuchen Sie es später erneut.' },
