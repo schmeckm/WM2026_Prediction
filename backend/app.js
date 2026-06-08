@@ -217,12 +217,11 @@ async function initDatabase(options = {}) {
 
   const { runMigrations } = require('./database/migrate');
   // Safe sync: erstellt fehlende Tabellen, löscht/ändert keine bestehenden Daten.
-  // Neue Spalten werden über database/migrate.js ergänzt.
-  const shouldSync = process.env.NODE_ENV !== 'production'
-    || force && (allowForce || process.env.NODE_ENV === 'test');
-  if (shouldSync) {
-    await sequelize.sync({ force: force && (allowForce || process.env.NODE_ENV === 'test') });
-  }
+  // Auch in Production nötig, wenn neue Models (z. B. RefreshToken) hinzukommen.
+  // Neue Spalten werden zusätzlich über database/migrate.js ergänzt.
+  await sequelize.sync({
+    force: force && (allowForce || process.env.NODE_ENV === 'test'),
+  });
   await runMigrations(sequelize);
 
   if (sequelize.getDialect() === 'sqlite') {
