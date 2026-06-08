@@ -1,5 +1,10 @@
 <template>
-  <footer class="system-status-bar" role="status" :aria-label="t('systemHealth.title')">
+  <footer
+    class="system-status-bar"
+    :class="{ 'system-status-bar--compact': !showHealthIndicators }"
+    role="status"
+    :aria-label="t('systemHealth.title')"
+  >
     <div
       v-if="expandedItem"
       class="system-status-detail"
@@ -8,7 +13,7 @@
       <strong>{{ expandedItem.label }}:</strong> {{ expandedItem.detail }}
     </div>
     <div class="system-status-bar-inner">
-      <div class="system-status-items">
+      <div v-if="showHealthIndicators" class="system-status-items">
         <button
           v-for="item in items"
           :key="item.key"
@@ -63,6 +68,14 @@ const { items, version, expandedItem, toggleDetail } = useSystemHealth();
   border-top: 1px solid var(--color-border);
   background: var(--color-surface);
   padding: 0.625rem 2rem;
+}
+
+.system-status-bar--compact {
+  padding: 0.4rem 2rem;
+}
+
+.system-status-bar--compact .system-status-bar-inner {
+  justify-content: flex-end;
 }
 
 .system-status-detail {

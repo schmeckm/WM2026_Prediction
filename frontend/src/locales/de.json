@@ -185,6 +185,12 @@
     "liveMatches": "Spiele",
     "noMatches": "Keine Spiele."
   },
+  "pwa": {
+    "installTitle": "App installieren",
+    "installHint": "Füge das Tippspiel zum Startbildschirm hinzu – schneller Zugriff wie eine native App.",
+    "installAction": "Installieren",
+    "installDismiss": "Später"
+  },
   "systemHealth": {
     "title": "Systemstatus",
     "backend": "Backend",
@@ -224,6 +230,10 @@
     "completionBannerTeam": "Bitte wähle im Profil dein Lieblingsteam.",
     "completionBannerScorer": "Bitte wähle im Profil deinen Torschützenkönig.",
     "completionGoToProfile": "Zum Profil",
+    "onboardingTitle": "Profil für Bonusfragen vervollständigen",
+    "onboardingHint": "Wähle dein Lieblingsteam und deinen Torschützenkönig – beides wird für Bonuspunkte und die Rangliste genutzt.",
+    "showAdvancedSettings": "Weitere Einstellungen (Avatar, Passwort, …)",
+    "hideAdvancedSettings": "Weniger anzeigen",
     "favoriteNationalTeam": "Favorisierte Nationalmannschaft",
     "noFavoriteTeam": "Kein Team gewählt",
     "topScorerPick": "Torschützenkönig (Nominierung)",
@@ -402,6 +412,14 @@
     "totalPoints": "Gesamtpunkte",
     "tipsSubmitted": "Tipps abgegeben",
     "missingTips": "Fehlende Tipps",
+    "missingTipsAction": "Tipps jetzt abgeben →",
+    "onboarding": {
+      "title": "Noch Tipps offen",
+      "text": "Du hast noch {count} offene Spiele ohne Tipp. Je früher du tippst, desto mehr Punkte kannst du sammeln.",
+      "tipNow": "Fehlende Tipps abgeben",
+      "bonus": "Bonusfragen",
+      "rules": "Spielregeln"
+    },
     "noUpcoming": "Keine anstehenden Spiele.",
     "top5": "Top 5 Hitliste",
     "fullLeaderboard": "Vollständige Hitliste",
@@ -621,6 +639,9 @@
     "game": "Spiel",
     "round": "Gruppe / Runde",
     "empty": "Noch keine Tipps abgegeben.",
+    "emptyTitle": "Hier erscheinen deine Tipps",
+    "emptyHint": "Sobald du Ergebnisse tippst, findest du sie hier in der Übersicht.",
+    "emptyAction": "Zu den offenen Spielen",
     "loadFailed": "Tipps konnten nicht geladen werden.",
     "homeScoreLabel": "Heimtore {team}",
     "awayScoreLabel": "Auswärtstore {team}",
@@ -680,6 +701,8 @@
     "open": "Offen",
     "resolved": "Aufgelöst",
     "empty": "Keine Bonusfragen verfügbar.",
+    "headerHint": "Sonderwetten zu Weltmeister, Torschützenkönig und mehr — zusätzliche Punkte für die Hitliste.",
+    "rulesLink": "Spielregeln ansehen",
     "loadFailed": "Bonusfragen konnten nicht geladen werden.",
     "points": "Punkte",
     "pointsShort": "Pkt.",

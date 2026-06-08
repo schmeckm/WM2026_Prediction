@@ -40,7 +40,7 @@ export function useBottomNavLinks() {
   return computed(() => [
     { to: '/dashboard', label: t('nav.dashboard'), icon: 'home' },
     { to: '/matches', label: t('nav.matches'), icon: 'matches' },
-    { to: '/my-predictions', label: t('nav.myPredictions'), icon: 'edit' },
+    { to: '/bonus', label: t('nav.bonus'), icon: 'target' },
     { to: '/leaderboard', label: t('nav.leaderboard'), icon: 'trophy' },
   ]);
 }

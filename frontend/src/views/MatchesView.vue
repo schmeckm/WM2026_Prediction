@@ -69,26 +69,41 @@
       </div>
     </div>
 
-    <LoadingSpinner v-if="loading" />
-    <ErrorState v-else-if="error" :message="error" @retry="loadMatches" />
+    <template v-if="initialLoading">
+      <MatchCardSkeleton v-for="n in 4" :key="`init-${n}`" />
+    </template>
+    <ErrorState v-else-if="error" :message="error" @retry="() => loadMatches()" />
 
     <template v-else>
-      <div v-if="viewMode === 'cards'">
+      <div
+        v-if="viewMode === 'cards'"
+        class="matches-list"
+        :class="{ 'matches-list--refreshing': filterLoading }"
+        :aria-busy="filterLoading"
+      >
         <MatchCard
           v-for="match in matches"
           :key="match.id"
           :match="match"
           :highlighted="String(match.matchNumber) === highlightedMatchNumber"
-          @saved="loadMatches"
+          @saved="() => loadMatches()"
         />
-        <div v-if="matches.length === 0" class="empty-state">
-          <div class="empty-icon">⚽</div>
-          <p>{{ t('matches.empty') }}</p>
-        </div>
+        <EmptyState
+          v-if="matches.length === 0 && !filterLoading"
+          icon="⚽"
+          :message="t('matches.empty')"
+          :action-label="hasActiveFilters ? t('matches.filters.reset') : ''"
+          @action="resetFilters"
+        />
       </div>
-      <div v-else class="card">
+      <div
+        v-else
+        class="card matches-list"
+        :class="{ 'matches-list--refreshing': filterLoading }"
+        :aria-busy="filterLoading"
+      >
         <div class="card-body">
-          <MatchTable :matches="matches" show-prediction @saved="loadMatches" />
+          <MatchTable :matches="matches" show-prediction @saved="() => loadMatches()" />
         </div>
       </div>
     </template>
@@ -97,18 +112,21 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import { onSocketEvent } from '../services/socket';
-import LoadingSpinner from '../components/LoadingSpinner.vue';
 import MatchCard from '../components/MatchCard.vue';
+import MatchCardSkeleton from '../components/MatchCardSkeleton.vue';
 import MatchTable from '../components/MatchTable.vue';
 import ErrorState from '../components/ErrorState.vue';
+import EmptyState from '../components/EmptyState.vue';
 
 const { t } = useI18n();
 const route = useRoute();
+const router = useRouter();
 const VIEW_MODE_KEY = 'matches-view-mode';
+const FIRST_VISIT_KEY = 'matches-onboarding-done';
 const highlightedMatchNumber = ref('');
 
 const filters = computed(() => [
@@ -128,7 +146,8 @@ const activeGroup = ref('');
 const groups = ref([]);
 const availableGroups = computed(() => (groups.value.length ? groups.value : DEFAULT_GROUPS));
 const matches = ref([]);
-const loading = ref(true);
+const initialLoading = ref(true);
+const filterLoading = ref(false);
 const error = ref('');
 const viewMode = ref(localStorage.getItem(VIEW_MODE_KEY) || 'cards');
 const now = ref(Date.now());
@@ -208,8 +227,12 @@ async function loadGroups() {
   }
 }
 
-async function loadMatches() {
-  loading.value = true;
+async function loadMatches({ filterChange = false } = {}) {
+  if (filterChange && !initialLoading.value) {
+    filterLoading.value = true;
+  } else if (matches.value.length === 0) {
+    initialLoading.value = true;
+  }
   error.value = '';
   try {
     const params = {};
@@ -221,23 +244,44 @@ async function loadMatches() {
   } catch (err) {
     error.value = err.response?.data?.error || t('matches.loadFailed');
   } finally {
-    loading.value = false;
+    initialLoading.value = false;
+    filterLoading.value = false;
   }
+}
+
+const VALID_FILTERS = new Set(['', 'open', 'finished', 'missing', 'group', 'knockout']);
+
+function syncRouteQuery() {
+  const query = { ...route.query };
+  if (activeFilter.value) query.filter = activeFilter.value;
+  else delete query.filter;
+  if (activeGroup.value) query.groupName = activeGroup.value;
+  else delete query.groupName;
+  router.replace({ query });
+}
+
+function applyFilterFromRoute() {
+  const filter = String(route.query.filter || '').trim();
+  activeFilter.value = VALID_FILTERS.has(filter) ? filter : '';
+  activeGroup.value = String(route.query.groupName || '').trim().toUpperCase();
 }
 
 function setFilter(value) {
   activeFilter.value = value;
+  syncRouteQuery();
   loadMatches();
 }
 
 function setGroup(value) {
   activeGroup.value = value;
+  syncRouteQuery();
   loadMatches();
 }
 
 function resetFilters() {
   activeFilter.value = '';
   activeGroup.value = '';
+  syncRouteQuery();
   loadMatches();
 }
 
@@ -266,6 +310,12 @@ onMounted(async () => {
   }
 
   await loadGroups();
+  applyFilterFromRoute();
+  if (!route.query.filter && !localStorage.getItem(FIRST_VISIT_KEY)) {
+    localStorage.setItem(FIRST_VISIT_KEY, '1');
+    activeFilter.value = 'missing';
+    syncRouteQuery();
+  }
   if (route.query.matchNumber) {
     await focusMatchFromQuery();
   } else {
@@ -276,6 +326,18 @@ onMounted(async () => {
 });
 
 watch(needsLockTimer, syncLockTimer);
+
+watch(
+  () => [route.query.filter, route.query.groupName],
+  () => {
+    const prevFilter = activeFilter.value;
+    const prevGroup = activeGroup.value;
+    applyFilterFromRoute();
+    if (prevFilter !== activeFilter.value || prevGroup !== activeGroup.value) {
+      loadMatches({ filterChange: true });
+    }
+  },
+);
 
 onUnmounted(() => {
   unsub?.();
@@ -332,6 +394,12 @@ onUnmounted(() => {
 .group-chip {
   min-width: 2.25rem;
   padding-inline: 0.65rem;
+}
+
+.matches-list--refreshing {
+  opacity: 0.55;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
 }
 
 @media (max-width: 768px) {

@@ -7,6 +7,18 @@
     <LoadingSpinner v-if="loading" />
     <ErrorState v-else-if="error" :message="error" @retry="retryLoad" />
 
+    <div v-else-if="predictions.length === 0" class="card">
+      <div class="card-body">
+        <EmptyState
+          icon="⚽"
+          :title="t('predictions.emptyTitle')"
+          :message="t('predictions.emptyHint')"
+          :action-label="t('predictions.emptyAction')"
+          :action-to="{ path: '/matches', query: { filter: 'missing' } }"
+        />
+      </div>
+    </div>
+
     <div v-else class="card">
       <div class="card-body">
         <div class="predictions-desktop table-wrapper">
@@ -116,9 +128,6 @@
                   />
                 </td>
               </tr>
-              <tr v-if="predictions.length === 0">
-                <td colspan="8" class="text-center text-muted">{{ t('predictions.empty') }}</td>
-              </tr>
             </tbody>
           </table>
         </div>
@@ -163,7 +172,6 @@
               <span v-else class="text-muted">–</span>
             </div>
           </article>
-          <p v-if="predictions.length === 0" class="text-center text-muted">{{ t('predictions.empty') }}</p>
         </div>
       </div>
     </div>
@@ -176,6 +184,7 @@ import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import ErrorState from '../components/ErrorState.vue';
+import EmptyState from '../components/EmptyState.vue';
 import SortableTh from '../components/SortableTh.vue';
 import TeamFlag from '../components/TeamFlag.vue';
 import MatchRefCell from '../components/MatchRefCell.vue';

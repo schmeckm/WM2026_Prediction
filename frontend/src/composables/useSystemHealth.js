@@ -74,6 +74,12 @@ export function useSystemHealth() {
     return items.value.find((item) => item.key === expandedKey.value) || null;
   });
 
+  const hasIssues = computed(() => (
+    backendState.value === 'offline'
+    || aiBackendState.value === 'offline'
+    || aiFrontendState.value === 'offline'
+  ));
+
   function toggleDetail(key) {
     const item = items.value.find((entry) => entry.key === key);
     if (!item?.clickable) return;
@@ -159,5 +165,5 @@ export function useSystemHealth() {
     if (intervalId) clearTimeout(intervalId);
   });
 
-  return { items, version, expandedItem, toggleDetail };
+  return { items, version, expandedItem, toggleDetail, hasIssues };
 }

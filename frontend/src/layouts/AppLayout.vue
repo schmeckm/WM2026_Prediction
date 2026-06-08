@@ -7,6 +7,7 @@
       <Navbar @toggle-sidebar="toggleSidebar" />
       <main id="main-content" class="layout-content">
         <ProfileCompletionBanner />
+        <PwaInstallBanner />
         <router-view />
       </main>
       <SystemStatusBar />
@@ -23,6 +24,7 @@ import Navbar from '../components/Navbar.vue';
 import BottomNav from '../components/BottomNav.vue';
 import SystemStatusBar from '../components/SystemStatusBar.vue';
 import ProfileCompletionBanner from '../components/ProfileCompletionBanner.vue';
+import PwaInstallBanner from '../components/PwaInstallBanner.vue';
 import { useNotificationStore } from '../stores/notificationStore';
 import { useAppSettingsStore } from '../stores/appSettingsStore';
 import { useAuthStore } from '../stores/authStore';

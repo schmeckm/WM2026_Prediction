@@ -9,7 +9,17 @@
     <AlertMessage v-if="error" :message="error" type="error" />
 
     <div class="card profile-card">
-      <div class="card-body">
+      <div class="card-body" :class="{ 'profile-onboarding-mode': needsCompletion && !showAdvanced }">
+        <div v-if="needsCompletion" class="profile-onboarding-banner" role="status">
+          <strong>{{ t('profile.onboardingTitle') }}</strong>
+          <p>{{ t('profile.onboardingHint') }}</p>
+          <ul class="profile-onboarding-checklist">
+            <li :class="{ done: !missingFavoriteTeam }">{{ t('profile.favoriteNationalTeam') }}</li>
+            <li :class="{ done: !missingTopScorer }">{{ t('profile.topScorerPick') }}</li>
+          </ul>
+        </div>
+
+        <div v-if="!needsCompletion || showAdvanced" class="profile-advanced-section">
         <div class="profile-image-section">
           <UserAvatar
             :image-url="previewUrl || authStore.user?.imageUrl"
@@ -99,8 +109,10 @@
             />
           </div>
         </div>
+        </div>
 
         <form @submit.prevent="handleSave">
+          <div v-if="!needsCompletion || showAdvanced" class="profile-advanced-section">
           <div class="form-row">
             <div class="form-group">
               <label for="firstName">{{ t('auth.firstName') }}</label>
@@ -143,8 +155,10 @@
               <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.name }}</option>
             </select>
           </div>
+          </div>
 
-          <hr class="profile-divider" />
+          <div class="profile-wm-section" :class="{ 'profile-wm-focus': needsCompletion }">
+          <hr v-if="!needsCompletion || showAdvanced" class="profile-divider" />
           <h3 class="profile-section-title">{{ t('profile.wmSection') }}</h3>
           <p class="text-muted profile-section-hint">{{ t('profile.wmSectionHint') }}</p>
 
@@ -196,7 +210,9 @@
               {{ t('profile.playersShown', { count: filteredPlayers.length }) }}
             </p>
           </div>
+          </div>
 
+          <div v-if="!needsCompletion || showAdvanced" class="profile-advanced-section">
           <div class="form-group">
             <label for="password">{{ t('profile.newPassword') }}</label>
             <div class="password-input-wrap">
@@ -227,14 +243,31 @@
               </button>
             </div>
           </div>
+          </div>
           <button type="submit" class="btn btn-primary" :disabled="loading">
             {{ loading ? t('common.saving') : t('profile.saveProfile') }}
+          </button>
+          <button
+            v-if="needsCompletion && !showAdvanced"
+            type="button"
+            class="btn btn-secondary btn-sm profile-show-advanced-btn"
+            @click="showAdvanced = true"
+          >
+            {{ t('profile.showAdvancedSettings') }}
+          </button>
+          <button
+            v-else-if="needsCompletion && showAdvanced"
+            type="button"
+            class="btn btn-secondary btn-sm profile-show-advanced-btn"
+            @click="showAdvanced = false"
+          >
+            {{ t('profile.hideAdvancedSettings') }}
           </button>
         </form>
       </div>
     </div>
 
-    <div v-if="isLocalAccount" class="card profile-card">
+    <div v-if="(!needsCompletion || showAdvanced) && isLocalAccount" class="card profile-card">
       <div class="card-body">
         <h3 class="profile-section-title">{{ t('profile.twoFactorTitle') }}</h3>
         <p class="text-muted profile-section-hint">{{ t('profile.twoFactorHint') }}</p>
@@ -308,7 +341,7 @@
       </div>
     </div>
 
-    <div class="card profile-card profile-session-card">
+    <div v-if="!needsCompletion || showAdvanced" class="card profile-card profile-session-card">
       <div class="card-body">
         <h3 class="profile-section-title">{{ t('nav.logout') }}</h3>
         <p class="text-muted profile-section-hint">{{ t('profile.signOutHint') }}</p>
@@ -318,7 +351,7 @@
       </div>
     </div>
 
-    <div class="card profile-card profile-danger-card">
+    <div v-if="!needsCompletion || showAdvanced" class="card profile-card profile-danger-card">
       <div class="card-body">
         <h3 class="profile-danger-title">{{ t('profile.dangerZoneTitle') }}</h3>
         <p class="text-muted profile-danger-hint">{{ t('profile.dangerZoneHint') }}</p>
@@ -371,6 +404,7 @@ import PageQrCode from '../components/PageQrCode.vue';
 import { useConfirmModal } from '../composables/useConfirmModal';
 import { AVATAR_COLOR_OPTIONS, resolveAvatarColorStyle } from '../utils/avatarColors';
 import { AVATAR_FACE_OPTIONS } from '../utils/avatarFaces';
+import { useProfileCompletion } from '../composables/useProfileCompletion';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -378,6 +412,8 @@ const authStore = useAuthStore();
 const themeStore = useThemeStore();
 const localeStore = useLocaleStore();
 const { confirmState, openConfirm, closeConfirm, onConfirm } = useConfirmModal();
+const { needsCompletion, missingFavoriteTeam, missingTopScorer } = useProfileCompletion();
+const showAdvanced = ref(false);
 
 const avatarColorOptions = AVATAR_COLOR_OPTIONS;
 const avatarFaceOptions = AVATAR_FACE_OPTIONS;
@@ -754,6 +790,44 @@ async function handleSave() {
 
 .profile-card {
   margin-bottom: 1.5rem;
+}
+
+.profile-onboarding-banner {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border: 1px solid rgba(0, 255, 127, 0.25);
+  border-radius: var(--radius);
+  background: var(--color-primary-soft);
+}
+
+.profile-onboarding-banner p {
+  margin: 0.35rem 0 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.profile-onboarding-checklist {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+}
+
+.profile-onboarding-checklist li.done {
+  color: var(--color-primary);
+  text-decoration: line-through;
+  text-decoration-color: rgba(0, 255, 127, 0.5);
+}
+
+.profile-wm-focus {
+  padding: 1rem;
+  border: 1px solid rgba(0, 255, 127, 0.2);
+  border-radius: var(--radius);
+  background: rgba(0, 255, 127, 0.04);
+}
+
+.profile-show-advanced-btn {
+  margin-top: 0.75rem;
+  margin-left: 0.5rem;
 }
 
 .profile-image-section {

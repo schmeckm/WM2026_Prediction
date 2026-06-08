@@ -22,7 +22,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { getTeamIso } from '../utils/flags';
+import { getTeamIso, getTeamFlagImage } from '../utils/flags';
 import { useFootballTeamStore } from '../stores/footballTeamStore';
 
 const props = defineProps({
@@ -34,30 +34,36 @@ const props = defineProps({
 });
 
 const footballTeamStore = useFootballTeamStore();
-const crestFailed = ref(false);
+const apiCrestFailed = ref(false);
+const flagFailed = ref(false);
+
+function resetImageState() {
+  apiCrestFailed.value = false;
+  flagFailed.value = false;
+}
 
 onMounted(() => {
   footballTeamStore.ensureLoaded();
 });
 
-watch(() => footballTeamStore.loaded, () => {
-  crestFailed.value = false;
-});
+watch(() => footballTeamStore.loaded, resetImageState);
 
-watch(() => props.name, () => {
-  crestFailed.value = false;
-});
+watch(() => props.name, resetImageState);
 
 const teamTla = computed(() => getTeamIso(props.name) || props.name.slice(0, 3).toUpperCase());
 
+const flagFallback = computed(() => getTeamFlagImage(props.name, props.inline ? 40 : 80));
+
 const displayCrest = computed(() => {
-  if (crestFailed.value) return '';
+  if (flagFailed.value) return '';
+  if (apiCrestFailed.value) return flagFallback.value;
   if (props.crest) return props.crest;
   if (!footballTeamStore.loaded && !footballTeamStore.loading) {
     footballTeamStore.ensureLoaded();
   }
   void footballTeamStore.loaded;
-  return footballTeamStore.crestFor(props.name);
+  const crest = footballTeamStore.crestFor(props.name);
+  return crest || flagFallback.value;
 });
 
 const squadLink = computed(() => ({
@@ -66,7 +72,11 @@ const squadLink = computed(() => ({
 }));
 
 function onCrestError() {
-  crestFailed.value = true;
+  if (!apiCrestFailed.value) {
+    apiCrestFailed.value = true;
+    return;
+  }
+  flagFailed.value = true;
 }
 </script>
 

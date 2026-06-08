@@ -176,6 +176,12 @@
     "notFound": "Page introuvable.",
     "backToDashboard": "Retour au tableau de bord"
   },
+  "pwa": {
+    "installTitle": "Installer l'application",
+    "installHint": "Ajoutez le pronostic à l'écran d'accueil pour un accès rapide comme une app native.",
+    "installAction": "Installer",
+    "installDismiss": "Plus tard"
+  },
   "systemHealth": {
     "title": "État du système",
     "backend": "Backend",
@@ -210,6 +216,10 @@
     "completionBannerTeam": "Veuillez choisir votre équipe favorite dans le profil.",
     "completionBannerScorer": "Veuillez choisir votre buteur dans le profil.",
     "completionGoToProfile": "Aller au profil",
+    "onboardingTitle": "Complétez votre profil pour les questions bonus",
+    "onboardingHint": "Choisissez votre équipe favorite et votre buteur — utilisés pour les points bonus et le classement.",
+    "showAdvancedSettings": "Plus de réglages (avatar, mot de passe, …)",
+    "hideAdvancedSettings": "Afficher moins",
     "favoriteNationalTeam": "Équipe nationale favorite",
     "noFavoriteTeam": "Aucune équipe",
     "topScorerPick": "Meilleur buteur (nomination)",
@@ -373,6 +383,14 @@
     "totalPoints": "Points totaux",
     "tipsSubmitted": "Pronostics soumis",
     "missingTips": "Pronostics manquants",
+    "missingTipsAction": "Soumettre les pronostics →",
+    "onboarding": {
+      "title": "Pronostics encore ouverts",
+      "text": "Il vous reste {count} matchs ouverts sans pronostic. Plus vous pronostiquez tôt, plus vous pouvez marquer de points.",
+      "tipNow": "Soumettre les pronostics manquants",
+      "bonus": "Questions bonus",
+      "rules": "Règles du jeu"
+    },
     "noUpcoming": "Aucun match à venir.",
     "top5": "Top 5 classement",
     "fullLeaderboard": "Classement complet"
@@ -585,6 +603,9 @@
     "game": "Match",
     "round": "Groupe / Tour",
     "empty": "Aucun pronostic soumis pour le moment.",
+    "emptyTitle": "Vos pronostics apparaîtront ici",
+    "emptyHint": "Dès que vous pronostiquez des matchs, vous les retrouverez dans cette vue.",
+    "emptyAction": "Voir les matchs ouverts",
     "loadFailed": "Impossible de charger les pronostics.",
     "homeScoreLabel": "Buts domicile {team}",
     "awayScoreLabel": "Buts extérieur {team}",
@@ -642,6 +663,8 @@
     "open": "Ouvert",
     "resolved": "Résolu",
     "empty": "Aucune question bonus disponible.",
+    "headerHint": "Paris spéciaux sur le champion, meilleur buteur et plus — points supplémentaires pour le classement.",
+    "rulesLink": "Voir les règles du jeu",
     "loadFailed": "Impossible de charger les questions bonus.",
     "points": "Points",
     "pointsShort": "pts",

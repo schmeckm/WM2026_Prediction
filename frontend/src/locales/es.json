@@ -176,6 +176,12 @@
     "notFound": "Página no encontrada.",
     "backToDashboard": "Volver al panel"
   },
+  "pwa": {
+    "installTitle": "Instalar aplicación",
+    "installHint": "Añade el pronóstico a la pantalla de inicio para un acceso rápido como una app nativa.",
+    "installAction": "Instalar",
+    "installDismiss": "Más tarde"
+  },
   "systemHealth": {
     "title": "Estado del sistema",
     "backend": "Backend",
@@ -210,6 +216,10 @@
     "completionBannerTeam": "Elige tu selección favorita en el perfil.",
     "completionBannerScorer": "Elige tu goleador en el perfil.",
     "completionGoToProfile": "Ir al perfil",
+    "onboardingTitle": "Completa tu perfil para las preguntas bonus",
+    "onboardingHint": "Elige tu selección favorita y tu goleador — se usan para puntos bonus y la clasificación.",
+    "showAdvancedSettings": "Más ajustes (avatar, contraseña, …)",
+    "hideAdvancedSettings": "Mostrar menos",
     "favoriteNationalTeam": "Selección favorita",
     "noFavoriteTeam": "Ninguna selección",
     "topScorerPick": "Goleador del torneo (nombramiento)",
@@ -373,6 +383,14 @@
     "totalPoints": "Puntos totales",
     "tipsSubmitted": "Pronósticos enviados",
     "missingTips": "Pronósticos faltantes",
+    "missingTipsAction": "Enviar pronósticos ahora →",
+    "onboarding": {
+      "title": "Aún hay pronósticos abiertos",
+      "text": "Te quedan {count} partidos abiertos sin pronóstico. Cuanto antes envíes tus pronósticos, más puntos podrás sumar.",
+      "tipNow": "Enviar pronósticos faltantes",
+      "bonus": "Preguntas bonus",
+      "rules": "Reglas del juego"
+    },
     "noUpcoming": "No hay partidos próximos.",
     "top5": "Top 5 clasificación",
     "fullLeaderboard": "Clasificación completa"
@@ -585,6 +603,9 @@
     "game": "Partido",
     "round": "Grupo / Fase",
     "empty": "Aún no hay pronósticos enviados.",
+    "emptyTitle": "Tus pronósticos aparecerán aquí",
+    "emptyHint": "En cuanto envíes pronósticos de partidos, los verás en esta vista.",
+    "emptyAction": "Ir a partidos abiertos",
     "loadFailed": "No se pudieron cargar los pronósticos.",
     "homeScoreLabel": "Goles local {team}",
     "awayScoreLabel": "Goles visitante {team}",
@@ -642,6 +663,8 @@
     "open": "Abierto",
     "resolved": "Resuelto",
     "empty": "No hay preguntas bonus disponibles.",
+    "headerHint": "Apuestas especiales sobre campeón, goleador y más — puntos extra para la clasificación.",
+    "rulesLink": "Ver reglas del juego",
     "loadFailed": "No se pudieron cargar las preguntas bonus.",
     "points": "Puntos",
     "pointsShort": "pts",

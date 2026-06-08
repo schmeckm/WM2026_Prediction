@@ -13,19 +13,30 @@ export const LOCALE_FLAG_IMAGES = {
 };
 
 const TEAM_TO_ISO = {
+  algerien: 'DZ', algeria: 'DZ',
   argentinien: 'AR', argentina: 'AR',
   australien: 'AU', australia: 'AU',
   belgien: 'BE', belgium: 'BE',
+  'bosnien und herzegowina': 'BA', 'bosnia and herzegovina': 'BA', 'bosnia herzegovina': 'BA',
   brasilien: 'BR', brazil: 'BR',
   canada: 'CA', kanada: 'CA',
+  'kap verde': 'CV', 'cape verde': 'CV',
   chile: 'CL',
   china: 'CN',
   'costa rica': 'CR',
+  curacao: 'CW', curaçao: 'CW',
+  'czech republic': 'CZ', czechia: 'CZ', tschechien: 'CZ',
   deutschland: 'DE', germany: 'DE',
+  'dr kongo': 'CD', 'dr congo': 'CD', 'congo dr': 'CD',
+  'democratic republic of the congo': 'CD', 'demokratische republik kongo': 'CD',
+  'demokratische republik des kongo': 'CD',
   ecuador: 'EC',
+  ägypten: 'EG', aegypten: 'EG', agypten: 'EG', egypt: 'EG',
+  elfenbeinküste: 'CI', elfenbeinkuste: 'CI', 'ivory coast': 'CI', "cote d'ivoire": 'CI', 'cote divoire': 'CI',
   england: 'GB', 'england national': 'GB',
   frankreich: 'FR', france: 'FR',
   ghana: 'GH',
+  haiti: 'HT',
   iran: 'IR',
   irak: 'IQ', iraq: 'IQ',
   italien: 'IT', italy: 'IT',
@@ -38,32 +49,45 @@ const TEAM_TO_ISO = {
   marokko: 'MA', morocco: 'MA',
   mexiko: 'MX', mexico: 'MX',
   niederlande: 'NL', netherlands: 'NL',
-  neuseeland: 'NZ',
-  'new zealand': 'NZ',
+  neuseeland: 'NZ', 'new zealand': 'NZ',
   nordmazedonien: 'MK', 'north macedonia': 'MK',
   nordirland: 'GB',
   norwegen: 'NO', norway: 'NO',
   österreich: 'AT', osterreich: 'AT', austria: 'AT',
+  panama: 'PA',
   paraguay: 'PY',
   peru: 'PE',
   polen: 'PL', poland: 'PL',
   portugal: 'PT',
   'saudi-arabien': 'SA', 'saudi arabia': 'SA',
   schottland: 'GB', scotland: 'GB',
+  schweden: 'SE', sweden: 'SE',
   schweiz: 'CH', switzerland: 'CH',
   senegal: 'SN',
   serbien: 'RS', serbia: 'RS',
   spanien: 'ES', spain: 'ES',
-  südkorea: 'KR', 'south korea': 'KR', 'korea republic': 'KR',
+  südkorea: 'KR', suedkorea: 'KR', sudkorea: 'KR', 'south korea': 'KR', 'korea republic': 'KR',
+  südafrika: 'ZA', suedafrika: 'ZA', sudafrika: 'ZA', 'south africa': 'ZA',
   tunesien: 'TN', tunisia: 'TN',
-  türkei: 'TR', turkei: 'TR', turkey: 'TR',
+  türkei: 'TR', turkei: 'TR', tuerkei: 'TR', turkey: 'TR',
   uruguay: 'UY',
   usa: 'US', 'united states': 'US', 'vereinigte staaten': 'US',
+  usbekistan: 'UZ', uzbekistan: 'UZ',
   ukraine: 'UA',
   ungarn: 'HU', hungary: 'HU',
   wales: 'GB',
   'zentralafrikanische republik': 'CF',
 };
+
+function normalizeTeamKey(name) {
+  return String(name || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 export { TEAM_TO_ISO };
 
@@ -83,16 +107,27 @@ export function getLocaleFlagImage(locale) {
   return LOCALE_FLAG_IMAGES[locale] || '';
 }
 
-export function getTeamFlag(teamName) {
+function lookupTeamIso(teamName) {
   if (!teamName?.trim()) return '';
-  const key = teamName.trim().toLowerCase();
-  const iso = TEAM_TO_ISO[key];
+  const raw = teamName.trim().toLowerCase();
+  if (TEAM_TO_ISO[raw]) return TEAM_TO_ISO[raw];
+  const normalized = normalizeTeamKey(teamName);
+  return TEAM_TO_ISO[normalized] || '';
+}
+
+export function getTeamFlag(teamName) {
+  const iso = lookupTeamIso(teamName);
   return iso ? isoToFlag(iso) : '';
 }
 
 export function getTeamIso(teamName) {
-  if (!teamName?.trim()) return '';
-  return TEAM_TO_ISO[teamName.trim().toLowerCase()] || '';
+  return lookupTeamIso(teamName);
+}
+
+export function getTeamFlagImage(teamName, size = 40) {
+  const iso = lookupTeamIso(teamName);
+  if (!iso) return '';
+  return `https://flagcdn.com/w${size}/${iso.toLowerCase()}.png`;
 }
 
 export function hasTeamFlag(teamName) {

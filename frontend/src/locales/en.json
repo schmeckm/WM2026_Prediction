@@ -179,6 +179,12 @@
     "notFound": "Page not found.",
     "backToDashboard": "Back to dashboard"
   },
+  "pwa": {
+    "installTitle": "Install app",
+    "installHint": "Add the tipping game to your home screen for quick access like a native app.",
+    "installAction": "Install",
+    "installDismiss": "Later"
+  },
   "systemHealth": {
     "title": "System status",
     "backend": "Backend",
@@ -221,6 +227,10 @@
     "completionBannerTeam": "Please choose your favorite national team in your profile.",
     "completionBannerScorer": "Please choose your top scorer pick in your profile.",
     "completionGoToProfile": "Go to profile",
+    "onboardingTitle": "Complete your profile for bonus questions",
+    "onboardingHint": "Pick your favorite team and top scorer pick — both are used for bonus points and the leaderboard.",
+    "showAdvancedSettings": "More settings (avatar, password, …)",
+    "hideAdvancedSettings": "Show less",
     "favoriteNationalTeam": "Favorite national team",
     "noFavoriteTeam": "No team selected",
     "topScorerPick": "Top scorer (nomination)",
@@ -396,6 +406,14 @@
     "totalPoints": "Total points",
     "tipsSubmitted": "Predictions submitted",
     "missingTips": "Missing predictions",
+    "missingTipsAction": "Submit predictions now →",
+    "onboarding": {
+      "title": "Predictions still open",
+      "text": "You still have {count} open matches without a prediction. The sooner you predict, the more points you can collect.",
+      "tipNow": "Submit missing predictions",
+      "bonus": "Bonus questions",
+      "rules": "Game rules"
+    },
     "noUpcoming": "No upcoming matches.",
     "top5": "Top 5 leaderboard",
     "fullLeaderboard": "Full leaderboard",
@@ -611,6 +629,9 @@
     "game": "Match",
     "round": "Group / Round",
     "empty": "No predictions submitted yet.",
+    "emptyTitle": "Your predictions will appear here",
+    "emptyHint": "Once you submit match predictions, you will find them listed here.",
+    "emptyAction": "Go to open matches",
     "loadFailed": "Could not load predictions.",
     "homeScoreLabel": "Home goals {team}",
     "awayScoreLabel": "Away goals {team}",
@@ -669,6 +690,8 @@
     "open": "Open",
     "resolved": "Resolved",
     "empty": "No bonus questions available.",
+    "headerHint": "Special bets on the winner, top scorer, and more — extra points for the leaderboard.",
+    "rulesLink": "View game rules",
     "loadFailed": "Could not load bonus questions.",
     "points": "Points",
     "pointsShort": "pts",
