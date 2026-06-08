@@ -203,7 +203,9 @@
     "detailAiDisabled": "KI ist deaktiviert (AI_FEATURES_ENABLED=false im Stack).",
     "detailAiNoApiKey": "OPENAI_API_KEY fehlt im Portainer-Stack.",
     "detailAiInactive": "KI Backend ist nicht einsatzbereit.",
-    "detailAiFrontendDisabled": "KI Frontend ist im Build deaktiviert (VITE_AI_FEATURES_ENABLED=false)."
+    "detailAiFrontendDisabled": "KI Frontend ist im Build deaktiviert (VITE_AI_FEATURES_ENABLED=false).",
+    "github": "GitHub",
+    "githubAria": "Quellcode auf GitHub öffnen"
   },
   "profile": {
     "title": "Profil",

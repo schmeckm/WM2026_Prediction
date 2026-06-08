@@ -1,3 +1,5 @@
+const { getAppVersion } = require('../../utils/appVersion');
+
 const MIN_INTERVAL_MS = parseInt(process.env.WIKIMEDIA_API_MIN_INTERVAL_MS || '6000', 10);
 const MAX_CONCURRENT = Math.min(
   Math.max(parseInt(process.env.WIKIMEDIA_API_MAX_CONCURRENT || '2', 10), 1),
@@ -20,7 +22,7 @@ function getWikimediaUserAgent() {
     || process.env.BOOTSTRAP_ADMIN_EMAIL
     || 'please-set-WIKIMEDIA_CONTACT_EMAIL@example.com';
 
-  return `WM2026-Tippspiel/2.5 (${appUrl}; ${contact}) player-image-resolver`;
+  return `WM2026-Tippspiel/${getAppVersion()} (${appUrl}; ${contact}) player-image-resolver`;
 }
 
 function parseRetryAfterMs(retryAfterHeader) {

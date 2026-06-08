@@ -197,7 +197,9 @@
     "detailAiDisabled": "AI is disabled (AI_FEATURES_ENABLED=false in stack).",
     "detailAiNoApiKey": "OPENAI_API_KEY is missing in the Portainer stack.",
     "detailAiInactive": "AI backend is not ready.",
-    "detailAiFrontendDisabled": "AI frontend is disabled in the build (VITE_AI_FEATURES_ENABLED=false)."
+    "detailAiFrontendDisabled": "AI frontend is disabled in the build (VITE_AI_FEATURES_ENABLED=false).",
+    "github": "GitHub",
+    "githubAria": "Open source code on GitHub"
   },
   "profile": {
     "title": "Profile",

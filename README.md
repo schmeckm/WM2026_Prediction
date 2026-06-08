@@ -1,46 +1,192 @@
-# WM 2026 Tippspiel – MVP 2.5
+# WM 2026 Tippspiel
 
-Private Fußball-Tipp-Webanwendung für die FIFA Weltmeisterschaft 2026 mit automatischer API-Synchronisierung, Live-Ergebnissen, Bonusfragen, E-Mail-Erinnerungen, KI-Funktionen und PWA-Unterstützung.
+**Version 1.0.1**
 
-## Neu in MVP 2.5 – KI-Funktionen
+> Private Fußball-Tipp-Webanwendung für die FIFA Weltmeisterschaft 2026 — mit Live-Ergebnissen, Bonusfragen, Teamwertung, KI-Coach und vollständigem Admin-Bereich.
 
-- **KI-Spielvorschau** – neutrale Vorschau pro Spiel (Meinung, keine Garantie)
-- **Persönlicher KI-Tipp-Coach** – Chat zu fehlenden Tipps, Rang und Strategie
-- **KI-Hitlisten-Kommentar** – kurze Zusammenfassung der Rangbewegungen
-- **Admin-KI-Assistent** – Diagnose, Empfehlungen und Admin-Texte
-- **KI-Bonusfragen-Vorschläge** – Vorschläge für Bonusfragen
-- **KI-Reminder-Texte** – E-Mail- und In-App-Texte für Erinnerungen
-- **Dashboard-KI-Insights** – personalisierte Hinweiskarten
+**Repository:** [github.com/schmeckm/aspire-make-tippspiel](https://github.com/schmeckm/aspire-make-tippspiel)
 
-### Wichtiger Grundsatz
+---
 
-**Die KI ist keine Quelle der Wahrheit.** Sie berechnet keine offiziellen Punkte, erfindet keine Ergebnisse und ändert keine Tipps. Alle offiziellen Berechnungen (Punkte, Hitliste, Sperrung) bleiben im deterministischen Backend.
+## Inhaltsverzeichnis
 
-## Neu in MVP 2.0
+- [Überblick](#überblick)
+- [Features](#features)
+- [Spielregeln](#spielregeln)
+- [Technologie-Stack](#technologie-stack)
+- [Schnellstart](#schnellstart)
+- [Konfiguration](#konfiguration)
+- [Deployment](#deployment)
+- [Architektur](#architektur)
+- [API-Übersicht](#api-übersicht)
+- [Fehlerbehebung](#fehlerbehebung)
+- [Lizenz](#lizenz)
 
-- **Automatische Spielplan-Synchronisierung** über konfigurierbare Fußball-APIs
-- **Automatische Ergebnis-Synchronisierung** mit Live-Score-Updates via WebSocket
-- **Geplante Cron-Jobs** für Sync und Erinnerungen
-- **Bonusfragen** mit separater Punktevergabe
-- **Erweiterte Hitliste** mit Rangbewegung, Filtern und CSV-Export
-- **Benutzer- und Team-Statistiken** mit Chart.js-Diagrammen
-- **E-Mail-Erinnerungen** via nodemailer (SMTP)
-- **In-App-Benachrichtigungen** mit WebSocket-Push
-- **Audit Log** für alle wichtigen Admin-Aktionen
-- **Systemstatus-Dashboard** für Admins
-- **PWA-Unterstützung** – installierbar auf Mobilgeräten
-- **PostgreSQL-Option** für Produktionsumgebungen
+---
+
+## Überblick
+
+Das Tippspiel richtet sich an **interne Firmen-Teams** (z. B. IT, Finance, HR). Jeder Teilnehmer tippt eigenständig alle **104 WM-Spiele** (72 Gruppenspiele + 32 K.-o.-Partien). Punkte, Hitliste und Teamwertung werden **deterministisch im Backend** berechnet — optional ergänzt durch KI-Hilfen, die keine offiziellen Ergebnisse erzeugen.
+
+| | |
+|---|---|
+| **Frontend** | Vue 3 SPA, PWA-fähig, 4 Sprachen (DE/EN/FR/ES) |
+| **Backend** | Node.js REST-API + WebSocket |
+| **Datenbank** | SQLite (Dev) / PostgreSQL (Prod) |
+| **Betrieb** | Manuell (CSV) oder automatisch (Football-API) |
+
+---
+
+## Features
+
+### Für Spieler
+
+| Feature | Beschreibung |
+|---------|--------------|
+| **Dashboard** | Persönliche Übersicht: nächste Spiele, offene Tipps, Rang, KI-Insights |
+| **Spiele** | Alle 104 WM-Partien mit Filter (offen, beendet, fehlende Tipps), Countdown bis Anpfiff |
+| **Meine Tipps** | Kompakte Übersicht aller abgegebenen Prognosen |
+| **Gruppentabelle** | Live-Tabellen der Gruppen A–L mit Projektionen |
+| **Turnierbaum** | K.-o.-Bracket mit Zoom, Listenansicht und Spielverknüpfung |
+| **Nationalmannschaften** | Kader, Tabellen, Torschützen, Live-Spiele, WM-Duelle (Head-to-Head) |
+| **Bonusfragen** | Sonderwetten (Weltmeister, Vize, Dritter, TSK, Team-Fortschritt) |
+| **Hitliste** | Rangliste mit Filtern (Gesamt, Spiele, Bonus, Gruppe, K.-o.), CSV-Export |
+| **Teamwertung** | Abteilungs-Ranking nach **Ø Punkte pro Mitglied** (nicht Summe) |
+| **Statistiken** | Eigene Leistung mit Chart.js-Diagrammen |
+| **Preise** | Sichtbare Preise für Platz 1–3 (vom Admin freigeschaltet) |
+| **Profil** | Avatar, Lieblingsteam, Torschützenkönig, Sprache, Dark Mode, optional 2FA |
+| **Spielregeln** | Offizielle RTE-Guideline unter `/help` |
+| **KI-Coach** | Chat zu Strategie, fehlenden Tipps und Punkten |
+| **Benachrichtigungen** | In-App-Meldungen mit Live-Updates via WebSocket |
+| **PWA** | Installierbar auf Smartphone/Tablet |
+
+### Authentifizierung & Profil
+
+- E-Mail/Passwort-Registrierung mit Verifizierung
+- **Google SSO** (optional, über `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`)
+- Passwort zurücksetzen per E-Mail
+- **Zwei-Faktor-Authentifizierung** (TOTP) im Profil
+- Erinnerung bei unvollständigem Profil (Lieblingsteam + Torschütze)
+
+### Öffentlicher Display-Modus
+
+Für Beamer/TV ohne Login:
+
+| Route | Inhalt |
+|-------|--------|
+| `/display` | Hitliste & Highlights |
+| `/display/bracket` | Turnierbaum |
+
+Aktivierung und Zugriff über Admin-Einstellungen (`displayModeEnabled`).
+
+### KI-Funktionen (optional)
+
+> **Die KI ist keine Quelle der Wahrheit.** Sie berechnet keine Punkte, erfindet keine Ergebnisse und ändert keine Tipps.
+
+| Feature | Zielgruppe | Beschreibung |
+|---------|------------|--------------|
+| Spielvorschau | Spieler | Neutrale Meinung pro Partie |
+| KI-Coach | Spieler | Chat zu Tipps, Rang und Strategie |
+| Hitlisten-Kommentar | Spieler | Kurze Zusammenfassung der Rangbewegungen |
+| Dashboard-Insights | Spieler | Personalisierte Hinweiskarten |
+| Admin-Assistent | Admin | Diagnose, Empfehlungen, Texte |
+| Bonus-Vorschläge | Admin | Vorschläge für neue Bonusfragen |
+| Reminder-Texte | Admin | E-Mail- und In-App-Texte für Erinnerungen |
+
+Aktivierung über `OPENAI_API_KEY` in `backend/.env`. Einzelne Features können separat deaktiviert werden.
+
+### Admin-Bereich
+
+| Bereich | Funktionen |
+|---------|------------|
+| **Dashboard** | Systemübersicht, Schnellaktionen, KI-Insights |
+| **Benutzer** | Anlegen, Rollen, Sperren, Admin-Rechte |
+| **Teams** | Abteilungen verwalten |
+| **Spiele** | Spielplan bearbeiten, sperren, korrigieren |
+| **Ergebnisse** | Manuelle Ergebniserfassung |
+| **Tipps** | Alle Prognosen einsehen und verwalten |
+| **Import** | CSV-Spielplan importieren |
+| **Synchronisierung** | Football-API: Spielplan, Ergebnisse, Live-Scores, Spielerbilder |
+| **Bonusfragen** | Erstellen, auflösen, Turnier-Vorschläge übernehmen |
+| **Punkteregeln** | Exakt / Tordifferenz / Tendenz konfigurierbar |
+| **Preise** | Platz 1–3 definieren und freischalten |
+| **E-Mail** | SMTP-Erinnerungen für fehlende Tipps |
+| **Benachrichtigungen** | In-App-Nachrichten an alle oder einzelne Nutzer |
+| **Statistiken** | Gesamtübersicht, Vollständigkeit, fehlende Tipps |
+| **Favoriten** | Lieblingsteams und Torschützen der Nutzer |
+| **Spielerbilder** | Sync über TheSportsDB / Wikimedia |
+| **Backup** | JSON-Export/Import, **Excel-Notfall-Export** (Hitliste, Tipps, Bonus, Spiele) |
+| **Audit-Log** | Protokoll aller Admin-Aktionen |
+| **System** | Einstellungen, Display-Modus, App-Titel |
+| **KI-Assistent** | Admin-KI mit Interaktions-Log |
+
+### Automatisierung
+
+| Job | Zeitplan | Beschreibung |
+|-----|----------|--------------|
+| Spielplan-Sync | Täglich 06:00 | Fixe Spielpläne aktualisieren |
+| Spielplan-Sync (Turnier) | Alle 6 Stunden | Während WM-Zeitraum |
+| Ergebnis-Sync | Alle 15 Minuten | Während WM-Zeitraum |
+| Live-Sync | Alle 5 Minuten | Nur bei laufenden Spielen |
+| E-Mail-Erinnerungen | Täglich 09:00 | Fehlende Tipps & Bonusfragen |
+| Hitliste-Snapshot | Stündlich | Rangverlauf speichern |
+
+---
+
+## Spielregeln
+
+### Punkte pro Spiel
+
+Nach Abpfiff zählt nur die **beste Trefferkategorie**:
+
+| Treffer | Punkte (Standard) |
+|---------|-------------------|
+| Exaktes Ergebnis | 4 |
+| Richtige Tordifferenz (bei Sieg) | 3 |
+| Richtige Tendenz (Sieg/Unentschieden) | 2 |
+| Falscher Tipp | 0 |
+
+### Bonusfragen (Standard)
+
+| Frage | Punkte |
+|-------|--------|
+| Weltmeister | 8 |
+| Vize-Weltmeister | 4 |
+| Dritter | 2 |
+| Torschützenkönig | 4 |
+| Wie weit kommt dein Lieblingsteam? | 2 |
+
+### Teamwertung
+
+Jede Abteilung wird nach **Durchschnittspunkten pro registriertem Mitglied** bewertet — die größte Abteilung gewinnt nicht automatisch.
+
+### Tipp-Pflicht
+
+Technisch sind nicht alle Spiele Pflicht (fehlende Tipps = 0 Punkte). **RTE-Regel:** Jeder Teilnehmer tippt alle 104 Spiele selbst.
+
+Die vollständigen Regeln stehen in der App unter **Spielregeln** (`/help`).
+
+---
 
 ## Technologie-Stack
 
-| Bereich | Technologie |
-|---------|-------------|
-| Frontend | Vue 3, Vite, Pinia, Vue Router, Axios, Chart.js, Socket.IO Client, PWA |
-| Backend | Node.js, Express.js, Sequelize, Socket.IO, node-cron, nodemailer, OpenAI |
-| Datenbank | SQLite (Entwicklung) / PostgreSQL (Produktion) |
-| Auth | JWT, bcrypt |
+| Bereich | Technologien |
+|---------|--------------|
+| **Frontend** | Vue 3, Vite, Pinia, Vue Router, Vue I18n, Axios, Chart.js, Socket.IO Client, PWA |
+| **Backend** | Node.js, Express, Sequelize, Socket.IO, node-cron, nodemailer, OpenAI, ExcelJS |
+| **Datenbank** | SQLite (Entwicklung) / PostgreSQL (Produktion) |
+| **Auth** | JWT, bcrypt, Google OIDC, TOTP (speakeasy) |
+| **Monitoring** | Sentry (optional), Prometheus-Metriken |
+| **CI/CD** | GitHub Actions (Docker Build) |
+
+---
 
 ## Schnellstart
+
+### Voraussetzungen
+
+- Node.js 20+
+- npm
 
 ### Backend
 
@@ -49,7 +195,7 @@ cd backend
 npm install
 cp .env.example .env
 npm run seed
-npm start
+npm run dev
 ```
 
 ### Frontend
@@ -60,427 +206,233 @@ npm install
 npm run dev
 ```
 
-- Frontend: http://localhost:5173
-- Backend: http://localhost:3000
-- Health: http://localhost:3000/api/health
+| Dienst | URL |
+|--------|-----|
+| Frontend | http://localhost:5173 |
+| Backend | http://localhost:3000 |
+| Health | http://localhost:3000/api/health |
 
-## Datenbank-Befehle
-
-```bash
-cd backend
-npm run db:migrate    # Fehlende Spalten/Indizes ergänzen (ohne Datenverlust)
-npm run db:reset -- --confirm   # Vollständiger Reset mit Backup (nur Dev)
-npm run db:seed-teams           # Standard-Firmen-Teams laden
-npm run seed                    # Demo-Daten (nur leere DB)
-```
-
-PostgreSQL für Produktion: `DB_DIALECT=postgres` und `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` setzen. Siehe `docker-compose.yml --profile postgres`.
-
-### Standard-Logins
+### Demo-Zugänge (nach `npm run seed`)
 
 | Rolle | E-Mail | Passwort |
 |-------|--------|----------|
 | Admin | admin@example.com | admin123 |
 | User | max.mueller@example.com | user123 |
 
-## Umgebungsvariablen
+### Datenbank-Befehle
 
-### Backend (.env)
+```bash
+cd backend
+npm run db:migrate          # Schema ergänzen (ohne Datenverlust)
+npm run db:seed-teams       # Standard-Firmen-Teams
+npm run db:reset -- --confirm   # Vollständiger Reset (nur Dev!)
+npm run seed                # Demo-Daten (nur leere DB)
+```
+
+---
+
+## Konfiguration
+
+Alle Variablen mit Kommentaren: [`backend/.env.example`](backend/.env.example)
+
+### Wichtige Einstellungen
 
 ```env
+# Basis
 PORT=3000
 JWT_SECRET=ihr-geheimer-schlüssel
+APP_URL=http://localhost:5173
+
+# Datenbank
 DB_DIALECT=sqlite
 DB_PATH=./database/wm2026.sqlite
+# Produktion: DB_DIALECT=postgres + DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
 
-# Fußball-API (optional – football-data.org v4)
+# Football-API (optional — ohne Key: CSV/Manuell-Modus)
 FOOTBALL_API_PROVIDER=football-data
-FOOTBALL_API_BASE_URL=https://api.football-data.org/v4
 FOOTBALL_API_KEY=
-FOOTBALL_API_COMPETITION_CODE=WC
-FOOTBALL_API_COMPETITION_NUMERIC_ID=2000
-FOOTBALL_API_COMPETITION_ID=WC
-FOOTBALL_API_SEASON=2026
-FOOTBALL_API_TIMEZONE=Europe/Zurich
 FOOTBALL_API_SYNC_ENABLED=false
-FOOTBALL_API_RESULT_SYNC_ENABLED=false
 
-# E-Mail (SMTP)
+# E-Mail (optional — ohne SMTP: Mock-Modus in Konsole)
 SMTP_HOST=
 SMTP_PORT=587
 SMTP_USER=
 SMTP_PASSWORD=
-SMTP_FROM=noreply@tippspiel.local
-APP_URL=http://localhost:5173
 
-# KI / OpenAI (MVP 2.5)
+# KI (optional)
 OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o-mini
 AI_FEATURES_ENABLED=true
-AI_CACHE_ENABLED=true
-AI_MAX_TOKENS=800
-AI_TEMPERATURE=0.4
-AI_ADMIN_FEATURES_ENABLED=true
-AI_USER_COACH_ENABLED=true
-AI_MATCH_PREVIEW_ENABLED=true
-AI_LEADERBOARD_COMMENTARY_ENABLED=true
+
+# Google SSO (optional)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
 ```
 
-### Frontend (.env)
+### Football-API
 
-```env
-VITE_API_URL=/api
-VITE_SOCKET_URL=
-```
+**Standard:** CSV-Import + manuelle Ergebnisse — die App funktioniert **ohne API-Key** vollständig.
 
-## Fußball-API einrichten (optional)
+| Provider | `FOOTBALL_API_PROVIDER` | Empfehlung |
+|----------|-------------------------|------------|
+| football-data.org v4 | `football-data` | **Empfohlen** |
+| API-Football | `api-football` | Alternative |
+| Sportmonks | `sportmonks` | Alternative |
+| TheStatsAPI | `thestatsapi` | Alternative |
 
-**Standard-Betriebsmodus:** CSV-Import durch Admin + manuelle Ergebniserfassung. Die App startet **ohne API-Key** und funktioniert vollständig.
+Das Frontend ruft externe APIs **niemals** direkt auf. Admin-Sync unter `/admin/sync`.
 
-**Optional:** Football-API-Synchronisierung kann später per Umgebungsvariablen aktiviert werden. Das Frontend ruft externe APIs **niemals** direkt auf.
+**Überschreib-Schutz:**
 
-Ohne API-Key zeigt der Admin-Bereich:
-> *Keine Football API konfiguriert. Die App läuft im manuellen CSV-Modus.*
+- `isManuallyLocked = true` → API überschreibt nicht
+- `isApiManaged = false` → Spiel wird beim Sync übersprungen
+- Alle Sync-Vorgänge in `SyncLog` protokolliert
 
-### Manueller Betrieb (MVP 1.0 / intern)
-
-1. **CSV Import** – offiziellen Spielplan importieren (`/admin/import`)
-2. **Ergebnisverwaltung** – Ergebnisse manuell eintragen (`/admin/results`)
-3. **Spielverwaltung** – Spiele korrigieren (`/admin/matches`)
-4. **Punkte neu berechnen** – auf Admin-Dashboard oder Sync-Seite
-
-Punkte, Hitliste und Teamwertung werden automatisch aktualisiert.
-
-### Unterstützte API-Provider (optional)
-
-| Provider | Wert für `FOOTBALL_API_PROVIDER` | API-Key nötig |
-|----------|-----------------------------------|---------------|
-| **football-data.org v4** | `football-data` | Ja (**empfohlen**) |
-| API-Football / API-Sports | `api-football` | Ja |
-| Sportmonks | `sportmonks` | Ja |
-| TheStatsAPI | `thestatsapi` | Ja |
-
-### football-data.org v4 (empfohlen)
-
-Authentifizierung nur im Backend via Header `X-Auth-Token`. Das Frontend ruft football-data.org **niemals** direkt auf.
-
-```env
-FOOTBALL_API_PROVIDER=football-data
-FOOTBALL_API_BASE_URL=https://api.football-data.org/v4
-FOOTBALL_API_KEY=ihr-api-key
-FOOTBALL_API_COMPETITION_CODE=WC
-FOOTBALL_API_COMPETITION_NUMERIC_ID=2000
-FOOTBALL_API_COMPETITION_ID=WC
-FOOTBALL_API_SEASON=2026
-FOOTBALL_API_TIMEZONE=Europe/Zurich
-FOOTBALL_API_SYNC_ENABLED=true
-FOOTBALL_API_RESULT_SYNC_ENABLED=true
-```
-
-Verwendete Endpunkte (WM 2026):
-- `GET /competitions/WC/matches?season=2026` – Spielplan (primär)
-- `GET /competitions/2000/matches?season=2026` – Fallback wenn `WC` fehlschlägt
-- `GET /competitions/WC/matches?season=2026&status=FINISHED` – Ergebnisse
-- `GET /matches?competitions=WC&status=LIVE` – Live-Spiele (Fallback: `competitions=2000`)
-
-Rate-Limits werden aus Response-Headern gelesen und in `SyncLog.rateLimitJson` gespeichert. Bei niedrigem Kontingent pausiert der Sync automatisch.
-
-Ohne API-Key (Sync-Versuch): *Football-data.org API-Key ist nicht konfiguriert.*
-
-### API-Football
-
-```env
-FOOTBALL_API_PROVIDER=api-football
-FOOTBALL_API_BASE_URL=https://v3.football.api-sports.io
-FOOTBALL_API_KEY=ihr-api-key
-FOOTBALL_API_COMPETITION_ID=1
-FOOTBALL_API_SEASON=2026
-FOOTBALL_API_TIMEZONE=Europe/Zurich
-FOOTBALL_API_SYNC_ENABLED=true
-FOOTBALL_API_RESULT_SYNC_ENABLED=true
-```
-
-### Sportmonks
-
-```env
-FOOTBALL_API_PROVIDER=sportmonks
-FOOTBALL_API_BASE_URL=https://api.sportmonks.com/v3/football
-FOOTBALL_API_KEY=ihr-api-token
-FOOTBALL_API_COMPETITION_ID=LEAGUE_OR_SEASON_ID
-FOOTBALL_API_SEASON=2026
-```
-
-### TheStatsAPI
-
-```env
-FOOTBALL_API_PROVIDER=thestatsapi
-FOOTBALL_API_BASE_URL=https://api.thestatsapi.com/api
-FOOTBALL_API_KEY=ihr-bearer-token
-FOOTBALL_API_COMPETITION_ID=comp_3039
-FOOTBALL_API_SEASON=2026
-```
-
-**Ohne API-Key:** App läuft im manuellen CSV-Modus. Automatische Sync-Jobs werden übersprungen.
-
-Zum Aktivieren der API-Synchronisierung:
-
-```env
-FOOTBALL_API_KEY=ihr-api-key
-FOOTBALL_API_COMPETITION_ID=WC
-FOOTBALL_API_SYNC_ENABLED=true
-FOOTBALL_API_RESULT_SYNC_ENABLED=true
-```
-
-### Admin-Sync-Funktionen (nur mit API-Key)
-
-Im Admin-Bereich unter **Synchronisierung**:
-
-- Football-API-Provider auswählen und speichern
-- API-Verbindung testen
-- Spielplan, Ergebnisse und Live-Scores manuell synchronisieren
-- Sync-Logs und Fehler einsehen
-- Punkte nach Ergebnis-Sync neu berechnen
-
-### Überschreib-Regeln
-
-- `isManuallyLocked = true` → API-Sync überschreibt keine admin-korrigierten Werte
-- `isApiManaged = false` → Spiel wird beim Sync übersprungen (z. B. CSV-Notfallimport)
-- Beendete Spiele mit bestätigtem Ergebnis werden nicht erneut überschrieben
-- Alle Sync-Vorgänge werden in `SyncLog` protokolliert
-
-Die Provider-Abstraktion (`footballProviderService` + Provider-Module) bleibt für spätere API-Integration erhalten.
-
-## KI-Funktionen einrichten (MVP 2.5)
-
-### OpenAI API Key konfigurieren
-
-1. API-Key unter [platform.openai.com](https://platform.openai.com) erstellen
-2. In `backend/.env` eintragen:
-
-```env
-OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-4o-mini
-AI_FEATURES_ENABLED=true
-```
-
-3. Backend neu starten
-
-**Ohne API-Key** laufen alle Kernfunktionen weiter. KI-Endpunkte liefern dann eine klare Fehlermeldung (`OPENAI_API_KEY ist nicht konfiguriert.`).
-
-### KI komplett deaktivieren
-
-```env
-AI_FEATURES_ENABLED=false
-```
-
-Einzelne Features können separat deaktiviert werden:
-
-```env
-AI_USER_COACH_ENABLED=false
-AI_MATCH_PREVIEW_ENABLED=false
-AI_LEADERBOARD_COMMENTARY_ENABLED=false
-AI_ADMIN_FEATURES_ENABLED=false
-```
-
-### Kostenkontrolle
+### KI-Kostenkontrolle
 
 | Maßnahme | Beschreibung |
 |----------|--------------|
-| Caching | Spielvorschauen und Hitlisten-Kommentare werden in `AICommentary` gespeichert |
-| Token-Limit | `AI_MAX_TOKENS=800` (Standard) |
-| Rate-Limits | Coach: 20/Tag, Admin-Assistent: 50/Tag, Bonus-Vorschläge: 20/Tag |
-| Modellwahl | `gpt-4o-mini` als kostengünstiger Standard |
-| Kurzer Kontext | Nur relevante JSON-Daten, keine vollständigen DB-Dumps |
+| Caching | Vorschauen und Kommentare in `AICommentary` |
+| Token-Limit | `AI_MAX_TOKENS=800` |
+| Rate-Limits | Coach: 20/Tag, Admin: 50/Tag, Bonus: 20/Tag |
+| Modell | `gpt-4o-mini` (Standard) |
 
-Token-Nutzung wird in `AICommentary` und `AIInteractionLog` protokolliert.
+---
 
-### Datenschutz
+## Deployment
 
-- Der OpenAI-API-Key bleibt ausschließlich im Backend
-- Private Tipps anderer Nutzer werden vor Anpfiff nicht an die KI übergeben
-- KI-Antworten werden auf Secrets gefiltert (Guardrails)
-- Interaktionen können im Admin-Bereich eingesehen werden (`/api/admin/ai/interaction-log`)
-
-### Limitierungen
-
-- KI liefert **Meinungen und Erklärungen**, keine garantierten Vorhersagen
-- KI **berechnet keine Punkte** und **ändert keine Daten**
-- Bei API-Ausfall: *„Die KI-Antwort konnte gerade nicht erstellt werden. Bitte später erneut versuchen.“*
-- Bei deaktivierten Features: *„KI-Funktionen sind aktuell deaktiviert.“*
-
-### Manuelle Admin-Overrides
-
-- Spiele mit `isManuallyLocked = true` werden **nicht** von der API überschrieben
-- Spiele mit `isApiManaged = false` werden beim Sync übersprungen
-- Manuell eingegebene Ergebnisse haben immer Vorrang
-
-## Cron-Jobs
-
-| Job | Zeitplan | Beschreibung |
-|-----|----------|--------------|
-| Spielplan-Sync | Täglich 06:00 | Fixe Spielpläne aktualisieren |
-| Spielplan-Sync (Turnier) | Alle 6 Stunden | Während WM-Zeitraum |
-| Ergebnis-Sync | Alle 15 Minuten | Während WM-Zeitraum |
-| Live-Sync | Alle 5 Minuten | Nur bei laufenden Spielen (rate-limit-freundlich) |
-| E-Mail-Erinnerungen | Täglich 09:00 | Fehlende Tipps & Bonusfragen |
-| Hitliste-Snapshot | Stündlich | Rangverlauf speichern |
-
-## E-Mail einrichten
-
-```env
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=benutzer@example.com
-SMTP_PASSWORD=geheim
-SMTP_FROM=WM2026 <noreply@example.com>
-```
-
-Ohne SMTP-Konfiguration werden E-Mails im **Mock-Modus** geloggt (Konsole).
-
-Admin-Bereich → **E-Mail Erinnerungen**:
-- Erinnerungen aktivieren/deaktivieren
-- Test-E-Mail senden
-- Erinnerungen manuell auslösen
-
-## Bonusfragen
-
-Admin erstellt Bonusfragen mit Punkten und Sperrzeit. Benutzer antworten vor Ablauf der Frist. Nach Auflösung durch Admin werden Bonuspunkte automatisch berechnet.
-
-Bonuspunkte fließen in die Gesamthitliste ein (Spielpunkte + Bonuspunkte).
-
-## Live-Scores (WebSocket)
-
-Das Frontend verbindet sich automatisch via Socket.IO. Bei Ergebnis-Updates werden folgende Seiten live aktualisiert:
-
-- Spiele
-- Hitliste
-- Benachrichtigungen
-
-Live-Status-Badges: Geplant, Läuft, Halbzeit, Beendet, Verschoben, Abgesagt
-
-## PWA / Mobile
-
-Die App ist als Progressive Web App installierbar:
-
-1. Im Browser öffnen (Chrome/Edge/Safari)
-2. „Zum Startbildschirm hinzufügen" wählen
-3. App erscheint wie native App
-
-Features: Offline-Fallback für statische Assets, Mobile-optimierte Match-Cards, Countdown-Badges.
-
-## Docker
-
-Ausführliche Anleitung für **GitHub + Portainer + PostgreSQL**: [docs/DEPLOY-GITHUB-PORTAINER.md](docs/DEPLOY-GITHUB-PORTAINER.md)
-
-### SQLite (Standard)
+### Docker (lokal)
 
 ```bash
+# SQLite
 docker compose up --build
 docker compose exec backend node database/seed.js
+
+# PostgreSQL
+docker compose --profile postgres up --build
 ```
 
-- Frontend: http://localhost:8080
-- Backend: http://localhost:3000
+### Produktion (GitHub + Portainer)
 
-### PostgreSQL (Produktion)
+Ausführliche Anleitung: [**docs/DEPLOY-GITHUB-PORTAINER.md**](docs/DEPLOY-GITHUB-PORTAINER.md)
 
 ```bash
-docker compose --profile postgres up --build
-docker compose exec backend-postgres node database/seed.js
+git clone https://github.com/schmeckm/aspire-make-tippspiel.git
+# Stack in Portainer mit docker-compose.prod.yml deployen
 ```
 
-## API-Endpunkte (MVP 2.5)
+**Google SSO in Produktion:** Keine Raw-IPs verwenden — stattdessen z. B. `sslip.io`-Hostname für `APP_URL`, `CORS_ORIGIN` und `GOOGLE_CALLBACK_URL`.
+
+---
+
+## Architektur
+
+```mermaid
+flowchart TB
+    subgraph client [Browser / PWA]
+        Vue[Vue 3 Frontend]
+        WS[Socket.IO Client]
+    end
+
+    subgraph server [Node.js Backend]
+        API[Express REST API]
+        SIO[Socket.IO Server]
+        Cron[node-cron Jobs]
+        AI[OpenAI Service]
+    end
+
+    subgraph data [Daten]
+        DB[(SQLite / PostgreSQL)]
+        Redis[(Redis – optional)]
+    end
+
+    subgraph external [Extern – optional]
+        FAPI[Football API]
+        SMTP[SMTP Server]
+        OAI[OpenAI API]
+    end
+
+    Vue --> API
+    WS --> SIO
+    API --> DB
+    SIO --> DB
+    Cron --> API
+    Cron --> FAPI
+    API --> FAPI
+    API --> SMTP
+    AI --> OAI
+    SIO --> Redis
+```
+
+---
+
+## API-Übersicht
+
+Vollständige Endpunkte in den Route-Dateien unter `backend/routes/`.
+
+### Kern (Spieler)
 
 ```
-# KI (Nutzer)
+GET  /api/matches
+POST /api/predictions
+GET  /api/leaderboard
+GET  /api/leaderboard/export
+GET  /api/bonus-questions
+GET  /api/scoring-rules
+GET  /api/statistics/me
+```
+
+### KI (Spieler)
+
+```
 GET  /api/ai/status
 POST /api/ai/match-preview/:matchId
 POST /api/ai/user-coach
 GET  /api/ai/leaderboard-summary
 GET  /api/ai/dashboard-insights
-
-# KI (Admin)
-POST /api/admin/ai/assistant
-POST /api/admin/ai/leaderboard-summary/regenerate
-POST /api/admin/ai/bonus-question-suggestions
-POST /api/admin/ai/reminder-text
-GET  /api/admin/ai/commentaries
-GET  /api/admin/ai/interaction-log
 ```
 
-## API-Endpunkte (MVP 2.0)
+### Admin (Auswahl)
 
 ```
-# Sync
-GET  /api/admin/sync/status
-GET  /api/admin/sync/providers
-GET  /api/admin/sync/logs
-GET  /api/admin/sync/errors
-PUT  /api/admin/sync/provider
-POST /api/admin/sync/test-connection
 POST /api/admin/sync/fixtures
 POST /api/admin/sync/results
-POST /api/admin/sync/live-scores
-POST /api/admin/sync/recalculate-points
-
-# Bonus
-GET  /api/bonus-questions
-POST /api/bonus-questions/predictions
-PUT  /api/bonus-questions/predictions/:id
-GET  /api/admin/bonus-questions
-POST /api/admin/bonus-questions
 POST /api/admin/bonus-questions/:id/resolve
-
-# Statistiken
-GET  /api/statistics/me
-GET  /api/statistics/users/:id
-GET  /api/statistics/team/:id
-GET  /api/statistics/admin/overview
-
-# Benachrichtigungen
-GET  /api/notifications
-POST /api/notifications/:id/read
-POST /api/notifications/read-all
-POST /api/admin/notifications/send
-
-# Audit & System
 GET  /api/admin/audit-log
-GET  /api/admin/system
-GET  /api/settings
-PUT  /api/admin/settings
-
-# E-Mail
-GET  /api/admin/email/status
-POST /api/admin/email/send-test
-POST /api/admin/email/send-reminders
-
-# Hitliste Export
-GET  /api/leaderboard/export?filter=overall
+POST /api/admin/backup/export-excel
+POST /api/admin/ai/assistant
 ```
 
-Alle MVP 1.0 Endpunkte bleiben erhalten.
+### Display (öffentlich)
+
+```
+GET  /api/display/leaderboard
+GET  /api/display/bracket
+```
+
+---
 
 ## Fehlerbehebung
 
 | Problem | Lösung |
 |---------|--------|
-| API-Sync schlägt fehl | `FOOTBALL_API_KEY` und Provider in `.env` prüfen, Verbindung im Admin testen |
-| Keine E-Mails | SMTP in `.env` konfigurieren oder Mock-Modus in Konsole prüfen |
-| WebSocket verbindet nicht | Backend neu starten, Proxy in `vite.config.js` prüfen |
-| DB-Schema veraltet | `DB_SYNC_ALTER=true npm start` oder `npm run seed` |
-| Port 3000 belegt | `PORT=3001` in `.env` setzen |
-| KI antwortet nicht | `OPENAI_API_KEY` in `.env` prüfen, `AI_FEATURES_ENABLED=true` |
-| KI-Tageslimit erreicht | Am nächsten Tag erneut versuchen oder Rate-Limits in `aiRateLimiter.js` anpassen |
+| API-Sync schlägt fehl | `FOOTBALL_API_KEY` und Provider prüfen, Verbindung unter `/admin/sync` testen |
+| Keine E-Mails | SMTP in `.env` konfigurieren oder Mock-Log in Konsole prüfen |
+| WebSocket verbindet nicht | Backend neu starten, `VITE_SOCKET_URL` / Proxy prüfen |
+| DB-Schema veraltet | `npm run db:migrate` oder Backend-Neustart mit Migration |
+| Port 3000 belegt | `PORT=3001` in `.env` |
+| KI antwortet nicht | `OPENAI_API_KEY` prüfen, `AI_FEATURES_ENABLED=true` |
+| Google SSO Fehler | Callback-URL und `APP_URL` müssen exakt zur Domain passen |
+| Spielerbilder-Sync hängt | Sync in Admin fortsetzen; hängende Jobs werden nach Timeout als stale erkannt |
 
-## MVP 1.0 Funktionen (weiterhin verfügbar)
-
-- Manuelle Spielverwaltung und CSV-Import
-- Manuelle Ergebniserfassung
-- Tippabgabe vor Anpfiff
-- Automatische Punkteberechnung
-- Hitliste und Teamwertung
-- Vollständiger Admin-Bereich
+---
 
 ## Lizenz
 
-Internes Projekt – nur für private/interne Nutzung.
+Internes Projekt — nur für private/interne Nutzung.
+
+---
+
+<p align="center">
+  <a href="https://github.com/schmeckm/aspire-make-tippspiel">GitHub Repository</a>
+</p>

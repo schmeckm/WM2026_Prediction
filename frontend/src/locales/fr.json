@@ -186,7 +186,9 @@
     "online": "En ligne",
     "offline": "Hors ligne",
     "aiActive": "Active",
-    "aiInactive": "Inactive"
+    "aiInactive": "Inactive",
+    "github": "GitHub",
+    "githubAria": "Ouvrir le code source sur GitHub"
   },
   "profile": {
     "title": "Profil",

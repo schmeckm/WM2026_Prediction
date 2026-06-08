@@ -27,6 +27,8 @@ process.on('uncaughtException', (error) => {
   process.exit(1);
 });
 
+const { getAppVersion } = require('./utils/appVersion');
+
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 
@@ -57,7 +59,7 @@ async function start() {
     startScheduler();
 
     server.listen(PORT, () => {
-      console.log(`WM 2026 Tippspiel v2.5 – Server läuft auf http://localhost:${PORT}`);
+      console.log(`WM 2026 Tippspiel v${getAppVersion()} – Server läuft auf http://localhost:${PORT}`);
       const { isAiEnabled, isApiKeyConfigured, getAiConfig } = require('./services/llmService');
       if (!isAiEnabled()) {
         console.warn('[AI] Inaktiv – AI_FEATURES_ENABLED=false');

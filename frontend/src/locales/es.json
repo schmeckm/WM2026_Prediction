@@ -186,7 +186,9 @@
     "online": "En línea",
     "offline": "Fuera de línea",
     "aiActive": "Activa",
-    "aiInactive": "Inactiva"
+    "aiInactive": "Inactiva",
+    "github": "GitHub",
+    "githubAria": "Abrir código fuente en GitHub"
   },
   "profile": {
     "title": "Perfil",
