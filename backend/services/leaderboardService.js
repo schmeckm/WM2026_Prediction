@@ -332,7 +332,7 @@ async function getTeamRanking(options = {}) {
     const teamUsers = leaderboard.filter((entry) => entry.teamId === team.id);
     const totalPoints = teamUsers.reduce((sum, u) => sum + u.totalPoints, 0);
     const exactResults = teamUsers.reduce((sum, u) => sum + u.exactResults, 0);
-    const userCount = teamUsers.length;
+    const userCount = team.users.length;
     const averagePoints = userCount > 0 ? Math.round((totalPoints / userCount) * 100) / 100 : 0;
     const bestUser = teamUsers.sort((a, b) => b.totalPoints - a.totalPoints)[0];
 
