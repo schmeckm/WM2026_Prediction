@@ -143,7 +143,7 @@
     "passwordMismatch": "Les mots de passe ne correspondent pas.",
     "verifyEmailTitle": "Confirmer l'e-mail",
     "verifyEmailSuccess": "E-mail confirmé. Connexion en cours…",
-    "noRocheAccountNotice": "Veuillez ne pas utiliser votre adresse e-mail Roche ni votre compte Google Roche. Utilisez plutôt un compte privé ou",
+    "noRocheAccountNotice": "Pour la connexion par e-mail, n'utilisez pas d'adresse Roche. La connexion Google avec un compte Google personnel est possible. Sinon",
     "signInWithGoogle": "Se connecter avec Google",
     "orContinueWith": "ou",
     "ssoSigningIn": "Finalisation de la connexion…",
@@ -422,7 +422,20 @@
     "exitFullscreen": "Quitter le plein écran",
     "lastUpdated": "Mis à jour",
     "focusBracket": "Arbre seul",
-    "showGroups": "Afficher les groupes"
+    "showGroups": "Afficher les groupes",
+    "highlightGroup": "Mettre en évidence le groupe",
+    "allGroups": "Tous les groupes",
+    "fullTreeHint": "L'arbre complet des phases à élimination reste toujours visible – la sélection de groupe ne met en évidence que les tableaux sur les côtés.",
+    "groupHighlighted": "Groupe {group} mis en évidence – les matchs à élimination associés sont marqués dans l'arbre.",
+    "noGroupData": "Pas encore de données de match pour ce groupe.",
+    "displayMode": "Vue TV",
+    "displaySubtitle": "Arbre en direct",
+    "openMatch": "Ouvrir le match",
+    "zoomToolbar": "Zoom",
+    "zoomIn": "Agrandir",
+    "zoomOut": "Réduire",
+    "zoomReset": "100%",
+    "zoomFit": "Ajuster"
   },
   "nationalTeams": {
     "title": "Équipes nationales & effectifs",
@@ -502,7 +515,10 @@
       "missing": "Mes pronostics manquants",
       "group": "Phase de groupes",
       "knockout": "Phase à élimination",
-      "allGroups": "Tous les groupes"
+      "allGroups": "Tous les groupes",
+      "groupBy": "Filtrer par groupe",
+      "active": "Filtre actif : {filters}",
+      "reset": "Afficher tous les matchs"
     },
     "empty": "Aucun match trouvé pour ce filtre.",
     "group": "Groupe",

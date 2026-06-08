@@ -21,6 +21,11 @@ const USER_COLUMNS = [
   { name: 'providerId', spec: { type: DataTypes.STRING, allowNull: true } },
   { name: 'totpEnabled', spec: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false } },
   { name: 'totpSecret', spec: { type: DataTypes.STRING, allowNull: true } },
+  { name: 'language', spec: { type: DataTypes.STRING(5), allowNull: false, defaultValue: 'de' } },
+  { name: 'favoriteNationalTeamId', spec: { type: DataTypes.INTEGER, allowNull: true } },
+  { name: 'favoriteNationalTeamName', spec: { type: DataTypes.STRING, allowNull: true } },
+  { name: 'topScorerPlayerId', spec: { type: DataTypes.INTEGER, allowNull: true } },
+  { name: 'topScorerPlayerName', spec: { type: DataTypes.STRING, allowNull: true } },
 ];
 
 async function runMigrations(sequelize) {
@@ -86,6 +91,19 @@ async function runMigrations(sequelize) {
     type: DataTypes.STRING(5),
     allowNull: false,
     defaultValue: 'de',
+  });
+
+  let bonusQuestionTableInfo;
+  try {
+    bonusQuestionTableInfo = await queryInterface.describeTable('BonusQuestions');
+  } catch {
+    return;
+  }
+
+  await ensureColumn(queryInterface, bonusQuestionTableInfo, 'BonusQuestions', 'resolutionKey', {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true,
   });
 
   await ensureIndexes(queryInterface);

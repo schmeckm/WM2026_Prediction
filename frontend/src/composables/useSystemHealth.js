@@ -2,7 +2,8 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 
-const POLL_INTERVAL_MS = 30000;
+const POLL_INTERVAL_ONLINE_MS = 30000;
+const POLL_INTERVAL_OFFLINE_MS = 5000;
 
 export function useSystemHealth() {
   const frontendAiEnabled = import.meta.env.VITE_AI_FEATURES_ENABLED !== 'false';
@@ -123,7 +124,7 @@ export function useSystemHealth() {
     } catch {
       backendState.value = 'offline';
       backendDetail.value = t('systemHealth.detailBackendOffline');
-      aiBackendState.value = 'offline';
+      aiBackendState.value = 'checking';
       aiBackendDetail.value = t('systemHealth.detailBackendOfflineAi');
     }
 
@@ -137,13 +138,25 @@ export function useSystemHealth() {
 
   let intervalId;
 
-  onMounted(() => {
-    checkHealth();
-    intervalId = setInterval(checkHealth, POLL_INTERVAL_MS);
+  function scheduleNextPoll() {
+    if (intervalId) clearInterval(intervalId);
+    const anyOffline = [backendState, aiBackendState, aiFrontendState].some(
+      (state) => state.value === 'offline' || state.value === 'checking',
+    );
+    const delay = anyOffline ? POLL_INTERVAL_OFFLINE_MS : POLL_INTERVAL_ONLINE_MS;
+    intervalId = setTimeout(async () => {
+      await checkHealth();
+      scheduleNextPoll();
+    }, delay);
+  }
+
+  onMounted(async () => {
+    await checkHealth();
+    scheduleNextPoll();
   });
 
   onUnmounted(() => {
-    if (intervalId) clearInterval(intervalId);
+    if (intervalId) clearTimeout(intervalId);
   });
 
   return { items, version, expandedItem, toggleDetail };

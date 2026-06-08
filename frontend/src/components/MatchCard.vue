@@ -1,5 +1,5 @@
 <template>
-  <div class="match-card">
+  <div :id="`match-${match.matchNumber}`" class="match-card" :class="{ 'match-card--highlight': highlighted }">
     <div class="match-card-header">
       <span>{{ matchRoundLabel(match) }}</span>
       <div class="match-card-header-end">
@@ -106,6 +106,7 @@ defineProps({
   match: { type: Object, required: true },
   showForm: { type: Boolean, default: true },
   showAiPreview: { type: Boolean, default: true },
+  highlighted: { type: Boolean, default: false },
 });
 
 defineEmits(['saved']);

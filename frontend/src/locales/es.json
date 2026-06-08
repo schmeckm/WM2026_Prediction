@@ -143,7 +143,7 @@
     "passwordMismatch": "Las contraseñas no coinciden.",
     "verifyEmailTitle": "Verificar correo",
     "verifyEmailSuccess": "Correo verificado. Iniciando sesión…",
-    "noRocheAccountNotice": "No utilice su dirección de correo Roche ni su cuenta de Google Roche. Use en su lugar una cuenta privada o",
+    "noRocheAccountNotice": "Para el inicio de sesión por correo, no use una dirección Roche. El inicio de sesión con Google mediante una cuenta personal es posible. Alternativamente",
     "signInWithGoogle": "Iniciar sesión con Google",
     "orContinueWith": "o",
     "ssoSigningIn": "Completando inicio de sesión…",
@@ -422,7 +422,20 @@
     "exitFullscreen": "Salir de pantalla completa",
     "lastUpdated": "Actualizado",
     "focusBracket": "Solo cuadro",
-    "showGroups": "Mostrar grupos"
+    "showGroups": "Mostrar grupos",
+    "highlightGroup": "Resaltar grupo",
+    "allGroups": "Todos los grupos",
+    "fullTreeHint": "El cuadro completo de eliminatorias permanece siempre visible; la selección de grupo solo resalta las tablas laterales.",
+    "groupHighlighted": "Grupo {group} resaltado: los partidos de eliminatorias relacionados están marcados en el cuadro.",
+    "noGroupData": "Aún no hay datos de partidos para este grupo.",
+    "displayMode": "Vista TV",
+    "displaySubtitle": "Cuadro en vivo",
+    "openMatch": "Abrir partido",
+    "zoomToolbar": "Zoom",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "zoomReset": "100%",
+    "zoomFit": "Ajustar"
   },
   "nationalTeams": {
     "title": "Selecciones y plantillas",
@@ -502,7 +515,10 @@
       "missing": "Mis pronósticos faltantes",
       "group": "Fase de grupos",
       "knockout": "Fase eliminatoria",
-      "allGroups": "Todos los grupos"
+      "allGroups": "Todos los grupos",
+      "groupBy": "Filtrar por grupo",
+      "active": "Filtro activo: {filters}",
+      "reset": "Mostrar todos los partidos"
     },
     "empty": "No se encontraron partidos para este filtro.",
     "group": "Grupo",

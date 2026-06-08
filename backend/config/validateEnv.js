@@ -56,6 +56,12 @@ function validateEnv() {
     warnings.push('SENTRY_DSN is not set – production errors during live matches will not be monitored.');
   }
 
+  const aiEnabled = process.env.AI_FEATURES_ENABLED !== 'false';
+  const openAiKey = (process.env.OPENAI_API_KEY || '').trim().replace(/^=+/, '');
+  if (aiEnabled && !openAiKey && !isTest) {
+    warnings.push('OPENAI_API_KEY is not set – AI features will show as inactive until configured.');
+  }
+
   for (const msg of warnings) console.warn(`[Env] ${msg}`);
   if (errors.length > 0) {
     for (const msg of errors) console.error(`[Env] ${msg}`);

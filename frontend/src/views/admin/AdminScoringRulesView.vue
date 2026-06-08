@@ -66,7 +66,7 @@ const loadError = ref('');
 const error = ref('');
 
 const form = ref({
-  exactResultPoints: 5,
+  exactResultPoints: 4,
   goalDifferencePoints: 3,
   tendencyPoints: 2,
   wrongPredictionPoints: 0,

@@ -38,17 +38,35 @@
       </button>
     </div>
 
-    <div class="group-filter-bar">
-      <label class="group-filter-label" for="group-filter">{{ t('matches.group') }}</label>
-      <select
-        id="group-filter"
-        v-model="activeGroup"
-        class="form-control group-filter"
-        @change="loadMatches"
-      >
-        <option value="">{{ t('matches.filters.allGroups') }}</option>
-        <option v-for="g in availableGroups" :key="g" :value="g">{{ t('matches.group') }} {{ g }}</option>
-      </select>
+    <div v-if="hasActiveFilters" class="alert alert-info filter-active-banner" role="status">
+      <span>{{ filterActiveLabel }}</span>
+      <button type="button" class="btn btn-secondary btn-sm" @click="resetFilters">
+        {{ t('matches.filters.reset') }}
+      </button>
+    </div>
+
+    <div class="group-filter-section">
+      <span class="group-filter-label">{{ t('matches.filters.groupBy') }}</span>
+      <div class="group-chip-bar" role="group" :aria-label="t('matches.filters.groupBy')">
+        <button
+          type="button"
+          :class="['filter-btn group-chip', { active: !activeGroup }]"
+          :aria-pressed="!activeGroup"
+          @click="setGroup('')"
+        >
+          {{ t('matches.filters.allGroups') }}
+        </button>
+        <button
+          v-for="g in availableGroups"
+          :key="g"
+          type="button"
+          :class="['filter-btn group-chip', { active: activeGroup === g }]"
+          :aria-pressed="activeGroup === g"
+          @click="setGroup(g)"
+        >
+          {{ g }}
+        </button>
+      </div>
     </div>
 
     <LoadingSpinner v-if="loading" />
@@ -60,6 +78,7 @@
           v-for="match in matches"
           :key="match.id"
           :match="match"
+          :highlighted="String(match.matchNumber) === highlightedMatchNumber"
           @saved="loadMatches"
         />
         <div v-if="matches.length === 0" class="empty-state">
@@ -77,7 +96,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
+import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import { onSocketEvent } from '../services/socket';
@@ -87,7 +107,9 @@ import MatchTable from '../components/MatchTable.vue';
 import ErrorState from '../components/ErrorState.vue';
 
 const { t } = useI18n();
+const route = useRoute();
 const VIEW_MODE_KEY = 'matches-view-mode';
+const highlightedMatchNumber = ref('');
 
 const filters = computed(() => [
   { value: '', label: t('matches.filters.all') },
@@ -138,6 +160,18 @@ const needsLockTimer = computed(() =>
     return remaining > 0 && remaining <= LOCK_WARNING_MS + 60_000;
   }),
 );
+
+const hasActiveFilters = computed(() => !!activeFilter.value || !!activeGroup.value);
+
+const filterActiveLabel = computed(() => {
+  const parts = [];
+  const filterEntry = filters.value.find((f) => f.value === activeFilter.value);
+  if (filterEntry?.value) parts.push(filterEntry.label);
+  if (activeGroup.value) parts.push(`${t('matches.group')} ${activeGroup.value}`);
+  return parts.length
+    ? t('matches.filters.active', { filters: parts.join(' · ') })
+    : t('matches.filters.all');
+});
 
 function syncLockTimer() {
   if (needsLockTimer.value && !lockTimer) {
@@ -196,6 +230,35 @@ function setFilter(value) {
   loadMatches();
 }
 
+function setGroup(value) {
+  activeGroup.value = value;
+  loadMatches();
+}
+
+function resetFilters() {
+  activeFilter.value = '';
+  activeGroup.value = '';
+  loadMatches();
+}
+
+async function focusMatchFromQuery() {
+  const matchNumber = String(route.query.matchNumber || '').trim();
+  if (!matchNumber) return;
+
+  highlightedMatchNumber.value = matchNumber;
+  await loadMatches();
+
+  await nextTick();
+  document.getElementById(`match-${matchNumber}`)?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center',
+  });
+
+  window.setTimeout(() => {
+    highlightedMatchNumber.value = '';
+  }, 4000);
+}
+
 onMounted(async () => {
   if (window.matchMedia('(max-width: 768px)').matches && viewMode.value === 'table') {
     viewMode.value = 'cards';
@@ -203,7 +266,11 @@ onMounted(async () => {
   }
 
   await loadGroups();
-  await loadMatches();
+  if (route.query.matchNumber) {
+    await focusMatchFromQuery();
+  } else {
+    await loadMatches();
+  }
   syncLockTimer();
   unsub = onSocketEvent('match:update', updateMatch);
 });
@@ -230,14 +297,23 @@ onUnmounted(() => {
   gap: 0.5rem;
 }
 
-.lock-warning {
+.lock-warning,
+.filter-active-banner {
   margin-bottom: 1rem;
 }
 
-.group-filter-bar {
+.filter-active-banner {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.group-filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   margin-bottom: 1.25rem;
 }
 
@@ -245,27 +321,20 @@ onUnmounted(() => {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text-muted);
-  white-space: nowrap;
 }
 
-.group-filter {
-  width: auto;
-  min-width: 11rem;
-  max-width: 14rem;
+.group-chip-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.group-chip {
+  min-width: 2.25rem;
+  padding-inline: 0.65rem;
 }
 
 @media (max-width: 768px) {
-  .group-filter-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .group-filter {
-    width: 100%;
-    min-width: 0;
-    max-width: none;
-  }
-
   .view-toggle {
     width: 100%;
   }

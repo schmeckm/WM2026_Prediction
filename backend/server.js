@@ -43,11 +43,29 @@ async function start() {
     const { ensureBootstrapAdmin } = require('./services/bootstrapAdminService');
     await ensureBootstrapAdmin();
 
+    try {
+      const { seedOfficialWm2026MatchesIfNeeded } = require('./services/wm2026ScheduleSeedService');
+      const seedResult = await seedOfficialWm2026MatchesIfNeeded();
+      if (!seedResult.skipped && (seedResult.createdCount || seedResult.updatedCount || seedResult.removedCount)) {
+        console.log(`[Schedule] ${seedResult.message}`);
+      }
+    } catch (seedError) {
+      console.warn('[Schedule] Automatischer WM-2026-Spielplan-Import fehlgeschlagen:', seedError.message);
+    }
+
     await socketService.init(server, { corsOrigin: getSocketCorsOrigin() });
     startScheduler();
 
     server.listen(PORT, () => {
       console.log(`WM 2026 Tippspiel v2.5 – Server läuft auf http://localhost:${PORT}`);
+      const { isAiEnabled, isApiKeyConfigured, getAiConfig } = require('./services/llmService');
+      if (!isAiEnabled()) {
+        console.warn('[AI] Inaktiv – AI_FEATURES_ENABLED=false');
+      } else if (!isApiKeyConfigured()) {
+        console.warn('[AI] Inaktiv – OPENAI_API_KEY fehlt (Portainer/.env setzen, dann Container neu starten)');
+      } else {
+        console.log(`[AI] Aktiv – Modell ${getAiConfig().model}`);
+      }
     });
 
     const shutdown = () => {

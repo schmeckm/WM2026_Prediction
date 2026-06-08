@@ -10,7 +10,7 @@ const ScoringRule = sequelize.define('ScoringRule', {
   exactResultPoints: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 5,
+    defaultValue: 4,
   },
   goalDifferencePoints: {
     type: DataTypes.INTEGER,

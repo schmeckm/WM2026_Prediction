@@ -2,7 +2,12 @@
   <div>
     <div class="page-header">
       <h1>{{ t('adminPages.bonus.title') }}</h1>
-      <button class="btn btn-primary btn-sm" @click="openCreate">+ {{ t('adminPages.bonus.newQuestion') }}</button>
+      <div class="header-actions">
+        <button class="btn btn-secondary btn-sm" :disabled="ensuringDefaults" @click="ensureDefaults">
+          {{ ensuringDefaults ? t('common.loading') : t('adminPages.bonus.ensureDefaults') }}
+        </button>
+        <button class="btn btn-primary btn-sm" @click="openCreate">+ {{ t('adminPages.bonus.newQuestion') }}</button>
+      </div>
     </div>
 
     <AlertMessage v-if="message" :message="message" type="success" />
@@ -92,6 +97,36 @@
               </template>
               <template v-else>
                 <p>{{ resolvingQuestion?.questionText }}</p>
+
+                <div v-if="resolvingQuestion?.questionType === 'favorite_team_progress'" class="resolve-hint">
+                  <p class="text-muted">{{ t('adminPages.bonus.progressResolveHint') }}</p>
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    :disabled="resolvingFromTournament"
+                    @click="resolveProgress"
+                  >
+                    {{ resolvingFromTournament ? t('common.loading') : t('adminPages.bonus.resolveProgressAuto') }}
+                  </button>
+                </div>
+
+                <template v-else>
+                <div v-if="suggestion" class="suggestion-box">
+                  <p v-if="suggestion.available && suggestion.correctAnswer" class="suggestion-text">
+                    {{ t('adminPages.bonus.suggestionLabel') }}:
+                    <strong>{{ formatSuggestion(suggestion.correctAnswer) }}</strong>
+                  </p>
+                  <p v-else class="text-muted">{{ t('adminPages.bonus.suggestionUnavailable') }}</p>
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-sm"
+                    :disabled="!suggestion.available || resolvingFromTournament"
+                    @click="resolveFromTournament"
+                  >
+                    {{ resolvingFromTournament ? t('common.loading') : t('adminPages.bonus.resolveFromTournament') }}
+                  </button>
+                </div>
+
                 <div v-if="resolvingQuestion?.questionType === 'national_team'" class="form-group">
                   <label>{{ t('adminPages.bonus.form.correctTeam') }}</label>
                   <input v-model="resolveTeamSearch" type="search" class="form-control mb-2" :placeholder="t('adminPages.bonus.form.searchTeam')" />
@@ -114,11 +149,18 @@
                   <label>{{ t('adminPages.bonus.form.correctAnswer') }}</label>
                   <input v-model="form.correctAnswer" class="form-control" required />
                 </div>
+                </template>
               </template>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" @click="closeModal">{{ t('common.cancel') }}</button>
-              <button type="submit" class="btn btn-primary">{{ t('common.save') }}</button>
+              <button
+                v-if="modalMode !== 'resolve' || resolvingQuestion?.questionType !== 'favorite_team_progress'"
+                type="submit"
+                class="btn btn-primary"
+              >
+                {{ t('common.save') }}
+              </button>
             </div>
           </form>
         </div>
@@ -158,6 +200,9 @@ const showModal = ref(false);
 const modalMode = ref('create');
 const resolvingQuestion = ref(null);
 const message = ref('');
+const ensuringDefaults = ref(false);
+const resolvingFromTournament = ref(false);
+const suggestion = ref(null);
 const resolveTeamSearch = ref('');
 const resolvePlayerSearch = ref('');
 
@@ -208,6 +253,49 @@ const filteredResolvePlayers = computed(() => {
 
 function closeModal() {
   showModal.value = false;
+  suggestion.value = null;
+}
+
+function formatSuggestion(answer) {
+  if (!answer) return '–';
+  if (typeof answer === 'object') {
+    if (answer.name && answer.teamName) return `${answer.name} (${answer.teamName})`;
+    return answer.name || '–';
+  }
+  return String(answer);
+}
+
+async function ensureDefaults() {
+  ensuringDefaults.value = true;
+  try {
+    const { data } = await api.post('/admin/bonus-questions/ensure-defaults');
+    const createdCount = data.created?.length || 0;
+    message.value = createdCount > 0
+      ? t('adminPages.bonus.defaultsCreated', { count: createdCount })
+      : t('adminPages.bonus.defaultsAlreadyPresent');
+    await load();
+  } catch (err) {
+    message.value = err.response?.data?.error || t('adminPages.bonus.defaultsFailed');
+  } finally {
+    ensuringDefaults.value = false;
+  }
+}
+
+async function loadSuggestion(questionId) {
+  try {
+    const { data } = await api.get(`/admin/bonus-questions/${questionId}/suggestion`);
+    suggestion.value = data;
+    if (data.available && data.correctAnswer) {
+      if (resolvingQuestion.value?.questionType === 'national_team' && data.correctAnswer.id) {
+        form.value.resolveTeamId = data.correctAnswer.id;
+      }
+      if (resolvingQuestion.value?.questionType === 'national_team_player' && data.correctAnswer.id) {
+        form.value.resolvePlayerId = data.correctAnswer.id;
+      }
+    }
+  } catch {
+    suggestion.value = null;
+  }
 }
 
 function onKeydown(event) {
@@ -274,7 +362,39 @@ async function openResolve(q) {
   form.value.correctAnswer = '';
   form.value.resolveTeamId = null;
   form.value.resolvePlayerId = null;
+  suggestion.value = null;
   showModal.value = true;
+  if (resolvingQuestion.value.questionType !== 'favorite_team_progress') {
+    await loadSuggestion(resolvingQuestion.value.id);
+  }
+}
+
+async function resolveFromTournament() {
+  resolvingFromTournament.value = true;
+  try {
+    await api.post(`/admin/bonus-questions/${resolvingQuestion.value.id}/resolve-from-tournament`);
+    message.value = t('adminPages.bonus.resolvedFromTournament');
+    showModal.value = false;
+    await load();
+  } catch (err) {
+    message.value = err.response?.data?.error || t('adminPages.bonus.resolveFromTournamentFailed');
+  } finally {
+    resolvingFromTournament.value = false;
+  }
+}
+
+async function resolveProgress() {
+  resolvingFromTournament.value = true;
+  try {
+    await api.post(`/admin/bonus-questions/${resolvingQuestion.value.id}/resolve-progress`);
+    message.value = t('adminPages.bonus.resolvedProgress');
+    showModal.value = false;
+    await load();
+  } catch (err) {
+    message.value = err.response?.data?.error || t('adminPages.bonus.resolveProgressFailed');
+  } finally {
+    resolvingFromTournament.value = false;
+  }
 }
 
 function buildCorrectAnswer() {
@@ -336,9 +456,24 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
 .api-hint {
   font-size: 0.85rem;
   margin-bottom: 1rem;
+}
+.suggestion-box,
+.resolve-hint {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-muted, #f5f7fa);
+}
+.suggestion-text {
+  margin-bottom: 0.5rem;
 }
 .mb-2 { margin-bottom: 1.5rem; }
 </style>

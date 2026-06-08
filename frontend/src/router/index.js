@@ -15,6 +15,12 @@ const routes = [
     meta: { publicDisplay: true },
   },
   {
+    path: '/display/bracket',
+    name: 'DisplayBracket',
+    component: () => import('../views/DisplayBracketView.vue'),
+    meta: { publicDisplay: true },
+  },
+  {
     path: '/login',
     component: PublicLayout,
     children: [{ path: '', name: 'Login', component: () => import('../views/LoginView.vue'), meta: { guest: true } }],

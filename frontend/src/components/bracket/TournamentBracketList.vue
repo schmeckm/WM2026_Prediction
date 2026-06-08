@@ -2,11 +2,20 @@
   <div class="tournament-bracket-list">
     <section v-for="section in sections" :key="section.stage" class="tournament-bracket-list-section">
       <h3>{{ section.title }}</h3>
-      <article
+      <component
+        :is="match.id ? 'router-link' : 'article'"
         v-for="match in section.matches"
         :key="match.matchNumber"
+        :to="match.id ? { path: '/matches', query: { matchNumber: String(match.matchNumber) } } : undefined"
         class="tournament-bracket-list-item"
-        :class="{ finished: match.status === 'finished', live: isLive(match), projected: match.projected }"
+        :class="{
+          finished: match.status === 'finished',
+          live: isLive(match),
+          projected: match.projected,
+          clickable: !!match.id,
+          highlighted: isMatchHighlighted(match),
+          dimmed: isMatchDimmed(match),
+        }"
       >
         <header class="tournament-bracket-list-header">
           <span>{{ t('groupStandings.match') }} {{ match.matchNumber }}</span>
@@ -24,9 +33,10 @@
             <strong v-if="showScore(match)">{{ match.awayScore }}</strong>
           </div>
         </div>
+        <div v-if="venueText(match)" class="tournament-bracket-list-venue text-muted">{{ venueText(match) }}</div>
         <div v-if="isLive(match)" class="tournament-bracket-list-badge">{{ t('groupStandings.live') }}</div>
         <div v-else-if="match.projected" class="tournament-bracket-list-badge muted">{{ t('groupStandings.projected') }}</div>
-      </article>
+      </component>
     </section>
   </div>
 </template>
@@ -36,11 +46,21 @@ import { computed, toRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useFormatters } from '../../composables/useFormatters';
 import { useKnockoutBracket } from '../../composables/useKnockoutBracket';
+import { knockoutMatchRelatesToGroup } from '../../composables/useBracketGroupHighlight';
 import TeamFlag from '../TeamFlag.vue';
 
 const props = defineProps({
   path: { type: Array, default: () => [] },
+  highlightedGroup: { type: String, default: '' },
 });
+
+function isMatchHighlighted(match) {
+  return !!props.highlightedGroup && knockoutMatchRelatesToGroup(match, props.highlightedGroup);
+}
+
+function isMatchDimmed(match) {
+  return !!props.highlightedGroup && !isMatchHighlighted(match);
+}
 
 const { t } = useI18n();
 const { formatDateTime } = useFormatters();
@@ -84,6 +104,11 @@ function awayWins(match) {
     && match.awayScore != null
     && match.awayScore > match.homeScore;
 }
+
+function venueText(match) {
+  if (match.stadium && match.city) return `${match.stadium}, ${match.city}`;
+  return match.stadium || match.city || '';
+}
 </script>
 
 <style scoped>
@@ -100,10 +125,17 @@ function awayWins(match) {
 }
 
 .tournament-bracket-list-item {
+  display: block;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
   overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+
+.tournament-bracket-list-item.clickable:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
 }
 
 .tournament-bracket-list-item + .tournament-bracket-list-item {
@@ -120,6 +152,15 @@ function awayWins(match) {
 
 .tournament-bracket-list-item.projected {
   border-style: dashed;
+}
+
+.tournament-bracket-list-item.highlighted {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 28%, transparent);
+}
+
+.tournament-bracket-list-item.dimmed {
+  opacity: 0.35;
 }
 
 .tournament-bracket-list-header {
@@ -167,5 +208,10 @@ function awayWins(match) {
 .tournament-bracket-list-badge.muted {
   color: var(--color-text-muted);
   font-weight: 500;
+}
+
+.tournament-bracket-list-venue {
+  padding: 0 0.75rem 0.55rem;
+  font-size: 0.72rem;
 }
 </style>

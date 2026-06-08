@@ -11,7 +11,7 @@ router.get('/', authMiddleware, async (req, res) => {
     let rules = await ScoringRule.findOne();
     if (!rules) {
       rules = await ScoringRule.create({
-        exactResultPoints: 5,
+        exactResultPoints: 4,
         goalDifferencePoints: 3,
         tendencyPoints: 2,
         wrongPredictionPoints: 0,

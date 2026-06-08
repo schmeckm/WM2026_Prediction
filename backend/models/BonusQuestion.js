@@ -37,6 +37,11 @@ const BonusQuestion = sequelize.define('BonusQuestion', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  resolutionKey: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true,
+  },
 });
 
 module.exports = BonusQuestion;

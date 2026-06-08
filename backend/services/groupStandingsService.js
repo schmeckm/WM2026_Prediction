@@ -321,12 +321,15 @@ function buildKnockoutPath(groups, allMatches) {
     if (!awayTeam && away.projectedMatchup) awayTeam = away.projectedMatchup.away;
 
     return {
+      id: dbMatch?.id || null,
       matchNumber: entry.matchNumber,
       stage: entry.stage,
       kickoffTime: dbMatch?.kickoffTime || null,
       status: dbMatch?.status || 'scheduled',
       homeScore: dbMatch?.homeScore ?? null,
       awayScore: dbMatch?.awayScore ?? null,
+      stadium: dbMatch?.stadium || null,
+      city: dbMatch?.city || null,
       homeSlot: entry.home,
       awaySlot: entry.away,
       homeTeam,
@@ -363,6 +366,7 @@ async function getGroupStandings() {
       attributes: [
         'id', 'matchNumber', 'groupName', 'homeTeam', 'awayTeam',
         'homeScore', 'awayScore', 'status', 'kickoffTime', 'stage',
+        'stadium', 'city',
       ],
       raw: true,
     }),

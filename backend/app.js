@@ -251,6 +251,9 @@ async function initDatabase(options = {}) {
     const { Team } = require('./models');
     const { ensureProductionTeams } = require('./database/teamsSeed');
     await ensureProductionTeams(Team);
+
+    const { ensureDefaultBonusQuestions } = require('./database/bonusQuestionsSeed');
+    await ensureDefaultBonusQuestions();
   }
 }
 

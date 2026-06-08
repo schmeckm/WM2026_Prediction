@@ -1,14 +1,20 @@
 <template>
-  <div
+  <component
+    :is="linkTarget ? 'router-link' : 'div'"
+    :to="linkTarget"
     class="bracket-node"
     :class="{
       finished: match.status === 'finished',
       projected: match.projected,
       live: isLive,
+      clickable: !!linkTarget,
       'bracket-node--final': match.stage === 'FINAL',
       'bracket-node--third': match.stage === 'THIRD_PLACE',
+      'bracket-node--highlighted': highlighted,
+      'bracket-node--dimmed': dimmed,
     }"
     :style="style"
+    :title="linkTarget ? t('tournamentBracket.openMatch') : undefined"
   >
     <div class="bracket-node-meta">
       <span class="bracket-node-number">{{ match.matchNumber }}</span>
@@ -24,9 +30,10 @@
       <span class="bracket-node-label" :title="awayText">{{ awayText }}</span>
       <span v-if="showScore" class="bracket-node-score">{{ match.awayScore }}</span>
     </div>
+    <div v-if="venueText" class="bracket-node-venue" :title="venueText">{{ venueText }}</div>
     <div v-if="isLive" class="bracket-node-badge">{{ t('groupStandings.live') }}</div>
     <div v-else-if="match.projected" class="bracket-node-badge muted">{{ t('groupStandings.projected') }}</div>
-  </div>
+  </component>
 </template>
 
 <script setup>
@@ -41,6 +48,9 @@ const props = defineProps({
   left: { type: Number, required: true },
   top: { type: Number, required: true },
   width: { type: Number, default: 188 },
+  clickable: { type: Boolean, default: true },
+  highlighted: { type: Boolean, default: false },
+  dimmed: { type: Boolean, default: false },
 });
 
 const { t } = useI18n();
@@ -56,6 +66,21 @@ const style = computed(() => ({
   top: `${props.top}px`,
   width: `${props.width}px`,
 }));
+
+const linkTarget = computed(() => {
+  if (!props.clickable || !props.match.id) return undefined;
+  return {
+    path: '/matches',
+    query: { matchNumber: String(props.match.matchNumber) },
+  };
+});
+
+const venueText = computed(() => {
+  if (props.match.stadium && props.match.city) {
+    return `${props.match.stadium}, ${props.match.city}`;
+  }
+  return props.match.stadium || props.match.city || '';
+});
 
 const homeText = computed(() => props.match.homeTeam || props.formatSlot(props.match.homeLabel || props.match.homeSlot));
 const awayText = computed(() => props.match.awayTeam || props.formatSlot(props.match.awayLabel || props.match.awaySlot));
@@ -73,11 +98,24 @@ const awayWins = computed(() => props.match.status === 'finished' && showScore.v
 <style scoped>
 .bracket-node {
   position: absolute;
+  display: block;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
   padding: 0.4rem 0.5rem;
   box-shadow: 0 1px 2px color-mix(in srgb, var(--color-text) 6%, transparent);
+  text-decoration: none;
+  color: inherit;
+}
+
+.bracket-node.clickable {
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bracket-node.clickable:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 12%, transparent);
 }
 
 .bracket-node.finished {
@@ -100,6 +138,16 @@ const awayWins = computed(() => props.match.status === 'finished' && showScore.v
 
 .bracket-node--third {
   opacity: 0.92;
+}
+
+.bracket-node--highlighted {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 30%, transparent);
+  z-index: 2;
+}
+
+.bracket-node--dimmed {
+  opacity: 0.28;
 }
 
 .bracket-node-meta {
@@ -155,6 +203,15 @@ const awayWins = computed(() => props.match.status === 'finished' && showScore.v
   font-weight: 700;
   min-width: 1rem;
   text-align: right;
+}
+
+.bracket-node-venue {
+  margin-top: 0.2rem;
+  font-size: 0.62rem;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .bracket-node-badge {

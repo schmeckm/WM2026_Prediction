@@ -6,6 +6,11 @@ const adminMiddleware = require('../middleware/adminMiddleware');
 const { logAudit } = require('../services/auditService');
 const { recalculateBonusPoints } = require('../services/leaderboardService');
 const { listTeams, listPlayers } = require('../services/footballTeamService');
+const { ensureDefaultBonusQuestions } = require('../database/bonusQuestionsSeed');
+const {
+  getTournamentOutcomes,
+  suggestAnswerForQuestion,
+} = require('../services/bonusResolutionService');
 
 const router = express.Router();
 
@@ -138,6 +143,34 @@ router.put('/predictions/:id', authMiddleware, async (req, res) => {
 const adminRouter = express.Router();
 adminRouter.use(authMiddleware, adminMiddleware);
 
+adminRouter.post('/ensure-defaults', async (req, res) => {
+  try {
+    const result = await ensureDefaultBonusQuestions();
+    await logAudit({
+      userId: req.user.id,
+      action: 'BONUS_QUESTIONS_ENSURE_DEFAULTS',
+      entityType: 'BonusQuestion',
+      newValue: result,
+      req,
+    });
+    res.json({
+      message: 'Standard-Bonusfragen geprüft.',
+      ...result,
+    });
+  } catch (error) {
+    sendError(res, req, 500, 'errors.bonusQuestionsEnsureFailed');
+  }
+});
+
+adminRouter.get('/tournament-outcomes', async (req, res) => {
+  try {
+    const outcomes = await getTournamentOutcomes();
+    res.json(outcomes);
+  } catch (error) {
+    sendError(res, req, 500, 'errors.bonusTournamentOutcomesFailed');
+  }
+});
+
 adminRouter.get('/', async (req, res) => {
   try {
     const questions = await BonusQuestion.findAll({ order: [['createdAt', 'DESC']] });
@@ -162,6 +195,17 @@ adminRouter.post('/', async (req, res) => {
     res.status(201).json(parseQuestion(question));
   } catch (error) {
     sendError(res, req, 500, 'errors.bonusQuestionCreateFailed');
+  }
+});
+
+adminRouter.get('/:id/suggestion', async (req, res) => {
+  try {
+    const question = await BonusQuestion.findByPk(req.params.id);
+    if (!question) return sendError(res, req, 404, 'errors.notFound');
+    const suggestion = await suggestAnswerForQuestion(question);
+    res.json(suggestion);
+  } catch (error) {
+    sendError(res, req, 500, 'errors.bonusSuggestionFailed');
   }
 });
 
@@ -206,6 +250,79 @@ adminRouter.delete('/:id', async (req, res) => {
     res.json({ message: 'Bonusfrage gelöscht.' });
   } catch (error) {
     sendError(res, req, 500, 'errors.deleteFailed');
+  }
+});
+
+adminRouter.post('/:id/resolve-from-tournament', async (req, res) => {
+  try {
+    const question = await BonusQuestion.findByPk(req.params.id);
+    if (!question) return sendError(res, req, 404, 'errors.notFound');
+
+    if (question.questionType === 'favorite_team_progress') {
+      return sendError(res, req, 400, 'errors.bonusProgressUseDedicatedResolve');
+    }
+
+    const suggestion = await suggestAnswerForQuestion(question);
+    const correctAnswer = req.body?.correctAnswer || suggestion.correctAnswer;
+
+    const hasResolvableAnswer = correctAnswer && (
+      correctAnswer.id != null
+      || correctAnswer.name
+      || typeof correctAnswer === 'string'
+    );
+    if (!suggestion.available || !hasResolvableAnswer) {
+      return sendError(res, req, 409, 'errors.bonusSuggestionUnavailable');
+    }
+
+    await question.update({
+      correctAnswerJson: JSON.stringify(correctAnswer),
+      status: 'resolved',
+    });
+
+    const updated = await recalculateBonusPoints();
+    await logAudit({
+      userId: req.user.id,
+      action: 'BONUS_QUESTION_RESOLVE_FROM_TOURNAMENT',
+      entityType: 'BonusQuestion',
+      entityId: question.id,
+      newValue: { correctAnswer, source: suggestion.source },
+      req,
+    });
+    res.json({
+      message: 'Bonusfrage aus Turnierdaten aufgelöst.',
+      pointsRecalculated: updated,
+      question: parseQuestion(question),
+      suggestion,
+    });
+  } catch (error) {
+    sendError(res, req, 500, 'errors.resolveFailed');
+  }
+});
+
+adminRouter.post('/:id/resolve-progress', async (req, res) => {
+  try {
+    const question = await BonusQuestion.findByPk(req.params.id);
+    if (!question) return sendError(res, req, 404, 'errors.notFound');
+    if (question.questionType !== 'favorite_team_progress') {
+      return sendError(res, req, 400, 'errors.bonusProgressQuestionRequired');
+    }
+
+    await question.update({ status: 'resolved' });
+    const updated = await recalculateBonusPoints();
+    await logAudit({
+      userId: req.user.id,
+      action: 'BONUS_QUESTION_RESOLVE_PROGRESS',
+      entityType: 'BonusQuestion',
+      entityId: question.id,
+      req,
+    });
+    res.json({
+      message: 'Lieblingsteam-Frage automatisch ausgewertet.',
+      pointsRecalculated: updated,
+      question: parseQuestion(question),
+    });
+  } catch (error) {
+    sendError(res, req, 500, 'errors.resolveFailed');
   }
 });
 

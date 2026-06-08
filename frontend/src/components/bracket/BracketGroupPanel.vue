@@ -1,9 +1,19 @@
 <template>
-  <div class="bracket-group-panel">
+  <div
+    :id="`bracket-group-${group.group}`"
+    class="bracket-group-panel"
+    :class="{
+      'bracket-group-panel--dimmed': highlightMode && !isActive,
+      'bracket-group-panel--active': isActive,
+    }"
+  >
     <div class="bracket-group-header">
       <h3>{{ t('nationalTeams.group') }} {{ group.group }}</h3>
     </div>
-    <ul class="bracket-group-teams">
+    <p v-if="group.empty" class="bracket-group-empty text-muted">
+      {{ t('tournamentBracket.noGroupData') }}
+    </p>
+    <ul v-else class="bracket-group-teams">
       <li
         v-for="row in group.table"
         :key="row.team.name"
@@ -15,17 +25,21 @@
     </ul>
     <ul v-if="group.allMatches?.length" class="bracket-group-matches">
       <li v-for="match in group.allMatches" :key="match.id || match.matchNumber">
-        <span class="bracket-group-date">{{ formatShortDate(match.kickoffTime) }}</span>
-        <span class="bracket-group-time">{{ formatShortTime(match.kickoffTime) }}</span>
-        <span class="bracket-group-fixture">
-          <TeamFlag :name="match.homeTeam" hide-name />
+        <div class="bracket-group-match-top">
+          <div class="bracket-group-match-meta">
+            <span class="bracket-group-date">{{ formatShortDate(match.kickoffTime) }}</span>
+            <span class="bracket-group-time">{{ formatShortTime(match.kickoffTime) }}</span>
+          </div>
+          <span v-if="isLive(match)" class="bracket-group-live">
+            {{ match.homeScore ?? 0 }}:{{ match.awayScore ?? 0 }}
+          </span>
+          <span v-else-if="hasScore(match)" class="bracket-group-score">{{ match.homeScore }}:{{ match.awayScore }}</span>
+        </div>
+        <div class="bracket-group-fixture">
+          <TeamFlag :name="match.homeTeam" inline hide-name />
           <span class="bracket-group-vs">{{ t('groupStandings.vs') }}</span>
-          <TeamFlag :name="match.awayTeam" hide-name />
-        </span>
-        <span v-if="isLive(match)" class="bracket-group-live">
-          {{ match.homeScore ?? 0 }}:{{ match.awayScore ?? 0 }}
-        </span>
-        <span v-else-if="hasScore(match)" class="bracket-group-score">{{ match.homeScore }}:{{ match.awayScore }}</span>
+          <TeamFlag :name="match.awayTeam" inline hide-name />
+        </div>
       </li>
     </ul>
   </div>
@@ -38,6 +52,8 @@ import TeamFlag from '../TeamFlag.vue';
 
 defineProps({
   group: { type: Object, required: true },
+  highlightMode: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: false },
 });
 
 const { t } = useI18n();
@@ -68,6 +84,23 @@ function hasScore(match) {
   border-radius: var(--radius-md);
   background: var(--color-surface);
   overflow: hidden;
+  transition: opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.bracket-group-panel--dimmed {
+  opacity: 0.3;
+}
+
+.bracket-group-panel--active {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 28%, transparent);
+  transform: scale(1.03);
+}
+
+.bracket-group-empty {
+  margin: 0;
+  padding: 0.55rem 0.6rem 0.65rem;
+  font-size: 0.72rem;
 }
 
 .bracket-group-header {
@@ -101,6 +134,19 @@ function hasScore(match) {
   align-items: center;
   gap: 0.35rem;
   font-size: 0.78rem;
+  min-width: 0;
+}
+
+.bracket-group-teams :deep(.team-with-flag) {
+  min-width: 0;
+  flex: 1;
+}
+
+.bracket-group-teams :deep(.team-name) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
 }
 
 .bracket-group-teams li.qualified .bracket-group-pos {
@@ -131,23 +177,38 @@ function hasScore(match) {
 }
 
 .bracket-group-matches li {
-  display: grid;
-  grid-template-columns: 3.2rem 2.4rem 1fr auto;
+  display: flex;
+  flex-direction: column;
   gap: 0.25rem;
-  align-items: center;
   font-size: 0.72rem;
 }
 
-.bracket-group-date,
-.bracket-group-time {
+.bracket-group-match-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.bracket-group-match-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
   color: var(--color-text-muted);
   white-space: nowrap;
 }
 
+.bracket-group-date,
+.bracket-group-time {
+  color: inherit;
+}
+
 .bracket-group-fixture {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.35rem;
+  flex-wrap: wrap;
 }
 
 .bracket-group-vs {

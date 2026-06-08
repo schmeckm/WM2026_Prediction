@@ -91,7 +91,7 @@ import LoadingSpinner from '../components/LoadingSpinner.vue';
 const { t } = useI18n();
 const loading = ref(true);
 const rules = ref({
-  exactResultPoints: 5,
+  exactResultPoints: 4,
   goalDifferencePoints: 3,
   tendencyPoints: 2,
   wrongPredictionPoints: 0,

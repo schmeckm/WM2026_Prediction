@@ -47,10 +47,14 @@
             <button class="btn btn-primary" :disabled="exporting" @click="downloadBackup">
               {{ exporting ? t('adminPages.backup.downloading') : t('adminPages.backup.download') }}
             </button>
+            <button class="btn btn-secondary" :disabled="exportingExcel" @click="downloadExcelExport">
+              {{ exportingExcel ? t('adminPages.backup.exportingExcel') : t('adminPages.backup.downloadExcel') }}
+            </button>
             <button class="btn btn-secondary" :disabled="saving" @click="saveBackup">
               {{ saving ? t('adminPages.backup.saving') : t('adminPages.backup.saveOnServer') }}
             </button>
           </div>
+          <p class="text-muted excel-hint">{{ t('adminPages.backup.excelHint') }}</p>
         </div>
 
         <div class="card">
@@ -165,6 +169,7 @@ const { confirmState, openConfirm, closeConfirm, onConfirm } = useConfirmModal()
 
 const loading = ref(true);
 const exporting = ref(false);
+const exportingExcel = ref(false);
 const saving = ref(false);
 const restoring = ref(false);
 const message = ref('');
@@ -215,6 +220,25 @@ async function loadOverview() {
     loadError.value = apiErrorMessage(err, t('adminPages.backup.loadFailed'));
   } finally {
     loading.value = false;
+  }
+}
+
+async function downloadExcelExport() {
+  exportingExcel.value = true;
+  error.value = '';
+  message.value = '';
+  try {
+    const response = await api.get('/admin/backup/export-excel', { responseType: 'blob' });
+    const filename = extractFilename(
+      response.headers['content-disposition'],
+      `tippspiel-export-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    );
+    triggerDownload(response.data, filename);
+    message.value = t('adminPages.backup.excelDownloadSuccess');
+  } catch (err) {
+    error.value = err.response?.data?.error || t('adminPages.backup.excelExportFailed');
+  } finally {
+    exportingExcel.value = false;
   }
 }
 
@@ -341,6 +365,10 @@ onMounted(loadOverview);
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+.excel-hint {
+  margin: 0.75rem 1rem 1rem;
+  font-size: 0.85rem;
 }
 .restore-hint {
   font-size: 0.875rem;

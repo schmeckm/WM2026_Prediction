@@ -30,7 +30,7 @@ async function seedDemoData() {
   }
 
   await ScoringRule.create({
-    exactResultPoints: 5,
+    exactResultPoints: 4,
     goalDifferencePoints: 3,
     tendencyPoints: 2,
     wrongPredictionPoints: 0,
@@ -51,32 +51,19 @@ async function seedDemoData() {
     { matchNumber: 10, stage: 'Final', groupName: null, homeTeam: 'Finalist 1', awayTeam: 'Finalist 2', kickoffTime: '2026-07-19T21:00:00.000Z', stadium: 'MetLife Stadium', city: 'New York' },
   ]);
 
-  await BonusQuestion.bulkCreate([
-    {
-      questionText: 'Wer wird Weltmeister?',
-      questionType: 'national_team',
-      optionsJson: null,
-      points: 20,
-      lockTime: '2026-06-11T20:00:00.000Z',
+  const { DEFAULT_BONUS_QUESTIONS, getDefaultLockTime } = require('../data/defaultBonusQuestions');
+  const lockTime = getDefaultLockTime();
+  await BonusQuestion.bulkCreate(
+    DEFAULT_BONUS_QUESTIONS.map((question) => ({
+      questionText: question.questionText,
+      questionType: question.questionType,
+      optionsJson: question.optionsJson || null,
+      points: question.points,
+      lockTime,
       status: 'open',
-    },
-    {
-      questionText: 'Wer wird Torschützenkönig?',
-      questionType: 'national_team_player',
-      optionsJson: null,
-      points: 15,
-      lockTime: '2026-06-11T20:00:00.000Z',
-      status: 'open',
-    },
-    {
-      questionText: 'Wie weit kommt {team}?',
-      questionType: 'favorite_team_progress',
-      optionsJson: JSON.stringify(['groupStage', 'roundOf16', 'quarterFinal', 'semiFinal', 'final', 'champion']),
-      points: 10,
-      lockTime: '2026-06-11T20:00:00.000Z',
-      status: 'open',
-    },
-  ]);
+      resolutionKey: question.resolutionKey,
+    })),
+  );
 }
 
 module.exports = { seedDemoData };

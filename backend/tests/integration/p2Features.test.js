@@ -47,6 +47,14 @@ describe('Display API', () => {
     assert.equal(res.status, 403);
     await setSetting('displayModeEnabled', true);
   });
+
+  it('returns public bracket data without auth', async () => {
+    const res = await api.get('/api/display/bracket');
+    assert.equal(res.status, 200);
+    assert.ok(Array.isArray(res.body.knockoutPath));
+    assert.ok(Array.isArray(res.body.groups));
+    assert.ok(res.body.updatedAt);
+  });
 });
 
 describe('Leaderboard – admin inclusion setting', () => {

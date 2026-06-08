@@ -23,6 +23,10 @@ const {
   restorePlayerData,
   buildFilename,
 } = require('../services/backupService');
+const {
+  buildExcelExportBuffer,
+  buildExportFilename,
+} = require('../services/excelExportService');
 
 const router = express.Router();
 
@@ -201,6 +205,27 @@ router.get('/backup/export', async (req, res) => {
   } catch (error) {
     console.error(error);
     sendError(res, req, 500, 'errors.backupExportFailed');
+  }
+});
+
+router.get('/backup/export-excel', async (req, res) => {
+  try {
+    const buffer = await buildExcelExportBuffer();
+    const filename = buildExportFilename();
+    await logAudit({
+      userId: req.user.id,
+      action: 'PLAYER_DATA_EXCEL_EXPORT',
+      req,
+    });
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(Buffer.from(buffer));
+  } catch (error) {
+    console.error(error);
+    sendError(res, req, 500, 'errors.excelExportFailed');
   }
 });
 

@@ -144,7 +144,7 @@
     "passwordMismatch": "Passwörter stimmen nicht überein.",
     "verifyEmailTitle": "E-Mail bestätigen",
     "verifyEmailSuccess": "E-Mail bestätigt. Sie werden angemeldet…",
-    "noRocheAccountNotice": "Bitte verwenden Sie keine Roche-E-Mail-Adresse und keinen Roche-Google-Account. Nutzen Sie stattdessen ein privates Konto oder",
+    "noRocheAccountNotice": "Für E-Mail-Login: bitte keine Roche-Adresse verwenden. Google-Login mit privatem Google-Konto ist möglich. Alternativ",
     "signInWithGoogle": "Mit Google anmelden",
     "orContinueWith": "oder",
     "ssoSigningIn": "Anmeldung wird abgeschlossen…",
@@ -199,7 +199,7 @@
     "clickForDetails": "Klicken für Details",
     "detailBackendOffline": "Backend nicht erreichbar. Stack/Container in Portainer prüfen.",
     "detailDatabaseUnavailable": "Datenbank nicht erreichbar. Postgres-Container und DB_PASSWORD prüfen.",
-    "detailBackendOfflineAi": "KI-Status unbekannt, weil das Backend nicht erreichbar ist.",
+    "detailBackendOfflineAi": "Backend gerade nicht erreichbar (Neustart?) – KI-Status wird automatisch erneut geprüft.",
     "detailAiDisabled": "KI ist deaktiviert (AI_FEATURES_ENABLED=false im Stack).",
     "detailAiNoApiKey": "OPENAI_API_KEY fehlt im Portainer-Stack.",
     "detailAiInactive": "KI Backend ist nicht einsatzbereit.",
@@ -221,6 +221,7 @@
     "topScorerPick": "Torschützenkönig (Nominierung)",
     "topScorerSearch": "Spieler suchen…",
     "noTopScorerPick": "Kein Spieler gewählt",
+    "currentTopScorer": "Gespeicherte Nominierung: {name}",
     "playersLoading": "Spieler werden geladen…",
     "playersLoadFailed": "Spieler konnten nicht geladen werden. Bitte Backend/API prüfen.",
     "teamsLoadFailed": "Abteilungs-Teams konnten nicht geladen werden.",
@@ -451,7 +452,20 @@
     "exitFullscreen": "Vollbild beenden",
     "lastUpdated": "Aktualisiert",
     "focusBracket": "Nur Spielbaum",
-    "showGroups": "Gruppen zeigen"
+    "showGroups": "Gruppen zeigen",
+    "highlightGroup": "Gruppe hervorheben",
+    "allGroups": "Alle Gruppen",
+    "fullTreeHint": "Der komplette K.-o.-Baum bleibt immer sichtbar – die Gruppenauswahl hebt nur die Tabellen an den Seiten hervor.",
+    "groupHighlighted": "Gruppe {group} hervorgehoben – zugehörige K.-o.-Spiele im Baum sind markiert.",
+    "noGroupData": "Noch keine Spieldaten für diese Gruppe.",
+    "displayMode": "TV-Ansicht",
+    "displaySubtitle": "Live-Spielbaum",
+    "openMatch": "Spiel öffnen",
+    "zoomToolbar": "Zoom",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern",
+    "zoomReset": "100%",
+    "zoomFit": "Anpassen"
   },
   "nationalTeams": {
     "title": "Nationalteams & Kader",
@@ -533,7 +547,10 @@
       "missing": "Meine fehlenden Tipps",
       "group": "Gruppenphase",
       "knockout": "K.o.-Phase",
-      "allGroups": "Alle Gruppen"
+      "allGroups": "Alle Gruppen",
+      "groupBy": "Nach Gruppe filtern",
+      "active": "Filter aktiv: {filters}",
+      "reset": "Alle Spiele anzeigen"
     },
     "empty": "Keine Spiele für diesen Filter gefunden.",
     "group": "Gruppe",
@@ -673,6 +690,7 @@
     "goToProfile": "Zum Profil",
     "progress": {
       "groupStage": "Gruppenphase",
+      "roundOf32": "Letzte 32",
       "roundOf16": "Achtelfinale",
       "quarterFinal": "Viertelfinale",
       "semiFinal": "Halbfinale",
@@ -699,7 +717,7 @@
       },
       "bonus": {
         "title": "Bonusfragen",
-        "text": "Zusätzlich zu den Spielen gibt es Bonusfragen (z. B. Weltmeister, Torschützenkönig). Diese bringen Extra-Punkte, die in deine Gesamtwertung einfließen."
+        "text": "Zusätzlich zu den Spielen gibt es Sonderwetten: Weltmeister (8 Pkt.), Vize-Weltmeister (4), Dritter (2), Torschützenkönig (4) und optional „Wie weit kommt dein Lieblingsteam?“. Diese Punkte fließen in deine Gesamtwertung ein."
       },
       "leaderboard": {
         "title": "Hitliste",
@@ -717,7 +735,7 @@
     },
     "scoring": {
       "exact": "Exaktes Ergebnis: {exact} Punkte",
-      "goalDiff": "Richtige Tordifferenz: {goalDiff} Punkte",
+      "goalDiff": "Richtige Tordifferenz (nur bei Sieg): {goalDiff} Punkte",
       "tendency": "Richtige Tendenz (Sieg/Unentschieden): {tendency} Punkte",
       "wrong": "Falscher Tipp: {wrong} Punkte"
     },
@@ -1126,6 +1144,19 @@
       "confirmDelete": "Bonusfrage wirklich löschen?",
       "created": "Bonusfrage erstellt.",
       "resolved": "Bonusfrage aufgelöst.",
+      "ensureDefaults": "Standardfragen anlegen",
+      "defaultsCreated": "{count} Standard-Bonusfrage(n) angelegt.",
+      "defaultsAlreadyPresent": "Alle Standard-Bonusfragen sind bereits vorhanden.",
+      "defaultsFailed": "Standard-Bonusfragen konnten nicht angelegt werden.",
+      "resolveFromTournament": "Aus Turnier übernehmen",
+      "resolveFromTournamentFailed": "Auswertung aus Turnierdaten fehlgeschlagen.",
+      "resolvedFromTournament": "Bonusfrage aus Turnierdaten aufgelöst.",
+      "suggestionLabel": "Vorschlag aus Turnier",
+      "suggestionUnavailable": "Noch kein Ergebnis verfügbar (Spiel/API fehlt).",
+      "resolveProgressAuto": "Automatisch auswerten",
+      "resolveProgressFailed": "Automatische Auswertung fehlgeschlagen.",
+      "resolvedProgress": "Lieblingsteam-Frage automatisch ausgewertet.",
+      "progressResolveHint": "Jeder Nutzer wird anhand seines Lieblingsteams bewertet. Es gibt keine einzelne richtige Antwort für alle.",
       "columns": {
         "question": "Frage",
         "type": "Typ",
@@ -1252,7 +1283,7 @@
       "refresh": "Aktualisieren",
       "refreshing": "Lädt...",
       "noticeTitle": "Spieler- und Benutzerdaten sichern",
-      "noticeDesc": "Erstellt eine Sicherungskopie aller Benutzer, Teams, Tipps und Bonus-Tipps. Im Problemfall kann die Datei wieder hochgeladen und die Daten wiederhergestellt werden.",
+      "noticeDesc": "JSON-Backup zum Wiederherstellen der Daten. Zusätzlich: Excel-Export mit Hitliste und allen Tipps zur Offline-Auswertung im Notfall.",
       "stats": {
         "users": "Benutzer",
         "teams": "Teams",
@@ -1260,8 +1291,13 @@
         "bonusPredictions": "Bonus-Tipps"
       },
       "createTitle": "Backup erstellen",
-      "download": "Als Datei herunterladen",
+      "download": "JSON-Backup herunterladen",
       "downloading": "Exportiere...",
+      "downloadExcel": "Excel-Export herunterladen",
+      "exportingExcel": "Erstelle Excel...",
+      "excelHint": "Excel-Datei mit Hitliste, allen Tipps, Bonusfragen, Spielen und Nutzern – als Notfall-Auswertung offline in Excel.",
+      "excelDownloadSuccess": "Excel-Export wurde heruntergeladen.",
+      "excelExportFailed": "Excel-Export fehlgeschlagen.",
       "saveOnServer": "Auf Server speichern",
       "saving": "Speichere...",
       "restoreTitle": "Daten wiederherstellen",

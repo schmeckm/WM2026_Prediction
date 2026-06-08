@@ -12,7 +12,7 @@ function calculatePoints(prediction, match, scoringRules) {
   const { predictedHomeScore, predictedAwayScore } = prediction;
   const { homeScore, awayScore } = match;
   const rules = scoringRules || {
-    exactResultPoints: 5,
+    exactResultPoints: 4,
     goalDifferencePoints: 3,
     tendencyPoints: 2,
     wrongPredictionPoints: 0,
@@ -22,14 +22,14 @@ function calculatePoints(prediction, match, scoringRules) {
     return rules.exactResultPoints;
   }
 
+  const actualTendency = getTendency(homeScore, awayScore);
   const predictedDiff = predictedHomeScore - predictedAwayScore;
   const actualDiff = homeScore - awayScore;
-  if (predictedDiff === actualDiff) {
+  if (actualTendency !== 'draw' && predictedDiff === actualDiff) {
     return rules.goalDifferencePoints;
   }
 
   const predictedTendency = getTendency(predictedHomeScore, predictedAwayScore);
-  const actualTendency = getTendency(homeScore, awayScore);
   if (predictedTendency === actualTendency) {
     return rules.tendencyPoints;
   }
@@ -42,7 +42,7 @@ function classifyPrediction(prediction, match, scoringRules) {
   if (points === null) return null;
 
   const rules = scoringRules || {
-    exactResultPoints: 5,
+    exactResultPoints: 4,
     goalDifferencePoints: 3,
     tendencyPoints: 2,
     wrongPredictionPoints: 0,

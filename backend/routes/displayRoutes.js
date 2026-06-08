@@ -2,6 +2,7 @@ const express = require('express');
 const { sendError } = require('../utils/apiResponse');
 const { getSetting } = require('../services/settingsService');
 const { getLeaderboard } = require('../services/leaderboardService');
+const { getGroupStandings } = require('../services/groupStandingsService');
 const { Match } = require('../models');
 const { Op } = require('sequelize');
 const displayAccessMiddleware = require('../middleware/displayAccessMiddleware');
@@ -50,6 +51,20 @@ router.get('/live-matches', async (req, res) => {
         kickoffTime: m.kickoffTime,
         stage: m.stage,
       })),
+    });
+  } catch (error) {
+    sendError(res, req, 500, 'errors.matchesLoadFailed');
+  }
+});
+
+router.get('/bracket', async (req, res) => {
+  try {
+    if (!(await assertDisplayEnabled(req, res))) return;
+    const standings = await getGroupStandings();
+    res.json({
+      updatedAt: new Date().toISOString(),
+      groups: standings.groups,
+      knockoutPath: standings.knockoutPath,
     });
   } catch (error) {
     sendError(res, req, 500, 'errors.matchesLoadFailed');

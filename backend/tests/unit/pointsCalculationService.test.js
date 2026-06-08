@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const { calculatePoints, classifyPrediction, getTendency } = require('../../services/pointsCalculationService');
 
 const rules = {
-  exactResultPoints: 5,
+  exactResultPoints: 4,
   goalDifferencePoints: 3,
   tendencyPoints: 2,
   wrongPredictionPoints: 0,
@@ -13,7 +13,7 @@ describe('pointsCalculationService', () => {
   test('exact score awards exact points', () => {
     const prediction = { predictedHomeScore: 2, predictedAwayScore: 1 };
     const match = { homeScore: 2, awayScore: 1, status: 'finished' };
-    assert.equal(calculatePoints(prediction, match, rules), 5);
+    assert.equal(calculatePoints(prediction, match, rules), 4);
     assert.equal(classifyPrediction(prediction, match, rules), 'exact');
   });
 
@@ -27,6 +27,13 @@ describe('pointsCalculationService', () => {
     const prediction = { predictedHomeScore: 3, predictedAwayScore: 0 };
     const match = { homeScore: 1, awayScore: 0, status: 'finished' };
     assert.equal(calculatePoints(prediction, match, rules), 2);
+  });
+
+  test('matching goal difference on draws awards tendency points only', () => {
+    const prediction = { predictedHomeScore: 2, predictedAwayScore: 2 };
+    const match = { homeScore: 1, awayScore: 1, status: 'finished' };
+    assert.equal(calculatePoints(prediction, match, rules), 2);
+    assert.equal(classifyPrediction(prediction, match, rules), 'tendency');
   });
 
   test('draw tendency is detected correctly', () => {

@@ -176,12 +176,16 @@
             <p v-else-if="filteredPlayers.length === 0 && players.length > 0" class="text-muted players-hint">
               {{ t('profile.noPlayersMatch') }}
             </p>
+            <p v-if="currentTopScorerLabel" class="current-top-scorer">
+              {{ t('profile.currentTopScorer', { name: currentTopScorerLabel }) }}
+            </p>
             <select
               id="topScorerPlayer"
-              v-model.number="form.topScorerPlayerId"
+              v-model="form.topScorerPlayerId"
               class="form-control player-select"
               size="6"
-              :disabled="playersLoading || filteredPlayers.length === 0"
+              :disabled="playersLoading"
+              @change="onTopScorerChange"
             >
               <option :value="null">{{ t('profile.noTopScorerPick') }}</option>
               <option v-for="player in filteredPlayers" :key="player.id" :value="player.id">
@@ -431,6 +435,7 @@ const twoFactorSetup = ref(null);
 const twoFactorEnableCode = ref('');
 const twoFactorDisableCode = ref('');
 const twoFactorBusy = ref(false);
+const topScorerTouched = ref(false);
 
 function normalizeOptionalId(id) {
   if (id == null || id === '') return null;
@@ -497,6 +502,48 @@ const filteredPlayers = computed(() => {
   return result;
 });
 
+const currentTopScorerLabel = computed(() => {
+  const playerId = resolveTopScorerPlayerId();
+  if (!playerId) return '';
+  const player = findPlayerById(playerId);
+  if (player) return `${player.name}${player.teamName ? ` (${player.teamName})` : ''}`;
+  if (authStore.user?.topScorerPlayerName) return authStore.user.topScorerPlayerName;
+  return '';
+});
+
+function onTopScorerChange() {
+  topScorerTouched.value = true;
+}
+
+function resolveTopScorerPlayerId() {
+  const fromForm = normalizePlayerId(form.value.topScorerPlayerId);
+  if (fromForm != null) return fromForm;
+  if (!topScorerTouched.value) {
+    return normalizePlayerId(authStore.user?.topScorerPlayerId);
+  }
+  return null;
+}
+
+function resolveTopScorerPlayerName(playerId) {
+  if (!playerId) return null;
+  const player = findPlayerById(playerId);
+  if (player?.name) return player.name;
+  if (Number(playerId) === Number(authStore.user?.topScorerPlayerId)) {
+    return authStore.user?.topScorerPlayerName || null;
+  }
+  const fromFiltered = filteredPlayers.value.find((p) => Number(p.id) === Number(playerId));
+  return fromFiltered?.name || null;
+}
+
+function syncTopScorerSelectionFromUser(user = authStore.user) {
+  if (topScorerTouched.value) return;
+  form.value.topScorerPlayerId = normalizePlayerId(user?.topScorerPlayerId);
+}
+
+watch(players, () => {
+  syncTopScorerSelectionFromUser();
+});
+
 onMounted(async () => {
   let user = authStore.user;
   try {
@@ -540,6 +587,7 @@ onMounted(async () => {
   }
 
   playersLoading.value = false;
+  syncTopScorerSelectionFromUser(user);
 });
 
 watch(() => form.value.language, (code) => {
@@ -666,8 +714,8 @@ async function handleSave() {
     const favoriteTeam = nationalTeams.value.find(
       (nt) => Number(nt.id) === Number(form.value.favoriteNationalTeamId),
     );
-    const playerId = normalizePlayerId(form.value.topScorerPlayerId);
-    const topScorer = findPlayerById(playerId);
+    const playerId = resolveTopScorerPlayerId();
+    const topScorerName = resolveTopScorerPlayerName(playerId);
 
     const payload = {
       firstName: form.value.firstName,
@@ -677,7 +725,7 @@ async function handleSave() {
       favoriteNationalTeamId: form.value.favoriteNationalTeamId,
       favoriteNationalTeamName: favoriteTeam?.name || null,
       topScorerPlayerId: playerId,
-      topScorerPlayerName: topScorer?.name || (playerId ? authStore.user?.topScorerPlayerName : null) || null,
+      topScorerPlayerName: topScorerName,
       avatarColor: form.value.avatarColor,
       avatarEmoji: form.value.avatarEmoji === 'initials' ? null : form.value.avatarEmoji,
     };
@@ -686,7 +734,9 @@ async function handleSave() {
       await uploadImage();
     }
     const updated = await authStore.updateProfile(authStore.user.id, payload);
+    topScorerTouched.value = false;
     applyFormFromUser(updated);
+    syncTopScorerSelectionFromUser(updated);
     showPassword.value = false;
     success.value = t('profile.updated');
   } catch (err) {
@@ -916,6 +966,13 @@ async function handleSave() {
 .players-hint {
   font-size: 0.8rem;
   margin-bottom: 0.5rem;
+}
+
+.current-top-scorer {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
 .players-error {

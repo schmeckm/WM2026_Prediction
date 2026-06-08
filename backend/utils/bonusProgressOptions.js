@@ -1,5 +1,6 @@
 const CANONICAL_PROGRESS_OPTIONS = [
   'groupStage',
+  'roundOf32',
   'roundOf16',
   'quarterFinal',
   'semiFinal',
@@ -9,6 +10,9 @@ const CANONICAL_PROGRESS_OPTIONS = [
 
 const LEGACY_TO_CANONICAL = {
   Gruppenphase: 'groupStage',
+  'Letzte 32': 'roundOf32',
+  'Round of 32': 'roundOf32',
+  'Last 32': 'roundOf32',
   Achtelfinale: 'roundOf16',
   Viertelfinale: 'quarterFinal',
   Halbfinale: 'semiFinal',

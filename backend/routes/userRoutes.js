@@ -258,7 +258,10 @@ router.put('/:id', async (req, res) => {
       user.topScorerPlayerId = parseOptionalInt(topScorerPlayerId);
     }
     if (topScorerPlayerName !== undefined) {
-      user.topScorerPlayerName = topScorerPlayerName?.trim() || null;
+      const trimmedName = topScorerPlayerName?.trim() || null;
+      if (trimmedName || !user.topScorerPlayerId) {
+        user.topScorerPlayerName = trimmedName;
+      }
     }
     if (avatarColor !== undefined) {
       user.avatarColor = normalizeAvatarColor(avatarColor);

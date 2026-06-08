@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { User, Team, Prediction, Match, ScoringRule, BonusPrediction, BonusQuestion, LeaderboardSnapshot } = require('../models');
+const { teamsMatch } = require('../data/wm2026ScheduleLookup');
 const { calculatePoints, classifyPrediction } = require('./pointsCalculationService');
 const { getSetting } = require('./settingsService');
 const { withImageCacheBuster } = require('./userImageService');
@@ -68,7 +69,7 @@ async function getScoringRules() {
   let rules = await ScoringRule.findOne();
   if (!rules) {
     rules = await ScoringRule.create({
-      exactResultPoints: 5,
+      exactResultPoints: 4,
       goalDifferencePoints: 3,
       tendencyPoints: 2,
       wrongPredictionPoints: 0,
@@ -403,9 +404,12 @@ function bonusAnswersMatch(answer, correctAnswer, questionType) {
     if (answerId != null && correctId != null && String(answerId) === String(correctId)) {
       return true;
     }
-    const answerName = (answer?.name ?? answer)?.toString().trim().toLowerCase();
-    const correctName = (correctAnswer?.name ?? correctAnswer)?.toString().trim().toLowerCase();
-    return !!(answerName && correctName && answerName === correctName);
+    const answerName = answer?.name ?? answer;
+    const correctName = correctAnswer?.name ?? correctAnswer;
+    if (answerName && correctName && teamsMatch(answerName, correctName)) {
+      return true;
+    }
+    return false;
   }
 
   if (questionType === 'national_team_player') {
@@ -425,6 +429,11 @@ function bonusAnswersMatch(answer, correctAnswer, questionType) {
 }
 
 async function recalculateBonusPoints(transaction = null) {
+  const {
+    getTeamProgress,
+    isProgressAnswerCorrect,
+    resolveFavoriteTeamName,
+  } = require('./bonusResolutionService');
   const questions = await BonusQuestion.findAll({
     where: { status: 'resolved' },
     transaction,
@@ -432,12 +441,35 @@ async function recalculateBonusPoints(transaction = null) {
   let updated = 0;
 
   for (const question of questions) {
-    if (!question.correctAnswerJson) continue;
-    const correctAnswer = JSON.parse(question.correctAnswerJson);
     const predictions = await BonusPrediction.findAll({
       where: { bonusQuestionId: question.id },
       transaction,
     });
+
+    if (question.questionType === 'favorite_team_progress') {
+      const progressCache = new Map();
+
+      for (const pred of predictions) {
+        const user = await User.findByPk(pred.userId, { transaction });
+        const teamName = await resolveFavoriteTeamName(user);
+        const cacheKey = teamName ? `team:${teamName.toLowerCase()}` : `user:${pred.userId}`;
+        let actualProgress = progressCache.get(cacheKey);
+        if (actualProgress === undefined) {
+          actualProgress = teamName ? await getTeamProgress(teamName) : null;
+          progressCache.set(cacheKey, actualProgress);
+        }
+
+        const answer = JSON.parse(pred.answerJson);
+        const isCorrect = isProgressAnswerCorrect(answer, actualProgress);
+        const points = isCorrect ? question.points : 0;
+        await pred.update({ points }, { transaction });
+        updated++;
+      }
+      continue;
+    }
+
+    if (!question.correctAnswerJson) continue;
+    const correctAnswer = JSON.parse(question.correctAnswerJson);
 
     for (const pred of predictions) {
       const answer = JSON.parse(pred.answerJson);
@@ -475,6 +507,7 @@ module.exports = {
   getTeamRanking,
   recalculateAllPoints,
   recalculateBonusPoints,
+  bonusAnswersMatch,
   getScoringRules,
   buildUserLeaderboardEntry,
   saveLeaderboardSnapshot,

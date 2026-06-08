@@ -25,7 +25,7 @@ async function seedTestData() {
   });
 
   await ScoringRule.create({
-    exactResultPoints: 5,
+    exactResultPoints: 4,
     goalDifferencePoints: 3,
     tendencyPoints: 2,
     wrongPredictionPoints: 0,

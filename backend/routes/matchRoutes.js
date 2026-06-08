@@ -51,9 +51,9 @@ router.get('/', authMiddleware, async (req, res) => {
     if (filter === 'finished') {
       where.status = 'finished';
     } else if (filter === 'group') {
-      where.stage = { [Op.like]: '%Group%' };
+      where.groupName = { [Op.ne]: null };
     } else if (filter === 'knockout') {
-      where.stage = { [Op.notLike]: '%Group%' };
+      where.groupName = null;
     }
 
     if (groupName) {
