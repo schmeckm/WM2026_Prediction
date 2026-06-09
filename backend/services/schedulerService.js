@@ -121,6 +121,8 @@ async function startScheduler() {
   const reminderTime = await getSetting('reminderTime', '09:00');
   const reminderFrequency = await getSetting('reminderFrequency', 'daily');
   const reminderCron = buildReminderCron(reminderTime, reminderFrequency);
+  const morningDigestTime = await getSetting('morningDigestTime', '07:30');
+  const morningDigestCron = buildReminderCron(morningDigestTime, 'daily');
 
   // Daily fixture sync at 06:00 (before tournament)
   jobs.push(cron.schedule('0 6 * * *', () => {
@@ -153,6 +155,13 @@ async function startScheduler() {
     if (await isEmailRemindersEnabled()) {
       await safeRun(() => sendMissingPredictionReminders(), 'Fehlende-Tipp-Erinnerungen');
       await safeRun(() => sendBonusQuestionReminders(), 'Bonusfrage-Erinnerungen');
+    }
+  }, { timezone: REMINDER_TZ }));
+
+  // Daily morning digest (time from admin settings)
+  jobs.push(cron.schedule(morningDigestCron, async () => {
+    if (await isMorningDigestEnabled()) {
+      await safeRun(() => sendMorningDigests(), 'Morning-Digest');
     }
   }, { timezone: REMINDER_TZ }));
 
