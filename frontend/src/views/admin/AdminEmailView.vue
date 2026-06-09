@@ -186,6 +186,44 @@ async function sendReminders() {
     error.value = e.response?.data?.error || t('adminPages.email.saveFailed');
   }
 }
+
+async function previewDigest() {
+  digestLoading.value = true;
+  error.value = '';
+  message.value = '';
+  try {
+    const { data } = await api.get('/admin/email/preview-morning-digest');
+    digestPreview.value = data;
+    message.value = t('adminPages.email.digestPreviewReady');
+  } catch (e) {
+    digestPreview.value = null;
+    error.value = e.response?.data?.error || t('adminPages.email.digestPreviewFailed');
+  } finally {
+    digestLoading.value = false;
+  }
+}
+
+async function sendDigest() {
+  digestLoading.value = true;
+  error.value = '';
+  message.value = '';
+  try {
+    const { data } = await api.post('/admin/email/send-morning-digest');
+    if (data.skipped) {
+      error.value = data.message || t('adminPages.email.digestDisabled');
+      return;
+    }
+    if (data.sent === 0) {
+      error.value = data.message || t('adminPages.email.noEmailsSent');
+      return;
+    }
+    message.value = data.message || t('adminPages.email.digestSent', { count: data.sent });
+  } catch (e) {
+    error.value = e.response?.data?.error || t('adminPages.email.digestSendFailed');
+  } finally {
+    digestLoading.value = false;
+  }
+}
 </script>
 
 <style scoped>
