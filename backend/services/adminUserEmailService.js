@@ -268,6 +268,8 @@ module.exports = {
   sendTipRemindersToUsers,
   sendStatusUpdatesToUsers,
   toRecipientAuditEntry,
+  loadUsersByIds,
+  getMissingPredictionData,
   formatRankingListHtml,
   templateManualTipReminder,
   templateStatusUpdate,
