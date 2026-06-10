@@ -8,6 +8,53 @@ const { getLeaderboard, getTeamRanking } = require('./leaderboardService');
 const { formatMatchListHtml, formatMatchListText } = require('./reminderEmailService');
 
 const TOP_LIST_SIZE = 5;
+const REMINDER_WINDOW_HOURS = 48;
+const EMAIL_MATCH_LIST_LIMIT = 5;
+
+function getReminderWindowMs() {
+  const hours = parseInt(process.env.REMINDER_MATCH_WINDOW_HOURS || String(REMINDER_WINDOW_HOURS), 10);
+  const resolved = Number.isFinite(hours) && hours > 0 ? hours : REMINDER_WINDOW_HOURS;
+  return resolved * 60 * 60 * 1000;
+}
+
+function filterMatchesWithinWindow(matches, windowMs = getReminderWindowMs(), now = new Date()) {
+  const windowEnd = new Date(now.getTime() + windowMs);
+  return matches.filter((match) => {
+    const kickoff = new Date(match.kickoffTime);
+    return kickoff > now && kickoff <= windowEnd;
+  });
+}
+
+function buildMissingPredictionEmailData(openMatches, predictedMatchIds, options = {}) {
+  const listLimit = options.listLimit ?? EMAIL_MATCH_LIST_LIMIT;
+  const relevantMatches = filterMatchesWithinWindow(
+    openMatches,
+    options.windowMs,
+    options.now,
+  );
+  const predicted = predictedMatchIds instanceof Set
+    ? predictedMatchIds
+    : new Set(predictedMatchIds);
+  const missingMatches = relevantMatches.filter((match) => !predicted.has(match.id));
+  const limitedMatches = missingMatches.slice(0, listLimit);
+
+  return {
+    missingCount: missingMatches.length,
+    missingMatches: limitedMatches,
+    upcomingMatches: limitedMatches,
+  };
+}
+
+async function loadOpenMatchesForReminders() {
+  return Match.findAll({
+    where: {
+      status: 'scheduled',
+      kickoffTime: { [Op.gt]: new Date() },
+      isManuallyLocked: false,
+    },
+    order: [['kickoffTime', 'ASC']],
+  });
+}
 
 function formatRankingListHtml(items, locale, nameKey = 'name', pointsKey = 'points') {
   if (!items.length) {
@@ -158,29 +205,20 @@ async function loadUsersByIds(userIds) {
   });
 }
 
-async function getMissingPredictionData(userId) {
-  const openMatches = await Match.findAll({
-    where: {
-      status: 'scheduled',
-      kickoffTime: { [Op.gt]: new Date() },
-      isManuallyLocked: false,
-    },
-  });
+async function getMissingPredictionData(userId, options = {}) {
+  const openMatches = await loadOpenMatchesForReminders();
+  const relevantMatches = filterMatchesWithinWindow(openMatches, options.windowMs, options.now);
+  const predictions = relevantMatches.length > 0
+    ? await Prediction.findAll({
+      where: { userId, matchId: relevantMatches.map((match) => match.id) },
+    })
+    : [];
 
-  const predictions = await Prediction.findAll({
-    where: { userId, matchId: openMatches.map((m) => m.id) },
-  });
-  const predictedIds = new Set(predictions.map((p) => p.matchId));
-  const missing = openMatches.filter((m) => !predictedIds.has(m.id));
-
-  const now = new Date();
-  const in48h = new Date(now.getTime() + 48 * 60 * 60 * 1000);
-  const upcoming = openMatches.filter((m) => new Date(m.kickoffTime) <= in48h);
-
-  return {
-    missingCount: missing.length,
-    upcomingMatches: upcoming.slice(0, 5),
-  };
+  return buildMissingPredictionEmailData(
+    openMatches,
+    predictions.map((prediction) => prediction.matchId),
+    options,
+  );
 }
 
 async function sendTipRemindersToUsers(userIds) {
@@ -199,8 +237,8 @@ async function sendTipRemindersToUsers(userIds) {
       recipients.push(toRecipientAuditEntry(user, 'skipped', 'no_email'));
       continue;
     }
-    const { missingCount, upcomingMatches } = await getMissingPredictionData(user.id);
-    const template = templateManualTipReminder(user, missingCount, upcomingMatches);
+    const { missingCount, missingMatches } = await getMissingPredictionData(user.id);
+    const template = templateManualTipReminder(user, missingCount, missingMatches);
     await emailService.sendEmail({ to: user.email, ...template });
     sent += 1;
     recipients.push(toRecipientAuditEntry(user, 'sent'));
@@ -270,6 +308,11 @@ module.exports = {
   toRecipientAuditEntry,
   loadUsersByIds,
   getMissingPredictionData,
+  buildMissingPredictionEmailData,
+  filterMatchesWithinWindow,
+  loadOpenMatchesForReminders,
+  getReminderWindowMs,
+  EMAIL_MATCH_LIST_LIMIT,
   formatRankingListHtml,
   templateManualTipReminder,
   templateStatusUpdate,

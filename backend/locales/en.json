@@ -245,14 +245,14 @@
       "subject": "Aspire World Cup 2026 - Competition – {missingCount} missing predictions",
       "title": "Missing predictions",
       "greeting": "Hello {firstName}!",
-      "body": "You still have {missingCount} open predictions.",
-      "upcomingHeading": "Upcoming matches:",
-      "noneUpcoming": "No matches in the next 48 hours.",
+      "body": "You still have {missingCount} open predictions in the next 48 hours.",
+      "upcomingHeading": "These predictions are missing next:",
+      "noneUpcoming": "No missing predictions in the next 48 hours.",
       "cta": "Submit predictions now",
       "fallback": "If the button does not work: {link}",
       "text": "Hello {firstName}! You still have {missingCount} open predictions.\n{matchListText}\n{link}",
       "notificationTitle": "Missing predictions",
-      "notificationBody": "You still have {missingCount} open predictions."
+      "notificationBody": "You still have {missingCount} open predictions in the next 48 hours."
     },
     "upcomingMatches": {
       "subject": "Aspire World Cup 2026 - Competition – Upcoming matches",
@@ -288,7 +288,7 @@
       "subject": "Aspire World Cup 2026 - Competition – Reminder: submit predictions",
       "title": "Prediction reminder",
       "greeting": "Hello {firstName}!",
-      "bodyWithMissing": "You still have {missingCount} open predictions. Submit them in time to collect points.",
+      "bodyWithMissing": "You still have {missingCount} open predictions in the next 48 hours. Submit them in time to collect points.",
       "bodyGeneric": "Check your open matches and submit your predictions in time.",
       "cta": "Submit predictions",
       "text": "Hello {firstName}! {missingCount} open predictions.\n{matchListText}\n{link}"
@@ -317,11 +317,12 @@
       "aiHighlightHeading": "AI recap",
       "noHighlights": "No special highlights today – check back tomorrow!",
       "todayHeading": "Today",
-      "missingTips": "You still have {count} open predictions for upcoming matches.",
+      "missingTipsHeading": "Your missing predictions",
+      "missingTips": "You still have {count} open predictions in the next 48 hours:",
       "cta": "View leaderboard",
       "notificationTitle": "Your morning World Cup update",
       "notificationBody": "{matchCount} matches last night – check your standing.",
-      "text": "Good morning {firstName}!\n\nLast night:\n{lastNightText}\n\nYour standing: #{rank}, {points} pts. {rankDelta}. Last night: +{pointsEarned} pts.\nTeam: {teamName} (#{teamRank})\n\nHighlights:\n{highlightsText}\n{aiText}\n\nToday:\n{todayText}\n\nOpen tips: {missingCount}\n{link}",
+      "text": "Good morning {firstName}!\n\nLast night:\n{lastNightText}\n\nYour standing: #{rank}, {points} pts. {rankDelta}. Last night: +{pointsEarned} pts.\nTeam: {teamName} (#{teamRank})\n\nHighlights:\n{highlightsText}\n{aiText}\n\nToday:\n{todayText}\n\nMissing predictions ({missingCount}):\n{missingMatchListText}\n{link}",
       "highlight": {
         "matchOfNight": "Match of the night: {homeTeam} {homeScore}:{awayScore} {awayTeam} – {totalPoints} points awarded.",
         "mostExactTips": "{count} exact tips for {homeTeam} vs {awayTeam}.",

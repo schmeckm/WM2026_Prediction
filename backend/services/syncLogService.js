@@ -113,6 +113,26 @@ async function getSyncErrors({ limit = 20 } = {}) {
   });
 }
 
+async function getRelevantLastSyncError() {
+  const { Op } = require('sequelize');
+  const lastError = await SyncLog.findOne({
+    where: { status: { [Op.in]: ['failed', 'partial'] } },
+    order: [['startedAt', 'DESC']],
+  });
+  if (!lastError) return null;
+
+  const recovered = await SyncLog.findOne({
+    where: {
+      syncType: lastError.syncType,
+      status: 'success',
+      startedAt: { [Op.gt]: lastError.startedAt },
+    },
+  });
+  if (recovered) return null;
+
+  return lastError;
+}
+
 async function getSyncStatusSummary() {
   const { Op } = require('sequelize');
   const footballProviderService = require('./footballProviderService');
@@ -166,6 +186,7 @@ module.exports = {
   getLastSuccessfulSync,
   getLastSync,
   getSyncErrors,
+  getRelevantLastSyncError,
   getSyncStatusSummary,
   computeStatus,
 };

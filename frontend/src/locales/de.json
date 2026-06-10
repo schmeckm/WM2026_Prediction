@@ -1443,7 +1443,28 @@
       "restoreSuccess": "Daten wiederhergestellt.",
       "restoreFailed": "Wiederherstellung fehlgeschlagen."
     },
-    "system": { "title": "Systemstatus" },
+    "system": {
+      "title": "Systemstatus",
+      "healthTitle": "Systemstatus",
+      "version": "Version",
+      "database": "Datenbank",
+      "websocket": "WebSocket",
+      "email": "E-Mail (SMTP)",
+      "footballApi": "Fußball-API",
+      "uptime": "Uptime",
+      "lastSyncTitle": "Letzte erfolgreiche Synchronisation",
+      "lastFixtureSync": "Spielplan: {time}",
+      "lastResultSync": "Ergebnisse: {time}",
+      "lastSyncErrorTitle": "Aktueller Sync-Fehler",
+      "lastSyncErrorLine": "{type} ({time}): {message}",
+      "syncTypeFixtures": "Spielplan-Sync",
+      "syncTypeResults": "Ergebnis-Sync",
+      "syncTypeLiveScores": "Live-Score-Sync",
+      "syncTypePlayerImages": "Spielerbilder-Sync",
+      "syncTypeUnknown": "Sync",
+      "syncErrorFetchFailedHint": "Netzwerkfehler beim Aufruf einer externen API. Häufig kurz nach einem Deploy/Neustart oder durch Firewall/DNS. Der Scheduler versucht es automatisch erneut.",
+      "syncErrorTimeoutHint": "Zeitüberschreitung bei externer API – oft vorübergehend."
+    },
     "aiAssistant": { "title": "KI Assistent", "subtitle": "Admin-Hilfe für Diagnose und Texte" }
   },
   "admin": {

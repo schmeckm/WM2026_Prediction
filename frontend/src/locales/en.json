@@ -1444,7 +1444,28 @@
       "restoreSuccess": "Data restored.",
       "restoreFailed": "Restore failed."
     },
-    "system": { "title": "System status" },
+    "system": {
+      "title": "System status",
+      "healthTitle": "System status",
+      "version": "Version",
+      "database": "Database",
+      "websocket": "WebSocket",
+      "email": "Email (SMTP)",
+      "footballApi": "Football API",
+      "uptime": "Uptime",
+      "lastSyncTitle": "Last successful sync",
+      "lastFixtureSync": "Fixtures: {time}",
+      "lastResultSync": "Results: {time}",
+      "lastSyncErrorTitle": "Current sync error",
+      "lastSyncErrorLine": "{type} ({time}): {message}",
+      "syncTypeFixtures": "Fixture sync",
+      "syncTypeResults": "Result sync",
+      "syncTypeLiveScores": "Live score sync",
+      "syncTypePlayerImages": "Player image sync",
+      "syncTypeUnknown": "Sync",
+      "syncErrorFetchFailedHint": "Network error calling an external API. Often right after deploy/restart or due to firewall/DNS. The scheduler will retry automatically.",
+      "syncErrorTimeoutHint": "External API timeout – often temporary."
+    },
     "aiAssistant": { "title": "AI assistant", "subtitle": "Admin help for diagnostics and copy" }
   },
   "admin": {

@@ -64,7 +64,16 @@ describe('morningDigestService', () => {
   });
 
   it('builds branded morning digest in user language with all sections', () => {
-    const userData = { ...buildUserDigestData(userDe, shared), missingCount: 2 };
+    const missingMatches = [{
+      homeTeam: 'Spanien',
+      awayTeam: 'Italien',
+      kickoffTime: new Date('2026-06-16T20:00:00Z'),
+    }];
+    const userData = {
+      ...buildUserDigestData(userDe, shared),
+      missingCount: 2,
+      missingMatches,
+    };
     const tpl = templateMorningDigest(userDe, shared, userData);
     assert.match(tpl.subject, /Guten Morgen|WM-Update/i);
     assert.match(tpl.html, /Guten Morgen, Max!/);
@@ -73,8 +82,11 @@ describe('morningDigestService', () => {
     assert.match(tpl.html, /Highlights/);
     assert.match(tpl.html, /KI-Rückblick/);
     assert.match(tpl.html, /Deutschland vs USA/);
-    assert.match(tpl.html, /2 offene Tipps/);
+    assert.match(tpl.html, /Deine fehlenden Tipps/);
+    assert.match(tpl.html, /2 offene Tipps in den nächsten 48 Stunden/);
+    assert.match(tpl.html, /Spanien vs Italien/);
     assert.match(tpl.text, /Max/);
+    assert.match(tpl.text, /Spanien vs Italien/);
   });
 
   it('builds english digest when user has no language', () => {

@@ -245,14 +245,14 @@
       "subject": "Aspire World Cup 2026 - Wettbewerb – {missingCount} fehlende Tipps",
       "title": "Fehlende Tipps",
       "greeting": "Hallo {firstName}!",
-      "body": "Sie haben noch {missingCount} offene Tipps.",
-      "upcomingHeading": "Anstehende Spiele:",
-      "noneUpcoming": "Keine Spiele in den nächsten 48 Stunden.",
+      "body": "Sie haben noch {missingCount} offene Tipps in den nächsten 48 Stunden.",
+      "upcomingHeading": "Diese Tipps fehlen dir als Nächstes:",
+      "noneUpcoming": "Keine fehlenden Tipps in den nächsten 48 Stunden.",
       "cta": "Jetzt tippen",
       "fallback": "Falls der Button nicht funktioniert: {link}",
       "text": "Hallo {firstName}! Sie haben noch {missingCount} offene Tipps.\n{matchListText}\n{link}",
       "notificationTitle": "Fehlende Tipps",
-      "notificationBody": "Sie haben noch {missingCount} offene Tipps."
+      "notificationBody": "Sie haben noch {missingCount} offene Tipps in den nächsten 48 Stunden."
     },
     "upcomingMatches": {
       "subject": "Aspire World Cup 2026 - Wettbewerb – Anstehende Spiele",
@@ -288,7 +288,7 @@
       "subject": "Aspire World Cup 2026 - Wettbewerb – Erinnerung: Tipps abgeben",
       "title": "Tipp-Erinnerung",
       "greeting": "Hallo {firstName}!",
-      "bodyWithMissing": "Du hast noch {missingCount} offene Tipps. Gib sie rechtzeitig ab, um Punkte zu sammeln.",
+      "bodyWithMissing": "Du hast noch {missingCount} offene Tipps in den nächsten 48 Stunden. Gib sie rechtzeitig ab, um Punkte zu sammeln.",
       "bodyGeneric": "Schau dir deine offenen Spiele an und gib rechtzeitig deine Tipps ab.",
       "cta": "Tipps abgeben",
       "text": "Hallo {firstName}! {missingCount} offene Tipps.\n{matchListText}\n{link}"
@@ -317,11 +317,12 @@
       "aiHighlightHeading": "KI-Rückblick",
       "noHighlights": "Keine besonderen Highlights – schau morgen wieder vorbei!",
       "todayHeading": "Heute",
-      "missingTips": "Du hast noch {count} offene Tipps für kommende Spiele.",
+      "missingTipsHeading": "Deine fehlenden Tipps",
+      "missingTips": "Du hast noch {count} offene Tipps in den nächsten 48 Stunden:",
       "cta": "Hitliste ansehen",
       "notificationTitle": "Dein WM-Morgen-Update",
       "notificationBody": "{matchCount} Spiele in der letzten Nacht – schau dir deinen Stand an.",
-      "text": "Guten Morgen {firstName}!\n\nLetzte Nacht:\n{lastNightText}\n\nDein Stand: Platz {rank}, {points} Pkt. {rankDelta}. Gestern: +{pointsEarned} Pkt.\nTeam: {teamName} (Platz {teamRank})\n\nHighlights:\n{highlightsText}\n{aiText}\n\nHeute:\n{todayText}\n\nOffene Tipps: {missingCount}\n{link}",
+      "text": "Guten Morgen {firstName}!\n\nLetzte Nacht:\n{lastNightText}\n\nDein Stand: Platz {rank}, {points} Pkt. {rankDelta}. Gestern: +{pointsEarned} Pkt.\nTeam: {teamName} (Platz {teamRank})\n\nHighlights:\n{highlightsText}\n{aiText}\n\nHeute:\n{todayText}\n\nFehlende Tipps ({missingCount}):\n{missingMatchListText}\n{link}",
       "highlight": {
         "matchOfNight": "Spiel der Nacht: {homeTeam} {homeScore}:{awayScore} {awayTeam} – insgesamt {totalPoints} Punkte verteilt.",
         "mostExactTips": "{count} Exakt-Tipps bei {homeTeam} vs {awayTeam}.",

@@ -402,7 +402,11 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
   }
 
   const missingBlock = userData.missingCount > 0
-    ? `<p style="margin:12px 0 0;">${escapeHtml(t('emails.morningDigest.missingTips', locale, { count: userData.missingCount }))}</p>`
+    ? `
+    <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.missingTipsHeading', locale))}</p>
+    <p style="margin:0 0 8px;">${escapeHtml(t('emails.morningDigest.missingTips', locale, { count: userData.missingCount }))}</p>
+    ${formatMatchListHtml(userData.missingMatches || [], locale)}
+  `.trim()
     : '';
 
   const bodyHtml = `
@@ -425,6 +429,7 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
 
   const lastNightText = formatFinishedMatchListText(shared.lastNightMatches, locale);
   const todayText = formatMatchListText(shared.todayMatches, locale);
+  const missingMatchListText = formatMatchListText(userData.missingMatches || [], locale);
   const highlightsText = formatHighlightsText(shared.ruleHighlights, locale);
 
   return {
@@ -450,6 +455,7 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
       aiText,
       todayText,
       missingCount: userData.missingCount ?? 0,
+      missingMatchListText,
       link,
     }),
     locale,
@@ -459,8 +465,8 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
 
 async function buildDigestForUser(user, shared) {
   const base = buildUserDigestData(user, shared);
-  const { missingCount } = await getMissingPredictionData(user.id);
-  return templateMorningDigest(user, shared, { ...base, missingCount });
+  const { missingCount, missingMatches } = await getMissingPredictionData(user.id);
+  return templateMorningDigest(user, shared, { ...base, missingCount, missingMatches });
 }
 
 async function previewMorningDigest(userId) {

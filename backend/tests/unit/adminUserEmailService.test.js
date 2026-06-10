@@ -5,6 +5,8 @@ const {
   templateManualTipReminder,
   templateStatusUpdate,
   toRecipientAuditEntry,
+  buildMissingPredictionEmailData,
+  filterMatchesWithinWindow,
 } = require('../../services/adminUserEmailService');
 
 describe('adminUserEmailService', () => {
@@ -59,5 +61,28 @@ describe('adminUserEmailService', () => {
     assert.match(tpl.html, /Top players/i);
     assert.match(tpl.html, /Top teams/i);
     assert.match(tpl.html, /Aspire MAKE/);
+  });
+
+  it('counts and lists only missing matches within the reminder window', () => {
+    const now = new Date('2026-06-10T10:00:00Z');
+    const windowMs = 48 * 60 * 60 * 1000;
+    const openMatches = [
+      { id: 1, kickoffTime: new Date('2026-06-10T18:00:00Z') },
+      { id: 2, kickoffTime: new Date('2026-06-11T18:00:00Z') },
+      { id: 3, kickoffTime: new Date('2026-06-20T18:00:00Z') },
+      { id: 4, kickoffTime: new Date('2026-06-10T20:00:00Z') },
+    ];
+
+    const relevant = filterMatchesWithinWindow(openMatches, windowMs, now);
+    assert.equal(relevant.length, 3);
+
+    const data = buildMissingPredictionEmailData(openMatches, new Set([2]), {
+      windowMs,
+      now,
+      listLimit: 5,
+    });
+
+    assert.equal(data.missingCount, 2);
+    assert.deepEqual(data.missingMatches.map((match) => match.id), [1, 4]);
   });
 });

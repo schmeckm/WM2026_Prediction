@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 const { sequelize, User, Match, Prediction, SyncLog } = require('../models');
-const { getSyncStatusSummary } = require('../services/syncLogService');
+const { getSyncStatusSummary, getRelevantLastSyncError } = require('../services/syncLogService');
 const emailService = require('../services/emailService');
 const { getSetting } = require('../services/settingsService');
 const footballProviderService = require('../services/footballProviderService');
@@ -28,10 +28,7 @@ router.get('/', async (req, res) => {
     const emailStatus = await emailService.getEmailStatus();
     const apiConfig = await footballProviderService.getProviderConfig();
 
-    const lastError = await SyncLog.findOne({
-      where: { status: { [Op.in]: ['failed', 'partial'] } },
-      order: [['startedAt', 'DESC']],
-    });
+    const lastError = await getRelevantLastSyncError();
 
     res.json({
       version: getAppVersion(),

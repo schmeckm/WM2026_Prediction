@@ -7,7 +7,7 @@ const { getSetting } = require('./settingsService');
 const { isEmailRemindersEnabled } = require('./emailReminderSettingsService');
 const { getLeaderboard } = require('./leaderboardService');
 const { runWithConcurrency } = require('./emailQueueService');
-const { toRecipientAuditEntry } = require('./adminUserEmailService');
+const { toRecipientAuditEntry, buildMissingPredictionEmailData, loadOpenMatchesForReminders, filterMatchesWithinWindow } = require('./adminUserEmailService');
 
 function groupPredictionsByUser(predictions) {
   const map = new Map();
@@ -40,33 +40,24 @@ async function sendMissingPredictionReminders({ force = false } = {}) {
   }
 
   const users = await getReminderRecipients();
-  const openMatches = await Match.findAll({
-    where: {
-      status: 'scheduled',
-      kickoffTime: { [Op.gt]: new Date() },
-      isManuallyLocked: false,
-    },
-  });
+  const openMatches = await loadOpenMatchesForReminders();
 
   if (users.length === 0) {
     return { sent: 0, skipped: 0, recipients: [], message: 'Keine Empfänger gefunden (registrierte Spieler mit bestätigter E-Mail).' };
   }
 
-  const openMatchIds = openMatches.map((m) => m.id);
-  const predictionsByUser = openMatchIds.length > 0
+  const relevantMatches = filterMatchesWithinWindow(openMatches);
+  const relevantMatchIds = relevantMatches.map((match) => match.id);
+  const predictionsByUser = relevantMatchIds.length > 0
     ? groupPredictionsByUser(await Prediction.findAll({
-      where: { matchId: { [Op.in]: openMatchIds } },
+      where: { matchId: { [Op.in]: relevantMatchIds } },
       attributes: ['userId', 'matchId'],
     }))
     : new Map();
 
-  const now = new Date();
-  const in48h = new Date(now.getTime() + 48 * 60 * 60 * 1000);
-  const upcoming = openMatches.filter((m) => new Date(m.kickoffTime) <= in48h);
-
   const recipients = users.filter((user) => {
     const predictedIds = predictionsByUser.get(user.id) || new Set();
-    return openMatches.some((m) => !predictedIds.has(m.id));
+    return relevantMatches.some((match) => !predictedIds.has(match.id));
   });
 
   if (recipients.length === 0) {
@@ -82,15 +73,15 @@ async function sendMissingPredictionReminders({ force = false } = {}) {
     }
 
     const predictedIds = predictionsByUser.get(user.id) || new Set();
-    const missing = openMatches.filter((m) => !predictedIds.has(m.id));
+    const { missingCount, missingMatches } = buildMissingPredictionEmailData(openMatches, predictedIds);
 
     await reminderEmailService.sendMissingPredictionsEmail(
       user,
-      missing.length,
-      upcoming.slice(0, 5),
+      missingCount,
+      missingMatches,
     );
 
-    const notification = reminderEmailService.buildMissingPredictionsNotification(user, missing.length);
+    const notification = reminderEmailService.buildMissingPredictionsNotification(user, missingCount);
 
     await notificationService.createNotification({
       userId: user.id,
