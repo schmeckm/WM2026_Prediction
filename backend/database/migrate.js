@@ -135,14 +135,84 @@ async function widenPlayerImageTextColumns(queryInterface, tableInfo) {
 }
 
 async function fixPlayerImagesUniqueIndexes(sequelize, queryInterface, tableInfo) {
-  const hasColumnUnique = tableInfo.playerName?.unique || tableInfo.teamName?.unique;
-  if (!hasColumnUnique) return;
-
   const dialect = sequelize.getDialect();
   if (dialect === 'sqlite') {
-    // Previous crashed runs may leave the temp table behind, causing SQLITE_ERROR on restart.
-    await sequelize.query('DROP TABLE IF EXISTS PlayerImages_new');
-    await sequelize.query(`
+    // `describeTable()` can mark columns as `unique` even for composite indexes.
+    // We only need the expensive table rebuild when legacy single-column UNIQUE constraints exist.
+    const hasLegacySingleColumnUnique = await hasLegacyUniqueIndexOnPlayerImages(sequelize);
+    if (hasLegacySingleColumnUnique) {
+      await rebuildPlayerImagesTableSqlite(sequelize);
+      console.log('Migration: PlayerImages unique indexes auf (playerName, teamName) korrigiert.');
+    }
+  } else {
+    const hasColumnUnique = tableInfo.playerName?.unique || tableInfo.teamName?.unique;
+    if (!hasColumnUnique) {
+      await ensureIndexSafe(queryInterface, 'PlayerImages', ['playerName', 'teamName'], {
+        unique: true,
+        name: 'player_images_player_name_team_name',
+      });
+      return;
+    }
+
+    await queryInterface.changeColumn('PlayerImages', 'playerName', {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: false,
+    });
+    await queryInterface.changeColumn('PlayerImages', 'teamName', {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: false,
+    });
+
+    console.log('Migration: PlayerImages unique indexes auf (playerName, teamName) korrigiert.');
+  }
+
+  await ensureIndexSafe(queryInterface, 'PlayerImages', ['playerName', 'teamName'], {
+    unique: true,
+    name: 'player_images_player_name_team_name',
+  });
+}
+
+async function hasLegacyUniqueIndexOnPlayerImages(sequelize) {
+  try {
+    // SQLite only: checks for UNIQUE indexes on a single column (`playerName` or `teamName`)
+    // which were created by legacy schema definitions using `unique: true` at column level.
+    const [indexList] = await sequelize.query(`PRAGMA index_list('PlayerImages')`);
+    for (const idx of indexList || []) {
+      if (!idx || Number(idx.unique) !== 1) continue;
+      const indexName = String(idx.name || '');
+      if (!indexName) continue;
+      const safeIndexName = indexName.replaceAll("'", "''");
+      const [indexInfo] = await sequelize.query(`PRAGMA index_info('${safeIndexName}')`);
+      const cols = (indexInfo || []).map((c) => c?.name).filter(Boolean);
+      if (cols.length === 1 && (cols[0] === 'playerName' || cols[0] === 'teamName')) {
+        return true;
+      }
+    }
+    return false;
+  } catch (error) {
+    // If anything goes wrong here, don't risk a destructive rebuild.
+    console.warn('Migration: legacy UNIQUE index check skipped:', error.message || error);
+    return false;
+  }
+}
+
+async function rebuildPlayerImagesTableSqlite(sequelize) {
+  // Safer SQLite table rebuild:
+  // 1) create & fill PlayerImages_new
+  // 2) rename old table to PlayerImages_old
+  // 3) rename new table to PlayerImages
+  // 4) drop old table
+  // This avoids dropping the original table before the new one exists.
+  await sequelize.transaction(async (t) => {
+    const q = (sql) => sequelize.query(sql, { transaction: t });
+
+    // Cleanup from previous interrupted runs (best-effort).
+    await q('DROP TABLE IF EXISTS PlayerImages_new');
+    await q('DROP TABLE IF EXISTS PlayerImages_old');
+
+    await q(`
       CREATE TABLE PlayerImages_new (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         playerName VARCHAR(255) NOT NULL,
@@ -159,7 +229,8 @@ async function fixPlayerImagesUniqueIndexes(sequelize, queryInterface, tableInfo
         updatedAt DATETIME NOT NULL
       )
     `);
-    await sequelize.query(`
+
+    await q(`
       INSERT INTO PlayerImages_new (
         id, playerName, teamName, countryCode, imageUrl, source, sourceId,
         licenseInfo, attributionText, lastCheckedAt, isManuallyApproved, createdAt, updatedAt
@@ -169,26 +240,11 @@ async function fixPlayerImagesUniqueIndexes(sequelize, queryInterface, tableInfo
         licenseInfo, attributionText, lastCheckedAt, isManuallyApproved, createdAt, updatedAt
       FROM PlayerImages
     `);
-    await sequelize.query('DROP TABLE PlayerImages');
-    await sequelize.query('ALTER TABLE PlayerImages_new RENAME TO PlayerImages');
-  } else {
-    await queryInterface.changeColumn('PlayerImages', 'playerName', {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: false,
-    });
-    await queryInterface.changeColumn('PlayerImages', 'teamName', {
-      type: DataTypes.STRING,
-      allowNull: true,
-      unique: false,
-    });
-  }
 
-  await ensureIndexSafe(queryInterface, 'PlayerImages', ['playerName', 'teamName'], {
-    unique: true,
-    name: 'player_images_player_name_team_name',
+    await q('ALTER TABLE PlayerImages RENAME TO PlayerImages_old');
+    await q('ALTER TABLE PlayerImages_new RENAME TO PlayerImages');
+    await q('DROP TABLE PlayerImages_old');
   });
-  console.log('Migration: PlayerImages unique indexes auf (playerName, teamName) korrigiert.');
 }
 
 async function ensureIndexSafe(queryInterface, tableName, fields, options = {}) {
