@@ -57,7 +57,13 @@ async function notifyAffectedUsers(matchIds) {
   }
 }
 
-async function applyResultUpdates({ syncType = 'results', userId = null, req = null, liveOnly = false } = {}) {
+async function applyResultUpdates({
+  syncType = 'results',
+  userId = null,
+  req = null,
+  liveOnly = false,
+  force = false,
+} = {}) {
   const config = await footballProviderService.getProviderConfig();
 
   const resultSyncEnabled = await getSetting('resultSyncEnabled', config.resultSyncEnabled);
@@ -68,7 +74,8 @@ async function applyResultUpdates({ syncType = 'results', userId = null, req = n
   footballProviderService.assertApiConfigured(config);
 
   const rateCheck = await shouldSkipSyncDueToRateLimit(syncType);
-  if (rateCheck.skip) {
+  const canForceLiveInterval = force && syncType === 'live_scores' && rateCheck.reason === 'live_interval';
+  if (rateCheck.skip && !canForceLiveInterval) {
     return {
       skipped: true,
       message: `${syncType === 'live_scores' ? 'Live-Score' : 'Ergebnis'}-Sync wegen Rate-Limit/Intervall pausiert.`,

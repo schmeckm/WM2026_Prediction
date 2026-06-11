@@ -24,11 +24,13 @@ describe('matchLockService', () => {
 });
 
 describe('matchSyncUtils.buildResultUpdateData', () => {
-  test('does not persist live scores as final', () => {
+  test('persists live scores while match is live', () => {
     const match = { status: 'scheduled', homeScore: null, awayScore: null };
     const fixture = { status: 'live', homeScore: 1, awayScore: 0, apiLastStatus: 'IN_PLAY' };
-    const { updateData } = buildResultUpdateData(fixture, match);
-    assert.equal(updateData.homeScore, undefined);
+    const { updateData, changed } = buildResultUpdateData(fixture, match);
+    assert.equal(changed, true);
+    assert.equal(updateData.homeScore, 1);
+    assert.equal(updateData.awayScore, 0);
     assert.equal(updateData.status, 'live');
   });
 

@@ -78,9 +78,15 @@ function buildResultUpdateData(fixture, match) {
   }
 
   if (isLive && !isFinished) {
-    // Live/halftime: update status only; final scores persist when finished.
-    if (fixture.liveHomeScore != null && fixture.liveAwayScore != null) {
-      changed = changed || match.status !== fixture.status;
+    // Live/halftime: persist current score for UI, but points/finalization only happen when finished.
+    const liveHome = fixture.liveHomeScore ?? fixture.homeScore;
+    const liveAway = fixture.liveAwayScore ?? fixture.awayScore;
+    if (liveHome != null && liveAway != null) {
+      if (match.homeScore !== liveHome || match.awayScore !== liveAway) {
+        updateData.homeScore = liveHome;
+        updateData.awayScore = liveAway;
+        changed = true;
+      }
     }
   }
 

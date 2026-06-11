@@ -126,7 +126,8 @@ router.post('/live-scores', async (req, res) => {
     if (!liveEnabled) {
       return res.json({ skipped: true, message: 'Live-Score-Sync ist deaktiviert.' });
     }
-    const result = await syncLiveScores({ userId: req.user.id, req });
+    const force = req.body?.force === true;
+    const result = await syncLiveScores({ userId: req.user.id, req, force });
     res.json(result);
   } catch (error) {
     handleSyncError(error, res, req);

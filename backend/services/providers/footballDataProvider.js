@@ -45,8 +45,9 @@ function resolveScores(m) {
 
   if (status === 'PAUSED' || status === 'IN_PLAY' || status === 'LIVE') {
     return {
-      homeScore: ht?.home ?? rt?.home ?? ft?.home ?? null,
-      awayScore: ht?.away ?? rt?.away ?? ft?.away ?? null,
+      // Prefer regularTime for live updates; halfTime may be present but stale/0:0 during IN_PLAY.
+      homeScore: rt?.home ?? ht?.home ?? ft?.home ?? null,
+      awayScore: rt?.away ?? ht?.away ?? ft?.away ?? null,
       isLiveScore: true,
     };
   }
@@ -198,14 +199,40 @@ async function fetchCompetitionMatches(config, extraQuery = {}) {
 async function fetchLiveMatchesRequest(config) {
   const candidates = getCompetitionCandidates(config);
   let lastError;
+  const statusCandidates = ['LIVE', 'IN_PLAY', 'PAUSED'];
 
   for (let i = 0; i < candidates.length; i += 1) {
     const competition = candidates[i];
     try {
-      return await apiRequest(config, '/matches', {
-        competitions: competition,
-        status: 'LIVE',
-      });
+      const merged = new Map();
+      const rateLimitsCollected = [];
+
+      for (const status of statusCandidates) {
+        try {
+          const result = await apiRequest(config, '/matches', {
+            competitions: competition,
+            status,
+          });
+          rateLimitsCollected.push(result.rateLimits);
+          for (const m of result.data?.matches || []) {
+            if (m?.id != null) merged.set(m.id, m);
+          }
+        } catch (err) {
+          lastError = err;
+        }
+      }
+
+      if (merged.size > 0) {
+        return {
+          data: { matches: Array.from(merged.values()) },
+          rateLimits: rateLimitsCollected[rateLimitsCollected.length - 1] || null,
+          url: `/matches?competitions=${competition}&status=${statusCandidates.join(',')}`,
+        };
+      }
+
+      // If nothing was returned and one status call errored, bubble up the last error.
+      if (lastError) throw lastError;
+      return { data: { matches: [] }, rateLimits: rateLimitsCollected.at(-1) || null, url: `/matches?competitions=${competition}` };
     } catch (error) {
       lastError = error;
       if (i < candidates.length - 1 && (error.status === 404 || error.status === 400)) continue;

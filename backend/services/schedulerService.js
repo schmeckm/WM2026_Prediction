@@ -163,7 +163,8 @@ async function startScheduler() {
   // Check every minute, but only sync when someone is online and live matches exist.
   // The live sync service enforces its own 5-minute minimum interval + quota checks.
   jobs.push(cron.schedule('* * * * *', async () => {
-    if (hasActiveUsers() && await hasLiveMatches()) {
+    // Do not rely on DB status to start live sync (prevents chicken-and-egg on first kickoff).
+    if (hasActiveUsers() && isTournamentActive()) {
       await safeSyncRun(() => syncLiveScores(), 'Live-Score-Sync (5min)', CRON_MONITORS.liveScoreSync);
     }
   }));
