@@ -1,6 +1,6 @@
 # WM 2026 Tippspiel
 
-**Version 1.0.1**
+**Version 1.0.1** 
 
 > Private Fußball-Tipp-Webanwendung für die FIFA Weltmeisterschaft 2026 — mit Live-Ergebnissen, Bonusfragen, Teamwertung, KI-Coach und vollständigem Admin-Bereich.
 
