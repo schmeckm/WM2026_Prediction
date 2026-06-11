@@ -2,8 +2,10 @@ const { AICommentary, AIInteractionLog } = require('../models');
 const { PROMPT_VERSION, buildDisclaimer, getUserPrompt, normalizeLocale } = require('./aiGuardrailService');
 const { buildMatchContext } = require('./aiContextBuilderService');
 const { generateText, checkAiAvailability, getAiConfig, getSystemPrompt } = require('./llmService');
+const { isAiInteractionLoggingEnabled } = require('./aiInteractionLogService');
 
 async function logInteraction({ userId, role, feature, question, answer, context, model, tokenUsage, status, errorMessage }) {
+  if (!isAiInteractionLoggingEnabled()) return;
   try {
     await AIInteractionLog.create({
       userId, role, feature, question, answer,

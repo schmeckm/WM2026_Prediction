@@ -351,6 +351,21 @@
       </div>
     </div>
 
+    <div v-if="!needsCompletion || showAdvanced" class="card profile-card profile-data-card">
+      <div class="card-body">
+        <h3 class="profile-section-title">{{ t('profile.profileDataTitle') }}</h3>
+        <p class="text-muted profile-section-hint">{{ t('profile.profileDataHint') }}</p>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          :disabled="resettingProfileData || loading || imageBusy"
+          @click="requestResetProfileData"
+        >
+          {{ resettingProfileData ? t('profile.resettingProfileData') : t('profile.resetProfileData') }}
+        </button>
+      </div>
+    </div>
+
     <div v-if="!needsCompletion || showAdvanced" class="card profile-card profile-danger-card">
       <div class="card-body">
         <h3 class="profile-danger-title">{{ t('profile.dangerZoneTitle') }}</h3>
@@ -467,6 +482,7 @@ const isLocalAccount = computed(() => {
 const imageBusy = ref(false);
 const deletePassword = ref('');
 const deletingAccount = ref(false);
+const resettingProfileData = ref(false);
 const twoFactorSetup = ref(null);
 const twoFactorEnableCode = ref('');
 const twoFactorDisableCode = ref('');
@@ -664,6 +680,53 @@ async function removeImage() {
     error.value = err.response?.data?.error || t('profile.imageUploadFailed');
   } finally {
     imageBusy.value = false;
+  }
+}
+
+function requestResetProfileData() {
+  openConfirm({
+    title: t('profile.resetProfileData'),
+    message: t('profile.resetProfileDataConfirm'),
+    confirmLabel: t('profile.resetProfileData'),
+    danger: false,
+    action: handleResetProfileData,
+  });
+}
+
+async function handleResetProfileData() {
+  resettingProfileData.value = true;
+  success.value = '';
+  error.value = '';
+
+  try {
+    // Drop any pending upload selection first.
+    selectedImage.value = null;
+    if (previewUrl.value) URL.revokeObjectURL(previewUrl.value);
+    previewUrl.value = '';
+
+    if (authStore.user?.imageUrl) {
+      const { data } = await api.delete(`/users/${authStore.user.id}/image`);
+      authStore.syncUser(data, { bumpImage: true });
+    }
+
+    const updated = await authStore.updateProfile(authStore.user.id, {
+      favoriteNationalTeamId: null,
+      favoriteNationalTeamName: null,
+      topScorerPlayerId: null,
+      topScorerPlayerName: null,
+      avatarColor: null,
+      avatarEmoji: null,
+    });
+
+    topScorerTouched.value = false;
+    applyFormFromUser(updated);
+    syncTopScorerSelectionFromUser(updated);
+    playerSearch.value = '';
+    success.value = t('profile.resetProfileDataSuccess');
+  } catch (err) {
+    error.value = err.response?.data?.error || t('profile.resetProfileDataFailed');
+  } finally {
+    resettingProfileData.value = false;
   }
 }
 

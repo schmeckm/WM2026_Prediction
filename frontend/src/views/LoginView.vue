@@ -159,7 +159,9 @@ const showTotp = ref(false);
 const totpCode = ref('');
 
 onMounted(async () => {
-  pageUrl.value = `${globalThis.location.origin}/login`;
+  const configuredAppUrl = (import.meta.env.VITE_APP_URL || '').trim();
+  const baseUrl = configuredAppUrl || globalThis.location.origin;
+  pageUrl.value = `${baseUrl.replace(/\/$/, '')}/login`;
   const rememberedEmail = localStorage.getItem(REMEMBER_EMAIL_KEY);
   if (rememberedEmail) {
     email.value = rememberedEmail;

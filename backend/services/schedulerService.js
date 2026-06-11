@@ -283,6 +283,15 @@ async function startScheduler() {
     await safeRun(() => cleanupExpiredTokens(), 'Token-Blacklist-Bereinigung');
   }));
 
+  // Cleanup AI interaction logs daily (retention in days via env)
+  const { cleanupOldAiInteractionLogs } = require('./aiInteractionLogService');
+  jobs.push(cron.schedule('10 4 * * *', async () => {
+    await safeRun(async () => {
+      const result = await cleanupOldAiInteractionLogs();
+      return { message: result.skipped ? 'skipped' : `deleted=${result.deletedCount} retentionDays=${result.retentionDays}` };
+    }, 'AI-Interaktionslog-Bereinigung');
+  }));
+
   const playerBackupInfo = playerBackupEnabled
     ? `Spielerdaten-Backup: ${playerBackupCron} (${CRON_TZ})`
     : 'Spielerdaten-Backup: aus';

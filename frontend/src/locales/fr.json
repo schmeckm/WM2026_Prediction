@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "Aspire World Cup 2026 - Compétition",
+    "title": "World Cup 2026 - Compétition",
     "subtitle": "Jeu de Pronostics"
   },
   "languages": {
@@ -81,18 +81,19 @@
     "adminArea": "Espace Admin"
   },
   "auth": {
-    "welcomeBack": "Aspire MAKE",
+    "welcomeBack": "Coupe du Monde 2026",
     "welcomeHeadline": "Pronostiquez contre vos",
     "welcomeHeadlineAccent": "collègues.",
     "registerHeadline": "Rejoignez la",
     "registerHeadlineAccent": "Coupe du Monde.",
-    "loginWelcomeText": "Bienvenue au jeu de pronostics Coupe du Monde FIFA 2026 d'Aspire MAKE – suivez les matchs, faites vos prédictions et rivalisez avec vos collègues.",
-    "registerWelcomeText": "Rejoignez Aspire MAKE – inscrivez-vous et commencez à pronostiquer la Coupe du Monde FIFA 2026.",
-    "forgotPasswordWelcomeText": "Pas de souci – nous vous aidons à retrouver l'accès à votre compte Aspire MAKE.",
-    "resetPasswordWelcomeText": "Définissez un nouveau mot de passe et revenez au jeu de pronostics Aspire MAKE.",
-    "verifyEmailWelcomeText": "Confirmez votre adresse e-mail pour activer votre compte Aspire MAKE.",
+    "loginWelcomeText": "Bienvenue au jeu de pronostics Coupe du Monde FIFA 2026 – suivez les matchs, faites vos prédictions et rivalisez avec vos collègues.",
+    "registerWelcomeText": "Rejoignez le jeu – inscrivez-vous et commencez à pronostiquer la Coupe du Monde FIFA 2026.",
+    "forgotPasswordWelcomeText": "Pas de souci – nous vous aidons à retrouver l'accès à votre compte.",
+    "resetPasswordWelcomeText": "Définissez un nouveau mot de passe et revenez au jeu de pronostics.",
+    "verifyEmailWelcomeText": "Confirmez votre adresse e-mail pour activer votre compte.",
     "emailAddress": "Adresse e-mail",
     "emailPlaceholder": "vous@email.fr",
+    "preferPrivateEmailHint": "Si possible, inscrivez-vous avec une adresse e-mail personnelle (pas professionnelle).",
     "rememberMe": "Se souvenir de moi",
     "signInNow": "Se connecter",
     "termsAgreement": "En cliquant sur « Se connecter », vous acceptez nos",
@@ -122,7 +123,7 @@
     "teamRequired": "Veuillez choisir une équipe.",
     "registerVerifyEmail": "Inscription réussie. Veuillez confirmer votre e-mail avant de vous connecter.",
     "registerSuccessTitle": "Presque terminé !",
-    "registerSuccessWelcomeText": "Encore une étape — confirmez votre e-mail pour rejoindre le jeu de pronostics Aspire MAKE.",
+    "registerSuccessWelcomeText": "Encore une étape — confirmez votre e-mail pour rejoindre le jeu de pronostics.",
     "registerSuccessIntro": "Nous avons envoyé un e-mail de confirmation à {email}.",
     "registerSuccessNoEmail": "Votre inscription pour {email} a été enregistrée. L'e-mail de confirmation n'a pas pu être envoyé. Contactez un administrateur ou utilisez « Renvoyer l'e-mail de confirmation » sur la page de connexion.",
     "registerSuccessStep1": "Ouvrez votre boîte e-mail.",
@@ -151,7 +152,7 @@
     "orContinueWith": "ou",
     "ssoSigningIn": "Finalisation de la connexion…",
     "ssoCompleteTitle": "Terminer l'inscription",
-    "ssoCompleteWelcomeText": "Presque terminé – choisissez votre équipe pour rejoindre le jeu de pronostics Aspire MAKE.",
+    "ssoCompleteWelcomeText": "Presque terminé – choisissez votre équipe pour rejoindre le jeu de pronostics.",
     "ssoCompleteHint": "Vos données Google ont été importées. Il ne reste qu'à choisir votre équipe.",
     "ssoCompleteSubmit": "Terminer l'inscription",
     "ssoCompleteFailed": "L'inscription n'a pas pu être terminée.",
@@ -284,6 +285,13 @@
       "fire": "Feu"
     },
     "signOutHint": "Déconnectez-vous sur cet appareil.",
+    "profileDataTitle": "Réinitialiser les données du profil",
+    "profileDataHint": "Supprimez les données de profil facultatives comme la photo, le style d'avatar et les choix Coupe du Monde. Votre nom, e-mail et équipe restent inchangés.",
+    "resetProfileData": "Supprimer les données de profil facultatives",
+    "resettingProfileData": "Suppression…",
+    "resetProfileDataConfirm": "Voulez-vous vraiment supprimer les données de profil facultatives ? Cela supprime par exemple la photo de profil, le style d'avatar et vos choix Coupe du Monde. Votre nom, e-mail et équipe restent inchangés.",
+    "resetProfileDataSuccess": "Les données de profil facultatives ont été supprimées.",
+    "resetProfileDataFailed": "Impossible de supprimer les données de profil facultatives.",
     "twoFactorTitle": "Authentification à deux facteurs",
     "twoFactorHint": "Protégez votre compte avec un code d'une application d'authentification.",
     "twoFactorEnabled": "L'authentification à deux facteurs est activée.",
@@ -306,11 +314,11 @@
     "title": "Politique de confidentialité",
     "lastUpdated": "Dernière mise à jour : juin 2026",
     "backToLogin": "Retour à la connexion",
-    "intro": "Cette politique de confidentialité explique comment Aspire MAKE traite les données personnelles dans le jeu interne de pronostics de la Coupe du monde FIFA 2026. L'application est destinée aux employés et aux équipes au sein de l'organisation.",
+    "intro": "Cette politique de confidentialité explique comment les données personnelles sont traitées dans le jeu interne de pronostics de la Coupe du monde FIFA 2026. L'application est destinée aux employés et aux équipes au sein de l'organisation. Si possible, inscrivez-vous avec une adresse e-mail personnelle (pas professionnelle).",
     "sections": {
       "controller": {
         "title": "1. Responsable du traitement",
-        "text": "Aspire MAKE est responsable du traitement des données personnelles dans cette application. Pour toute question relative à la confidentialité, veuillez contacter l'adresse indiquée ci-dessous."
+        "text": "L'organisation est responsable du traitement des données personnelles dans cette application. Pour toute question relative à la confidentialité, veuillez contacter l'adresse indiquée ci-dessous."
       },
       "dataCollected": {
         "title": "2. Données que nous traitons",
@@ -355,12 +363,14 @@
           "Exploitation informatique : hébergement et fonctionnement technique de l'application",
           "Service e-mail : envoi des e-mails de vérification, de réinitialisation et de rappel",
           "API sportives externes : récupération des calendriers, résultats et données d'équipes (vos données de compte ne sont pas transmises)",
+          "Fonctionnalités IA optionnelles : si activées, les saisies et le contexte sont transférés à un fournisseur IA/LLM externe (p. ex. OpenAI) pour générer des réponses",
+          "Suivi des erreurs/performances : si configuré, des données techniques d'erreur peuvent être envoyées à un service de monitoring (p. ex. Sentry)",
           "Aucune vente de données personnelles à des tiers"
         ]
       },
       "retention": {
         "title": "7. Durée de conservation",
-        "text": "Nous conservons les données personnelles uniquement le temps nécessaire au fonctionnement du jeu de pronostics ou conformément aux obligations légales. Vous pouvez supprimer votre compte à tout moment dans votre profil. Cela supprime définitivement votre compte utilisateur et les données de jeu associées."
+        "text": "Nous conservons les données personnelles uniquement le temps nécessaire au fonctionnement du jeu de pronostics ou conformément aux obligations légales. Vous pouvez supprimer votre compte à tout moment dans votre profil. Cela supprime définitivement votre compte utilisateur et les données de jeu associées. Vous pouvez également supprimer des données de profil facultatives (p. ex. la photo) à tout moment depuis votre profil. Les journaux des interactions IA optionnelles, s'ils sont activés, sont supprimés par défaut après 90 jours et supprimés lors de la suppression du compte."
       },
       "rights": {
         "title": "8. Vos droits",
@@ -379,7 +389,7 @@
       },
       "contact": {
         "title": "10. Contact",
-        "text": "Pour toute question concernant cette politique de confidentialité ou pour exercer vos droits, veuillez contacter votre administrateur Aspire MAKE ou la personne de contact désignée pour le jeu de pronostics au sein de votre organisation."
+        "text": "Pour toute question concernant cette politique de confidentialité ou pour exercer vos droits, veuillez contacter votre administrateur ou la personne de contact désignée pour le jeu de pronostics au sein de votre organisation."
       }
     }
   },

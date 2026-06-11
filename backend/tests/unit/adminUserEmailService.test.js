@@ -29,7 +29,7 @@ describe('adminUserEmailService', () => {
     }]);
     assert.match(tpl.subject, /Erinnerung/i);
     assert.match(tpl.html, /Hallo Max!/);
-    assert.match(tpl.html, /Aspire MAKE/);
+    assert.match(tpl.html, /World Cup 2026/);
     assert.match(tpl.text, /2/);
   });
 
@@ -60,7 +60,7 @@ describe('adminUserEmailService', () => {
     assert.match(tpl.html, /Hello Alex!/);
     assert.match(tpl.html, /Top players/i);
     assert.match(tpl.html, /Top teams/i);
-    assert.match(tpl.html, /Aspire MAKE/);
+    assert.match(tpl.html, /World Cup 2026/);
   });
 
   it('counts and lists only missing matches within the reminder window', () => {

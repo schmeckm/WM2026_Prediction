@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "Aspire World Cup 2026 - Wettbewerb",
+    "title": "World Cup 2026 - Wettbewerb",
     "subtitle": "Tippspiel"
   },
   "languages": {
@@ -82,18 +82,19 @@
     "adminArea": "Admin-Bereich"
   },
   "auth": {
-    "welcomeBack": "Aspire MAKE",
+    "welcomeBack": "WM 2026",
     "welcomeHeadline": "Tippen gegen deine",
     "welcomeHeadlineAccent": "Kollegen.",
     "registerHeadline": "Tippe auf die",
     "registerHeadlineAccent": "WM 2026.",
-    "loginWelcomeText": "Willkommen beim WM 2026 Tippspiel von Aspire MAKE – tippen Sie mit, verfolgen Sie Spiele und messen Sie sich mit Ihren Kollegen.",
-    "registerWelcomeText": "Werden Sie Teil von Aspire MAKE – registrieren Sie sich und tippen Sie mit auf die FIFA WM 2026.",
-    "forgotPasswordWelcomeText": "Kein Problem – wir helfen Ihnen, wieder Zugang zu Ihrem Aspire MAKE Konto zu erhalten.",
-    "resetPasswordWelcomeText": "Legen Sie ein neues Passwort fest und kehren Sie zum Aspire MAKE Tippspiel zurück.",
-    "verifyEmailWelcomeText": "Bestätigen Sie Ihre E-Mail-Adresse, um Ihr Aspire MAKE Konto zu aktivieren.",
+    "loginWelcomeText": "Willkommen beim WM 2026 Tippspiel – tippen Sie mit, verfolgen Sie Spiele und messen Sie sich mit Ihren Kollegen.",
+    "registerWelcomeText": "Registrieren Sie sich und tippen Sie mit auf die FIFA WM 2026.",
+    "forgotPasswordWelcomeText": "Kein Problem – wir helfen Ihnen, wieder Zugang zu Ihrem Konto zu erhalten.",
+    "resetPasswordWelcomeText": "Legen Sie ein neues Passwort fest und kehren Sie zum Tippspiel zurück.",
+    "verifyEmailWelcomeText": "Bestätigen Sie Ihre E-Mail-Adresse, um Ihr Konto zu aktivieren.",
     "emailAddress": "E-Mail-Adresse",
     "emailPlaceholder": "ihre@email.de",
+    "preferPrivateEmailHint": "Bitte wenn möglich mit privater E-Mail-Adresse registrieren (keine Geschäfts-/Firmenadresse).",
     "rememberMe": "Angemeldet bleiben",
     "signInNow": "Jetzt anmelden",
     "termsAgreement": "Mit Klick auf „Jetzt anmelden“ stimmen Sie unseren",
@@ -123,7 +124,7 @@
     "teamRequired": "Bitte wählen Sie ein Team.",
     "registerVerifyEmail": "Registrierung erfolgreich. Bitte bestätigen Sie Ihre E-Mail, bevor Sie sich anmelden.",
     "registerSuccessTitle": "Fast geschafft!",
-    "registerSuccessWelcomeText": "Nur noch ein Schritt – bestätigen Sie Ihre E-Mail, um beim Aspire MAKE Tippspiel mitzutippen.",
+    "registerSuccessWelcomeText": "Nur noch ein Schritt – bestätigen Sie Ihre E-Mail, um beim Tippspiel mitzutippen.",
     "registerSuccessIntro": "Wir haben eine Bestätigungs-E-Mail an {email} gesendet.",
     "registerSuccessNoEmail": "Ihre Registrierung für {email} wurde gespeichert. Die Bestätigungs-E-Mail konnte nicht versendet werden. Bitte wenden Sie sich an einen Administrator oder nutzen Sie auf der Login-Seite „Bestätigungs-E-Mail erneut senden“.",
     "registerSuccessStep1": "Öffnen Sie Ihr E-Mail-Postfach.",
@@ -152,7 +153,7 @@
     "orContinueWith": "oder",
     "ssoSigningIn": "Anmeldung wird abgeschlossen…",
     "ssoCompleteTitle": "Registrierung abschließen",
-    "ssoCompleteWelcomeText": "Fast geschafft – wählen Sie Ihr Team, um beim Aspire MAKE Tippspiel mitzutippen.",
+    "ssoCompleteWelcomeText": "Fast geschafft – wählen Sie Ihr Team, um beim Tippspiel mitzutippen.",
     "ssoCompleteHint": "Ihre Google-Daten wurden übernommen. Wählen Sie nur noch Ihr Team.",
     "ssoCompleteSubmit": "Registrierung abschließen",
     "ssoCompleteFailed": "Registrierung konnte nicht abgeschlossen werden.",
@@ -316,6 +317,13 @@
       "fire": "Feuer"
     },
     "dangerZoneTitle": "Konto löschen",
+    "profileDataTitle": "Profildaten zurücksetzen",
+    "profileDataHint": "Entfernen Sie optionale Profildaten wie Profilbild, Avatar-Design sowie WM-Favorit und Torschützen-Tipp. Name, E-Mail und Team bleiben erhalten.",
+    "resetProfileData": "Optionale Profildaten löschen",
+    "resettingProfileData": "Lösche…",
+    "resetProfileDataConfirm": "Möchten Sie optionale Profildaten wirklich löschen? Das entfernt z. B. Profilbild, Avatar-Design sowie WM-Favorit und Torschützen-Tipp. Name, E-Mail und Team bleiben erhalten.",
+    "resetProfileDataSuccess": "Optionale Profildaten wurden gelöscht.",
+    "resetProfileDataFailed": "Optionale Profildaten konnten nicht gelöscht werden.",
     "signOutHint": "Melden Sie sich auf diesem Gerät ab.",
     "twoFactorTitle": "Zwei-Faktor-Authentifizierung",
     "twoFactorHint": "Schützen Sie Ihr Konto mit einem Code aus einer Authenticator-App.",
@@ -347,11 +355,11 @@
     "title": "Datenschutzerklärung",
     "lastUpdated": "Stand: Juni 2026",
     "backToLogin": "Zurück zur Anmeldung",
-    "intro": "Diese Datenschutzerklärung informiert Sie darüber, wie Aspire MAKE personenbezogene Daten im internen WM 2026 Tippspiel verarbeitet. Das Tippspiel richtet sich an Mitarbeitende und Teams innerhalb der Organisation.",
+    "intro": "Diese Datenschutzerklärung informiert Sie darüber, wie personenbezogene Daten im internen WM 2026 Tippspiel verarbeitet werden. Das Tippspiel richtet sich an Mitarbeitende und Teams innerhalb der Organisation. Bitte registrieren Sie sich wenn möglich mit einer privaten E-Mail-Adresse (keine Firmenadresse).",
     "sections": {
       "controller": {
         "title": "1. Verantwortlicher",
-        "text": "Verantwortlich für die Datenverarbeitung ist Aspire MAKE. Bei Fragen zum Datenschutz wenden Sie sich bitte an die unten genannte Kontaktadresse."
+        "text": "Verantwortlich für die Datenverarbeitung in dieser Anwendung ist die Organisation. Bei Fragen zum Datenschutz wenden Sie sich bitte an die unten genannte Kontaktadresse."
       },
       "dataCollected": {
         "title": "2. Welche Daten wir verarbeiten",
@@ -396,12 +404,14 @@
           "IT-Betrieb: Hosting und technischer Betrieb der Anwendung",
           "E-Mail-Dienst: Versand von Verifizierungs-, Reset- und Erinnerungs-E-Mails",
           "Externe Sportdaten-APIs: Abruf von Spielplänen, Ergebnissen und Mannschaftsdaten (keine Weitergabe Ihrer Kontodaten)",
+          "Optionale KI-Funktionen: Wenn aktiviert, werden Eingaben und Kontextdaten zur Generierung von KI-Antworten an einen externen KI/LLM-Anbieter (z. B. OpenAI) übertragen",
+          "Fehler-/Performance-Monitoring: Wenn konfiguriert, können technische Fehlerdaten an einen Monitoring-Dienst (z. B. Sentry) übermittelt werden",
           "Kein Verkauf personenbezogener Daten an Dritte"
         ]
       },
       "retention": {
         "title": "7. Speicherdauer",
-        "text": "Wir speichern personenbezogene Daten nur so lange, wie es für den Betrieb des Tippspiels erforderlich ist oder gesetzliche Aufbewahrungsfristen bestehen. Sie können Ihr Konto jederzeit im Profil löschen. Dadurch werden Ihr Benutzerkonto und die zugehörigen Spieldaten unwiderruflich entfernt."
+        "text": "Wir speichern personenbezogene Daten nur so lange, wie es für den Betrieb des Tippspiels erforderlich ist oder gesetzliche Aufbewahrungsfristen bestehen. Sie können Ihr Konto jederzeit im Profil löschen. Dadurch werden Ihr Benutzerkonto und die zugehörigen Spieldaten unwiderruflich entfernt. Optionale Profildaten (z. B. Profilbild) können Sie jederzeit im Profil entfernen. Protokolle zu optionalen KI-Interaktionen werden, sofern aktiviert, standardmäßig nach 90 Tagen gelöscht und bei Kontolöschung entfernt."
       },
       "rights": {
         "title": "8. Ihre Rechte",
@@ -420,7 +430,7 @@
       },
       "contact": {
         "title": "10. Kontakt",
-        "text": "Bei Fragen zu dieser Datenschutzerklärung oder zur Ausübung Ihrer Rechte kontaktieren Sie bitte den Aspire MAKE Administrator bzw. die für das Tippspiel benannte Ansprechperson in Ihrer Organisation."
+        "text": "Bei Fragen zu dieser Datenschutzerklärung oder zur Ausübung Ihrer Rechte kontaktieren Sie bitte Ihren Administrator bzw. die für das Tippspiel benannte Ansprechperson in Ihrer Organisation."
       }
     }
   },

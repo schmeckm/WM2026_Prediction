@@ -2,6 +2,7 @@ const { User } = require('../models');
 const { deleteUserImageFiles } = require('./userImageService');
 const { saveLeaderboardSnapshot } = require('./leaderboardService');
 const { logAudit } = require('./auditService');
+const { deleteAiInteractionLogsForUser } = require('./aiInteractionLogService');
 
 async function assertCanDeleteUser(user) {
   if (user.role !== 'admin') return;
@@ -35,6 +36,7 @@ async function deleteUserAccount(user, options = {}) {
     });
   }
 
+  await deleteAiInteractionLogsForUser(user.id);
   deleteUserImageFiles(user.id);
   await user.destroy();
   await saveLeaderboardSnapshot();

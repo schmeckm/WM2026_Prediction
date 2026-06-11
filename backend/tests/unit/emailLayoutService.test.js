@@ -7,7 +7,7 @@ describe('emailLayoutService', () => {
     assert.equal(escapeHtml('<script>'), '&lt;script&gt;');
   });
 
-  it('wraps content with Aspire MAKE branding and CTA button', () => {
+  it('wraps content with branding and CTA button', () => {
     const html = wrapBrandedEmail({
       locale: 'de',
       title: 'E-Mail bestätigen',
@@ -18,7 +18,7 @@ describe('emailLayoutService', () => {
       footerHtml: '<p style="margin:0;">Footer</p>',
     });
 
-    assert.match(html, /Aspire MAKE/);
+    assert.match(html, /World Cup 2026/);
     assert.match(html, /#e86a33/);
     assert.match(html, /https:\/\/example.com\/verify/);
     assert.match(html, /Jetzt bestätigen/);

@@ -18,7 +18,7 @@ describe('authEmailService templates', () => {
 
   it('verification template uses branded layout', () => {
     const tpl = templateEmailVerification(user, 'abc123');
-    assert.match(tpl.html, /Aspire MAKE/);
+    assert.match(tpl.html, /World Cup 2026/);
     assert.match(tpl.html, /#e86a33/);
   });
 

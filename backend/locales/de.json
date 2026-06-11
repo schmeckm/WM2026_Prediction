@@ -218,11 +218,11 @@
   },
   "emails": {
     "layout": {
-      "brand": "Aspire MAKE",
-      "tagline": "Willkommen beim WM 2026 Tippspiel von Aspire MAKE – tippen Sie mit, verfolgen Sie Spiele und messen Sie sich mit Ihren Kollegen."
+      "brand": "World Cup 2026",
+      "tagline": "Willkommen beim WM 2026 Tippspiel – tippen Sie mit, verfolgen Sie Spiele und messen Sie sich mit Ihren Kollegen."
     },
     "passwordReset": {
-      "subject": "Aspire World Cup 2026 - Wettbewerb – Passwort zurücksetzen",
+      "subject": "World Cup 2026 - Wettbewerb – Passwort zurücksetzen",
       "title": "Passwort zurücksetzen",
       "greeting": "Hallo {firstName}!",
       "body": "Sie haben eine Passwort-Zurücksetzung angefordert.",
@@ -232,7 +232,7 @@
       "text": "Passwort zurücksetzen: {link}"
     },
     "emailVerification": {
-      "subject": "Aspire World Cup 2026 - Wettbewerb – E-Mail bestätigen",
+      "subject": "World Cup 2026 - Wettbewerb – E-Mail bestätigen",
       "title": "E-Mail bestätigen",
       "greeting": "Willkommen, {firstName}!",
       "body": "Bitte bestätigen Sie Ihre E-Mail-Adresse, um sich anzumelden:",
@@ -242,7 +242,7 @@
       "text": "Willkommen {firstName}! Bitte bestätigen Sie Ihre E-Mail: {link}"
     },
     "missingPredictions": {
-      "subject": "Aspire World Cup 2026 - Wettbewerb – {missingCount} fehlende Tipps",
+      "subject": "World Cup 2026 - Wettbewerb – {missingCount} fehlende Tipps",
       "title": "Fehlende Tipps",
       "greeting": "Hallo {firstName}!",
       "body": "Sie haben noch {missingCount} offene Tipps in den nächsten 48 Stunden.",
@@ -255,7 +255,7 @@
       "notificationBody": "Sie haben noch {missingCount} offene Tipps in den nächsten 48 Stunden."
     },
     "upcomingMatches": {
-      "subject": "Aspire World Cup 2026 - Wettbewerb – Anstehende Spiele",
+      "subject": "World Cup 2026 - Wettbewerb – Anstehende Spiele",
       "title": "Anstehende Spiele",
       "greeting": "Hallo {firstName}!",
       "body": "Diese Spiele stehen in den nächsten Tagen an:",
@@ -264,7 +264,7 @@
       "text": "Anstehende Spiele:\n{matchListText}\n{link}"
     },
     "bonusReminder": {
-      "subject": "Aspire World Cup 2026 - Wettbewerb – Bonusfrage schließt bald",
+      "subject": "World Cup 2026 - Wettbewerb – Bonusfrage schließt bald",
       "title": "Bonusfrage",
       "greeting": "Hallo {firstName}!",
       "body": "Die Bonusfrage \"{questionText}\" schließt am {lockTime}.",
@@ -272,7 +272,7 @@
       "text": "Hallo {firstName}! Bonusfrage \"{questionText}\" schließt am {lockTime}.\n{link}"
     },
     "leaderboardUpdate": {
-      "subject": "Aspire World Cup 2026 - Wettbewerb – Hitliste aktualisiert",
+      "subject": "World Cup 2026 - Wettbewerb – Hitliste aktualisiert",
       "title": "Hitliste",
       "greeting": "Hallo {firstName}!",
       "body": "Ihr aktueller Rang: #{rank} mit {points} Punkten.",
@@ -280,12 +280,12 @@
       "text": "Hallo {firstName}! Rang: #{rank}, Punkte: {points}\n{link}"
     },
     "syncError": {
-      "subject": "Aspire World Cup 2026 - Wettbewerb – Sync-Fehler",
+      "subject": "World Cup 2026 - Wettbewerb – Sync-Fehler",
       "title": "Synchronisierungsfehler",
       "text": "Sync-Fehler: {errorMessage}"
     },
     "manualTipReminder": {
-      "subject": "Aspire World Cup 2026 - Wettbewerb – Erinnerung: Tipps abgeben",
+      "subject": "World Cup 2026 - Wettbewerb – Erinnerung: Tipps abgeben",
       "title": "Tipp-Erinnerung",
       "greeting": "Hallo {firstName}!",
       "bodyWithMissing": "Du hast noch {missingCount} offene Tipps in den nächsten 48 Stunden. Gib sie rechtzeitig ab, um Punkte zu sammeln.",
@@ -294,7 +294,7 @@
       "text": "Hallo {firstName}! {missingCount} offene Tipps.\n{matchListText}\n{link}"
     },
     "morningDigest": {
-      "subject": "Aspire World Cup 2026 - Wettbewerb – Guten Morgen: Dein WM-Update",
+      "subject": "World Cup 2026 - Wettbewerb – Guten Morgen: Dein WM-Update",
       "title": "Morning Digest",
       "greeting": "Guten Morgen, {firstName}!",
       "intro": "Hier ist dein tägliches WM-Update mit Ergebnissen, Stand und Highlights:",
@@ -332,7 +332,7 @@
       }
     },
     "statusUpdate": {
-      "subject": "Aspire World Cup 2026 - Wettbewerb – Aktueller Stand",
+      "subject": "World Cup 2026 - Wettbewerb – Aktueller Stand",
       "title": "Status-Update",
       "greeting": "Hallo {firstName}!",
       "intro": "Hier ist der aktuelle Stand im Tippspiel:",
@@ -348,7 +348,7 @@
       "text": "Hallo {firstName}! Dein Rang: {rank}, Punkte: {points}. Team: {teamName} (Platz {teamRank}). {link}"
     },
     "test": {
-      "subject": "Aspire World Cup 2026 - Wettbewerb – Test-E-Mail",
+      "subject": "World Cup 2026 - Wettbewerb – Test-E-Mail",
       "title": "Test",
       "greeting": "Hallo!",
       "body": "Die E-Mail-Konfiguration funktioniert.",

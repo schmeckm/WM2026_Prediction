@@ -218,11 +218,11 @@
   },
   "emails": {
     "layout": {
-      "brand": "Aspire MAKE",
-      "tagline": "Welcome to the Aspire MAKE FIFA World Cup 2026 prediction game – follow matches, place your predictions, and compete with your colleagues."
+      "brand": "World Cup 2026",
+      "tagline": "Welcome to the FIFA World Cup 2026 prediction game – follow matches, place your predictions, and compete with your colleagues."
     },
     "passwordReset": {
-      "subject": "Aspire World Cup 2026 - Competition – Reset password",
+      "subject": "World Cup 2026 - Competition – Reset password",
       "title": "Reset password",
       "greeting": "Hello {firstName}!",
       "body": "You requested a password reset.",
@@ -232,7 +232,7 @@
       "text": "Reset password: {link}"
     },
     "emailVerification": {
-      "subject": "Aspire World Cup 2026 - Competition – Verify email",
+      "subject": "World Cup 2026 - Competition – Verify email",
       "title": "Verify email",
       "greeting": "Welcome, {firstName}!",
       "body": "Please verify your email address to sign in:",
@@ -242,7 +242,7 @@
       "text": "Welcome {firstName}! Please verify your email: {link}"
     },
     "missingPredictions": {
-      "subject": "Aspire World Cup 2026 - Competition – {missingCount} missing predictions",
+      "subject": "World Cup 2026 - Competition – {missingCount} missing predictions",
       "title": "Missing predictions",
       "greeting": "Hello {firstName}!",
       "body": "You still have {missingCount} open predictions in the next 48 hours.",
@@ -255,7 +255,7 @@
       "notificationBody": "You still have {missingCount} open predictions in the next 48 hours."
     },
     "upcomingMatches": {
-      "subject": "Aspire World Cup 2026 - Competition – Upcoming matches",
+      "subject": "World Cup 2026 - Competition – Upcoming matches",
       "title": "Upcoming matches",
       "greeting": "Hello {firstName}!",
       "body": "These matches are coming up:",
@@ -264,7 +264,7 @@
       "text": "Upcoming matches:\n{matchListText}\n{link}"
     },
     "bonusReminder": {
-      "subject": "Aspire World Cup 2026 - Competition – Bonus question closing soon",
+      "subject": "World Cup 2026 - Competition – Bonus question closing soon",
       "title": "Bonus question",
       "greeting": "Hello {firstName}!",
       "body": "The bonus question \"{questionText}\" closes on {lockTime}.",
@@ -272,7 +272,7 @@
       "text": "Hello {firstName}! Bonus question \"{questionText}\" closes on {lockTime}.\n{link}"
     },
     "leaderboardUpdate": {
-      "subject": "Aspire World Cup 2026 - Competition – Leaderboard updated",
+      "subject": "World Cup 2026 - Competition – Leaderboard updated",
       "title": "Leaderboard",
       "greeting": "Hello {firstName}!",
       "body": "Your current rank: #{rank} with {points} points.",
@@ -280,12 +280,12 @@
       "text": "Hello {firstName}! Rank: #{rank}, Points: {points}\n{link}"
     },
     "syncError": {
-      "subject": "Aspire World Cup 2026 - Competition – Sync error",
+      "subject": "World Cup 2026 - Competition – Sync error",
       "title": "Synchronization error",
       "text": "Sync error: {errorMessage}"
     },
     "manualTipReminder": {
-      "subject": "Aspire World Cup 2026 - Competition – Reminder: submit predictions",
+      "subject": "World Cup 2026 - Competition – Reminder: submit predictions",
       "title": "Prediction reminder",
       "greeting": "Hello {firstName}!",
       "bodyWithMissing": "You still have {missingCount} open predictions in the next 48 hours. Submit them in time to collect points.",
@@ -294,7 +294,7 @@
       "text": "Hello {firstName}! {missingCount} open predictions.\n{matchListText}\n{link}"
     },
     "morningDigest": {
-      "subject": "Aspire World Cup 2026 - Competition – Good morning: Your daily update",
+      "subject": "World Cup 2026 - Competition – Good morning: Your daily update",
       "title": "Morning Digest",
       "greeting": "Good morning, {firstName}!",
       "intro": "Here is your daily World Cup update with results, standings and highlights:",
@@ -332,7 +332,7 @@
       }
     },
     "statusUpdate": {
-      "subject": "Aspire World Cup 2026 - Competition – Current standings",
+      "subject": "World Cup 2026 - Competition – Current standings",
       "title": "Status update",
       "greeting": "Hello {firstName}!",
       "intro": "Here is the current status in the prediction game:",
@@ -348,7 +348,7 @@
       "text": "Hello {firstName}! Your rank: {rank}, points: {points}. Team: {teamName} (rank {teamRank}). {link}"
     },
     "test": {
-      "subject": "Aspire World Cup 2026 - Competition – Test email",
+      "subject": "World Cup 2026 - Competition – Test email",
       "title": "Test",
       "greeting": "Hello!",
       "body": "The email configuration is working.",

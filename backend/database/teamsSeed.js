@@ -1,5 +1,5 @@
 const PRODUCTION_TEAMS = [
-  'Aspire MAKE',
+  'World Cup 2026',
   'Team Bernina',
   'Team Rigi',
   'Team Pilatus',
@@ -7,7 +7,7 @@ const PRODUCTION_TEAMS = [
   'Team DIA',
   'Team FHLR',
   'Team Accenture',
-  'Team TROIKA MAKE',
+  'Team TROIKA',
   'Team TROIKA Warehouse',
 ];
 

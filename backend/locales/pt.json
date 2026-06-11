@@ -218,11 +218,11 @@
   },
   "emails": {
     "layout": {
-      "brand": "Aspire MAKE",
-      "tagline": "Bem-vindo ao jogo de palpites Aspire MAKE FIFA World Cup 2026 – acompanhe os jogos, faça os seus palpites e compita com os seus colegas."
+      "brand": "World Cup 2026",
+      "tagline": "Bem-vindo ao jogo de palpites FIFA World Cup 2026 – acompanhe os jogos, faça os seus palpites e compita com os seus colegas."
     },
     "passwordReset": {
-      "subject": "Aspire World Cup 2026 - Competição – Redefinir palavra-passe",
+      "subject": "World Cup 2026 - Competição – Redefinir palavra-passe",
       "title": "Redefinir palavra-passe",
       "greeting": "Olá {firstName}!",
       "body": "Solicitou a redefinição da palavra-passe.",
@@ -232,7 +232,7 @@
       "text": "Redefinir palavra-passe: {link}"
     },
     "emailVerification": {
-      "subject": "Aspire World Cup 2026 - Competição – Verificar e-mail",
+      "subject": "World Cup 2026 - Competição – Verificar e-mail",
       "title": "Verificar e-mail",
       "greeting": "Bem-vindo, {firstName}!",
       "body": "Por favor, verifique o seu endereço de e-mail para iniciar sessão:",
@@ -242,7 +242,7 @@
       "text": "Bem-vindo {firstName}! Por favor, verifique o seu e-mail: {link}"
     },
     "missingPredictions": {
-      "subject": "Aspire World Cup 2026 - Competição – {missingCount} palpites em falta",
+      "subject": "World Cup 2026 - Competição – {missingCount} palpites em falta",
       "title": "Palpites em falta",
       "greeting": "Olá {firstName}!",
       "body": "Ainda tem {missingCount} palpites em aberto nas próximas 48 horas.",
@@ -255,7 +255,7 @@
       "notificationBody": "Ainda tem {missingCount} palpites em aberto nas próximas 48 horas."
     },
     "upcomingMatches": {
-      "subject": "Aspire World Cup 2026 - Competição – Próximos jogos",
+      "subject": "World Cup 2026 - Competição – Próximos jogos",
       "title": "Próximos jogos",
       "greeting": "Olá {firstName}!",
       "body": "Estes jogos estão a chegar:",
@@ -264,7 +264,7 @@
       "text": "Próximos jogos:\n{matchListText}\n{link}"
     },
     "bonusReminder": {
-      "subject": "Aspire World Cup 2026 - Competição – Pergunta bónus a fechar em breve",
+      "subject": "World Cup 2026 - Competição – Pergunta bónus a fechar em breve",
       "title": "Pergunta bónus",
       "greeting": "Olá {firstName}!",
       "body": "A pergunta bónus \"{questionText}\" fecha em {lockTime}.",
@@ -272,7 +272,7 @@
       "text": "Olá {firstName}! Pergunta bónus \"{questionText}\" fecha em {lockTime}.\n{link}"
     },
     "leaderboardUpdate": {
-      "subject": "Aspire World Cup 2026 - Competição – Classificação atualizada",
+      "subject": "World Cup 2026 - Competição – Classificação atualizada",
       "title": "Classificação",
       "greeting": "Olá {firstName}!",
       "body": "A sua posição atual: #{rank} com {points} pontos.",
@@ -280,12 +280,12 @@
       "text": "Olá {firstName}! Posição: #{rank}, Pontos: {points}\n{link}"
     },
     "syncError": {
-      "subject": "Aspire World Cup 2026 - Competição – Erro de sincronização",
+      "subject": "World Cup 2026 - Competição – Erro de sincronização",
       "title": "Erro de sincronização",
       "text": "Erro de sincronização: {errorMessage}"
     },
     "manualTipReminder": {
-      "subject": "Aspire World Cup 2026 - Competição – Lembrete: submeter palpites",
+      "subject": "World Cup 2026 - Competição – Lembrete: submeter palpites",
       "title": "Lembrete de palpites",
       "greeting": "Olá {firstName}!",
       "bodyWithMissing": "Ainda tem {missingCount} palpites em aberto nas próximas 48 horas. Submeta-os a tempo para ganhar pontos.",
@@ -294,7 +294,7 @@
       "text": "Olá {firstName}! {missingCount} palpites em aberto.\n{matchListText}\n{link}"
     },
     "morningDigest": {
-      "subject": "Aspire World Cup 2026 - Competição – Bom dia: A sua atualização diária",
+      "subject": "World Cup 2026 - Competição – Bom dia: A sua atualização diária",
       "title": "Resumo matinal",
       "greeting": "Bom dia, {firstName}!",
       "intro": "Aqui está a sua atualização diária do Campeonato do Mundo com resultados, classificações e destaques:",
@@ -332,7 +332,7 @@
       }
     },
     "statusUpdate": {
-      "subject": "Aspire World Cup 2026 - Competição – Classificação atual",
+      "subject": "World Cup 2026 - Competição – Classificação atual",
       "title": "Atualização de estado",
       "greeting": "Olá {firstName}!",
       "intro": "Aqui está o estado atual do jogo de palpites:",
@@ -348,7 +348,7 @@
       "text": "Olá {firstName}! Posição: {rank}, pontos: {points}. Equipa: {teamName} (posição {teamRank}). {link}"
     },
     "test": {
-      "subject": "Aspire World Cup 2026 - Competição – E-mail de teste",
+      "subject": "World Cup 2026 - Competição – E-mail de teste",
       "title": "Teste",
       "greeting": "Olá!",
       "body": "A configuração de e-mail está a funcionar.",

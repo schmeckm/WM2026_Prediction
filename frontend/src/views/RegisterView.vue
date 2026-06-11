@@ -46,6 +46,7 @@
           autocomplete="email"
           :placeholder="t('auth.emailPlaceholder')"
         />
+        <p class="auth-register-email-hint">{{ t('auth.preferPrivateEmailHint') }}</p>
       </div>
 
       <div class="auth-immersive-field">
@@ -246,5 +247,12 @@ async function handleRegister() {
   justify-content: center;
   text-decoration: none;
   margin-top: 0.25rem;
+}
+
+.auth-register-email-hint {
+  margin: 0.15rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
 }
 </style>

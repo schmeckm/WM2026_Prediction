@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "Aspire World Cup 2026 - Competição",
+    "title": "World Cup 2026 - Competição",
     "subtitle": "Jogo de Palpites"
   },
   "languages": {
@@ -82,18 +82,19 @@
     "adminArea": "Área de Administração"
   },
   "auth": {
-    "welcomeBack": "Aspire MAKE",
+    "welcomeBack": "Mundial 2026",
     "welcomeHeadline": "Aposte contra os seus",
     "welcomeHeadlineAccent": "colegas.",
     "registerHeadline": "Junte-se ao",
     "registerHeadlineAccent": "Mundial.",
-    "loginWelcomeText": "Bem-vindo ao jogo de palpites Aspire MAKE para o Campeonato do Mundo FIFA 2026 – acompanhe os jogos, faça os seus palpites e compita com os seus colegas.",
-    "registerWelcomeText": "Junte-se ao Aspire MAKE – registe-se e comece a apostar no Campeonato do Mundo FIFA 2026.",
-    "forgotPasswordWelcomeText": "Não se preocupe – vamos ajudá-lo a recuperar o acesso à sua conta Aspire MAKE.",
-    "resetPasswordWelcomeText": "Defina uma nova palavra-passe e volte ao jogo de palpites Aspire MAKE.",
-    "verifyEmailWelcomeText": "Confirme o seu endereço de e-mail para ativar a sua conta Aspire MAKE.",
+    "loginWelcomeText": "Bem-vindo ao jogo de palpites do Campeonato do Mundo FIFA 2026 – acompanhe os jogos, faça os seus palpites e compita com os seus colegas.",
+    "registerWelcomeText": "Junte-se ao jogo – registe-se e comece a apostar no Campeonato do Mundo FIFA 2026.",
+    "forgotPasswordWelcomeText": "Não se preocupe – vamos ajudá-lo a recuperar o acesso à sua conta.",
+    "resetPasswordWelcomeText": "Defina uma nova palavra-passe e volte ao jogo de palpites.",
+    "verifyEmailWelcomeText": "Confirme o seu endereço de e-mail para ativar a sua conta.",
     "emailAddress": "Endereço de e-mail",
     "emailPlaceholder": "tu@email.com",
+    "preferPrivateEmailHint": "Se possível, registe-se com um e-mail pessoal (não corporativo/empresa).",
     "rememberMe": "Manter sessão iniciada",
     "signInNow": "Iniciar sessão agora",
     "termsAgreement": "Ao clicar em «Iniciar sessão agora», concorda com os nossos",
@@ -123,7 +124,7 @@
     "teamRequired": "Selecione uma equipa.",
     "registerVerifyEmail": "Registo concluído. Verifique o seu e-mail antes de iniciar sessão.",
     "registerSuccessTitle": "Quase lá!",
-    "registerSuccessWelcomeText": "Só falta um passo — verifique o seu e-mail para participar no jogo de palpites Aspire MAKE.",
+    "registerSuccessWelcomeText": "Só falta um passo — verifique o seu e-mail para participar no jogo de palpites.",
     "registerSuccessIntro": "Enviámos um e-mail de confirmação para {email}.",
     "registerSuccessNoEmail": "O seu registo para {email} foi guardado. Não foi possível enviar o e-mail de confirmação. Contacte um administrador ou use «Reenviar e-mail de verificação» na página de início de sessão.",
     "registerSuccessStep1": "Abra a sua caixa de correio.",
@@ -152,7 +153,7 @@
     "orContinueWith": "ou",
     "ssoSigningIn": "A concluir início de sessão…",
     "ssoCompleteTitle": "Concluir registo",
-    "ssoCompleteWelcomeText": "Quase lá – escolha a sua equipa para participar no jogo de palpites Aspire MAKE.",
+    "ssoCompleteWelcomeText": "Quase lá – escolha a sua equipa para participar no jogo de palpites.",
     "ssoCompleteHint": "Os seus dados Google foram importados. Basta selecionar a sua equipa.",
     "ssoCompleteSubmit": "Concluir registo",
     "ssoCompleteFailed": "Não foi possível concluir o registo.",
@@ -336,16 +337,24 @@
     "deletingAccount": "A eliminar conta…",
     "deleteConfirm": "Tem a certeza de que pretende eliminar permanentemente a sua conta? Esta ação não pode ser anulada.",
     "deleteFailed": "Não foi possível eliminar a conta."
+    ,
+    "profileDataTitle": "Repor dados do perfil",
+    "profileDataHint": "Remova dados opcionais do perfil como foto, estilo do avatar e escolhas do Mundial. O seu nome, e-mail e equipa permanecem inalterados.",
+    "resetProfileData": "Eliminar dados opcionais do perfil",
+    "resettingProfileData": "A eliminar…",
+    "resetProfileDataConfirm": "Tem a certeza de que pretende eliminar os dados opcionais do perfil? Isto remove, por exemplo, a foto de perfil, o estilo do avatar e as suas escolhas do Mundial. O seu nome, e-mail e equipa permanecem inalterados.",
+    "resetProfileDataSuccess": "Os dados opcionais do perfil foram eliminados.",
+    "resetProfileDataFailed": "Não foi possível eliminar os dados opcionais do perfil."
   },
   "privacy": {
     "title": "Política de Privacidade",
     "lastUpdated": "Última atualização: junho de 2026",
     "backToLogin": "Voltar ao início de sessão",
-    "intro": "Esta política de privacidade explica como o Aspire MAKE trata os dados pessoais no jogo interno de palpites do Campeonato do Mundo FIFA 2026. A aplicação destina-se a colaboradores e equipas dentro da organização.",
+    "intro": "Esta política de privacidade explica como os dados pessoais são tratados no jogo interno de palpites do Campeonato do Mundo FIFA 2026. A aplicação destina-se a colaboradores e equipas dentro da organização. Se possível, registe-se com um e-mail pessoal (não corporativo/empresa).",
     "sections": {
       "controller": {
         "title": "1. Responsável pelo tratamento",
-        "text": "O Aspire MAKE é responsável pelo tratamento de dados pessoais nesta aplicação. Se tiver questões relacionadas com a privacidade, contacte o endereço indicado abaixo."
+        "text": "A organização é responsável pelo tratamento de dados pessoais nesta aplicação. Se tiver questões relacionadas com a privacidade, contacte o endereço indicado abaixo."
       },
       "dataCollected": {
         "title": "2. Dados que tratamos",
@@ -390,12 +399,14 @@
           "Operações de TI: alojamento e funcionamento técnico da aplicação",
           "Serviço de e-mail: envio de e-mails de verificação, reposição e lembretes",
           "APIs desportivas externas: obtenção de calendários, resultados e dados de equipas (os seus dados de conta não são partilhados)",
+          "Funcionalidades de IA opcionais: se ativadas, as entradas e o contexto são transferidos para um fornecedor externo de IA/LLM (p. ex., OpenAI) para gerar respostas",
+          "Monitorização de erros/desempenho: se configurada, dados técnicos de erros podem ser enviados para um serviço de monitorização (p. ex., Sentry)",
           "Não vendemos dados pessoais a terceiros"
         ]
       },
       "retention": {
         "title": "7. Conservação",
-        "text": "Conservamos os dados pessoais apenas durante o tempo necessário para o funcionamento do jogo de palpites ou conforme exigido por lei. Pode eliminar a sua conta a qualquer momento no perfil. Isto remove permanentemente a sua conta de utilizador e os dados do jogo associados."
+        "text": "Conservamos os dados pessoais apenas durante o tempo necessário para o funcionamento do jogo de palpites ou conforme exigido por lei. Pode eliminar a sua conta a qualquer momento no perfil. Isto remove permanentemente a sua conta de utilizador e os dados do jogo associados. Também pode remover dados opcionais do perfil (p. ex., a foto) a qualquer momento no seu perfil. Os registos de interações opcionais de IA, se ativados, são eliminados por defeito após 90 dias e removidos ao eliminar a conta."
       },
       "rights": {
         "title": "8. Os seus direitos",
@@ -414,7 +425,7 @@
       },
       "contact": {
         "title": "10. Contacto",
-        "text": "Para questões sobre esta política de privacidade ou para exercer os seus direitos, contacte o administrador Aspire MAKE ou a pessoa de contacto designada para o jogo de palpites na sua organização."
+        "text": "Para questões sobre esta política de privacidade ou para exercer os seus direitos, contacte o administrador ou a pessoa de contacto designada para o jogo de palpites na sua organização."
       }
     }
   },

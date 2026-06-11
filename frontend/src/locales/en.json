@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "Aspire World Cup 2026 - Competition",
+    "title": "World Cup 2026 - Competition",
     "subtitle": "Prediction Game"
   },
   "languages": {
@@ -82,18 +82,19 @@
     "adminArea": "Admin Area"
   },
   "auth": {
-    "welcomeBack": "Aspire MAKE",
+    "welcomeBack": "World Cup 2026",
     "welcomeHeadline": "Predict against your",
     "welcomeHeadlineAccent": "colleagues.",
     "registerHeadline": "Join the",
     "registerHeadlineAccent": "World Cup.",
-    "loginWelcomeText": "Welcome to the Aspire MAKE FIFA World Cup 2026 prediction game – follow matches, place your predictions, and compete with your colleagues.",
-    "registerWelcomeText": "Join Aspire MAKE – register and start predicting the FIFA World Cup 2026.",
-    "forgotPasswordWelcomeText": "No worries – we'll help you regain access to your Aspire MAKE account.",
-    "resetPasswordWelcomeText": "Set a new password and return to the Aspire MAKE prediction game.",
-    "verifyEmailWelcomeText": "Confirm your email address to activate your Aspire MAKE account.",
+    "loginWelcomeText": "Welcome to the FIFA World Cup 2026 prediction game – follow matches, place your predictions, and compete with your colleagues.",
+    "registerWelcomeText": "Join the game – register and start predicting the FIFA World Cup 2026.",
+    "forgotPasswordWelcomeText": "No worries – we'll help you regain access to your account.",
+    "resetPasswordWelcomeText": "Set a new password and return to the prediction game.",
+    "verifyEmailWelcomeText": "Confirm your email address to activate your account.",
     "emailAddress": "Email Address",
     "emailPlaceholder": "you@email.com",
+    "preferPrivateEmailHint": "If possible, please register with a personal email address (not a work/company address).",
     "rememberMe": "Remember Me",
     "signInNow": "Sign in now",
     "termsAgreement": "By clicking on 'Sign in now' you agree to our",
@@ -122,7 +123,7 @@
     "teamRequired": "Please select a team.",
     "registerVerifyEmail": "Registration successful. Please verify your email before signing in.",
     "registerSuccessTitle": "Almost there!",
-    "registerSuccessWelcomeText": "Just one more step — verify your email to join the Aspire MAKE prediction game.",
+    "registerSuccessWelcomeText": "Just one more step — verify your email to join the prediction game.",
     "registerSuccessIntro": "We sent a confirmation email to {email}.",
     "registerSuccessNoEmail": "Your registration for {email} was saved. The confirmation email could not be sent. Please contact an administrator or use “Resend verification email” on the login page.",
     "registerSuccessStep1": "Open your email inbox.",
@@ -151,7 +152,7 @@
     "orContinueWith": "or",
     "ssoSigningIn": "Completing sign-in…",
     "ssoCompleteTitle": "Complete registration",
-    "ssoCompleteWelcomeText": "Almost there – choose your team to join the Aspire MAKE prediction game.",
+    "ssoCompleteWelcomeText": "Almost there – choose your team to join the prediction game.",
     "ssoCompleteHint": "Your Google details have been imported. Just select your team.",
     "ssoCompleteSubmit": "Complete registration",
     "ssoCompleteFailed": "Registration could not be completed.",
@@ -309,6 +310,13 @@
       "fire": "Fire"
     },
     "dangerZoneTitle": "Delete account",
+    "profileDataTitle": "Reset profile data",
+    "profileDataHint": "Remove optional profile data such as profile picture, avatar styling, and World Cup picks. Your name, email and team will remain unchanged.",
+    "resetProfileData": "Delete optional profile data",
+    "resettingProfileData": "Deleting…",
+    "resetProfileDataConfirm": "Do you really want to delete optional profile data? This removes e.g. your profile picture, avatar styling and World Cup picks. Your name, email and team will remain unchanged.",
+    "resetProfileDataSuccess": "Optional profile data has been deleted.",
+    "resetProfileDataFailed": "Could not delete optional profile data.",
     "signOutHint": "Sign out on this device.",
     "twoFactorTitle": "Two-factor authentication",
     "twoFactorHint": "Protect your account with a code from an authenticator app.",
@@ -340,11 +348,11 @@
     "title": "Privacy Policy",
     "lastUpdated": "Last updated: June 2026",
     "backToLogin": "Back to login",
-    "intro": "This privacy policy explains how Aspire MAKE processes personal data in the internal FIFA World Cup 2026 prediction game. The application is intended for employees and teams within the organisation.",
+    "intro": "This privacy policy explains how personal data is processed in the internal FIFA World Cup 2026 prediction game. The application is intended for employees and teams within the organisation. If possible, please register with a personal email address (not a work/company address).",
     "sections": {
       "controller": {
         "title": "1. Data controller",
-        "text": "Aspire MAKE is responsible for processing personal data in this application. If you have privacy-related questions, please contact the address provided below."
+        "text": "The organisation is responsible for processing personal data in this application. If you have privacy-related questions, please contact the address provided below."
       },
       "dataCollected": {
         "title": "2. Data we process",
@@ -389,12 +397,14 @@
           "IT operations: hosting and technical operation of the application",
           "Email service: delivery of verification, reset and reminder emails",
           "External sports data APIs: retrieval of schedules, results and team data (your account data is not shared)",
+          "Optional AI features: if enabled, inputs and context data are transferred to an external AI/LLM provider (e.g. OpenAI) to generate AI responses",
+          "Error/performance monitoring: if configured, technical error data may be sent to a monitoring service (e.g. Sentry)",
           "No sale of personal data to third parties"
         ]
       },
       "retention": {
         "title": "7. Retention",
-        "text": "We retain personal data only for as long as necessary to operate the prediction game or as required by law. You can delete your account at any time in your profile. This permanently removes your user account and related game data."
+        "text": "We retain personal data only for as long as necessary to operate the prediction game or as required by law. You can delete your account at any time in your profile. This permanently removes your user account and related game data. You can remove optional profile data (e.g. profile picture) at any time in your profile. Logs of optional AI interactions, if enabled, are deleted after 90 days by default and removed upon account deletion."
       },
       "rights": {
         "title": "8. Your rights",
@@ -413,7 +423,7 @@
       },
       "contact": {
         "title": "10. Contact",
-        "text": "For questions about this privacy policy or to exercise your rights, please contact your Aspire MAKE administrator or the designated contact person for the prediction game in your organisation."
+        "text": "For questions about this privacy policy or to exercise your rights, please contact your administrator or the designated contact person for the prediction game in your organisation."
       }
     }
   },
