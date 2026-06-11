@@ -27,6 +27,7 @@ const {
   buildExcelExportBuffer,
   buildExportFilename,
 } = require('../services/excelExportService');
+const { getMatchSummaryForDate } = require('../services/resultsCopilotService');
 
 const router = express.Router();
 
@@ -98,6 +99,20 @@ router.get('/dashboard', async (req, res) => {
   } catch (error) {
     console.error(error);
     sendError(res, req, 500, 'errors.dashboardLoadFailed');
+  }
+});
+
+router.get('/matches/today-for-results', async (req, res) => {
+  try {
+    const rawOffset = req.query?.offset;
+    const offset = rawOffset === undefined ? 0 : parseInt(String(rawOffset), 10);
+    const dayOffset = Number.isFinite(offset) ? offset : 0;
+    const date = typeof req.query?.date === 'string' ? req.query.date.trim() : null;
+    const summary = await getMatchSummaryForDate({ dateStr: date || null, dayOffset });
+    res.json(summary);
+  } catch (error) {
+    console.error(error);
+    sendError(res, req, 500, 'errors.matchesLoadFailed');
   }
 });
 

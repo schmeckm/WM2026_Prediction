@@ -140,6 +140,8 @@ async function fixPlayerImagesUniqueIndexes(sequelize, queryInterface, tableInfo
 
   const dialect = sequelize.getDialect();
   if (dialect === 'sqlite') {
+    // Previous crashed runs may leave the temp table behind, causing SQLITE_ERROR on restart.
+    await sequelize.query('DROP TABLE IF EXISTS PlayerImages_new');
     await sequelize.query(`
       CREATE TABLE PlayerImages_new (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

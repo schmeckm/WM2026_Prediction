@@ -9,6 +9,7 @@ export function useUserNavLinks() {
   return computed(() => {
     const links = [
       { to: '/dashboard', label: t('nav.dashboard'), icon: 'home' },
+      { to: '/tip-copilot', label: t('nav.tipCopilot'), icon: 'zap' },
       { to: '/matches', label: t('nav.matches'), icon: 'matches' },
       { to: '/group-standings', label: t('nav.groupStandings'), icon: 'table' },
       { to: '/tournament-bracket', label: t('nav.tournamentBracket'), icon: 'bracket' },

@@ -67,6 +67,7 @@ const routes = [
     children: [
       { path: '', redirect: '/dashboard' },
       { path: 'dashboard', name: 'Dashboard', component: () => import('../views/DashboardView.vue') },
+      { path: 'tip-copilot', name: 'TipCopilot', component: () => import('../views/TipCopilotView.vue') },
       { path: 'matches', name: 'Matches', component: () => import('../views/MatchesView.vue') },
       { path: 'group-standings', name: 'GroupStandings', component: () => import('../views/GroupStandingsView.vue') },
       { path: 'tournament-bracket', name: 'TournamentBracket', component: () => import('../views/TournamentBracketView.vue') },
@@ -94,6 +95,7 @@ const routes = [
       { path: 'player-images', name: 'AdminPlayerImages', component: () => import('../views/admin/AdminPlayerImagesView.vue') },
       { path: 'matches', name: 'AdminMatches', component: () => import('../views/admin/AdminMatchesView.vue') },
       { path: 'results', name: 'AdminResults', component: () => import('../views/admin/AdminResultsView.vue') },
+      { path: 'results-copilot', name: 'AdminResultsCopilot', component: () => import('../views/admin/AdminResultsCopilotView.vue') },
       { path: 'predictions', name: 'AdminPredictions', component: () => import('../views/admin/AdminPredictionsView.vue') },
       { path: 'favorites', name: 'AdminFavorites', component: () => import('../views/admin/AdminFavoritesView.vue') },
       { path: 'scoring-rules', name: 'AdminScoringRules', component: () => import('../views/admin/AdminScoringRulesView.vue') },

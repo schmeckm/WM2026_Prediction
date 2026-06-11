@@ -31,6 +31,18 @@
       </div>
 
       <div class="card mb-2">
+        <div class="card-header">
+          <h3>⚡ {{ t('adminPages.resultsCopilot.title') }}</h3>
+          <router-link to="/admin/results-copilot" class="btn btn-secondary btn-sm">
+            {{ t('adminPages.resultsCopilot.openFull') }}
+          </router-link>
+        </div>
+        <div class="card-body">
+          <AdminResultsCopilot compact />
+        </div>
+      </div>
+
+      <div class="card mb-2">
         <div class="card-header"><h3>{{ t('admin.leaderboard.includeAdmins') }}</h3></div>
         <div class="card-body">
           <label class="checkbox-label">
@@ -60,6 +72,7 @@ import LeaderboardTable from '../../components/LeaderboardTable.vue';
 import AlertMessage from '../../components/AlertMessage.vue';
 import ErrorState from '../../components/ErrorState.vue';
 import AdminManualModeBanner from '../../components/AdminManualModeBanner.vue';
+import AdminResultsCopilot from '../../components/AdminResultsCopilot.vue';
 
 const { t } = useI18n();
 

@@ -45,6 +45,7 @@
     "menuMore": "More",
     "administration": "Administration",
     "dashboard": "Dashboard",
+    "tipCopilot": "Tip Co-Pilot",
     "matches": "Matches",
     "groupStandings": "Group standings",
     "tournamentBracket": "Tournament bracket",
@@ -67,6 +68,7 @@
     "playerImages": "Player Images",
     "matchAdmin": "Match Management",
     "results": "Result Management",
+    "resultsCopilot": "Results Co-Pilot",
     "predictions": "Prediction Overview",
     "favorites": "Favorites Overview",
     "scoringRules": "Scoring Rules",
@@ -101,7 +103,6 @@
     "createAccount": "Create account",
     "email": "Email",
     "password": "Password",
-    "confirmPassword": "Confirm password",
     "passwordsDoNotMatch": "Passwords do not match.",
     "firstName": "First name",
     "lastName": "Last name",
@@ -883,6 +884,47 @@
     "points": "Points",
     "loadFailed": "Could not load statistics."
   },
+  "tipCopilot": {
+    "title": "Tip Co-Pilot",
+    "subtitle": "Enter today's (or open) matches quickly — type 2:1 and save.",
+    "backToMatches": "Back to matches",
+    "refresh": "Refresh",
+    "filters": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "open": "Open",
+      "missingOnly": "Missing only",
+      "myTeamFirst": "My team first"
+    },
+    "modeList": "List",
+    "modeWizard": "One by one",
+    "summary": "{count} matches",
+    "emptyToday": "No open matches to predict today.",
+    "emptyTomorrow": "No open matches to predict tomorrow.",
+    "emptyOpen": "No open matches to predict right now.",
+    "wizardProgress": "Match {current} of {total}",
+    "scorePlaceholder": "2:1",
+    "currentTip": "Current tip: {score}",
+    "lockSoon": "Locks soon",
+    "myTeamNotSet": "No favorite team set in your profile (Profile → select a favorite team).",
+    "showAll": "All {count} matches",
+    "saved": "Tip saved ({score})",
+    "loadFailed": "Could not load matches.",
+    "bulk": {
+      "title": "Bulk entry",
+      "hint": "One line per match, with match number.",
+      "placeholder": "#1 2:1\n#2 0:0\n#7 1-3",
+      "apply": "Save all",
+      "lineInvalid": "Invalid line (format: #<no> 2:1)",
+      "matchNotFound": "Match #{number} not found (current filter).",
+      "saveFailed": "Save failed"
+    },
+    "errors": {
+      "invalidFormat": "Enter your tip as 2:1 or 2-1.",
+      "outOfRange": "Tip must be between 0 and {max}.",
+      "saveFailed": "Could not save tip."
+    }
+  },
   "adminPages": {
     "table": {
       "noEntries": "No entries found."
@@ -1044,7 +1086,43 @@
       "statusLabels": {
         "scheduled": "Scheduled",
         "locked": "Locked",
-        "finished": "Finished"
+        "finished": "Finished",
+        "live": "Live",
+        "halftime": "Halftime"
+      }
+    },
+    "resultsCopilot": {
+      "title": "Results Co-Pilot",
+      "subtitle": "Enter today's results quickly – type 2:1 and press Enter",
+      "dayYesterday": "Yesterday",
+      "dayToday": "Today",
+      "dayTomorrow": "Tomorrow",
+      "openFull": "Full view",
+      "fullResultsLink": "All results",
+      "modeList": "List",
+      "modeWizard": "One by one",
+      "refresh": "Refresh",
+      "summary": "{pending} open · {finished} done ({date})",
+      "noMatchesForDay": "No matches scheduled on {date}.",
+      "allDone": "All of today's results have been entered.",
+      "wizardProgress": "Match {current} of {total}",
+      "scorePlaceholder": "2:1",
+      "showAll": "All {count} matches",
+      "saved": "{home} vs {away}: {score} saved",
+      "loadFailed": "Could not load today's matches.",
+      "bulk": {
+        "title": "Bulk entry",
+        "hint": "One line per match, with match number.",
+        "placeholder": "#1 2:1\n#2 0:0\n#7 1-3",
+        "apply": "Save all",
+        "lineInvalid": "Invalid line (format: #<no> 2:1)",
+        "matchNotFound": "Match #{number} not found in open list.",
+        "saveFailed": "Save failed"
+      },
+      "errors": {
+        "invalidFormat": "Enter the score as 2:1 or 2-1.",
+        "outOfRange": "Score must be between 0 and {max}.",
+        "matchNotFound": "Match #{number} not found in today's list."
       }
     },
     "favorites": {
@@ -1476,6 +1554,7 @@
       "defaultMessage": "No Football API configured. The app is running in manual CSV mode.",
       "csvImport": "CSV import",
       "results": "Results",
+      "resultsCopilot": "Results Co-Pilot",
       "editMatches": "Edit matches",
       "recalculate": "Recalculate points",
       "recalculating": "Recalculating..."
@@ -1561,7 +1640,7 @@
     "player": "Player",
     "team": "Team",
     "source": "Source",
-    "approved": "Approved",
+    "approvedStatus": "Approved",
     "editTitle": "Edit player image",
     "createTitle": "Add player image",
     "countryCode": "Country code",
@@ -1581,7 +1660,7 @@
     "searchFailed": "Provider search failed.",
     "noProviderResults": "No images found from configured providers.",
     "imageApplied": "Image applied.",
-    "approved": "Image approved.",
+    "approvedMessage": "Image approved.",
     "approveFailed": "Approval failed.",
     "imageRemoved": "Image removed.",
     "removeFailed": "Could not remove image.",

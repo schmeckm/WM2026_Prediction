@@ -55,7 +55,7 @@
                 <th>{{ t('adminPlayerImages.player') }}</th>
                 <th>{{ t('adminPlayerImages.team') }}</th>
                 <th>{{ t('adminPlayerImages.source') }}</th>
-                <th>{{ t('adminPlayerImages.approved') }}</th>
+                <th>{{ t('adminPlayerImages.approvedStatus') }}</th>
                 <th></th>
               </tr>
             </thead>
@@ -398,7 +398,7 @@ async function approveImage() {
   try {
     const { data } = await api.post(`/admin/player-images/${editingRecord.value.id}/approve`);
     editingRecord.value = data;
-    message.value = t('adminPlayerImages.approved');
+    message.value = t('adminPlayerImages.approvedMessage');
     await loadRecords();
   } catch (err) {
     error.value = err.response?.data?.error || t('adminPlayerImages.approveFailed');

@@ -7,6 +7,7 @@
     </div>
     <div class="banner-actions">
       <router-link to="/admin/import" class="btn btn-secondary btn-sm">{{ t('admin.manualMode.csvImport') }}</router-link>
+      <router-link to="/admin/results-copilot" class="btn btn-accent btn-sm">{{ t('admin.manualMode.resultsCopilot') }}</router-link>
       <router-link to="/admin/results" class="btn btn-secondary btn-sm">{{ t('admin.manualMode.results') }}</router-link>
       <router-link to="/admin/matches" class="btn btn-secondary btn-sm">{{ t('admin.manualMode.editMatches') }}</router-link>
       <button class="btn btn-accent btn-sm" :disabled="recalculating" @click="$emit('recalculate')">

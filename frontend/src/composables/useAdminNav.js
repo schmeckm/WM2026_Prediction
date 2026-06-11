@@ -7,6 +7,7 @@ export function useAdminNavLinks() {
   return computed(() => [
     { to: '/admin', label: t('nav.adminDashboard'), icon: 'settings' },
     { to: '/admin/import', label: t('nav.csvImport'), icon: 'download' },
+    { to: '/admin/results-copilot', label: t('nav.resultsCopilot'), icon: 'zap' },
     { to: '/admin/results', label: t('nav.results'), icon: 'chart' },
     { to: '/admin/matches', label: t('nav.matchAdmin'), icon: 'calendar' },
     { to: '/admin/sync', label: t('nav.sync'), icon: 'refresh' },

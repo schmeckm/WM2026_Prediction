@@ -45,6 +45,7 @@
     "menuMore": "Mais",
     "administration": "Administração",
     "dashboard": "Painel",
+    "tipCopilot": "Co-Pilot de Palpites",
     "matches": "Jogos",
     "groupStandings": "Classificação por grupos",
     "tournamentBracket": "Quadro do torneio",
@@ -67,6 +68,7 @@
     "playerImages": "Imagens de Jogadores",
     "matchAdmin": "Gestão de Jogos",
     "results": "Gestão de Resultados",
+    "resultsCopilot": "Co-Pilot de Resultados",
     "predictions": "Resumo de Palpites",
     "favorites": "Resumo de Favoritos",
     "scoringRules": "Regras de Pontuação",
@@ -883,6 +885,31 @@
     "points": "Pontos",
     "loadFailed": "Não foi possível carregar as estatísticas."
   },
+  "tipCopilot": {
+    "title": "Co-Pilot de Palpites",
+    "subtitle": "Introduza rapidamente os palpites de hoje (ou abertos) — escreva 2:1 e guarde.",
+    "backToMatches": "Voltar aos jogos",
+    "refresh": "Atualizar",
+    "filters": { "today": "Hoje", "tomorrow": "Amanhã", "open": "Abertos", "missingOnly": "Só sem palpite", "myTeamFirst": "O meu time primeiro" },
+    "modeList": "Lista",
+    "modeWizard": "Um a um",
+    "summary": "{count} jogos",
+    "emptyToday": "Não há jogos abertos para palpitar hoje.",
+    "emptyTomorrow": "Não há jogos abertos para palpitar amanhã.",
+    "emptyOpen": "Não há jogos abertos para palpitar neste momento.",
+    "wizardProgress": "Jogo {current} de {total}",
+    "scorePlaceholder": "2:1",
+    "currentTip": "Palpite atual: {score}",
+    "myTeamNotSet": "Não tens equipa favorita no teu perfil (Perfil → escolhe uma equipa favorita).",
+    "showAll": "Todos os {count} jogos",
+    "saved": "Palpite guardado ({score})",
+    "loadFailed": "Não foi possível carregar os jogos.",
+    "errors": {
+      "invalidFormat": "Introduza o palpite como 2:1 ou 2-1.",
+      "outOfRange": "O palpite deve estar entre 0 e {max}.",
+      "saveFailed": "Não foi possível guardar o palpite."
+    }
+  },
   "adminPages": {
     "table": {
       "noEntries": "Nenhuma entrada encontrada."
@@ -1044,7 +1071,33 @@
       "statusLabels": {
         "scheduled": "Agendado",
         "locked": "Bloqueado",
-        "finished": "Terminado"
+        "finished": "Terminado",
+        "live": "Ao vivo",
+        "halftime": "Intervalo"
+      }
+    },
+    "resultsCopilot": {
+      "title": "Co-Pilot de Resultados",
+      "subtitle": "Introduza os resultados de hoje rapidamente – escreva 2:1 e prima Enter",
+      "dayToday": "Hoje",
+      "dayTomorrow": "Amanhã",
+      "openFull": "Vista completa",
+      "fullResultsLink": "Todos os resultados",
+      "modeList": "Lista",
+      "modeWizard": "Um a um",
+      "refresh": "Atualizar",
+      "summary": "{pending} em aberto · {finished} concluídos ({date})",
+      "noMatchesForDay": "Não há jogos agendados em {date}.",
+      "allDone": "Todos os resultados de hoje foram introduzidos.",
+      "wizardProgress": "Jogo {current} de {total}",
+      "scorePlaceholder": "2:1",
+      "showAll": "Todos os {count} jogos",
+      "saved": "{home} vs {away}: {score} guardado",
+      "loadFailed": "Não foi possível carregar os jogos de hoje.",
+      "errors": {
+        "invalidFormat": "Introduza o resultado como 2:1 ou 2-1.",
+        "outOfRange": "O resultado deve estar entre 0 e {max}.",
+        "matchNotFound": "Jogo #{number} não encontrado na lista de hoje."
       }
     },
     "favorites": {
@@ -1476,6 +1529,7 @@
       "defaultMessage": "Nenhuma API de Futebol configurada. A aplicação está a correr em modo CSV manual.",
       "csvImport": "Importação CSV",
       "results": "Resultados",
+      "resultsCopilot": "Co-Pilot de Resultados",
       "editMatches": "Editar jogos",
       "recalculate": "Recalcular pontos",
       "recalculating": "A recalcular..."
@@ -1561,7 +1615,7 @@
     "player": "Jogador",
     "team": "Equipa",
     "source": "Fonte",
-    "approved": "Aprovado",
+    "approvedStatus": "Aprovado",
     "editTitle": "Editar imagem de jogador",
     "createTitle": "Adicionar imagem de jogador",
     "countryCode": "Código do país",
@@ -1581,7 +1635,7 @@
     "searchFailed": "Falha na pesquisa do fornecedor.",
     "noProviderResults": "Nenhuma imagem encontrada nos fornecedores configurados.",
     "imageApplied": "Imagem aplicada.",
-    "approved": "Imagem aprovada.",
+    "approvedMessage": "Imagem aprovada.",
     "approveFailed": "Falha na aprovação.",
     "imageRemoved": "Imagem removida.",
     "removeFailed": "Não foi possível remover a imagem.",

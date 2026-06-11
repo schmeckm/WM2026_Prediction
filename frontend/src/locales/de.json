@@ -45,6 +45,7 @@
     "menuMore": "Mehr",
     "administration": "Administration",
     "dashboard": "Dashboard",
+    "tipCopilot": "Tipp Co-Pilot",
     "matches": "Spiele",
     "groupStandings": "Gruppentabellen",
     "tournamentBracket": "Spielbaum",
@@ -67,6 +68,7 @@
     "playerImages": "Spielerbilder",
     "matchAdmin": "Spielverwaltung",
     "results": "Ergebnisverwaltung",
+    "resultsCopilot": "Ergebnis Co-Pilot",
     "predictions": "Tippübersicht",
     "favorites": "Favoriten-Übersicht",
     "scoringRules": "Punkte-Regeln",
@@ -888,6 +890,47 @@
     "points": "Punkte",
     "loadFailed": "Statistiken konnten nicht geladen werden."
   },
+  "tipCopilot": {
+    "title": "Tipp Co-Pilot",
+    "subtitle": "Heutige (oder offene) Spiele schnell tippen – einfach 2:1 eingeben und speichern.",
+    "backToMatches": "Zur Spieleliste",
+    "refresh": "Aktualisieren",
+    "filters": {
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "open": "Offen",
+      "missingOnly": "Nur ohne Tipp",
+      "myTeamFirst": "Mein Team zuerst"
+    },
+    "modeList": "Liste",
+    "modeWizard": "Spiel für Spiel",
+    "summary": "{count} Spiele",
+    "emptyToday": "Heute gibt es keine offenen Spiele zum Tippen.",
+    "emptyTomorrow": "Morgen gibt es keine offenen Spiele zum Tippen.",
+    "emptyOpen": "Aktuell gibt es keine offenen Spiele zum Tippen.",
+    "wizardProgress": "Spiel {current} von {total}",
+    "scorePlaceholder": "2:1",
+    "currentTip": "Aktueller Tipp: {score}",
+    "lockSoon": "Sperrt bald",
+    "myTeamNotSet": "Kein Lieblingsteam im Profil gesetzt (Profil → Lieblingsteam wählen).",
+    "showAll": "Alle {count} Spiele",
+    "saved": "Tipp gespeichert ({score})",
+    "loadFailed": "Spiele konnten nicht geladen werden.",
+    "bulk": {
+      "title": "Bulk-Eingabe",
+      "hint": "Eine Zeile pro Spiel, mit Match-Nummer.",
+      "placeholder": "#1 2:1\n#2 0:0\n#7 1-3",
+      "apply": "Alle speichern",
+      "lineInvalid": "Ungültige Zeile (Format: #<nr> 2:1)",
+      "matchNotFound": "Spiel #{number} nicht gefunden (aktueller Filter).",
+      "saveFailed": "Speichern fehlgeschlagen"
+    },
+    "errors": {
+      "invalidFormat": "Bitte Tipp als 2:1 oder 2-1 eingeben.",
+      "outOfRange": "Tipp muss zwischen 0 und {max} liegen.",
+      "saveFailed": "Tipp konnte nicht gespeichert werden."
+    }
+  },
   "adminPages": {
     "table": {
       "noEntries": "Keine Einträge vorhanden."
@@ -1048,7 +1091,43 @@
       "statusLabels": {
         "scheduled": "Geplant",
         "locked": "Gesperrt",
-        "finished": "Beendet"
+        "finished": "Beendet",
+        "live": "Live",
+        "halftime": "Halbzeit"
+      }
+    },
+    "resultsCopilot": {
+      "title": "Ergebnis Co-Pilot",
+      "subtitle": "Heutige Spiele schnell eintragen – einfach 2:1 tippen und Enter drücken",
+      "dayYesterday": "Gestern",
+      "dayToday": "Heute",
+      "dayTomorrow": "Morgen",
+      "openFull": "Vollansicht",
+      "fullResultsLink": "Alle Ergebnisse",
+      "modeList": "Liste",
+      "modeWizard": "Spiel für Spiel",
+      "refresh": "Aktualisieren",
+      "summary": "{pending} offen · {finished} erledigt ({date})",
+      "noMatchesForDay": "Keine Spiele am {date} im Kalender.",
+      "allDone": "Alle heutigen Ergebnisse sind eingetragen.",
+      "wizardProgress": "Spiel {current} von {total}",
+      "scorePlaceholder": "2:1",
+      "showAll": "Alle {count} Spiele",
+      "saved": "{home} vs {away}: {score} gespeichert",
+      "loadFailed": "Heutige Spiele konnten nicht geladen werden.",
+      "bulk": {
+        "title": "Bulk-Eingabe",
+        "hint": "Eine Zeile pro Spiel, mit Match-Nummer.",
+        "placeholder": "#1 2:1\n#2 0:0\n#7 1-3",
+        "apply": "Alle speichern",
+        "lineInvalid": "Ungültige Zeile (Format: #<nr> 2:1)",
+        "matchNotFound": "Spiel #{number} nicht in der offenen Liste gefunden.",
+        "saveFailed": "Speichern fehlgeschlagen"
+      },
+      "errors": {
+        "invalidFormat": "Bitte Ergebnis als 2:1 oder 2-1 eingeben.",
+        "outOfRange": "Ergebnis muss zwischen 0 und {max} liegen.",
+        "matchNotFound": "Spiel #{number} nicht in der heutigen Liste gefunden."
       }
     },
     "favorites": {
@@ -1475,6 +1554,7 @@
       "defaultMessage": "Keine Football API konfiguriert. Die App läuft im manuellen CSV-Modus.",
       "csvImport": "CSV Import",
       "results": "Ergebnisse",
+      "resultsCopilot": "Ergebnis Co-Pilot",
       "editMatches": "Spiele bearbeiten",
       "recalculate": "Punkte neu berechnen",
       "recalculating": "Berechne..."
@@ -1560,7 +1640,7 @@
     "player": "Spieler",
     "team": "Team",
     "source": "Quelle",
-    "approved": "Freigegeben",
+    "approvedStatus": "Freigegeben",
     "editTitle": "Spielerbild bearbeiten",
     "createTitle": "Spielerbild hinzufügen",
     "countryCode": "Ländercode",
@@ -1580,7 +1660,7 @@
     "searchFailed": "Provider-Suche fehlgeschlagen.",
     "noProviderResults": "Keine Bilder von konfigurierten Providern gefunden.",
     "imageApplied": "Bild übernommen.",
-    "approved": "Bild freigegeben.",
+    "approvedMessage": "Bild freigegeben.",
     "approveFailed": "Freigabe fehlgeschlagen.",
     "imageRemoved": "Bild entfernt.",
     "removeFailed": "Bild konnte nicht entfernt werden.",

@@ -45,6 +45,7 @@
     "menuMore": "Más",
     "administration": "Administración",
     "dashboard": "Panel",
+    "tipCopilot": "Co-Pilot de Pronósticos",
     "matches": "Partidos",
     "groupStandings": "Clasificación por grupos",
     "tournamentBracket": "Cuadro del torneo",
@@ -67,6 +68,7 @@
     "playerImages": "Imágenes de jugadores",
     "matchAdmin": "Gestión de Partidos",
     "results": "Gestión de Resultados",
+    "resultsCopilot": "Co-Pilot de Resultados",
     "predictions": "Resumen de Pronósticos",
     "scoringRules": "Reglas de Puntos",
     "prizesAdmin": "Gestión de premios",
@@ -849,6 +851,7 @@
       "defaultMessage": "No hay API de fútbol configurada. La app funciona en modo CSV manual.",
       "csvImport": "Importar CSV",
       "results": "Resultados",
+      "resultsCopilot": "Co-Pilot de Resultados",
       "editMatches": "Editar partidos",
       "recalculate": "Recalcular puntos",
       "recalculating": "Recalculando..."
@@ -922,6 +925,31 @@
   "chart": {
     "rank": "Posición",
     "points": "Puntos"
+  },
+  "tipCopilot": {
+    "title": "Co-Pilot de Pronósticos",
+    "subtitle": "Introduce rápidamente los pronósticos de hoy (o abiertos) — escribe 2:1 y guarda.",
+    "backToMatches": "Volver a partidos",
+    "refresh": "Actualizar",
+    "filters": { "today": "Hoy", "tomorrow": "Mañana", "open": "Abiertos", "missingOnly": "Solo sin pronóstico", "myTeamFirst": "Mi equipo primero" },
+    "modeList": "Lista",
+    "modeWizard": "Uno a uno",
+    "summary": "{count} partidos",
+    "emptyToday": "No hay partidos abiertos para pronosticar hoy.",
+    "emptyTomorrow": "No hay partidos abiertos para pronosticar mañana.",
+    "emptyOpen": "No hay partidos abiertos para pronosticar ahora.",
+    "wizardProgress": "Partido {current} de {total}",
+    "scorePlaceholder": "2:1",
+    "currentTip": "Pronóstico actual: {score}",
+    "myTeamNotSet": "No tienes equipo favorito en tu perfil (Perfil → elige un equipo favorito).",
+    "showAll": "Todos los {count} partidos",
+    "saved": "Pronóstico guardado ({score})",
+    "loadFailed": "No se pudieron cargar los partidos.",
+    "errors": {
+      "invalidFormat": "Introduce tu pronóstico como 2:1 o 2-1.",
+      "outOfRange": "El pronóstico debe estar entre 0 y {max}.",
+      "saveFailed": "No se pudo guardar el pronóstico."
+    }
   },
   "adminPages": {
     "table": {
@@ -1113,7 +1141,33 @@
       "statusLabels": {
         "scheduled": "Programado",
         "locked": "Bloqueado",
-        "finished": "Finalizado"
+        "finished": "Finalizado",
+        "live": "En vivo",
+        "halftime": "Descanso"
+      }
+    },
+    "resultsCopilot": {
+      "title": "Co-Pilot de Resultados",
+      "subtitle": "Introduce los resultados de hoy rápido – escribe 2:1 y pulsa Enter",
+      "dayToday": "Hoy",
+      "dayTomorrow": "Mañana",
+      "openFull": "Vista completa",
+      "fullResultsLink": "Todos los resultados",
+      "modeList": "Lista",
+      "modeWizard": "Uno a uno",
+      "refresh": "Actualizar",
+      "summary": "{pending} pendientes · {finished} hechos ({date})",
+      "noMatchesForDay": "No hay partidos programados el {date}.",
+      "allDone": "Todos los resultados de hoy están introducidos.",
+      "wizardProgress": "Partido {current} de {total}",
+      "scorePlaceholder": "2:1",
+      "showAll": "Todos los {count} partidos",
+      "saved": "{home} vs {away}: {score} guardado",
+      "loadFailed": "No se pudieron cargar los partidos de hoy.",
+      "errors": {
+        "invalidFormat": "Introduce el resultado como 2:1 o 2-1.",
+        "outOfRange": "El resultado debe estar entre 0 y {max}.",
+        "matchNotFound": "Partido #{number} no encontrado en la lista de hoy."
       }
     },
     "scoringRules": {
@@ -1374,7 +1428,7 @@
     "player": "Jugador",
     "team": "Equipo",
     "source": "Fuente",
-    "approved": "Aprobado",
+    "approvedStatus": "Aprobado",
     "editTitle": "Editar imagen del jugador",
     "createTitle": "Añadir imagen del jugador",
     "countryCode": "Código de país",
@@ -1394,7 +1448,7 @@
     "searchFailed": "Error en la búsqueda del proveedor.",
     "noProviderResults": "No se encontraron imágenes en los proveedores configurados.",
     "imageApplied": "Imagen aplicada.",
-    "approved": "Imagen aprobada.",
+    "approvedMessage": "Imagen aprobada.",
     "approveFailed": "Error al aprobar.",
     "imageRemoved": "Imagen eliminada.",
     "removeFailed": "No se pudo eliminar la imagen.",
