@@ -10,8 +10,11 @@ function hashToken(token) {
 }
 
 function issueAccessToken(user) {
+  // Ensure each issued JWT is unique even when called multiple times
+  // within the same second (prevents accidental collisions with token blacklisting).
+  const jti = crypto.randomBytes(12).toString('hex');
   return jwt.sign(
-    { userId: user.id, role: user.role },
+    { userId: user.id, role: user.role, jti },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '1h' },
   );
