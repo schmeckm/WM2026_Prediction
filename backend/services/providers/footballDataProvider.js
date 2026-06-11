@@ -119,10 +119,27 @@ async function apiRequest(config, path, queryParams = {}) {
   const timer = setTimeout(() => controller.abort(), 30000);
 
   try {
-    const response = await fetch(url.toString(), {
-      headers: { 'X-Auth-Token': config.apiKey },
-      signal: controller.signal,
-    });
+    let response;
+    try {
+      response = await fetch(url.toString(), {
+        headers: { 'X-Auth-Token': config.apiKey },
+        signal: controller.signal,
+      });
+    } catch (error) {
+      const cause = error?.cause;
+      const parts = [];
+      if (error?.name === 'AbortError') parts.push('timeout after 30s');
+      if (cause?.code) parts.push(cause.code);
+      if (cause?.syscall) parts.push(cause.syscall);
+      if (cause?.hostname) parts.push(cause.hostname);
+      if (cause?.address) parts.push(cause.address);
+      if (cause?.port) parts.push(String(cause.port));
+      const detail = parts.length ? ` (${parts.join(' ')})` : '';
+
+      const err = new Error(`football-data.org request failed${detail}: ${url.toString()}`);
+      err.cause = error;
+      throw err;
+    }
 
     const rateLimits = extractRateLimits(response.headers);
     recordRateLimits(rateLimits);
