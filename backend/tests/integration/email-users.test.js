@@ -133,6 +133,30 @@ describe('User account deletion', () => {
     assert.equal(res.status, 400);
   });
 
+  it('linked SSO users can delete own account without password', async () => {
+    const user = await User.create({
+      firstName: 'Linked',
+      lastName: 'User',
+      email: 'linked@example.com',
+      password: 'user123',
+      authProvider: 'local',
+      providerId: 'google-sub-123',
+      emailVerified: true,
+    });
+
+    const login = await loginAs(api, 'linked@example.com', 'user123');
+    assert.ok(login.body.token);
+
+    const res = await api
+      .delete('/api/users/me')
+      .set('Authorization', `Bearer ${login.body.token}`)
+      .send({});
+    assert.equal(res.status, 200);
+
+    const deletedUser = await User.findByPk(user.id);
+    assert.equal(deletedUser, null);
+  });
+
   it('last admin cannot delete own account', async () => {
     const login = await loginAs(api, 'admin@example.com', 'admin123');
     const res = await api

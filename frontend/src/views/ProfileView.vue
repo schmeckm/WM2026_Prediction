@@ -476,8 +476,10 @@ const hasProfileImage = computed(
   () => Boolean(previewUrl.value || authStore.user?.imageUrl),
 );
 const isLocalAccount = computed(() => {
-  const provider = authStore.user?.authProvider || 'local';
-  return provider === 'local';
+  const u = authStore.user;
+  const provider = u?.authProvider || 'local';
+  // If the account is linked to an SSO provider, don't require a local password for self-delete UX.
+  return provider === 'local' && !u?.providerId;
 });
 const imageBusy = ref(false);
 const deletePassword = ref('');

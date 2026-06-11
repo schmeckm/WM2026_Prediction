@@ -289,7 +289,9 @@ router.delete('/me', async (req, res) => {
       return sendError(res, req, 404, 'errors.userNotFound');
     }
 
-    const isLocalAccount = !user.authProvider || user.authProvider === 'local';
+    // If a local account is linked to an SSO provider (providerId present),
+    // we allow self-deletion without requiring the local password.
+    const isLocalAccount = (!user.authProvider || user.authProvider === 'local') && !user.providerId;
     if (isLocalAccount) {
       const { password } = req.body || {};
       if (!password) {
