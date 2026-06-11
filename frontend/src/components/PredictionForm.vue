@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import { useToast } from '../composables/useToast';
@@ -92,9 +92,48 @@ const props = defineProps({
 
 const emit = defineEmits(['saved']);
 
+const NON_EDITABLE_STATUSES = new Set(['finished', 'locked', 'live', 'halftime', 'suspended', 'cancelled']);
+
+const nowMs = ref(Date.now());
+let nowTimer = null;
+
+function kickoffMs() {
+  const kt = props.match?.kickoffTime;
+  if (!kt) return null;
+  const ms = new Date(kt).getTime();
+  return Number.isFinite(ms) ? ms : null;
+}
+
+function scheduleNowUpdates() {
+  if (nowTimer) clearInterval(nowTimer);
+  nowMs.value = Date.now();
+  const k = kickoffMs();
+  const remaining = k ? (k - nowMs.value) : null;
+  const interval = remaining !== null && remaining <= 3600000 ? 1000 : 30000;
+  nowTimer = setInterval(() => {
+    nowMs.value = Date.now();
+  }, interval);
+}
+
+onMounted(scheduleNowUpdates);
+onUnmounted(() => {
+  if (nowTimer) clearInterval(nowTimer);
+});
+
+watch(() => props.match?.kickoffTime, scheduleNowUpdates);
+
 const isLocked = computed(() => {
   if (props.locked != null) return props.locked;
-  return props.match.canPredict === false;
+
+  const match = props.match;
+  if (!match) return true;
+  if (match.isManuallyLocked) return true;
+  if (NON_EDITABLE_STATUSES.has(match.status)) return true;
+
+  const k = kickoffMs();
+  if (k && nowMs.value >= k) return true;
+
+  return match.canPredict === false;
 });
 
 const MIN_SCORE = 0;

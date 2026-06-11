@@ -21,7 +21,7 @@
           <li v-for="match in matches" :key="match.id" class="display-match-item">
             <span class="match-ref">#{{ match.matchNumber }}</span>
             <span class="display-team">{{ match.homeTeam }}</span>
-            <strong class="display-score">
+            <strong :class="['display-score', scoreClass(match)]">
               <template v-if="match.status === 'finished' || match.status === 'live' || match.status === 'halftime'">
                 {{ match.homeScore ?? '–' }} : {{ match.awayScore ?? '–' }}
               </template>
@@ -50,6 +50,12 @@ import {
 
 const { t } = useI18n();
 const { formatTime } = useFormatters();
+
+function scoreClass(match) {
+  if (match?.status === 'finished') return 'display-score--finished';
+  if (match?.status === 'live' || match?.status === 'halftime') return 'display-score--live';
+  return '';
+}
 
 const leaderboard = ref([]);
 const matches = ref([]);
@@ -196,8 +202,13 @@ onUnmounted(() => {
 .display-score {
   font-size: 1.375rem;
   font-weight: 800;
-  color: #00FF7F;
+  color: #FFFFFF;
   text-align: center;
+  text-shadow: none;
+}
+
+.display-score--finished {
+  color: #00FF7F;
   text-shadow: 0 0 20px rgba(0, 255, 127, 0.25);
 }
 

@@ -27,7 +27,10 @@
             <td><TeamFlag :name="match.homeTeam" inline /></td>
             <td><TeamFlag :name="match.awayTeam" inline /></td>
             <td>
-              <span v-if="match.status === 'finished'">{{ match.homeScore }} : {{ match.awayScore }}</span>
+              <span
+                v-if="shouldShowScore(match)"
+                :class="scoreClass(match)"
+              >{{ displayScore(match).home }} : {{ displayScore(match).away }}</span>
               <span v-else class="text-muted">–</span>
             </td>
             <td><span :class="['badge', `badge-${match.status}`]">{{ statusLabel(match.status) }}</span></td>
@@ -100,7 +103,10 @@
           <dd>{{ match.groupName ? `${t('matches.group')} ${match.groupName}` : '–' }}</dd>
           <dt>{{ t('matchTable.result') }}</dt>
           <dd>
-            <span v-if="match.status === 'finished'">{{ match.homeScore }} : {{ match.awayScore }}</span>
+            <span
+              v-if="shouldShowScore(match)"
+              :class="scoreClass(match)"
+            >{{ displayScore(match).home }} : {{ displayScore(match).away }}</span>
             <span v-else class="text-muted">–</span>
           </dd>
           <template v-if="showPrediction">
@@ -207,6 +213,29 @@ function predictionLockTitle(match) {
   }
   return t(key);
 }
+
+function shouldShowScore(match) {
+  const hasScore = match.homeScore !== null && match.homeScore !== undefined
+    && match.awayScore !== null && match.awayScore !== undefined;
+  if (hasScore) return match.status === 'live' || match.status === 'halftime' || match.status === 'finished';
+
+  const kickoffMs = new Date(match.kickoffTime).getTime();
+  const startedByTime = Number.isFinite(kickoffMs) && Date.now() >= kickoffMs;
+  const canHavePlaceholder = match.status !== 'cancelled' && match.status !== 'postponed';
+  return startedByTime && canHavePlaceholder;
+}
+
+function displayScore(match) {
+  const home = match.homeScore ?? 0;
+  const away = match.awayScore ?? 0;
+  return { home, away };
+}
+
+function scoreClass(match) {
+  if (match.status === 'finished') return 'match-score--finished';
+  if (match.status === 'live' || match.status === 'halftime') return 'match-score--live';
+  return '';
+}
 </script>
 
 <style scoped>
@@ -230,6 +259,15 @@ function predictionLockTitle(match) {
 .lock-reason {
   margin-top: 0.15rem;
   font-size: 0.8rem;
+}
+
+.match-score--live {
+  color: var(--color-text);
+}
+
+.match-score--finished {
+  color: var(--color-success);
+  font-weight: 600;
 }
 
 .match-table-card-teams {

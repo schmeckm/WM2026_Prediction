@@ -18,9 +18,9 @@
       <div class="match-team">
         <TeamFlag :name="match.homeTeam" link-to-squad />
       </div>
-      <div class="match-score-display">
-        <template v-if="match.status === 'finished'">
-          {{ match.homeScore }} : {{ match.awayScore }}
+      <div class="match-score-display" :class="scoreClass(match)">
+        <template v-if="shouldShowScore(match)">
+          {{ displayScore(match).home }} : {{ displayScore(match).away }}
         </template>
         <template v-else>{{ t('common.vs') }}</template>
       </div>
@@ -124,9 +124,47 @@ const lockTitle = computed(() => {
   }
   return t(key);
 });
+
+function shouldShowScore(match) {
+  const hasScore = match.homeScore !== null && match.homeScore !== undefined
+    && match.awayScore !== null && match.awayScore !== undefined;
+  if (hasScore) return match.status === 'live' || match.status === 'halftime' || match.status === 'finished';
+
+  const kickoffMs = new Date(match.kickoffTime).getTime();
+  const startedByTime = Number.isFinite(kickoffMs) && Date.now() >= kickoffMs;
+  const canHavePlaceholder = match.status !== 'cancelled' && match.status !== 'postponed';
+  return startedByTime && canHavePlaceholder;
+}
+
+function displayScore(match) {
+  const hasScore = match.homeScore !== null && match.homeScore !== undefined
+    && match.awayScore !== null && match.awayScore !== undefined;
+  if (hasScore) {
+    return { home: match.homeScore, away: match.awayScore };
+  }
+  // If a match started but live sync hasn't arrived yet, avoid showing misleading 0:0.
+  return { home: '–', away: '–' };
+}
+
+function scoreClass(match) {
+  if (match.status === 'finished') return 'match-score-display--finished';
+  if (match.status === 'live' || match.status === 'halftime') return 'match-score-display--live';
+  const kickoffMs = new Date(match.kickoffTime).getTime();
+  const startedByTime = Number.isFinite(kickoffMs) && Date.now() >= kickoffMs;
+  if (startedByTime) return 'match-score-display--live';
+  return '';
+}
 </script>
 
 <style scoped>
+.match-score-display--live {
+  color: var(--color-text);
+}
+
+.match-score-display--finished {
+  color: var(--color-success);
+}
+
 .match-lock-reason {
   margin-top: 0.35rem;
   font-size: 0.85rem;
