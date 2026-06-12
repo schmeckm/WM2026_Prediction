@@ -11,10 +11,10 @@
             <th v-if="!compact">{{ t('leaderboard.matchPts') }}</th>
             <th v-if="!compact">{{ t('leaderboard.bonus') }}</th>
             <th>{{ t('leaderboard.total') }}</th>
-            <th v-if="!compact">{{ t('leaderboard.correct') }}</th>
-            <th v-if="!compact">{{ t('leaderboard.exact') }}</th>
-            <th v-if="!compact">{{ t('leaderboard.goalDiff') }}</th>
-            <th v-if="!compact">{{ t('leaderboard.tendency') }}</th>
+            <th v-if="!compact" :title="props.columnHelp?.correct || undefined">{{ t('leaderboard.correct') }}</th>
+            <th v-if="!compact" :title="props.columnHelp?.exact || undefined">{{ t('leaderboard.exact') }}</th>
+            <th v-if="!compact" :title="props.columnHelp?.goalDiff || undefined">{{ t('leaderboard.goalDiff') }}</th>
+            <th v-if="!compact" :title="props.columnHelp?.tendency || undefined">{{ t('leaderboard.tendency') }}</th>
             <th v-if="!compact">{{ t('leaderboard.tips') }}</th>
             <th v-if="!compact">{{ t('leaderboard.completion') }}</th>
           </tr>
@@ -116,6 +116,7 @@ const props = defineProps({
   showMovement: { type: Boolean, default: true },
   currentUserId: { type: Number, default: null },
   compact: { type: Boolean, default: false },
+  columnHelp: { type: Object, default: null },
 });
 
 const { t } = useI18n();

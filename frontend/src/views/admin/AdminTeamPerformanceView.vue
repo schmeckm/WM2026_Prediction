@@ -115,10 +115,10 @@
                       <th>{{ t('leaderboard.rank') }}</th>
                       <th>{{ t('leaderboard.name') }}</th>
                       <th>{{ t('leaderboard.total') }}</th>
-                      <th>{{ t('leaderboard.correct') }}</th>
-                      <th>{{ t('leaderboard.exact') }}</th>
-                      <th>{{ t('leaderboard.goalDiff') }}</th>
-                      <th>{{ t('leaderboard.tendency') }}</th>
+                      <th :title="`${t('leaderboard.correct')} = ${t('leaderboard.exact')} + ${t('leaderboard.goalDiff')} + ${t('leaderboard.tendency')}`">{{ t('leaderboard.correct') }}</th>
+                      <th :title="t('help.scoring.exact', points)">{{ t('leaderboard.exact') }}</th>
+                      <th :title="t('help.scoring.goalDiff', points)">{{ t('leaderboard.goalDiff') }}</th>
+                      <th :title="t('help.scoring.tendency', points)">{{ t('leaderboard.tendency') }}</th>
                       <th>{{ t('leaderboard.tips') }}</th>
                       <th>{{ t('leaderboard.completion') }}</th>
                     </tr>

@@ -42,7 +42,15 @@
 
     <LoadingSpinner v-if="loading" />
     <ErrorState v-else-if="error" :message="error" @retry="loadLeaderboard" />
-    <div v-else class="card"><div class="card-body"><LeaderboardTable :entries="leaderboard" :current-user-id="authStore.user?.id" /></div></div>
+    <div v-else class="card">
+      <div class="card-body">
+        <LeaderboardTable
+          :entries="leaderboard"
+          :current-user-id="authStore.user?.id"
+          :column-help="columnHelp"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -64,6 +72,13 @@ const authStore = useAuthStore();
 const { t } = useI18n();
 const toast = useToast();
 const { points } = useScoringRules();
+
+const columnHelp = computed(() => ({
+  exact: t('help.scoring.exact', points.value),
+  goalDiff: t('help.scoring.goalDiff', points.value),
+  tendency: t('help.scoring.tendency', points.value),
+  correct: `${t('leaderboard.correct')} = ${t('leaderboard.exact')} + ${t('leaderboard.goalDiff')} + ${t('leaderboard.tendency')}`,
+}));
 
 const filters = computed(() => [
   { value: 'overall', label: t('leaderboard.filters.overall') },
