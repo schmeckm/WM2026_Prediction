@@ -10,6 +10,39 @@ const DEFAULT_BASE_URL = 'https://api.football-data.org/v4';
 const DEFAULT_COMPETITION_CODE = 'WC';
 const DEFAULT_COMPETITION_NUMERIC_ID = '2000';
 const DEFAULT_SEASON = '2026';
+const REQUEST_TIMEOUT_MS = 30000;
+const NETWORK_RETRY_ATTEMPTS = 3;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function extractNetworkErrorDetails(error) {
+  const cause = error?.cause;
+  const parts = [];
+  if (error?.name === 'AbortError') parts.push(`timeout after ${Math.round(REQUEST_TIMEOUT_MS / 1000)}s`);
+  if (cause?.code) parts.push(cause.code);
+  if (cause?.syscall) parts.push(cause.syscall);
+  if (cause?.hostname) parts.push(cause.hostname);
+  if (cause?.address) parts.push(cause.address);
+  if (cause?.port) parts.push(String(cause.port));
+  return parts;
+}
+
+function isRetryableNetworkError(error) {
+  if (!error) return false;
+  if (error.name === 'AbortError') return true;
+  const code = error?.cause?.code || error?.code;
+  return code === 'ECONNRESET'
+    || code === 'ETIMEDOUT'
+    || code === 'EAI_AGAIN'
+    || code === 'ENOTFOUND'
+    || code === 'ECONNREFUSED';
+}
+
+function isRetryableStatus(status) {
+  return status === 500 || status === 502 || status === 503 || status === 504;
+}
 
 function mapStage(stage) {
   if (!stage) return 'Group Stage';
@@ -116,53 +149,65 @@ async function apiRequest(config, path, queryParams = {}) {
     if (value != null && value !== '') url.searchParams.set(key, String(value));
   }
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 30000);
+  let lastError;
 
-  try {
-    let response;
+  for (let attempt = 1; attempt <= NETWORK_RETRY_ATTEMPTS; attempt += 1) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
     try {
-      response = await fetch(url.toString(), {
+      const response = await fetch(url.toString(), {
         headers: { 'X-Auth-Token': config.apiKey },
         signal: controller.signal,
       });
+
+      const rateLimits = extractRateLimits(response.headers);
+      recordRateLimits(rateLimits);
+
+      if (response.status === 429) {
+        setThrottled(15 * 60 * 1000, 'http_429');
+        const body = await response.text().catch(() => '');
+        throw new Error(`football-data.org Rate-Limit erreicht (429)${body ? `: ${body.slice(0, 120)}` : ''}`);
+      }
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        const err = new Error(`football-data.org ${response.status} ${response.statusText}${body ? ` – ${body.slice(0, 200)}` : ''}`);
+        err.status = response.status;
+        if (isRetryableStatus(response.status) && attempt < NETWORK_RETRY_ATTEMPTS) {
+          lastError = err;
+          const backoffMs = 400 * (2 ** (attempt - 1)) + Math.round(Math.random() * 250);
+          await sleep(backoffMs);
+          continue;
+        }
+        throw err;
+      }
+
+      const data = await response.json();
+      return { data, rateLimits, url: url.toString() };
     } catch (error) {
-      const cause = error?.cause;
-      const parts = [];
-      if (error?.name === 'AbortError') parts.push('timeout after 30s');
-      if (cause?.code) parts.push(cause.code);
-      if (cause?.syscall) parts.push(cause.syscall);
-      if (cause?.hostname) parts.push(cause.hostname);
-      if (cause?.address) parts.push(cause.address);
-      if (cause?.port) parts.push(String(cause.port));
-      const detail = parts.length ? ` (${parts.join(' ')})` : '';
+      lastError = error;
+      const canRetry = isRetryableNetworkError(error) && attempt < NETWORK_RETRY_ATTEMPTS;
+      if (canRetry) {
+        const backoffMs = 500 * (2 ** (attempt - 1)) + Math.round(Math.random() * 300);
+        await sleep(backoffMs);
+        continue;
+      }
 
-      const err = new Error(`football-data.org request failed${detail}: ${url.toString()}`);
-      err.cause = error;
-      throw err;
+      if (isRetryableNetworkError(error)) {
+        const parts = extractNetworkErrorDetails(error);
+        const detail = parts.length ? ` (${parts.join(' ')})` : '';
+        const err = new Error(`football-data.org request failed${detail}: ${url.toString()}`);
+        err.cause = error;
+        throw err;
+      }
+      throw error;
+    } finally {
+      clearTimeout(timer);
     }
-
-    const rateLimits = extractRateLimits(response.headers);
-    recordRateLimits(rateLimits);
-
-    if (response.status === 429) {
-      setThrottled(15 * 60 * 1000, 'http_429');
-      const body = await response.text().catch(() => '');
-      throw new Error(`football-data.org Rate-Limit erreicht (429)${body ? `: ${body.slice(0, 120)}` : ''}`);
-    }
-
-    if (!response.ok) {
-      const body = await response.text().catch(() => '');
-      const err = new Error(`football-data.org ${response.status} ${response.statusText}${body ? ` – ${body.slice(0, 200)}` : ''}`);
-      err.status = response.status;
-      throw err;
-    }
-
-    const data = await response.json();
-    return { data, rateLimits, url: url.toString() };
-  } finally {
-    clearTimeout(timer);
   }
+
+  throw lastError || new Error(`football-data.org request failed: ${url.toString()}`);
 }
 
 async function requestWithCompetitionFallback(config, buildPath, queryParams = {}) {
