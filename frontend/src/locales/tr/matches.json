@@ -25,7 +25,24 @@
     "viewCards": "Kartlar",
     "viewTable": "Tablo",
     "lockWarningMissing": "Uyarı: {count} açık maç 15 dakikadan kısa sürede kilitleniyor – hâlâ tahmin eksik!",
-    "lockWarningSoon": "Uyarı: {count} maç 15 dakikadan kısa sürede başlıyor – tahminler yakında kilitlenecek."
+    "lockWarningSoon": "Uyarı: {count} maç 15 dakikadan kısa sürede başlıyor – tahminler yakında kilitlenecek.",
+    "whatIf": {
+      "show": "What-if",
+      "hide": "What-if gizle",
+      "yourAlternativeTip": "Alternatif tahmini dene",
+      "home": "Ev sahibi golleri",
+      "away": "Deplasman golleri",
+      "simulate": "Simüle et",
+      "simulating": "Simüle ediliyor...",
+      "failed": "What-if simüle edilemedi.",
+      "pointsDelta": "Puan değişimi",
+      "rankChange": "Sıra",
+      "vsTop10": "İlk 10 ile karşılaştır",
+      "gapFootnote": "Fark, simüle edilen toplam puanına göre hesaplanır.",
+      "gapBehind": "{points} puan geride",
+      "gapAhead": "{points} puan önde",
+      "gapEven": "eşit"
+    }
   },
   "matchTable": {
     "number": "No.",

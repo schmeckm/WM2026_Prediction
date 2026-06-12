@@ -428,6 +428,49 @@
     "top5": "Top 5 clasificación",
     "fullLeaderboard": "Clasificación completa"
   },
+  "challenges": {
+    "matchdayChampion": {
+      "title": "Desafío del día",
+      "subtitle": "Mejores resultados en {count} partidos finalizados.",
+      "points": "{points} pts",
+      "exact": "{count} exactos",
+      "empty": "Aún no hay partidos finalizados para este día.",
+      "loadFailed": "No se pudo cargar el desafío del día."
+    }
+  },
+  "achievements": {
+    "streak": {
+      "title": "Rachas",
+      "current": "Racha actual",
+      "best": "Mejor racha",
+      "hint": "La racha cuenta partidos finalizados consecutivos con tendencia correcta.",
+      "loadFailed": "No se pudieron cargar las rachas."
+    },
+    "streakBronze": {
+      "title": "Racha bronce",
+      "description": "Alcanza una mejor racha de {threshold}."
+    },
+    "streakSilver": {
+      "title": "Racha plata",
+      "description": "Alcanza una mejor racha de {threshold}."
+    },
+    "streakGold": {
+      "title": "Racha oro",
+      "description": "Alcanza una mejor racha de {threshold}."
+    }
+  },
+  "activity": {
+    "title": "Actividad",
+    "scopeTeam": "Mi equipo",
+    "scopeGlobal": "Global",
+    "empty": "Aún no hay actividad.",
+    "loadFailed": "No se pudo cargar la actividad.",
+    "unknown": "Actualización",
+    "matchdayChampion": "{name} ganó el desafío del día ({points} pts).",
+    "rankUp": "{name} subió ▲{delta} hasta el puesto #{rank}.",
+    "rankDown": "{name} bajó ▼{delta} hasta el puesto #{rank}.",
+    "badgeExact": "{count} exactos"
+  },
   "teamDashboard": {
     "title": "Mi equipo",
     "teamPerformance": "Rendimiento del equipo",
@@ -618,7 +661,24 @@
     "viewCards": "Tarjetas",
     "viewTable": "Tabla",
     "lockWarningMissing": "Atención: {count} partidos abiertos se bloquean en menos de 15 minutos – ¡faltan pronósticos!",
-    "lockWarningSoon": "Atención: {count} partidos empiezan en menos de 15 minutos – los pronósticos se bloquearán pronto."
+    "lockWarningSoon": "Atención: {count} partidos empiezan en menos de 15 minutos – los pronósticos se bloquearán pronto.",
+    "whatIf": {
+      "show": "What-if",
+      "hide": "Ocultar what-if",
+      "yourAlternativeTip": "Probar un pronóstico alternativo",
+      "home": "Goles local",
+      "away": "Goles visitante",
+      "simulate": "Simular",
+      "simulating": "Simulando...",
+      "failed": "No se pudo simular el what-if.",
+      "pointsDelta": "Cambio de puntos",
+      "rankChange": "Rango",
+      "vsTop10": "Comparación con Top 10",
+      "gapFootnote": "La diferencia se calcula con tus puntos totales simulados.",
+      "gapBehind": "{points} pts detrás",
+      "gapAhead": "{points} pts delante",
+      "gapEven": "igual"
+    }
   },
   "matchTable": {
     "number": "N.º",

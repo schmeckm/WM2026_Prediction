@@ -60,6 +60,49 @@
     "backToApp": "Wróć do aplikacji",
     "logout": "Wyloguj"
   },
+  "challenges": {
+    "matchdayChampion": {
+      "title": "Wyzwanie dnia",
+      "subtitle": "Najlepsze wyniki w {count} zakończonych meczach.",
+      "points": "{points} pkt",
+      "exact": "{count} dokładne",
+      "empty": "Brak zakończonych meczów dla tego dnia.",
+      "loadFailed": "Nie udało się wczytać wyzwania dnia."
+    }
+  },
+  "achievements": {
+    "streak": {
+      "title": "Serie",
+      "current": "Aktualna seria",
+      "best": "Najlepsza seria",
+      "hint": "Seria liczy kolejne zakończone mecze z poprawną tendencją.",
+      "loadFailed": "Nie udało się wczytać serii."
+    },
+    "streakBronze": {
+      "title": "Seria brązowa",
+      "description": "Osiągnij najlepszą serię: {threshold}."
+    },
+    "streakSilver": {
+      "title": "Seria srebrna",
+      "description": "Osiągnij najlepszą serię: {threshold}."
+    },
+    "streakGold": {
+      "title": "Seria złota",
+      "description": "Osiągnij najlepszą serię: {threshold}."
+    }
+  },
+  "activity": {
+    "title": "Aktywność",
+    "scopeTeam": "Mój zespół",
+    "scopeGlobal": "Globalnie",
+    "empty": "Brak aktywności.",
+    "loadFailed": "Nie udało się wczytać aktywności.",
+    "unknown": "Aktualizacja",
+    "matchdayChampion": "{name} wygrał(a) wyzwanie dnia ({points} pkt).",
+    "rankUp": "{name} awansował(a) ▲{delta} na miejsce #{rank}.",
+    "rankDown": "{name} spadł(a) ▼{delta} na miejsce #{rank}.",
+    "badgeExact": "{count} dokładne"
+  },
   "matches": {
     "title": "Mecze",
     "filters": {
@@ -86,7 +129,24 @@
     "viewCards": "Karty",
     "viewTable": "Tabela",
     "lockWarningMissing": "Uwaga: {count} otwartych meczów zostanie zablokowanych w mniej niż 15 minut – nadal brakuje typów!",
-    "lockWarningSoon": "Uwaga: {count} meczów zaczyna się w mniej niż 15 minut – typy wkrótce się zablokują."
+    "lockWarningSoon": "Uwaga: {count} meczów zaczyna się w mniej niż 15 minut – typy wkrótce się zablokują.",
+    "whatIf": {
+      "show": "What-if",
+      "hide": "Ukryj what-if",
+      "yourAlternativeTip": "Sprawdź alternatywny typ",
+      "home": "Gole gospodarzy",
+      "away": "Gole gości",
+      "simulate": "Symuluj",
+      "simulating": "Symulacja...",
+      "failed": "Nie udało się wykonać symulacji what-if.",
+      "pointsDelta": "Zmiana punktów",
+      "rankChange": "Miejsce",
+      "vsTop10": "Porównanie z Top 10",
+      "gapFootnote": "Różnica liczona względem Twoich symulowanych punktów.",
+      "gapBehind": "{points} pkt za",
+      "gapAhead": "{points} pkt przed",
+      "gapEven": "remis"
+    }
   },
   "matchTable": {
     "number": "Nr",

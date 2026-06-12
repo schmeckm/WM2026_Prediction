@@ -459,6 +459,49 @@
     "fullLeaderboard": "Classificação completa",
     "loadFailed": "Não foi possível carregar o painel."
   },
+  "challenges": {
+    "matchdayChampion": {
+      "title": "Desafio do dia",
+      "subtitle": "Melhores desempenhos em {count} jogos terminados.",
+      "points": "{points} pts",
+      "exact": "{count} exatos",
+      "empty": "Ainda não há jogos terminados para este dia.",
+      "loadFailed": "Não foi possível carregar o desafio do dia."
+    }
+  },
+  "achievements": {
+    "streak": {
+      "title": "Séries",
+      "current": "Série atual",
+      "best": "Melhor série",
+      "hint": "A série conta jogos terminados consecutivos com tendência correta.",
+      "loadFailed": "Não foi possível carregar as séries."
+    },
+    "streakBronze": {
+      "title": "Série bronze",
+      "description": "Atinge uma melhor série de {threshold}."
+    },
+    "streakSilver": {
+      "title": "Série prata",
+      "description": "Atinge uma melhor série de {threshold}."
+    },
+    "streakGold": {
+      "title": "Série ouro",
+      "description": "Atinge uma melhor série de {threshold}."
+    }
+  },
+  "activity": {
+    "title": "Atividade",
+    "scopeTeam": "A minha equipa",
+    "scopeGlobal": "Global",
+    "empty": "Ainda não há atividade.",
+    "loadFailed": "Não foi possível carregar a atividade.",
+    "unknown": "Atualização",
+    "matchdayChampion": "{name} ganhou o desafio do dia ({points} pts).",
+    "rankUp": "{name} subiu ▲{delta} para o lugar #{rank}.",
+    "rankDown": "{name} desceu ▼{delta} para o lugar #{rank}.",
+    "badgeExact": "{count} exatos"
+  },
   "teamDashboard": {
     "title": "A minha equipa",
     "teamPerformance": "Desempenho da equipa",
@@ -651,7 +694,24 @@
     "viewCards": "Cartões",
     "viewTable": "Tabela",
     "lockWarningMissing": "Aviso: {count} jogos em aberto bloqueiam em menos de 15 minutos – ainda faltam palpites!",
-    "lockWarningSoon": "Aviso: {count} jogos começam em menos de 15 minutos – os palpites bloqueiam em breve."
+    "lockWarningSoon": "Aviso: {count} jogos começam em menos de 15 minutos – os palpites bloqueiam em breve.",
+    "whatIf": {
+      "show": "What-if",
+      "hide": "Ocultar what-if",
+      "yourAlternativeTip": "Testar um palpite alternativo",
+      "home": "Golos da casa",
+      "away": "Golos de fora",
+      "simulate": "Simular",
+      "simulating": "A simular...",
+      "failed": "Não foi possível simular o what-if.",
+      "pointsDelta": "Variação de pontos",
+      "rankChange": "Ranking",
+      "vsTop10": "Comparação com Top 10",
+      "gapFootnote": "A diferença é calculada com os teus pontos totais simulados.",
+      "gapBehind": "{points} pts atrás",
+      "gapAhead": "{points} pts à frente",
+      "gapEven": "empatado"
+    }
   },
   "matchTable": {
     "number": "N.º",

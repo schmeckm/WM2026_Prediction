@@ -63,4 +63,48 @@
     "highlightBestCorrectTitle": "En çok doğru tahmin",
     "highlightBestCorrectText": "{name} {count} doğru tahmin yaptı."
   }
+  ,
+  "challenges": {
+    "matchdayChampion": {
+      "title": "Günün meydan okuması",
+      "subtitle": "{count} tamamlanmış maçta en iyi performans.",
+      "points": "{points} puan",
+      "exact": "{count} tam",
+      "empty": "Bu gün için henüz bitmiş maç yok.",
+      "loadFailed": "Günün meydan okuması yüklenemedi."
+    }
+  },
+  "achievements": {
+    "streak": {
+      "title": "Seriler",
+      "current": "Mevcut seri",
+      "best": "En iyi seri",
+      "hint": "Seri, doğru eğilimle art arda bitmiş maçları sayar.",
+      "loadFailed": "Seriler yüklenemedi."
+    },
+    "streakBronze": {
+      "title": "Bronz seri",
+      "description": "En iyi seri: {threshold} hedefine ulaş."
+    },
+    "streakSilver": {
+      "title": "Gümüş seri",
+      "description": "En iyi seri: {threshold} hedefine ulaş."
+    },
+    "streakGold": {
+      "title": "Altın seri",
+      "description": "En iyi seri: {threshold} hedefine ulaş."
+    }
+  },
+  "activity": {
+    "title": "Aktivite",
+    "scopeTeam": "Takımım",
+    "scopeGlobal": "Global",
+    "empty": "Henüz aktivite yok.",
+    "loadFailed": "Aktivite yüklenemedi.",
+    "unknown": "Güncelleme",
+    "matchdayChampion": "{name} günün meydan okumasını kazandı ({points} puan).",
+    "rankUp": "{name} ▲{delta} yükseldi ve #{rank} oldu.",
+    "rankDown": "{name} ▼{delta} düştü ve #{rank} oldu.",
+    "badgeExact": "{count} tam"
+  }
 }
