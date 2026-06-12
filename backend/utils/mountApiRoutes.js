@@ -24,6 +24,8 @@ function mountApiRoutes(app, basePath, routes) {
     displayRoutes,
     prizeRoutes,
     adminAiRoutes,
+    feedbackRoutes,
+    adminFeedbackRoutes,
     authMiddleware,
     adminMiddleware,
     settingsUpdateHandler,
@@ -57,6 +59,8 @@ function mountApiRoutes(app, basePath, routes) {
   app.use(`${basePath}/display`, displayLimiter, displayRoutes);
   app.use(`${basePath}/admin/prizes`, prizeRoutes);
   app.use(`${basePath}/admin/ai`, adminAiRoutes);
+  app.use(`${basePath}/feedback`, feedbackRoutes);
+  app.use(`${basePath}/admin/feedback`, adminFeedbackRoutes);
 }
 
 module.exports = { mountApiRoutes };

@@ -16,6 +16,7 @@
   "common": {
     "save": "Speichern",
     "saving": "Speichern...",
+    "updated": "Aktualisiert.",
     "cancel": "Abbrechen",
     "delete": "Löschen",
     "edit": "Bearbeiten",
@@ -62,6 +63,7 @@
     "statistics": "Statistiken",
     "notifications": "Benachrichtigungen",
     "profile": "Profil",
+    "reportGap": "Lücke melden",
     "adminDashboard": "Admin Dashboard",
     "aiAssistant": "KI Assistent",
     "sync": "Synchronisierung",
@@ -437,6 +439,21 @@
       }
     }
   },
+  "feedback": {
+    "title": "Lücke melden",
+    "subtitle": "Bug, Änderungswunsch oder neues Feature – direkt aus der App senden.",
+    "type": "Typ",
+    "typeBug": "Bug",
+    "typeChange": "Änderung",
+    "typeFeature": "Neues Feature",
+    "titleLabel": "Titel",
+    "description": "Beschreibung",
+    "descriptionHint": "Bitte beschreiben, was passiert ist (oder was du ändern möchtest) und wo du es gesehen hast.",
+    "send": "Senden",
+    "sending": "Sende...",
+    "sent": "Danke! Dein Feedback wurde gesendet.",
+    "failed": "Feedback konnte nicht gesendet werden."
+  },
   "dashboard": {
     "welcome": "Willkommen, {name}!",
     "nextMatches": "Nächste Spiele",
@@ -800,6 +817,11 @@
     },
     "favoriteTeamRequired": "Bitte wähle zuerst dein Lieblingsteam im Profil.",
     "goToProfile": "Zum Profil",
+    "statsShow": "Community-Tipps anzeigen",
+    "statsHide": "Community-Tipps ausblenden",
+    "statsTotal": "{count} Tipp(s) gesamt",
+    "statsEmpty": "Noch keine Tipps.",
+    "statsLoadFailed": "Community-Tipps konnten nicht geladen werden.",
     "progress": {
       "groupStage": "Gruppenphase",
       "roundOf32": "Letzte 32",

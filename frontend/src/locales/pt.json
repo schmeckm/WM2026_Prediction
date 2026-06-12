@@ -16,6 +16,7 @@
   "common": {
     "save": "Guardar",
     "saving": "A guardar...",
+    "updated": "Atualizado.",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "edit": "Editar",
@@ -782,6 +783,11 @@
     },
     "favoriteTeamRequired": "Selecione primeiro a sua seleção favorita no perfil.",
     "goToProfile": "Ir para o perfil",
+    "statsShow": "Ver escolhas da comunidade",
+    "statsHide": "Ocultar escolhas da comunidade",
+    "statsTotal": "{count} palpite(s) no total",
+    "statsEmpty": "Ainda não há palpites.",
+    "statsLoadFailed": "Não foi possível carregar as escolhas da comunidade.",
     "progress": {
       "groupStage": "Fase de grupos",
       "roundOf32": "Dezesseis avos de final",

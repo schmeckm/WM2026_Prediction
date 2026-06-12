@@ -16,6 +16,7 @@
   "common": {
     "save": "Guardar",
     "saving": "Guardando...",
+    "updated": "Actualizado.",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "edit": "Editar",
@@ -748,6 +749,11 @@
     },
     "favoriteTeamRequired": "Elige primero tu selección favorita en el perfil.",
     "goToProfile": "Ir al perfil",
+    "statsShow": "Ver elecciones de la comunidad",
+    "statsHide": "Ocultar elecciones de la comunidad",
+    "statsTotal": "{count} pronóstico(s) en total",
+    "statsEmpty": "Aún no hay pronósticos.",
+    "statsLoadFailed": "No se pudieron cargar las elecciones de la comunidad.",
     "progress": {
       "groupStage": "Fase de grupos",
       "roundOf16": "Octavos de final",

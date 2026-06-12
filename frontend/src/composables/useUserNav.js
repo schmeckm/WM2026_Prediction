@@ -29,6 +29,7 @@ export function useUserNavLinks() {
       { to: '/team-performance', label: t('nav.teamPerformance'), icon: 'users' },
       { to: '/statistics', label: t('nav.statistics'), icon: 'chart' },
       { to: '/notifications', label: t('nav.notifications'), icon: 'bell' },
+      { to: '/feedback', label: t('nav.reportGap'), icon: 'file-text' },
       { to: '/profile', label: t('nav.profile'), icon: 'user' },
     );
 

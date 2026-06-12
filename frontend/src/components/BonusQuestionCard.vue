@@ -30,6 +30,29 @@
       </button>
     </div>
 
+    <div v-if="canShowCommunityStats" class="community-stats">
+      <button type="button" class="btn btn-secondary btn-sm" @click="toggleStats" :disabled="statsLoading">
+        {{ showStats ? t('bonus.statsHide') : t('bonus.statsShow') }}
+      </button>
+
+      <div v-if="showStats" class="community-stats-panel">
+        <p class="text-muted stats-meta" v-if="statsTotal !== null">
+          {{ t('bonus.statsTotal', { count: statsTotal }) }}
+        </p>
+        <p v-if="statsError" class="text-muted">{{ statsError }}</p>
+        <div v-else-if="statsLoading" class="text-muted">{{ t('common.loading') }}</div>
+        <template v-else>
+          <div v-if="topStats.length === 0" class="text-muted">{{ t('bonus.statsEmpty') }}</div>
+          <ul v-else class="stats-list">
+            <li v-for="row in topStats" :key="row.key" class="stats-row">
+              <span class="stats-label">{{ row.label || row.key }}</span>
+              <span class="stats-value">{{ row.percent }}%</span>
+            </li>
+          </ul>
+        </template>
+      </div>
+    </div>
+
     <form v-if="showForm && question.canAnswer" @submit.prevent="submit" class="answer-form">
       <div v-if="question.questionType === 'national_team'" class="form-group">
         <input
@@ -159,7 +182,6 @@ const showFavoriteTeamBadge = computed(() => (
 const favoriteTeamCrest = computed(() => {
   if (!favoriteTeamName.value) return '';
   footballTeamStore.ensureLoaded();
-  void footballTeamStore.loaded;
   return footballTeamStore.crestFor(favoriteTeamName.value);
 });
 
@@ -230,6 +252,45 @@ const storedAnswer = computed(() => {
   if (!props.question.userPrediction) return null;
   return parseStoredAnswer(props.question.userPrediction.answerJson);
 });
+
+const canShowCommunityStats = computed(() => {
+  if (!props.question?.id) return false;
+  if (props.question.questionType === 'favorite_team_progress') return false;
+  if (!props.question.lockTime) return false;
+  const lockedByTime = new Date() >= new Date(props.question.lockTime);
+  const lockedByStatus = props.question.status !== 'open';
+  return lockedByTime || lockedByStatus;
+});
+
+const showStats = ref(false);
+const statsLoading = ref(false);
+const statsError = ref('');
+const statsTotal = ref(null);
+const topStats = ref([]);
+
+async function loadStats() {
+  statsLoading.value = true;
+  statsError.value = '';
+  try {
+    const { data } = await api.get(`/bonus-questions/${props.question.id}/stats`);
+    statsTotal.value = typeof data.total === 'number' ? data.total : null;
+    const dist = Array.isArray(data.distribution) ? data.distribution : [];
+    topStats.value = dist.slice(0, 5);
+  } catch (err) {
+    statsError.value = err.response?.data?.error || t('bonus.statsLoadFailed');
+    topStats.value = [];
+    statsTotal.value = null;
+  } finally {
+    statsLoading.value = false;
+  }
+}
+
+async function toggleStats() {
+  showStats.value = !showStats.value;
+  if (showStats.value && topStats.value.length === 0 && !statsLoading.value) {
+    await loadStats();
+  }
+}
 
 const displayTeamAnswer = computed(() => {
   if (props.question.questionType !== 'national_team' || !storedAnswer.value) return null;
@@ -331,6 +392,20 @@ async function submit() {
 .question-team-flag { flex-shrink: 0; }
 .meta { font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem; }
 .favorite-team-hint { font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1rem; }
+.community-stats { margin: 0.75rem 0 0; }
+.community-stats-panel {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm), var(--glow-card);
+}
+.stats-meta { margin: 0 0 0.5rem; }
+.stats-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.35rem; }
+.stats-row { display: flex; justify-content: space-between; gap: 0.75rem; }
+.stats-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stats-value { font-weight: 700; }
 .user-answer { margin-top: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
 .selected-preview { margin-top: 0.5rem; }
 .answer-chip { display: inline-flex; align-items: center; padding: 0.25rem 0.5rem; border-radius: var(--radius-sm); background: var(--color-primary-soft); }

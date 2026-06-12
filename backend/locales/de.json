@@ -195,7 +195,10 @@
     "totpRequired": "Zwei-Faktor-Authentifizierungscode erforderlich.",
     "invalidTotp": "Ungültiger Authentifizierungscode.",
     "invalidRefreshToken": "Ungültiger oder abgelaufener Refresh-Token.",
-    "totpNotEnabled": "Zwei-Faktor-Authentifizierung ist nicht aktiviert."
+    "totpNotEnabled": "Zwei-Faktor-Authentifizierung ist nicht aktiviert.",
+    "feedbackNotFound": "Feedback nicht gefunden.",
+    "githubNotConfigured": "GitHub ist nicht konfiguriert.",
+    "githubIssueCreateFailed": "GitHub Issue konnte nicht erstellt werden."
   },
   "messages": {
     "registrationSuccess": "Registrierung erfolgreich.",
@@ -214,7 +217,9 @@
     "teamsSeeded": "Standard-Teams wurden geladen.",
     "playerImageDeleted": "Spielerbild-Eintrag gelöscht.",
     "healthOk": "WM 2026 Tippspiel API läuft.",
-    "predictionDeleted": "Tipp gelöscht."
+    "predictionDeleted": "Tipp gelöscht.",
+    "feedbackSubmitted": "Danke! Dein Feedback wurde gesendet.",
+    "githubIssueCreated": "GitHub Issue wurde erstellt."
   },
   "emails": {
     "layout": {

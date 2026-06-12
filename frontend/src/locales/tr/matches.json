@@ -169,6 +169,11 @@
     },
     "favoriteTeamRequired": "Lütfen önce profilinizde favori takımınızı seçin.",
     "goToProfile": "Profile git",
+    "statsShow": "Topluluk seçimlerini göster",
+    "statsHide": "Topluluk seçimlerini gizle",
+    "statsTotal": "Toplam {count} tahmin",
+    "statsEmpty": "Henüz tahmin yok.",
+    "statsLoadFailed": "Topluluk seçimleri yüklenemedi.",
     "progress": {
       "groupStage": "Grup aşaması",
       "roundOf32": "Son 32",

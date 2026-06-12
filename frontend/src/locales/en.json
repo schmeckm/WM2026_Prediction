@@ -16,6 +16,7 @@
   "common": {
     "save": "Save",
     "saving": "Saving...",
+    "updated": "Updated.",
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
@@ -62,6 +63,7 @@
     "statistics": "Statistics",
     "notifications": "Notifications",
     "profile": "Profile",
+    "reportGap": "Report a gap",
     "adminDashboard": "Admin Dashboard",
     "aiAssistant": "AI Assistant",
     "sync": "Synchronization",
@@ -430,6 +432,21 @@
       }
     }
   },
+  "feedback": {
+    "title": "Report a gap",
+    "subtitle": "Bug, change request or new feature – send it directly from the app.",
+    "type": "Type",
+    "typeBug": "Bug",
+    "typeChange": "Change",
+    "typeFeature": "New feature",
+    "titleLabel": "Title",
+    "description": "Description",
+    "descriptionHint": "Please describe what happened (or what you want to change) and where you saw it.",
+    "send": "Send",
+    "sending": "Sending...",
+    "sent": "Thanks! Your feedback was submitted.",
+    "failed": "Could not send feedback."
+  },
   "dashboard": {
     "welcome": "Welcome, {name}!",
     "nextMatches": "Upcoming matches",
@@ -792,6 +809,11 @@
     },
     "favoriteTeamRequired": "Please select your favorite team in your profile first.",
     "goToProfile": "Go to profile",
+    "statsShow": "Show community picks",
+    "statsHide": "Hide community picks",
+    "statsTotal": "{count} tip(s) total",
+    "statsEmpty": "No tips yet.",
+    "statsLoadFailed": "Could not load community picks.",
     "progress": {
       "groupStage": "Group stage",
       "roundOf32": "Round of 32",

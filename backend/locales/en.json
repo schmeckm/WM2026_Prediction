@@ -195,7 +195,10 @@
     "totpRequired": "Two-factor authentication code required.",
     "invalidTotp": "Invalid authentication code.",
     "invalidRefreshToken": "Invalid or expired refresh token.",
-    "totpNotEnabled": "Two-factor authentication is not enabled."
+    "totpNotEnabled": "Two-factor authentication is not enabled.",
+    "feedbackNotFound": "Feedback not found.",
+    "githubNotConfigured": "GitHub is not configured.",
+    "githubIssueCreateFailed": "GitHub issue could not be created."
   },
   "messages": {
     "registrationSuccess": "Registration successful.",
@@ -214,7 +217,9 @@
     "teamsSeeded": "Default teams have been loaded.",
     "playerImageDeleted": "Player image record deleted.",
     "healthOk": "WM 2026 prediction game API is running.",
-    "predictionDeleted": "Prediction deleted."
+    "predictionDeleted": "Prediction deleted.",
+    "feedbackSubmitted": "Thanks! Your feedback was submitted.",
+    "githubIssueCreated": "GitHub issue created."
   },
   "emails": {
     "layout": {

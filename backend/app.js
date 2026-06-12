@@ -41,6 +41,8 @@ const playerImageRoutes = require('./routes/playerImageRoutes');
 const adminPlayerImageRoutes = require('./routes/adminPlayerImageRoutes');
 const displayRoutes = require('./routes/displayRoutes');
 const prizeRoutes = require('./routes/prizeRoutes');
+const feedbackRoutes = require('./routes/feedbackRoutes');
+const adminFeedbackRoutes = require('./routes/adminFeedbackRoutes');
 const authMiddleware = require('./middleware/authMiddleware');
 const adminMiddleware = require('./middleware/adminMiddleware');
 const { localeMiddleware } = require('./middleware/localeMiddleware');
@@ -186,6 +188,8 @@ const apiRouteBundle = {
   displayRoutes,
   prizeRoutes,
   adminAiRoutes,
+  feedbackRoutes,
+  adminFeedbackRoutes,
   authMiddleware,
   adminMiddleware,
   settingsUpdateHandler: settingsRoutes.updateSettings,

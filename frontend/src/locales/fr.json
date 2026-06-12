@@ -16,6 +16,7 @@
   "common": {
     "save": "Enregistrer",
     "saving": "Enregistrement...",
+    "updated": "Mis à jour.",
     "cancel": "Annuler",
     "delete": "Supprimer",
     "edit": "Modifier",
@@ -742,6 +743,11 @@
     },
     "favoriteTeamRequired": "Veuillez d'abord choisir votre équipe favorite dans le profil.",
     "goToProfile": "Aller au profil",
+    "statsShow": "Afficher les choix de la communauté",
+    "statsHide": "Masquer les choix de la communauté",
+    "statsTotal": "{count} pronostic(s) au total",
+    "statsEmpty": "Aucun pronostic pour le moment.",
+    "statsLoadFailed": "Impossible de charger les choix de la communauté.",
     "progress": {
       "groupStage": "Phase de groupes",
       "roundOf16": "Huitièmes de finale",

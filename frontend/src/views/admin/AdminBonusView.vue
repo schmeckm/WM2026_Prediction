@@ -33,6 +33,7 @@
               <td>{{ q.lockTime ? formatDateTime(q.lockTime) : '–' }}</td>
               <td>
                 <div class="btn-group">
+                  <button class="btn btn-secondary btn-sm" @click="openEdit(q)">{{ t('common.edit') }}</button>
                   <button class="btn btn-secondary btn-sm" @click="openResolve(q)">{{ t('adminPages.bonus.resolve') }}</button>
                   <button class="btn btn-danger btn-sm" @click="requestDelete(q)">{{ t('common.delete') }}</button>
                 </div>
@@ -49,15 +50,21 @@
           class="modal"
           role="dialog"
           aria-modal="true"
-          :aria-label="modalMode === 'create' ? t('adminPages.bonus.createTitle') : t('adminPages.bonus.resolveTitle')"
+          :aria-label="modalMode === 'create'
+            ? t('adminPages.bonus.createTitle')
+            : (modalMode === 'edit' ? t('common.edit') : t('adminPages.bonus.resolveTitle'))"
         >
           <div class="modal-header">
-            <h3>{{ modalMode === 'create' ? t('adminPages.bonus.createTitle') : t('adminPages.bonus.resolveTitle') }}</h3>
+            <h3>
+              {{ modalMode === 'create'
+                ? t('adminPages.bonus.createTitle')
+                : (modalMode === 'edit' ? t('common.edit') : t('adminPages.bonus.resolveTitle')) }}
+            </h3>
             <button type="button" class="modal-close" :aria-label="t('common.close')" @click="closeModal">&times;</button>
           </div>
           <form @submit.prevent="handleSave">
             <div class="modal-body">
-              <template v-if="modalMode === 'create'">
+              <template v-if="modalMode === 'create' || modalMode === 'edit'">
                 <div class="form-group">
                   <label>{{ t('adminPages.bonus.form.question') }}</label>
                   <input v-model="form.questionText" class="form-control" required />
@@ -92,7 +99,23 @@
                 </p>
                 <div class="form-group">
                   <label>{{ t('adminPages.bonus.form.lockTime') }}</label>
-                  <input v-model="form.lockTime" type="datetime-local" class="form-control" />
+                  <div class="form-row">
+                    <div class="form-group">
+                      <input v-model="form.lockDate" type="date" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                      <input v-model="form.lockClock" type="time" step="60" class="form-control" />
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="modalMode === 'edit'" class="form-group">
+                  <label>{{ t('adminPages.bonus.columns.status') }}</label>
+                  <select v-model="form.status" class="form-control">
+                    <option value="open">open</option>
+                    <option value="locked">locked</option>
+                    <option value="resolved">resolved</option>
+                  </select>
                 </div>
               </template>
               <template v-else>
@@ -201,6 +224,7 @@ const loading = ref(true);
 const showModal = ref(false);
 const modalMode = ref('create');
 const resolvingQuestion = ref(null);
+const editingQuestionId = ref(null);
 const message = ref('');
 const ensuringDefaults = ref(false);
 const resolvingFromTournament = ref(false);
@@ -213,7 +237,9 @@ const form = ref({
   questionType: 'single_choice',
   points: 10,
   optionsStr: '',
-  lockTime: '',
+  lockDate: '',
+  lockClock: '',
+  status: 'open',
   correctAnswer: '',
   resolveTeamId: null,
   resolvePlayerId: null,
@@ -256,6 +282,24 @@ const filteredResolvePlayers = computed(() => {
 function closeModal() {
   showModal.value = false;
   suggestion.value = null;
+}
+
+function toLocalDatetime(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return '';
+  const offset = d.getTimezoneOffset();
+  const local = new Date(d.getTime() - offset * 60000);
+  return local.toISOString().slice(0, 16);
+}
+
+function buildLockTimeIso() {
+  if (!form.value.lockDate) return null;
+  const time = form.value.lockClock || '00:00';
+  const local = `${form.value.lockDate}T${time}`;
+  const d = new Date(local);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
 }
 
 function formatSuggestion(answer) {
@@ -328,12 +372,15 @@ async function load() {
 
 function openCreate() {
   modalMode.value = 'create';
+  editingQuestionId.value = null;
   form.value = {
     questionText: '',
     questionType: 'single_choice',
     points: 10,
     optionsStr: '',
-    lockTime: '',
+    lockDate: '',
+    lockClock: '',
+    status: 'open',
     correctAnswer: '',
     resolveTeamId: null,
     resolvePlayerId: null,
@@ -343,12 +390,15 @@ function openCreate() {
 
 function applySuggestion(s) {
   modalMode.value = 'create';
+  editingQuestionId.value = null;
   form.value = {
     questionText: s.questionText,
     questionType: s.questionType || 'single_choice',
     points: s.suggestedPoints || 10,
     optionsStr: (s.options || []).join(', '),
-    lockTime: '',
+    lockDate: '',
+    lockClock: '',
+    status: 'open',
     correctAnswer: '',
     resolveTeamId: null,
     resolvePlayerId: null,
@@ -356,8 +406,42 @@ function applySuggestion(s) {
   showModal.value = true;
 }
 
+async function openEdit(q) {
+  modalMode.value = 'edit';
+  editingQuestionId.value = q.id;
+  resolvingQuestion.value = null;
+  suggestion.value = null;
+
+  // Ensure we have parsed options/teamOptions/playerOptions if needed.
+  const full = q.teamOptions || q.playerOptions || q.options ? q : (await api.get(`/admin/bonus-questions/${q.id}`)).data;
+  const options = Array.isArray(full.options) ? full.options : [];
+
+  form.value = {
+    questionText: full.questionText || '',
+    questionType: full.questionType || 'single_choice',
+    points: Number.isFinite(full.points) ? full.points : 10,
+    optionsStr: options.join(', '),
+    lockDate: '',
+    lockClock: '',
+    status: full.status || 'open',
+    correctAnswer: '',
+    resolveTeamId: null,
+    resolvePlayerId: null,
+  };
+
+  const lockLocal = toLocalDatetime(full.lockTime);
+  if (lockLocal) {
+    const [d, t] = lockLocal.split('T');
+    form.value.lockDate = d || '';
+    form.value.lockClock = t || '';
+  }
+
+  showModal.value = true;
+}
+
 async function openResolve(q) {
   modalMode.value = 'resolve';
+  editingQuestionId.value = null;
   resolvingQuestion.value = q.teamOptions || q.playerOptions ? q : (await api.get(`/admin/bonus-questions/${q.id}`)).data;
   resolveTeamSearch.value = '';
   resolvePlayerSearch.value = '';
@@ -419,9 +503,20 @@ async function handleSave() {
       questionType: form.value.questionType,
       points: form.value.points,
       options: usesApiOptions(form.value.questionType) ? null : options,
-      lockTime: form.value.lockTime ? new Date(form.value.lockTime).toISOString() : null,
+      lockTime: buildLockTimeIso(),
     });
     message.value = t('adminPages.bonus.created');
+  } else if (modalMode.value === 'edit') {
+    const options = form.value.optionsStr ? form.value.optionsStr.split(',').map((s) => s.trim()) : [];
+    await api.put(`/admin/bonus-questions/${editingQuestionId.value}`, {
+      questionText: form.value.questionText,
+      questionType: form.value.questionType,
+      points: form.value.points,
+      options: usesApiOptions(form.value.questionType) ? null : options,
+      lockTime: buildLockTimeIso(),
+      status: form.value.status,
+    });
+    message.value = t('common.updated');
   } else {
     await api.post(`/admin/bonus-questions/${resolvingQuestion.value.id}/resolve`, {
       correctAnswer: buildCorrectAnswer(),

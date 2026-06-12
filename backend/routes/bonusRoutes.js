@@ -89,6 +89,74 @@ router.get('/', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/:id/stats', authMiddleware, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) return sendError(res, req, 404, 'errors.notFound');
+
+    const question = await BonusQuestion.findByPk(id);
+    if (!question) return sendError(res, req, 404, 'errors.notFound');
+
+    if (question.questionType === 'favorite_team_progress') {
+      return sendError(res, req, 400, 'errors.accessDenied');
+    }
+
+    const lockTime = question.lockTime ? new Date(question.lockTime) : null;
+    const isAfterLockTime = !!lockTime && new Date() >= lockTime;
+    const isNotOpen = question.status !== 'open';
+    if (!isAfterLockTime && !isNotOpen) {
+      return sendError(res, req, 403, 'errors.accessDenied');
+    }
+
+    const predictions = await BonusPrediction.findAll({ where: { bonusQuestionId: id } });
+    const total = predictions.length;
+
+    const counts = new Map();
+    for (const p of predictions) {
+      let raw = null;
+      try { raw = JSON.parse(p.answerJson); } catch { raw = p.answerJson; }
+
+      let key = null;
+      let label = null;
+      if (raw && typeof raw === 'object') {
+        if (raw.id != null) key = String(raw.id);
+        else if (raw.name) key = String(raw.name);
+        label = raw.teamName ? `${raw.name} (${raw.teamName})` : (raw.name ? String(raw.name) : String(key));
+      } else if (raw != null) {
+        key = String(raw);
+        label = String(raw);
+      }
+
+      if (!key) continue;
+
+      const existing = counts.get(key);
+      if (existing) {
+        existing.count += 1;
+        if (!existing.label && label) existing.label = label;
+      } else {
+        counts.set(key, { key, label, count: 1 });
+      }
+    }
+
+    const distribution = Array.from(counts.values())
+      .sort((a, b) => b.count - a.count)
+      .map((entry) => ({
+        ...entry,
+        percent: total > 0 ? Math.round((entry.count / total) * 1000) / 10 : 0,
+      }));
+
+    res.json({
+      questionId: id,
+      total,
+      lockTime: question.lockTime,
+      status: question.status,
+      distribution,
+    });
+  } catch (error) {
+    sendError(res, req, 500, 'errors.bonusQuestionsLoadFailed');
+  }
+});
+
 router.post('/predictions', authMiddleware, async (req, res) => {
   try {
     const { bonusQuestionId, answer } = req.body;
