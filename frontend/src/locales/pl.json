@@ -13,6 +13,19 @@
     "tr": "Turecki",
     "label": "Język"
   },
+  "auth": {
+    "welcomeHeadline": "Typuj razem z",
+    "welcomeHeadlineAccent": "kolegami.",
+    "loginWelcomeText": "Witaj w grze typowania Mistrzostw Świata FIFA 2026 — śledź mecze, typuj wyniki i rywalizuj ze współpracownikami.",
+    "registerWelcomeText": "Dołącz do gry — zarejestruj się i zacznij typować Mistrzostwa Świata FIFA 2026.",
+    "forgotPasswordWelcomeText": "Zresetuj hasło i wróć do gry w typowanie.",
+    "resetPasswordWelcomeText": "Ustaw nowe hasło i wróć do gry w typowanie.",
+    "verifyEmailWelcomeText": "Potwierdź adres e-mail, aby dokończyć rejestrację i dołączyć do gry.",
+    "registerSuccessWelcomeText": "Jeszcze jeden krok — potwierdź adres e-mail, aby dołączyć do gry.",
+    "ssoCompleteWelcomeText": "Prawie gotowe — wybierz swój zespół, aby dołączyć do gry.",
+    "registerHeadline": "Dołącz do",
+    "registerHeadlineAccent": "gry."
+  },
   "common": {
     "save": "Zapisz",
     "saving": "Zapisywanie...",
