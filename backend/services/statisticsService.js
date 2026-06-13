@@ -15,7 +15,7 @@ function mapUserFavoriteEntry(user) {
   };
 }
 
-function aggregateFavoritePicks(users, getKey, getInitialEntry) {
+function aggregateFavoritePicks(users, getKey, getInitialEntry, { includeUsers = true } = {}) {
   const map = new Map();
 
   for (const user of users) {
@@ -23,15 +23,136 @@ function aggregateFavoritePicks(users, getKey, getInitialEntry) {
     if (!key) continue;
 
     if (!map.has(key)) {
-      map.set(key, { ...getInitialEntry(user), pickCount: 0, users: [] });
+      map.set(key, {
+        ...getInitialEntry(user),
+        pickCount: 0,
+        ...(includeUsers ? { users: [] } : {}),
+      });
     }
 
     const entry = map.get(key);
     entry.pickCount += 1;
-    entry.users.push(mapUserFavoriteEntry(user));
+    if (includeUsers) entry.users.push(mapUserFavoriteEntry(user));
   }
 
   return map;
+}
+
+async function buildFavoritesOverview({ includeUsers }) {
+  const users = await User.findAll({
+    include: [{ model: Team, as: 'team' }],
+    order: [['lastName', 'ASC'], ['firstName', 'ASC']],
+  });
+
+  const usersWithTopScorer = users.filter(
+    (user) => user.topScorerPlayerId || user.topScorerPlayerName,
+  );
+  const usersWithFavoriteTeam = users.filter(
+    (user) => user.favoriteNationalTeamId || user.favoriteNationalTeamName,
+  );
+
+  const topScorerMap = aggregateFavoritePicks(
+    users,
+    (user) => {
+      if (user.topScorerPlayerId) return `id:${user.topScorerPlayerId}`;
+      if (user.topScorerPlayerName) {
+        return `name:${user.topScorerPlayerName.toLowerCase().trim()}`;
+      }
+      return null;
+    },
+    (user) => ({
+      playerId: user.topScorerPlayerId || null,
+      playerName: user.topScorerPlayerName || null,
+      teamName: null,
+      teamId: null,
+      imageUrl: null,
+      imageSource: null,
+    }),
+    { includeUsers },
+  );
+
+  const favoriteTeamMap = aggregateFavoritePicks(
+    users,
+    (user) => {
+      if (user.favoriteNationalTeamId) return `id:${user.favoriteNationalTeamId}`;
+      if (user.favoriteNationalTeamName) {
+        return `name:${user.favoriteNationalTeamName.toLowerCase().trim()}`;
+      }
+      return null;
+    },
+    (user) => ({
+      teamId: user.favoriteNationalTeamId || null,
+      teamName: user.favoriteNationalTeamName || null,
+    }),
+    { includeUsers },
+  );
+
+  try {
+    const players = await listPlayers();
+    const playersById = new Map(players.map((player) => [player.id, player]));
+
+    for (const entry of topScorerMap.values()) {
+      if (!entry.playerId || !playersById.has(entry.playerId)) continue;
+      const player = playersById.get(entry.playerId);
+      entry.playerName = entry.playerName || player.name;
+      entry.teamName = player.teamName || null;
+      entry.teamId = player.teamId || null;
+      entry.imageUrl = player.imageUrl || null;
+      entry.imageSource = player.imageSource || null;
+    }
+  } catch {
+    // Football API optional – overview still works with stored names
+  }
+
+  const topScorerBase = usersWithTopScorer.length || 1;
+  const topScorerPicks = [...topScorerMap.values()]
+    .map((entry) => ({
+      ...entry,
+      percentage: Math.round((entry.pickCount / topScorerBase) * 100),
+    }))
+    .sort((a, b) => (
+      b.pickCount - a.pickCount
+      || String(a.playerName || '').localeCompare(String(b.playerName || ''))
+    ));
+
+  const favoriteTeamBase = usersWithFavoriteTeam.length || 1;
+  const favoriteTeams = [...favoriteTeamMap.values()]
+    .map((entry) => ({
+      ...entry,
+      percentage: Math.round((entry.pickCount / favoriteTeamBase) * 100),
+    }))
+    .sort((a, b) => (
+      b.pickCount - a.pickCount
+      || String(a.teamName || '').localeCompare(String(b.teamName || ''))
+    ));
+
+  const result = {
+    summary: {
+      totalUsers: users.length,
+      withTopScorerPick: usersWithTopScorer.length,
+      withFavoriteTeam: usersWithFavoriteTeam.length,
+      withoutTopScorerPick: users.length - usersWithTopScorer.length,
+      withoutFavoriteTeam: users.length - usersWithFavoriteTeam.length,
+      uniqueTopScorerPicks: topScorerPicks.length,
+      uniqueFavoriteTeams: favoriteTeams.length,
+      mostPopularPlayer: topScorerPicks[0]?.playerName || null,
+      mostPopularTeam: favoriteTeams[0]?.teamName || null,
+    },
+    topScorerPicks,
+    favoriteTeams,
+  };
+
+  if (!includeUsers) return result;
+
+  return {
+    ...result,
+    usersWithoutTopScorer: users
+      .filter((user) => !user.topScorerPlayerId && !user.topScorerPlayerName)
+      .map(mapUserFavoriteEntry),
+    usersWithoutFavoriteTeam: users
+      .filter((user) => !user.favoriteNationalTeamId && !user.favoriteNationalTeamName)
+      .map(mapUserFavoriteEntry),
+  };
 }
 
 async function getUserStatistics(userId) {
@@ -195,116 +316,11 @@ async function getAdminOverview() {
 }
 
 async function getUserFavoritesOverview() {
-  const users = await User.findAll({
-    include: [{ model: Team, as: 'team' }],
-    order: [['lastName', 'ASC'], ['firstName', 'ASC']],
-  });
+  return buildFavoritesOverview({ includeUsers: true });
+}
 
-  const usersWithTopScorer = users.filter(
-    (user) => user.topScorerPlayerId || user.topScorerPlayerName,
-  );
-  const usersWithFavoriteTeam = users.filter(
-    (user) => user.favoriteNationalTeamId || user.favoriteNationalTeamName,
-  );
-
-  const topScorerMap = aggregateFavoritePicks(
-    users,
-    (user) => {
-      if (user.topScorerPlayerId) return `id:${user.topScorerPlayerId}`;
-      if (user.topScorerPlayerName) {
-        return `name:${user.topScorerPlayerName.toLowerCase().trim()}`;
-      }
-      return null;
-    },
-    (user) => ({
-      playerId: user.topScorerPlayerId || null,
-      playerName: user.topScorerPlayerName || null,
-      teamName: null,
-      teamId: null,
-      imageUrl: null,
-      imageSource: null,
-    }),
-  );
-
-  const favoriteTeamMap = aggregateFavoritePicks(
-    users,
-    (user) => {
-      if (user.favoriteNationalTeamId) return `id:${user.favoriteNationalTeamId}`;
-      if (user.favoriteNationalTeamName) {
-        return `name:${user.favoriteNationalTeamName.toLowerCase().trim()}`;
-      }
-      return null;
-    },
-    (user) => ({
-      teamId: user.favoriteNationalTeamId || null,
-      teamName: user.favoriteNationalTeamName || null,
-    }),
-  );
-
-  try {
-    const players = await listPlayers();
-    const playersById = new Map(players.map((player) => [player.id, player]));
-
-    for (const entry of topScorerMap.values()) {
-      if (!entry.playerId || !playersById.has(entry.playerId)) continue;
-      const player = playersById.get(entry.playerId);
-      entry.playerName = entry.playerName || player.name;
-      entry.teamName = player.teamName || null;
-      entry.teamId = player.teamId || null;
-      entry.imageUrl = player.imageUrl || null;
-      entry.imageSource = player.imageSource || null;
-    }
-  } catch {
-    // Football API optional – overview still works with stored names
-  }
-
-  const topScorerBase = usersWithTopScorer.length || 1;
-  const topScorerPicks = [...topScorerMap.values()]
-    .map((entry) => ({
-      ...entry,
-      percentage: Math.round((entry.pickCount / topScorerBase) * 100),
-    }))
-    .sort((a, b) => (
-      b.pickCount - a.pickCount
-      || String(a.playerName || '').localeCompare(String(b.playerName || ''))
-    ));
-
-  const favoriteTeamBase = usersWithFavoriteTeam.length || 1;
-  const favoriteTeams = [...favoriteTeamMap.values()]
-    .map((entry) => ({
-      ...entry,
-      percentage: Math.round((entry.pickCount / favoriteTeamBase) * 100),
-    }))
-    .sort((a, b) => (
-      b.pickCount - a.pickCount
-      || String(a.teamName || '').localeCompare(String(b.teamName || ''))
-    ));
-
-  const usersWithoutTopScorer = users
-    .filter((user) => !user.topScorerPlayerId && !user.topScorerPlayerName)
-    .map(mapUserFavoriteEntry);
-
-  const usersWithoutFavoriteTeam = users
-    .filter((user) => !user.favoriteNationalTeamId && !user.favoriteNationalTeamName)
-    .map(mapUserFavoriteEntry);
-
-  return {
-    summary: {
-      totalUsers: users.length,
-      withTopScorerPick: usersWithTopScorer.length,
-      withFavoriteTeam: usersWithFavoriteTeam.length,
-      withoutTopScorerPick: usersWithoutTopScorer.length,
-      withoutFavoriteTeam: usersWithoutFavoriteTeam.length,
-      uniqueTopScorerPicks: topScorerPicks.length,
-      uniqueFavoriteTeams: favoriteTeams.length,
-      mostPopularPlayer: topScorerPicks[0]?.playerName || null,
-      mostPopularTeam: favoriteTeams[0]?.teamName || null,
-    },
-    topScorerPicks,
-    favoriteTeams,
-    usersWithoutTopScorer,
-    usersWithoutFavoriteTeam,
-  };
+async function getPublicFavoritesOverview() {
+  return buildFavoritesOverview({ includeUsers: false });
 }
 
 module.exports = {
@@ -312,4 +328,5 @@ module.exports = {
   getTeamStatistics,
   getAdminOverview,
   getUserFavoritesOverview,
+  getPublicFavoritesOverview,
 };

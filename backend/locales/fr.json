@@ -292,6 +292,7 @@
       "intro": "Voici votre résumé quotidien de la Coupe du Monde avec résultats, classement et temps forts :",
       "lastNightHeading": "Cette nuit",
       "noLastNight": "Aucun match cette nuit.",
+      "highlightsLabel": "Highlights",
       "yourStandHeading": "Votre position",
       "yourRank": "Vous êtes classé {rank}e avec {points} points.",
       "notRanked": "Vous n'êtes pas encore au classement.",

@@ -300,6 +300,7 @@
       "intro": "Here is your daily World Cup update with results, standings and highlights:",
       "lastNightHeading": "Last night",
       "noLastNight": "No matches last night.",
+      "highlightsLabel": "Highlights",
       "yourStandHeading": "Your standing",
       "yourRank": "You are ranked #{rank} with {points} points.",
       "notRanked": "You are not on the leaderboard yet.",

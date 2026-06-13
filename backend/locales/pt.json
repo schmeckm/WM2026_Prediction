@@ -300,6 +300,7 @@
       "intro": "Aqui está a sua atualização diária do Campeonato do Mundo com resultados, classificações e destaques:",
       "lastNightHeading": "Ontem à noite",
       "noLastNight": "Nenhum jogo ontem à noite.",
+      "highlightsLabel": "Highlights",
       "yourStandHeading": "A sua posição",
       "yourRank": "Está na posição #{rank} com {points} pontos.",
       "notRanked": "Ainda não está na classificação.",

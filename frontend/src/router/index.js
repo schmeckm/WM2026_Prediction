@@ -99,6 +99,7 @@ const routes = [
       { path: 'ai-coach', name: 'AICoach', component: () => import('../views/AICoachView.vue') },
       { path: 'help', name: 'Help', component: () => import('../views/RulesHelpView.vue') },
       { path: 'feedback', name: 'Feedback', component: () => import('../views/FeedbackView.vue') },
+      { path: 'favorites', name: 'FavoritesOverview', component: () => import('../views/FavoritesOverviewView.vue') },
     ],
   },
   {

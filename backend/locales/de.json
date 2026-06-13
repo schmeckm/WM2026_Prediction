@@ -308,6 +308,7 @@
       "intro": "Hier ist dein tägliches WM-Update mit Ergebnissen, Stand und Highlights:",
       "lastNightHeading": "Letzte Nacht",
       "noLastNight": "Keine Spiele in der letzten Nacht.",
+      "highlightsLabel": "Highlights",
       "yourStandHeading": "Dein Stand",
       "yourRank": "Du liegst auf Platz {rank} mit {points} Punkten.",
       "notRanked": "Du bist aktuell noch nicht in der Hitliste platziert.",

@@ -77,6 +77,7 @@
     "resultsCopilot": "Ergebnis Co-Pilot",
     "predictions": "Tippübersicht",
     "favorites": "Favoriten-Übersicht",
+    "communityFavorites": "Community-Favoriten",
     "scoringRules": "Punkte-Regeln",
     "prizesAdmin": "Preisverwaltung",
     "csvImport": "CSV Import",
@@ -86,6 +87,31 @@
     "backToApp": "Zur App",
     "logout": "Abmelden",
     "adminArea": "Admin-Bereich"
+  },
+  "favoritesOverview": {
+    "title": "Community-Favoriten",
+    "subtitle": "Welche Spieler und Nationalteams die Nutzer im Profil gewählt haben",
+    "searchPlaceholder": "Spieler oder Team suchen…",
+    "pickCount": "{count} Auswahlen",
+    "topScorerSection": "Torschützen-Tipps",
+    "favoriteTeamSection": "Favorisierte Nationalteams",
+    "emptyTopScorer": "Noch keine Torschützen-Tipps im Profil hinterlegt.",
+    "emptyFavoriteTeam": "Noch keine Lieblings-Nationalteams gewählt.",
+    "emptyFiltered": "Keine Treffer für diese Suche.",
+    "loadFailed": "Favoriten-Übersicht konnte nicht geladen werden.",
+    "stats": {
+      "withTopScorer": "Mit Torschützen-Tipp",
+      "uniquePlayers": "Verschiedene Spieler",
+      "withFavoriteTeam": "Mit Lieblingsteam",
+      "mostPopularPlayer": "Beliebtester Spieler"
+    },
+    "columns": {
+      "player": "Spieler",
+      "nationalTeam": "Nationalteam",
+      "team": "Nationalteam",
+      "picks": "Auswahlen",
+      "share": "Anteil"
+    }
   },
   "pricing": {
     "title": "Preise",
@@ -772,6 +798,8 @@
     "title": "Spiele",
     "highlights": "Highlights",
     "highlightsInvalid": "Ungültiger Highlights-Link.",
+    "watchOnYoutube": "Auf YouTube ansehen",
+    "highlightsEmbedBlockedHint": "Wenn das Video nicht eingebettet werden darf (z. B. FIFA-Sperre), öffne es direkt auf YouTube.",
     "filters": {
       "all": "Alle Spiele",
       "open": "Offene Tipps",

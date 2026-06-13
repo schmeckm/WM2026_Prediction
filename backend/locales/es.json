@@ -292,6 +292,7 @@
       "intro": "Aquí tienes tu resumen diario del Mundial con resultados, clasificación y destacados:",
       "lastNightHeading": "Anoche",
       "noLastNight": "No hubo partidos anoche.",
+      "highlightsLabel": "Highlights",
       "yourStandHeading": "Tu posición",
       "yourRank": "Estás en el puesto {rank} con {points} puntos.",
       "notRanked": "Aún no estás en la clasificación.",

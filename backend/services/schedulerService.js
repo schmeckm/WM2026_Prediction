@@ -293,6 +293,24 @@ async function startScheduler() {
     }, 'AI-Interaktionslog-Bereinigung');
   }));
 
+  // Auto-fill highlights URLs for finished matches (optional)
+  const autoHighlightsEnabled = process.env.AUTO_HIGHLIGHTS_ENABLED === 'true';
+  if (autoHighlightsEnabled) {
+    const highlightsCron = process.env.AUTO_HIGHLIGHTS_CRON || '15 */2 * * *';
+    const tournamentOnly = process.env.AUTO_HIGHLIGHTS_TOURNAMENT_ONLY !== 'false';
+    const lookbackHours = Number.parseInt(process.env.AUTO_HIGHLIGHTS_LOOKBACK_HOURS || '72', 10);
+    const maxUpdates = Number.parseInt(process.env.AUTO_HIGHLIGHTS_MAX_UPDATES || '5', 10);
+    const { autoFillHighlightsForFinishedMatches } = require('./highlightsAutofillService');
+
+    jobs.push(cron.schedule(highlightsCron, async () => {
+      if (tournamentOnly && !isTournamentActive()) return;
+      await safeRun(
+        () => autoFillHighlightsForFinishedMatches({ lookbackHours, maxUpdates }),
+        `Highlights Auto-Fill (${highlightsCron})`,
+      );
+    }, { timezone: CRON_TZ }));
+  }
+
   const playerBackupInfo = playerBackupEnabled
     ? `Spielerdaten-Backup: ${playerBackupCron} (${CRON_TZ})`
     : 'Spielerdaten-Backup: aus';

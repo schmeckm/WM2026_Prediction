@@ -300,6 +300,7 @@
       "intro": "İşte sonuçlar, sıralamalar ve öne çıkanlarla günlük Dünya Kupası güncellemeniz:",
       "lastNightHeading": "Dün gece",
       "noLastNight": "Dün gece maç yoktu.",
+      "highlightsLabel": "Özet",
       "yourStandHeading": "Durumunuz",
       "yourRank": "{points} puan ile #{rank}. sıradasınız.",
       "notRanked": "Henüz lider tablosunda değilsiniz.",

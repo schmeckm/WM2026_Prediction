@@ -3,6 +3,34 @@ function getYouTubeApiKey() {
   return typeof key === 'string' && key.trim() ? key.trim() : '';
 }
 
+function parseCsv(value) {
+  if (!value) return [];
+  return String(value)
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function getSkipChannelKeywords() {
+  // Default: skip FIFA uploads. Can be extended via env.
+  return parseCsv(process.env.YOUTUBE_SKIP_CHANNEL_KEYWORDS || 'fifa').map((s) => s.toLowerCase());
+}
+
+function getSkipChannelIds() {
+  return parseCsv(process.env.YOUTUBE_SKIP_CHANNEL_IDS || '');
+}
+
+function shouldSkipVideo(row) {
+  const keywords = getSkipChannelKeywords();
+  const channelIds = new Set(getSkipChannelIds());
+  const channelTitle = String(row?.channelTitle || '').toLowerCase();
+  const title = String(row?.title || '').toLowerCase();
+  const channelId = String(row?.channelId || '');
+
+  if (channelId && channelIds.has(channelId)) return true;
+  return keywords.some((kw) => kw && (channelTitle.includes(kw) || title.includes(kw)));
+}
+
 function buildQuery({ homeTeam, awayTeam, kickoffTime }) {
   const home = String(homeTeam || '').trim();
   const away = String(awayTeam || '').trim();
@@ -62,6 +90,8 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
   searchUrl.searchParams.set('maxResults', String(maxResults));
   searchUrl.searchParams.set('q', query);
   searchUrl.searchParams.set('videoEmbeddable', 'true');
+  // Prefer videos that are allowed to play on third-party sites.
+  searchUrl.searchParams.set('videoSyndicated', 'true');
   searchUrl.searchParams.set('safeSearch', 'none');
   const publishedAfter = isoHoursBefore(match.kickoffTime, 18);
   if (publishedAfter) searchUrl.searchParams.set('publishedAfter', publishedAfter);
@@ -77,6 +107,7 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
     videoId: it.id.videoId,
     title: it.snippet?.title || '',
     channelTitle: it.snippet?.channelTitle || '',
+    channelId: it.snippet?.channelId || '',
     publishedAt: it.snippet?.publishedAt || '',
     thumbnailUrl: it.snippet?.thumbnails?.medium?.url
       || it.snippet?.thumbnails?.default?.url
@@ -87,7 +118,7 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
   if (videoIds.length === 0) return { query, items: [] };
 
   const videosUrl = new URL('https://www.googleapis.com/youtube/v3/videos');
-  videosUrl.searchParams.set('part', 'contentDetails,statistics');
+  videosUrl.searchParams.set('part', 'contentDetails,statistics,status');
   videosUrl.searchParams.set('id', videoIds.join(','));
   videosUrl.searchParams.set('key', apiKey);
   let details = [];
@@ -103,14 +134,22 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
     const d = detailMap.get(row.videoId);
     const viewCount = d?.statistics?.viewCount ? Number(d.statistics.viewCount) : null;
     const duration = d?.contentDetails?.duration || '';
+    const embeddable = d?.status?.embeddable;
     return {
       ...row,
       viewCount: Number.isFinite(viewCount) ? viewCount : null,
       duration,
+      embeddable: typeof embeddable === 'boolean' ? embeddable : null,
     };
   });
 
-  return { query, items: merged };
+  const filtered = merged
+    // If YouTube reports not embeddable, skip it (typical for blocked videos).
+    .filter((row) => row.embeddable !== false)
+    // Skip FIFA (or other configured channels/keywords)
+    .filter((row) => !shouldSkipVideo(row));
+
+  return { query, items: filtered };
 }
 
 module.exports = { searchMatchHighlights };

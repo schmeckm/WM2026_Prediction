@@ -18,6 +18,7 @@ export function useUserNavLinks() {
       { to: '/bonus', label: t('nav.bonus'), icon: 'target' },
       { to: '/ai-coach', label: t('nav.aiCoach'), icon: 'bot' },
       { to: '/leaderboard', label: t('nav.leaderboard'), icon: 'trophy' },
+      { to: '/favorites', label: t('nav.communityFavorites'), icon: 'star' },
     ];
 
     if (appSettings.showPrizesNav) {

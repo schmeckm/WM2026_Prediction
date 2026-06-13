@@ -7,6 +7,7 @@ const {
   getTeamStatistics,
   getAdminOverview,
   getUserFavoritesOverview,
+  getPublicFavoritesOverview,
 } = require('../services/statisticsService');
 const { getTeamRanking } = require('../services/leaderboardService');
 
@@ -51,6 +52,15 @@ router.get('/team/:id', authMiddleware, async (req, res) => {
     res.json(stats);
   } catch (error) {
     sendError(res, req, 500, 'errors.statisticsLoadFailed');
+  }
+});
+
+router.get('/favorites', authMiddleware, async (req, res) => {
+  try {
+    const overview = await getPublicFavoritesOverview();
+    res.json(overview);
+  } catch (error) {
+    sendError(res, req, 500, 'errors.favoritesOverviewLoadFailed');
   }
 });
 

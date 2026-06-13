@@ -80,7 +80,11 @@
       {{ t('matches.noTipGiven') }}
     </div>
     <div v-if="match.highlightsUrl" class="text-center" style="margin-top: 0.5rem;">
-      <button type="button" class="btn btn-secondary btn-sm" @click="openHighlights">
+      <button
+        type="button"
+        class="btn btn-secondary btn-sm"
+        @click="openHighlights"
+      >
         {{ t('matches.highlights') }}
       </button>
     </div>
@@ -92,34 +96,66 @@
       :show-ai="showAiPreview"
       @close="showVenueModal = false"
     />
-
     <Teleport to="body">
-      <div v-if="showHighlightsModal" class="modal-overlay" @click.self="showHighlightsModal = false">
-        <div class="modal" role="dialog" aria-modal="true" :aria-label="t('matches.highlights')">
+      <div
+        v-if="showHighlightsModal"
+        class="modal-overlay"
+        @click.self="closeHighlights"
+      >
+        <dialog
+          class="modal"
+          open
+          :aria-label="t('matches.highlights')"
+        >
           <div class="modal-header">
             <h3>{{ t('matches.highlights') }}</h3>
-            <button type="button" class="modal-close" :aria-label="t('common.close')" @click="showHighlightsModal = false">&times;</button>
+            <button
+              type="button"
+              class="modal-close"
+              :aria-label="t('common.close')"
+              @click="closeHighlights"
+            >
+              &times;
+            </button>
           </div>
           <div class="modal-body">
-            <div class="video-wrap">
+            <div v-if="highlightsEmbedUrl" class="video-wrap">
               <iframe
-                v-if="embedUrl"
-                :src="embedUrl"
-                title="YouTube highlights"
+                class="video-frame"
+                :src="highlightsEmbedUrl"
+                title="YouTube video player"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowfullscreen
               />
-              <p v-else class="text-muted">{{ t('matches.highlightsInvalid') }}</p>
+            </div>
+            <p v-else class="text-muted" style="margin: 0;">
+              {{ t('matches.highlightsInvalid') }}
+            </p>
+
+            <div class="highlights-actions">
+              <a
+                class="btn btn-primary btn-sm"
+                :href="highlightsWatchUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ t('matches.watchOnYoutube') }}
+              </a>
+              <p class="text-muted highlights-hint">
+                {{ t('matches.highlightsEmbedBlockedHint') }}
+              </p>
             </div>
           </div>
-        </div>
+        </dialog>
       </div>
     </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import {
+  ref, computed, onMounted, onUnmounted,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import PredictionForm from './PredictionForm.vue';
 import LiveScoreBadge from './LiveScoreBadge.vue';
@@ -177,15 +213,42 @@ function extractYoutubeId(url) {
   return m?.[1] || '';
 }
 
-const embedUrl = computed(() => {
+const highlightsWatchUrl = computed(() => {
+  const raw = String(props.match?.highlightsUrl || '').trim();
+  const id = extractYoutubeId(props.match?.highlightsUrl);
+  if (id) return `https://www.youtube.com/watch?v=${id}`;
+  return raw;
+});
+
+const highlightsEmbedUrl = computed(() => {
   const id = extractYoutubeId(props.match?.highlightsUrl);
   if (!id) return '';
-  return `https://www.youtube-nocookie.com/embed/${id}`;
+  return `https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1`;
 });
 
 function openHighlights() {
-  showHighlightsModal.value = true;
+  if (highlightsEmbedUrl.value) {
+    showHighlightsModal.value = true;
+  } else if (highlightsWatchUrl.value) {
+    globalThis.open(highlightsWatchUrl.value, '_blank', 'noopener,noreferrer');
+  }
 }
+
+function closeHighlights() {
+  showHighlightsModal.value = false;
+}
+
+function onKeydown(event) {
+  if (event.key === 'Escape' && showHighlightsModal.value) closeHighlights();
+}
+
+onMounted(() => {
+  globalThis.addEventListener('keydown', onKeydown);
+});
+
+onUnmounted(() => {
+  globalThis.removeEventListener('keydown', onKeydown);
+});
 
 function shouldShowScore(match) {
   const hasScore = match.homeScore !== null && match.homeScore !== undefined
@@ -233,20 +296,32 @@ function scoreClass(match) {
 }
 
 .video-wrap {
-  position: relative;
   width: 100%;
-  padding-top: 56.25%;
-  border-radius: var(--radius-md);
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: var(--radius-sm);
   overflow: hidden;
-  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm), var(--glow-card);
 }
 
-.video-wrap iframe {
-  position: absolute;
-  inset: 0;
+.video-frame {
   width: 100%;
   height: 100%;
+  display: block;
+}
+
+.highlights-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.highlights-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  text-align: center;
+  max-width: 520px;
 }
 </style>

@@ -74,7 +74,13 @@
               <div class="form-row">
                 <div class="form-group" style="flex: 1;">
                   <label>{{ t('adminPages.matches.form.highlightsUrl') }}</label>
-                  <input v-model="form.highlightsUrl" type="url" class="form-control" placeholder="https://www.youtube.com/watch?v=…" />
+                  <input
+                    ref="highlightsInput"
+                    v-model="form.highlightsUrl"
+                    type="url"
+                    class="form-control"
+                    placeholder="https://www.youtube.com/watch?v=…"
+                  />
                 </div>
                 <div class="form-group" style="align-self: end;">
                   <button type="button" class="btn btn-secondary btn-sm" @click="openYoutubeSearch">
@@ -101,9 +107,19 @@
                         {{ s.channelTitle }}<span v-if="s.viewCount"> · {{ formatViews(s.viewCount) }}</span>
                       </div>
                     </div>
-                    <button type="button" class="btn btn-primary btn-sm" @click="useSuggestion(s)">
-                      {{ t('adminPages.matches.form.useSuggestion') }}
-                    </button>
+                    <div style="display:flex; align-items:center; gap:0.5rem;">
+                      <span
+                        v-if="isSelectedSuggestion(s)"
+                        class="badge badge-success"
+                        :title="t('adminPages.matches.form.highlightsUrl')"
+                        aria-label="Selected"
+                      >
+                        ✓
+                      </span>
+                      <button type="button" class="btn btn-primary btn-sm" @click="useSuggestion(s)">
+                        {{ t('adminPages.matches.form.useSuggestion') }}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -132,7 +148,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import {
+  ref, onMounted, onUnmounted, nextTick,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
@@ -156,6 +174,7 @@ const error = ref('');
 const youtubeSuggestions = ref([]);
 const loadingSuggestions = ref(false);
 const suggestError = ref('');
+const highlightsInput = ref(null);
 
 const form = ref({
   matchNumber: 1,
@@ -253,9 +272,25 @@ function formatViews(n) {
   return `${n} views`;
 }
 
+function getSuggestionUrl(s) {
+  if (s?.url) return String(s.url).trim();
+  if (s?.videoId) return `https://www.youtube.com/watch?v=${s.videoId}`;
+  return '';
+}
+
+function isSelectedSuggestion(s) {
+  const url = getSuggestionUrl(s);
+  return !!url && url === String(form.value.highlightsUrl || '').trim();
+}
+
 function useSuggestion(s) {
-  if (!s?.url) return;
-  form.value.highlightsUrl = s.url;
+  const url = getSuggestionUrl(s);
+  if (!url) return;
+  form.value.highlightsUrl = url;
+  nextTick(() => {
+    highlightsInput.value?.focus?.();
+    highlightsInput.value?.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
+  });
 }
 
 async function loadYoutubeSuggestions() {

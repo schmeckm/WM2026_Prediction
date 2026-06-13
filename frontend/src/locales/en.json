@@ -77,6 +77,7 @@
     "resultsCopilot": "Results Co-Pilot",
     "predictions": "Prediction Overview",
     "favorites": "Favorites Overview",
+    "communityFavorites": "Community Favorites",
     "scoringRules": "Scoring Rules",
     "prizesAdmin": "Prize Management",
     "csvImport": "CSV Import",
@@ -86,6 +87,31 @@
     "backToApp": "Back to App",
     "logout": "Sign out",
     "adminArea": "Admin Area"
+  },
+  "favoritesOverview": {
+    "title": "Community favorites",
+    "subtitle": "Which players and national teams users selected in their profile",
+    "searchPlaceholder": "Search player or team…",
+    "pickCount": "{count} picks",
+    "topScorerSection": "Top scorer picks",
+    "favoriteTeamSection": "Favorite national teams",
+    "emptyTopScorer": "No top scorer picks saved in profiles yet.",
+    "emptyFavoriteTeam": "No favorite national teams selected yet.",
+    "emptyFiltered": "No matches for this search.",
+    "loadFailed": "Could not load favorites overview.",
+    "stats": {
+      "withTopScorer": "With top scorer pick",
+      "uniquePlayers": "Different players",
+      "withFavoriteTeam": "With favorite team",
+      "mostPopularPlayer": "Most popular player"
+    },
+    "columns": {
+      "player": "Player",
+      "nationalTeam": "National team",
+      "team": "National team",
+      "picks": "Picks",
+      "share": "Share"
+    }
   },
   "pricing": {
     "title": "Pricing",
@@ -765,6 +791,8 @@
     "title": "Matches",
     "highlights": "Highlights",
     "highlightsInvalid": "Invalid highlights link.",
+    "watchOnYoutube": "Watch on YouTube",
+    "highlightsEmbedBlockedHint": "If the video is blocked from embedding (e.g. by FIFA), open it on YouTube.",
     "filters": {
       "all": "All matches",
       "open": "Open predictions",

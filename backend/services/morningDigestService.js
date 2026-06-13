@@ -40,17 +40,47 @@ function formatResultLine(match) {
   return `${match.homeTeam} ${match.homeScore}:${match.awayScore} ${match.awayTeam}`;
 }
 
+function normalizeHttpUrl(url) {
+  if (!url) return '';
+  const str = String(url).trim();
+  if (!str) return '';
+  if (str.startsWith('http://') || str.startsWith('https://')) return str;
+  return '';
+}
+
+function escapeHtmlAttr(value) {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;');
+}
+
 function formatFinishedMatchListHtml(matches, locale) {
   if (!matches.length) {
     return `<p style="margin:0;">${escapeHtml(t('emails.morningDigest.noLastNight', locale))}</p>`;
   }
-  const items = matches.map((m) => `<li>${escapeHtml(formatResultLine(m))}</li>`).join('');
+  const linkLabel = t('emails.morningDigest.highlightsLabel', locale);
+  const items = matches.map((m) => {
+    const base = escapeHtml(formatResultLine(m));
+    const url = normalizeHttpUrl(m.highlightsUrl);
+    if (!url) return `<li>${base}</li>`;
+    const href = escapeHtmlAttr(url);
+    const label = escapeHtml(linkLabel);
+    return `<li>${base} · <a href="${href}" target="_blank" rel="noopener noreferrer">${label}</a></li>`;
+  }).join('');
   return `<ul style="margin:12px 0;padding-left:20px;">${items}</ul>`;
 }
 
 function formatFinishedMatchListText(matches, locale) {
   if (!matches.length) return t('emails.morningDigest.noLastNight', locale);
-  return matches.map((m) => `- ${formatResultLine(m)}`).join('\n');
+  const label = t('emails.morningDigest.highlightsLabel', locale);
+  return matches.map((m) => {
+    const base = `- ${formatResultLine(m)}`;
+    const url = normalizeHttpUrl(m.highlightsUrl);
+    if (!url) return base;
+    return `${base} (${label}: ${url})`;
+  }).join('\n');
 }
 
 function formatRankDelta(rankDelta, locale) {
