@@ -357,17 +357,26 @@ a:hover {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  /* Mobile Safari/Chrome: prefer dynamic viewport units to avoid scroll lock
+     when the browser UI (address bar) expands/collapses. */
   height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
   overflow: hidden;
 }
 
 .layout-content {
   flex: 1;
+  /* Critical for nested scrolling inside flex layouts on mobile browsers. */
+  min-height: 0;
   padding: 1rem 2rem 2rem;
   max-width: 90rem;
   width: 100%;
   margin: 0 auto;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 /* Fiori Side Navigation */
@@ -822,6 +831,7 @@ tbody tr:hover {
 
 .sortable-th {
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
   white-space: nowrap;
 }
