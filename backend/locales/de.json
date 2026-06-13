@@ -76,6 +76,7 @@
     "resultSaveFailed": "Ergebnis konnte nicht gespeichert werden.",
     "matchLockFailed": "Spiel konnte nicht gesperrt werden.",
     "matchUnlockFailed": "Spiel konnte nicht entsperrt werden.",
+    "youtubeApiKeyMissing": "YouTube API Key fehlt. Setze YOUTUBE_API_KEY im Deployment (Portainer/.env) und starte das Backend neu.",
     "actionFailed": "Aktion fehlgeschlagen.",
     "predictionsLoadFailed": "Tipps konnten nicht geladen werden.",
     "predictionRequired": "Spiel und Tipp sind erforderlich.",

@@ -138,7 +138,7 @@ router.get('/:id/highlight-suggestions', authMiddleware, adminMiddleware, async 
     res.json(result);
   } catch (error) {
     if (error?.code === 'YOUTUBE_API_KEY_MISSING') {
-      return sendError(res, req, 503, 'errors.actionFailed');
+      return sendError(res, req, 503, 'errors.youtubeApiKeyMissing');
     }
     return sendError(res, req, 500, 'errors.actionFailed');
   }

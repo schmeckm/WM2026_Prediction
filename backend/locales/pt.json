@@ -75,6 +75,7 @@
     "resultSaveFailed": "Não foi possível guardar o resultado.",
     "matchLockFailed": "Não foi possível bloquear o jogo.",
     "matchUnlockFailed": "Não foi possível desbloquear o jogo.",
+    "youtubeApiKeyMissing": "A chave de API do YouTube está em falta. Defina YOUTUBE_API_KEY no seu deployment (Portainer/.env) e reinicie o backend.",
     "actionFailed": "Ação falhou.",
     "predictionsLoadFailed": "Não foi possível carregar os palpites.",
     "predictionRequired": "Jogo e palpite são obrigatórios.",

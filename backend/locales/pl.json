@@ -75,6 +75,7 @@
     "resultSaveFailed": "Result could not be saved.",
     "matchLockFailed": "Match could not be locked.",
     "matchUnlockFailed": "Match could not be unlocked.",
+    "youtubeApiKeyMissing": "YouTube API key is missing. Set YOUTUBE_API_KEY in your deployment (Portainer/.env) and restart the backend.",
     "actionFailed": "Action failed.",
     "predictionsLoadFailed": "Predictions could not be loaded.",
     "predictionRequired": "Match and prediction are required.",

@@ -24,11 +24,12 @@ function shouldSkipVideo(row) {
   const keywords = getSkipChannelKeywords();
   const channelIds = new Set(getSkipChannelIds());
   const channelTitle = String(row?.channelTitle || '').toLowerCase();
-  const title = String(row?.title || '').toLowerCase();
   const channelId = String(row?.channelId || '');
 
   if (channelId && channelIds.has(channelId)) return true;
-  return keywords.some((kw) => kw && (channelTitle.includes(kw) || title.includes(kw)));
+  // Only filter by channel name/id to avoid accidentally skipping non-FIFA channels
+  // that mention "FIFA" in the video title.
+  return keywords.some((kw) => kw && channelTitle.includes(kw));
 }
 
 function buildQuery({ homeTeam, awayTeam, kickoffTime }) {
@@ -84,72 +85,84 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
   }
 
   const query = buildQuery(match);
-  const searchUrl = new URL('https://www.googleapis.com/youtube/v3/search');
-  searchUrl.searchParams.set('part', 'snippet');
-  searchUrl.searchParams.set('type', 'video');
-  searchUrl.searchParams.set('maxResults', String(maxResults));
-  searchUrl.searchParams.set('q', query);
-  searchUrl.searchParams.set('videoEmbeddable', 'true');
-  // Prefer videos that are allowed to play on third-party sites.
-  searchUrl.searchParams.set('videoSyndicated', 'true');
-  searchUrl.searchParams.set('safeSearch', 'none');
-  const publishedAfter = isoHoursBefore(match.kickoffTime, 18);
-  if (publishedAfter) searchUrl.searchParams.set('publishedAfter', publishedAfter);
-  searchUrl.searchParams.set('key', apiKey);
 
-  const searchJson = await youtubeFetchJson(searchUrl.toString());
-  const items = Array.isArray(searchJson?.items) ? searchJson.items : [];
-  const videoIds = items
-    .map((it) => it?.id?.videoId)
-    .filter(Boolean);
+  const requireSyndicated = process.env.YOUTUBE_REQUIRE_SYNDICATED === 'true';
+  const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
+  const desired = clamp(Number(maxResults) || 6, 1, 25);
+  const searchLimit = clamp(desired * 4, 8, 25);
 
-  const base = items.map((it) => ({
-    videoId: it.id.videoId,
-    title: it.snippet?.title || '',
-    channelTitle: it.snippet?.channelTitle || '',
-    channelId: it.snippet?.channelId || '',
-    publishedAt: it.snippet?.publishedAt || '',
-    thumbnailUrl: it.snippet?.thumbnails?.medium?.url
-      || it.snippet?.thumbnails?.default?.url
-      || '',
-    url: it.id?.videoId ? `https://www.youtube.com/watch?v=${it.id.videoId}` : '',
-  }));
+  async function searchOnce({ requireEmbeddable }) {
+    const searchUrl = new URL('https://www.googleapis.com/youtube/v3/search');
+    searchUrl.searchParams.set('part', 'snippet');
+    searchUrl.searchParams.set('type', 'video');
+    searchUrl.searchParams.set('maxResults', String(searchLimit));
+    searchUrl.searchParams.set('q', query);
+    if (requireEmbeddable) searchUrl.searchParams.set('videoEmbeddable', 'true');
+    if (requireSyndicated) searchUrl.searchParams.set('videoSyndicated', 'true');
+    searchUrl.searchParams.set('safeSearch', 'none');
+    const publishedAfter = isoHoursBefore(match.kickoffTime, 18);
+    if (publishedAfter) searchUrl.searchParams.set('publishedAfter', publishedAfter);
+    searchUrl.searchParams.set('key', apiKey);
 
-  if (videoIds.length === 0) return { query, items: [] };
+    const searchJson = await youtubeFetchJson(searchUrl.toString());
+    const items = Array.isArray(searchJson?.items) ? searchJson.items : [];
+    const videoIds = items
+      .map((it) => it?.id?.videoId)
+      .filter(Boolean);
 
-  const videosUrl = new URL('https://www.googleapis.com/youtube/v3/videos');
-  videosUrl.searchParams.set('part', 'contentDetails,statistics,status');
-  videosUrl.searchParams.set('id', videoIds.join(','));
-  videosUrl.searchParams.set('key', apiKey);
-  let details = [];
-  try {
-    const videosJson = await youtubeFetchJson(videosUrl.toString());
-    details = Array.isArray(videosJson?.items) ? videosJson.items : [];
-  } catch {
-    details = [];
+    const base = items.map((it) => ({
+      videoId: it.id.videoId,
+      title: it.snippet?.title || '',
+      channelTitle: it.snippet?.channelTitle || '',
+      channelId: it.snippet?.channelId || '',
+      publishedAt: it.snippet?.publishedAt || '',
+      thumbnailUrl: it.snippet?.thumbnails?.medium?.url
+        || it.snippet?.thumbnails?.default?.url
+        || '',
+      url: it.id?.videoId ? `https://www.youtube.com/watch?v=${it.id.videoId}` : '',
+    }));
+
+    if (videoIds.length === 0) return [];
+
+    const videosUrl = new URL('https://www.googleapis.com/youtube/v3/videos');
+    videosUrl.searchParams.set('part', 'contentDetails,statistics,status');
+    videosUrl.searchParams.set('id', videoIds.join(','));
+    videosUrl.searchParams.set('key', apiKey);
+    let details = [];
+    try {
+      const videosJson = await youtubeFetchJson(videosUrl.toString());
+      details = Array.isArray(videosJson?.items) ? videosJson.items : [];
+    } catch {
+      details = [];
+    }
+
+    const detailMap = new Map(details.map((d) => [d.id, d]));
+    return base.map((row) => {
+      const d = detailMap.get(row.videoId);
+      const viewCount = d?.statistics?.viewCount ? Number(d.statistics.viewCount) : null;
+      const duration = d?.contentDetails?.duration || '';
+      const embeddable = d?.status?.embeddable;
+      return {
+        ...row,
+        viewCount: Number.isFinite(viewCount) ? viewCount : null,
+        duration,
+        embeddable: typeof embeddable === 'boolean' ? embeddable : null,
+      };
+    });
   }
 
-  const detailMap = new Map(details.map((d) => [d.id, d]));
-  const merged = base.map((row) => {
-    const d = detailMap.get(row.videoId);
-    const viewCount = d?.statistics?.viewCount ? Number(d.statistics.viewCount) : null;
-    const duration = d?.contentDetails?.duration || '';
-    const embeddable = d?.status?.embeddable;
-    return {
-      ...row,
-      viewCount: Number.isFinite(viewCount) ? viewCount : null,
-      duration,
-      embeddable: typeof embeddable === 'boolean' ? embeddable : null,
-    };
-  });
+  // 1) Preferred: embeddable (best UX in modal iframe), and non-FIFA channels.
+  const strict = (await searchOnce({ requireEmbeddable: true }))
+    .filter((row) => !shouldSkipVideo(row))
+    .slice(0, desired);
+  if (strict.length > 0) return { query, items: strict };
 
-  const filtered = merged
-    // If YouTube reports not embeddable, skip it (typical for blocked videos).
-    .filter((row) => row.embeddable !== false)
-    // Skip FIFA (or other configured channels/keywords)
-    .filter((row) => !shouldSkipVideo(row));
-
-  return { query, items: filtered };
+  // 2) Fallback: still skip FIFA channels, but allow non-embeddable videos so admins can
+  // at least pick a "watch on YouTube" link instead of getting an empty list.
+  const relaxed = (await searchOnce({ requireEmbeddable: false }))
+    .filter((row) => !shouldSkipVideo(row))
+    .slice(0, desired);
+  return { query, items: relaxed };
 }
 
 module.exports = { searchMatchHighlights };

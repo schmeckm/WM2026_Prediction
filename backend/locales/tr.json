@@ -75,6 +75,7 @@
     "resultSaveFailed": "Sonuç kaydedilemedi.",
     "matchLockFailed": "Maç kilitlenemedi.",
     "matchUnlockFailed": "Maç kilidi açılamadı.",
+    "youtubeApiKeyMissing": "YouTube API anahtarı eksik. Deployment içinde (Portainer/.env) YOUTUBE_API_KEY ayarlayın ve backend'i yeniden başlatın.",
     "actionFailed": "İşlem başarısız.",
     "predictionsLoadFailed": "Tahminler yüklenemedi.",
     "predictionRequired": "Maç ve tahmin zorunludur.",

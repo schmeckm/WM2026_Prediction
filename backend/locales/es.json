@@ -74,6 +74,7 @@
     "resultSaveFailed": "No se pudo guardar el resultado.",
     "matchLockFailed": "No se pudo bloquear el partido.",
     "matchUnlockFailed": "No se pudo desbloquear el partido.",
+    "youtubeApiKeyMissing": "Falta la clave de API de YouTube. Configura YOUTUBE_API_KEY en tu despliegue (Portainer/.env) y reinicia el backend.",
     "actionFailed": "Acción fallida.",
     "predictionsLoadFailed": "No se pudieron cargar los pronósticos.",
     "predictionRequired": "Partido y pronóstico son obligatorios.",
