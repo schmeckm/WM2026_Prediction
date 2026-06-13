@@ -19,7 +19,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="match in matches" :key="match.id">
+          <tr v-for="match in matches" :key="match.id" :class="{ 'match-row--next': isNextMatch(match) }">
             <td>{{ formatDate(match.kickoffTime) }}</td>
             <td>{{ formatTime(match.kickoffTime) }}</td>
             <td>{{ stageLabel(match.stage) }}</td>
@@ -86,7 +86,11 @@
     </div>
 
     <div class="match-table-mobile">
-      <article v-for="match in matches" :key="`mobile-${match.id}`" class="match-table-card">
+      <article
+        v-for="match in matches"
+        :key="`mobile-${match.id}`"
+        :class="['match-table-card', { 'match-table-card--next': isNextMatch(match) }]"
+      >
         <div class="match-table-card-teams">
           <TeamFlag :name="match.homeTeam" inline />
           <span class="match-table-card-vs">vs</span>
@@ -186,6 +190,7 @@ const props = defineProps({
   showActions: { type: Boolean, default: false },
   showMatchRef: { type: Boolean, default: true },
   editable: { type: Boolean, default: true },
+  highlightMatchIds: { type: Array, default: () => [] },
 });
 
 defineEmits(['edit', 'delete', 'saved']);
@@ -201,6 +206,12 @@ const colspan = computed(() => {
   if (props.showMatchRef) cols += 1;
   return cols;
 });
+
+const highlightIdSet = computed(() => new Set(props.highlightMatchIds.map(String)));
+
+function isNextMatch(match) {
+  return highlightIdSet.value.has(String(match?.id));
+}
 
 function statusLabel(status) {
   return t(`matchStatus.${status}`, status);
@@ -248,6 +259,35 @@ function scoreClass(match) {
   border-radius: var(--radius-sm);
   padding: 0.875rem;
   background: var(--color-surface);
+}
+
+.match-table-card--next {
+  border-color: var(--color-success);
+  box-shadow: var(--shadow-sm), 0 0 0 2px color-mix(in srgb, var(--color-success) 35%, transparent);
+}
+
+.match-row--next td {
+  background: rgba(0, 255, 127, 0.04);
+}
+
+.match-row--next td:first-child {
+  box-shadow:
+    inset 2px 0 0 var(--color-success),
+    inset 0 2px 0 var(--color-success),
+    inset 0 -2px 0 var(--color-success);
+}
+
+.match-row--next td:not(:first-child):not(:last-child) {
+  box-shadow:
+    inset 0 2px 0 var(--color-success),
+    inset 0 -2px 0 var(--color-success);
+}
+
+.match-row--next td:last-child {
+  box-shadow:
+    inset -2px 0 0 var(--color-success),
+    inset 0 2px 0 var(--color-success),
+    inset 0 -2px 0 var(--color-success);
 }
 
 .lock-inline {

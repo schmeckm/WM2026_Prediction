@@ -86,6 +86,7 @@
           :key="match.id"
           :match="match"
           :highlighted="String(match.matchNumber) === highlightedMatchNumber"
+          :next-up="isNextUp(match)"
           @saved="() => loadMatches()"
         />
         <EmptyState
@@ -103,7 +104,12 @@
         :aria-busy="filterLoading"
       >
         <div class="card-body">
-          <MatchTable :matches="matches" show-prediction @saved="() => loadMatches()" />
+          <MatchTable
+            :matches="matches"
+            :highlight-match-ids="nextMatchIds"
+            show-prediction
+            @saved="() => loadMatches()"
+          />
         </div>
       </div>
     </template>
@@ -181,6 +187,26 @@ const needsLockTimer = computed(() =>
 );
 
 const hasActiveFilters = computed(() => !!activeFilter.value || !!activeGroup.value);
+
+const nextKickoffMs = computed(() => {
+  const future = matches.value
+    .filter((m) => m?.status === 'scheduled')
+    .map((m) => new Date(m.kickoffTime).getTime())
+    .filter((ms) => Number.isFinite(ms) && ms > now.value);
+  if (future.length === 0) return null;
+  return Math.min(...future);
+});
+
+const nextMatchIds = computed(() => {
+  if (!nextKickoffMs.value) return [];
+  return matches.value
+    .filter((m) => m?.status === 'scheduled' && new Date(m.kickoffTime).getTime() === nextKickoffMs.value)
+    .map((m) => m.id);
+});
+
+function isNextUp(match) {
+  return nextMatchIds.value.includes(match?.id);
+}
 
 const filterActiveLabel = computed(() => {
   const parts = [];

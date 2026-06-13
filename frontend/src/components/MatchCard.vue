@@ -1,5 +1,12 @@
 <template>
-  <div :id="`match-${match.matchNumber}`" class="match-card" :class="{ 'match-card--highlight': highlighted }">
+  <div
+    :id="`match-${match.matchNumber}`"
+    class="match-card"
+    :class="{
+      'match-card--highlight': highlighted,
+      'match-card--next': nextUp,
+    }"
+  >
     <div class="match-card-header">
       <span>{{ matchRoundLabel(match) }}</span>
       <div class="match-card-header-end">
@@ -182,6 +189,7 @@ const props = defineProps({
   showForm: { type: Boolean, default: true },
   showAiPreview: { type: Boolean, default: true },
   highlighted: { type: Boolean, default: false },
+  nextUp: { type: Boolean, default: false },
 });
 
 const lockTitle = computed(() => {
@@ -293,6 +301,11 @@ function scoreClass(match) {
 .match-lock-reason {
   margin-top: 0.35rem;
   font-size: 0.85rem;
+}
+
+.match-card--next {
+  border-color: var(--color-success);
+  box-shadow: var(--shadow-md), 0 0 0 2px color-mix(in srgb, var(--color-success) 35%, transparent);
 }
 
 .video-wrap {
