@@ -1,5 +1,6 @@
 import { createI18n } from 'vue-i18n';
 import de from '../locales/de.json';
+import en from '../locales/en.json';
 
 export const SUPPORTED_LOCALES = ['de', 'en', 'es', 'fr', 'pt', 'pl', 'tr'];
 export const DEFAULT_LOCALE = 'de';
@@ -55,6 +56,9 @@ const i18n = createI18n({
   fallbackLocale: ['en', DEFAULT_LOCALE],
   messages: {
     de: preprocessLocaleMessages(de),
+    // Keep English loaded so fallback does not regress to German
+    // when locale bundles are lazy-loaded (e.g. pl missing keys).
+    en: preprocessLocaleMessages(en),
   },
 });
 
