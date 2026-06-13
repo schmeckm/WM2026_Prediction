@@ -10,6 +10,7 @@ export function useAdminNavLinks() {
     { to: '/admin/results-copilot', label: t('nav.resultsCopilot'), icon: 'zap' },
     { to: '/admin/results', label: t('nav.results'), icon: 'chart' },
     { to: '/admin/matches', label: t('nav.matchAdmin'), icon: 'calendar' },
+    { to: '/admin/group-standings', label: t('nav.groupStandings'), icon: 'table' },
     { to: '/admin/sync', label: t('nav.sync'), icon: 'refresh' },
     { to: '/admin/bonus-questions', label: t('nav.bonus'), icon: 'target' },
     { to: '/admin/email', label: t('nav.email'), icon: 'mail' },

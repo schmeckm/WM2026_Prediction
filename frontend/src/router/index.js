@@ -115,6 +115,7 @@ const routes = [
       { path: 'matches', name: 'AdminMatches', component: () => import('../views/admin/AdminMatchesView.vue') },
       { path: 'results', name: 'AdminResults', component: () => import('../views/admin/AdminResultsView.vue') },
       { path: 'results-copilot', name: 'AdminResultsCopilot', component: () => import('../views/admin/AdminResultsCopilotView.vue') },
+      { path: 'group-standings', name: 'AdminGroupStandings', component: () => import('../views/admin/AdminGroupStandingsView.vue') },
       { path: 'predictions', name: 'AdminPredictions', component: () => import('../views/admin/AdminPredictionsView.vue') },
       { path: 'favorites', name: 'AdminFavorites', component: () => import('../views/admin/AdminFavoritesView.vue') },
       { path: 'scoring-rules', name: 'AdminScoringRules', component: () => import('../views/admin/AdminScoringRulesView.vue') },
@@ -158,7 +159,7 @@ router.beforeEach((to, from, next) => {
 
 router.afterEach((to) => {
   const baseTitle = 'WM 2026 Tippspiel';
-  const routeTitle = to.meta?.title;
+  const routeTitle = typeof to.meta?.title === 'string' ? to.meta.title : '';
   document.title = routeTitle ? `${routeTitle} · ${baseTitle}` : baseTitle;
 });
 

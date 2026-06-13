@@ -99,11 +99,14 @@ router.put('/:id', authMiddleware, async (req, res) => {
     }
 
     const isAdmin = req.user.role === 'admin';
+    const isOwner = prediction.userId === req.user.id;
     if (prediction.userId !== req.user.id && !isAdmin) {
       return sendError(res, req, 403, 'errors.accessDenied');
     }
 
-    if (!canEditPrediction(prediction.match, { allowAdminOverride: isAdmin, isAdmin })) {
+    // Prevent admins from changing their own tips after lock/kickoff.
+    const allowAdminOverride = isAdmin && !isOwner;
+    if (!canEditPrediction(prediction.match, { allowAdminOverride, isAdmin })) {
       return sendError(res, req, 403, 'errors.predictionEditClosed');
     }
 
@@ -158,7 +161,9 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       return sendError(res, req, 403, 'errors.accessDenied');
     }
 
-    if (prediction.match && !canEditPrediction(prediction.match, { allowAdminOverride: isAdmin, isAdmin })) {
+    // Prevent admins from deleting their own tips after lock/kickoff.
+    const allowAdminOverride = isAdmin && !isOwner;
+    if (prediction.match && !canEditPrediction(prediction.match, { allowAdminOverride, isAdmin })) {
       return sendError(res, req, 403, 'errors.predictionEditClosed');
     }
 
