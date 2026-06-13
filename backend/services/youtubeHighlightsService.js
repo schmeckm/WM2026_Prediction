@@ -20,6 +20,22 @@ function getSkipChannelIds() {
   return parseCsv(process.env.YOUTUBE_SKIP_CHANNEL_IDS || '');
 }
 
+function getRegionCode() {
+  const code = String(process.env.YOUTUBE_REGION_CODE || '').trim().toUpperCase();
+  // YouTube uses ISO 3166-1 alpha-2 country codes (e.g. DE, CH, US)
+  return /^[A-Z]{2}$/.test(code) ? code : '';
+}
+
+function isBlockedInRegion(regionCode, videoDetails) {
+  if (!regionCode) return false;
+  const rr = videoDetails?.contentDetails?.regionRestriction;
+  const blocked = Array.isArray(rr?.blocked) ? rr?.blocked : null;
+  const allowed = Array.isArray(rr?.allowed) ? rr?.allowed : null;
+  if (blocked?.includes?.(regionCode)) return true;
+  if (allowed && !allowed?.includes?.(regionCode)) return true;
+  return false;
+}
+
 function shouldSkipVideo(row) {
   const keywords = getSkipChannelKeywords();
   const channelIds = new Set(getSkipChannelIds());
@@ -90,6 +106,7 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
   const clamp = (n, min, max) => Math.min(max, Math.max(min, n));
   const desired = clamp(Number(maxResults) || 6, 1, 25);
   const searchLimit = clamp(desired * 4, 8, 25);
+  const regionCode = getRegionCode();
 
   async function searchOnce({ requireEmbeddable }) {
     const searchUrl = new URL('https://www.googleapis.com/youtube/v3/search');
@@ -99,6 +116,7 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
     searchUrl.searchParams.set('q', query);
     if (requireEmbeddable) searchUrl.searchParams.set('videoEmbeddable', 'true');
     if (requireSyndicated) searchUrl.searchParams.set('videoSyndicated', 'true');
+    if (regionCode) searchUrl.searchParams.set('regionCode', regionCode);
     searchUrl.searchParams.set('safeSearch', 'none');
     const publishedAfter = isoHoursBefore(match.kickoffTime, 18);
     if (publishedAfter) searchUrl.searchParams.set('publishedAfter', publishedAfter);
@@ -142,11 +160,13 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
       const viewCount = d?.statistics?.viewCount ? Number(d.statistics.viewCount) : null;
       const duration = d?.contentDetails?.duration || '';
       const embeddable = d?.status?.embeddable;
+      const blockedInRegion = isBlockedInRegion(regionCode, d);
       return {
         ...row,
         viewCount: Number.isFinite(viewCount) ? viewCount : null,
         duration,
         embeddable: typeof embeddable === 'boolean' ? embeddable : null,
+        blockedInRegion,
       };
     });
   }
@@ -154,6 +174,7 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
   // 1) Preferred: embeddable (best UX in modal iframe), and non-FIFA channels.
   const strict = (await searchOnce({ requireEmbeddable: true }))
     .filter((row) => !shouldSkipVideo(row))
+    .filter((row) => !row.blockedInRegion)
     .slice(0, desired);
   if (strict.length > 0) return { query, items: strict };
 
@@ -161,6 +182,7 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
   // at least pick a "watch on YouTube" link instead of getting an empty list.
   const relaxed = (await searchOnce({ requireEmbeddable: false }))
     .filter((row) => !shouldSkipVideo(row))
+    .filter((row) => !row.blockedInRegion)
     .slice(0, desired);
   return { query, items: relaxed };
 }
