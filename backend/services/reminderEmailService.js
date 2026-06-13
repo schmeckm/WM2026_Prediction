@@ -5,31 +5,44 @@ const { escapeHtml, wrapBrandedEmail } = require('./emailLayoutService');
 
 const DATE_LOCALES = {
   de: 'de-DE',
-  en: 'en-GB',
+  // Use en-US so the default time format is typically AM/PM (clearer for English recipients).
+  en: 'en-US',
   es: 'es-ES',
   fr: 'fr-FR',
   pt: 'pt-PT',
+  pl: 'pl-PL',
+  tr: 'tr-TR',
 };
 
-function formatKickoff(kickoffTime, locale) {
-  return new Date(kickoffTime).toLocaleString(DATE_LOCALES[locale] || DATE_LOCALES.de);
+function formatKickoff(kickoffTime, locale, { timezone } = {}) {
+  const date = new Date(kickoffTime);
+  const tz = timezone || process.env.REMINDER_TIMEZONE || process.env.DEFAULT_TIMEZONE || 'Europe/Zurich';
+  const localeTag = DATE_LOCALES[locale] || DATE_LOCALES.de;
+  return new Intl.DateTimeFormat(localeTag, {
+    timeZone: tz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
 }
 
-function formatMatchListHtml(matches, locale) {
+function formatMatchListHtml(matches, locale, { timezone } = {}) {
   if (!matches.length) {
     return `<p style="margin:0;">${escapeHtml(t('emails.missingPredictions.noneUpcoming', locale))}</p>`;
   }
   const items = matches.map((m) => {
-    const when = formatKickoff(m.kickoffTime, locale);
+    const when = formatKickoff(m.kickoffTime, locale, { timezone });
     return `<li>${escapeHtml(m.homeTeam)} vs ${escapeHtml(m.awayTeam)} – ${escapeHtml(when)}</li>`;
   }).join('');
   return `<ul style="margin:12px 0;padding-left:20px;">${items}</ul>`;
 }
 
-function formatMatchListText(matches, locale) {
+function formatMatchListText(matches, locale, { timezone } = {}) {
   if (!matches.length) return t('emails.missingPredictions.noneUpcoming', locale);
   return matches.map((m) => {
-    const when = formatKickoff(m.kickoffTime, locale);
+    const when = formatKickoff(m.kickoffTime, locale, { timezone });
     return `- ${m.homeTeam} vs ${m.awayTeam} (${when})`;
   }).join('\n');
 }

@@ -398,7 +398,7 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
   }
 
   const lastNightHtml = formatFinishedMatchListHtml(shared.lastNightMatches, locale);
-  const todayHtml = formatMatchListHtml(shared.todayMatches, locale);
+  const todayHtml = formatMatchListHtml(shared.todayMatches, locale, { timezone: shared.timezone });
   const leaderboardHtml = formatRankingListHtml(
     shared.topUsers.map((entry) => ({
       rank: entry.rank,
@@ -434,7 +434,7 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
     ? `
     <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.missingTipsHeading', locale))}</p>
     <p style="margin:0 0 8px;">${escapeHtml(t('emails.morningDigest.missingTips', locale, { count: userData.missingCount }))}</p>
-    ${formatMatchListHtml(userData.missingMatches || [], locale)}
+    ${formatMatchListHtml(userData.missingMatches || [], locale, { timezone: shared.timezone })}
   `.trim()
     : '';
 
@@ -457,8 +457,8 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
   `.trim();
 
   const lastNightText = formatFinishedMatchListText(shared.lastNightMatches, locale);
-  const todayText = formatMatchListText(shared.todayMatches, locale);
-  const missingMatchListText = formatMatchListText(userData.missingMatches || [], locale);
+  const todayText = formatMatchListText(shared.todayMatches, locale, { timezone: shared.timezone });
+  const missingMatchListText = formatMatchListText(userData.missingMatches || [], locale, { timezone: shared.timezone });
   const highlightsText = formatHighlightsText(shared.ruleHighlights, locale);
 
   return {
