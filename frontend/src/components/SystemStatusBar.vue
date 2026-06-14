@@ -31,7 +31,7 @@
       </div>
       <div class="system-status-meta">
         <a
-          href="https://github.com/schmeckm/aspire-make-tippspiel"
+          href="https://github.com/schmeckm/WM2026_Prediction"
           class="system-status-github"
           target="_blank"
           rel="noopener noreferrer"

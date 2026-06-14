@@ -13,8 +13,8 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  BACKEND_IMAGE: ghcr.io/schmeckm/aspire-make-tippspiel-backend
-  FRONTEND_IMAGE: ghcr.io/schmeckm/aspire-make-tippspiel-frontend
+  BACKEND_IMAGE: ghcr.io/schmeckm/wm2026_prediction-backend
+  FRONTEND_IMAGE: ghcr.io/schmeckm/wm2026_prediction-frontend
 
 jobs:
   build-and-push:

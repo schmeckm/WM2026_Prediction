@@ -16,7 +16,7 @@ function getWikimediaUserAgent() {
     return process.env.WIKIMEDIA_USER_AGENT;
   }
 
-  const appUrl = process.env.APP_URL || 'https://github.com/schmeckm/aspire-make-tippspiel';
+  const appUrl = process.env.APP_URL || 'https://github.com/schmeckm/WM2026_Prediction';
   const contact = process.env.WIKIMEDIA_CONTACT_EMAIL
     || process.env.SMTP_FROM
     || process.env.BOOTSTRAP_ADMIN_EMAIL

@@ -5,7 +5,7 @@
   "main": "server.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/schmeckm/aspire-make-tippspiel.git",
+    "url": "https://github.com/schmeckm/WM2026_Prediction.git",
     "directory": "backend"
   },
   "keywords": ["football", "world-cup", "tippspiel", "nodejs", "express"],

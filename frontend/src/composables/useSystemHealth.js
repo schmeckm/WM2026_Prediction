@@ -160,7 +160,7 @@ export function useSystemHealth() {
 
   const commitShort = computed(() => (commitSha.value ? commitSha.value.slice(0, 7) : null));
   const commitUrl = computed(() => (
-    commitSha.value ? `https://github.com/schmeckm/aspire-make-tippspiel/commit/${commitSha.value}` : null
+    commitSha.value ? `https://github.com/schmeckm/WM2026_Prediction/commit/${commitSha.value}` : null
   ));
 
   const hasIssues = computed(() => items.value.some(

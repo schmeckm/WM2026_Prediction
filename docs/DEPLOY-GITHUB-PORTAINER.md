@@ -34,15 +34,15 @@ git add .
 git commit -m "Initial commit: WM 2026 Prediction Game"
 ```
 
-Create a **new empty repository** on GitHub (e.g. `aspire-make-tippspiel`), then:
+Create a **new empty repository** on GitHub (e.g. `WM2026_Prediction`), then:
 
 ```powershell
 git branch -M main
-git remote add origin https://github.com/schmeckm/aspire-make-tippspiel.git
+git remote add origin https://github.com/schmeckm/WM2026_Prediction.git
 git push -u origin main
 ```
 
-> Replace `schmeckm/aspire-make-tippspiel` with your actual repository if different.
+> Replace `schmeckm/WM2026_Prediction` with your actual repository if different.
 
 ---
 
@@ -84,7 +84,7 @@ For **production with PostgreSQL**, set at minimum:
 1. Portainer → **Stacks** → **Add stack**
 2. Name: e.g. `wm2026-tippspiel`
 3. **Build method**: Git repository
-4. Repository URL: `https://github.com/schmeckm/aspire-make-tippspiel`
+4. Repository URL: `https://github.com/schmeckm/WM2026_Prediction`
 5. Repository reference: `main`
 6. **Compose path**: `docker-compose.prod.yml`
 7. **Environment variables**: enter values from `.env` (or "Load variables from .env file")
@@ -99,8 +99,8 @@ Portainer clones the repo, builds images, and starts:
 ### Option B: Manual on the Server
 
 ```bash
-git clone https://github.com/schmeckm/aspire-make-tippspiel.git
-cd aspire-make-tippspiel
+git clone https://github.com/schmeckm/WM2026_Prediction.git
+cd WM2026_Prediction
 cp .env.docker.example .env
 # edit .env
 docker compose -f docker-compose.prod.yml up -d --build

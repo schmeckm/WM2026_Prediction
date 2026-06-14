@@ -6,7 +6,7 @@
   "description": "Frontend for WM 2026 Prediction Game",
   "repository": {
     "type": "git",
-    "url": "https://github.com/schmeckm/aspire-make-tippspiel.git",
+    "url": "https://github.com/schmeckm/WM2026_Prediction.git",
     "directory": "frontend"
   },
   "keywords": ["football", "world-cup", "tippspiel", "vue3", "pwa"],

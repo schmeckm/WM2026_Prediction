@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/schmeckm/aspire-make-tippspiel/actions/workflows/ci.yml"><img src="https://github.com/schmeckm/aspire-make-tippspiel/actions/workflows/ci.yml/badge.svg" alt="CI Status" /></a>
-  <a href="https://github.com/schmeckm/aspire-make-tippspiel/actions/workflows/docker-publish.yml"><img src="https://github.com/schmeckm/aspire-make-tippspiel/actions/workflows/docker-publish.yml/badge.svg" alt="Docker Publish" /></a>
+  <a href="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/ci.yml"><img src="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/ci.yml/badge.svg" alt="CI Status" /></a>
+  <a href="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/docker-publish.yml"><img src="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/docker-publish.yml/badge.svg" alt="Docker Publish" /></a>
   <img src="https://img.shields.io/badge/version-1.0.5-blue" alt="Version 1.0.5" />
   <img src="https://img.shields.io/badge/node-20%2B-green" alt="Node.js 20+" />
   <img src="https://img.shields.io/badge/vue-3-42b883" alt="Vue 3" />
@@ -22,7 +22,7 @@
   <a href="docs/DEPLOY-GITHUB-PORTAINER.md">Deployment</a> ·
   <a href="docs/GITHUB-SETUP.md">GitHub Setup</a> ·
   <a href="CHANGELOG.md">Changelog</a> ·
-  <a href="https://github.com/schmeckm/aspire-make-tippspiel">GitHub</a>
+  <a href="https://github.com/schmeckm/WM2026_Prediction">GitHub</a>
 </p>
 
 ---
@@ -353,7 +353,7 @@ docker compose --profile postgres up --build
 Full guide: [**docs/DEPLOY-GITHUB-PORTAINER.md**](docs/DEPLOY-GITHUB-PORTAINER.md)
 
 ```bash
-git clone https://github.com/schmeckm/aspire-make-tippspiel.git
+git clone https://github.com/schmeckm/WM2026_Prediction.git
 # Deploy stack in Portainer with docker-compose.prod.yml
 ```
 
@@ -471,7 +471,7 @@ Proprietary software — for private/internal use only. See [LICENSE](LICENSE).
 
 <p align="center">
   <sub>WM 2026 Prediction Game · Version 1.0.5</sub><br />
-  <a href="https://github.com/schmeckm/aspire-make-tippspiel">GitHub Repository</a> ·
+  <a href="https://github.com/schmeckm/WM2026_Prediction">GitHub Repository</a> ·
   <a href="CONTRIBUTING.md">Contributing</a> ·
   <a href="SECURITY.md">Security</a>
 </p>

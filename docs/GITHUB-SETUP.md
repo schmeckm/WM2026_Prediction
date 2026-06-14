@@ -46,8 +46,8 @@ The `docker-publish.yml` workflow automatically builds images with the release t
 
 | Image | Tag |
 |-------|-----|
-| Backend | `ghcr.io/schmeckm/aspire-make-tippspiel-backend:1.0.5` |
-| Frontend | `ghcr.io/schmeckm/aspire-make-tippspiel-frontend:1.0.5` |
+| Backend | `ghcr.io/schmeckm/wm2026_prediction-backend:1.0.5` |
+| Frontend | `ghcr.io/schmeckm/wm2026_prediction-frontend:1.0.5` |
 
 ### Deployment
 

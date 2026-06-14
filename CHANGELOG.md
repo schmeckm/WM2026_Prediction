@@ -16,8 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Unified version numbers across README, backend, and frontend
-- Updated deploy guide to repository `aspire-make-tippspiel`
+- Renamed GitHub repository from `aspire-make-tippspiel` to `WM2026_Prediction`
+- Updated Docker image names to `ghcr.io/schmeckm/wm2026_prediction-*`
+- Updated deploy guide to repository `WM2026_Prediction`
 - All repository documentation translated to English
 
 ## [1.0.4] - 2026
@@ -38,6 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Docker Compose for development and production
 - CI/CD with GitHub Actions
 
-[1.0.5]: https://github.com/schmeckm/aspire-make-tippspiel/compare/v1.0.4...v1.0.5
-[1.0.4]: https://github.com/schmeckm/aspire-make-tippspiel/compare/v1.0.1...v1.0.4
-[1.0.1]: https://github.com/schmeckm/aspire-make-tippspiel/releases/tag/v1.0.1
+[1.0.5]: https://github.com/schmeckm/WM2026_Prediction/compare/v1.0.4...v1.0.5
+[1.0.4]: https://github.com/schmeckm/WM2026_Prediction/compare/v1.0.1...v1.0.4
+[1.0.1]: https://github.com/schmeckm/WM2026_Prediction/releases/tag/v1.0.1
