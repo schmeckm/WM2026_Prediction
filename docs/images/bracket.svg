@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <rect width="800" height="450" fill="#1a1f2e"/>
+  <rect x="60" y="80" width="120" height="40" rx="6" fill="#2d3548"/>
+  <rect x="60" y="140" width="120" height="40" rx="6" fill="#2d3548"/>
+  <rect x="240" y="110" width="120" height="40" rx="6" fill="#3d4a63"/>
+  <rect x="420" y="110" width="120" height="40" rx="6" fill="#3d4a63"/>
+  <rect x="600" y="110" width="120" height="40" rx="6" fill="#4a6fa5"/>
+  <line x1="180" y1="100" x2="240" y2="130" stroke="#4a5568" stroke-width="2"/>
+  <line x1="180" y1="160" x2="240" y2="130" stroke="#4a5568" stroke-width="2"/>
+  <line x1="360" y1="130" x2="420" y2="130" stroke="#4a5568" stroke-width="2"/>
+  <line x1="540" y1="130" x2="600" y2="130" stroke="#4a5568" stroke-width="2"/>
+  <text x="400" y="420" text-anchor="middle" fill="#8892a4" font-family="system-ui,sans-serif" font-size="16">Knockout bracket - replace with screenshot (bracket.png)</text>
+</svg>

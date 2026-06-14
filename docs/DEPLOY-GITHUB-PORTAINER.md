@@ -1,150 +1,150 @@
-# Deployment: GitHub + Docker + Portainer (mit PostgreSQL)
+# Deployment: GitHub + Docker + Portainer (with PostgreSQL)
 
-Diese Anleitung beschreibt den Weg von der lokalen Entwicklung bis zum produktiven Stack in Portainer.
+This guide covers the path from local development to a production stack in Portainer.
 
-## Voraussetzungen
+## Prerequisites
 
-- GitHub-Konto
-- Server mit Docker und [Portainer](https://www.portainer.io/)
-- Optional: Domain + Reverse Proxy (Traefik/Nginx Proxy Manager) für HTTPS
+- GitHub account
+- Server with Docker and [Portainer](https://www.portainer.io/)
+- Optional: domain + reverse proxy (Traefik/Nginx Proxy Manager) for HTTPS
 
 ---
 
-## Schritt 1: Projekt auf GitHub bringen
+## Step 1: Push the Project to GitHub
 
-### 1.1 Secrets prüfen (wichtig)
+### 1.1 Check for secrets (important)
 
-Folgende Dateien **dürfen nicht** ins Repository:
+The following files **must not** be committed to the repository:
 
 - `backend/.env`
-- `.env` im Projektroot
-- `*.sqlite` Datenbankdateien
+- `.env` in the project root
+- `*.sqlite` database files
 
-Das ist bereits in `.gitignore` eingetragen.
+These are already listed in `.gitignore`.
 
-### 1.2 Git initialisieren und pushen
+### 1.2 Initialize Git and push
 
-Im Projektordner (PowerShell):
+In the project folder (PowerShell):
 
 ```powershell
-cd c:\Users\marku\OneDrive\Dokumente\node_project\ai-football-agent
+cd c:\Users\marku\OneDrive\Dokumente\node_project\wm2026-tipspiel
 
 git init
 git add .
-git commit -m "Initial commit: WM 2026 Tippspiel"
+git commit -m "Initial commit: WM 2026 Prediction Game"
 ```
 
-Auf GitHub ein **neues leeres Repository** anlegen (z. B. `ai-football-agent`), dann:
+Create a **new empty repository** on GitHub (e.g. `aspire-make-tippspiel`), then:
 
 ```powershell
 git branch -M main
-git remote add origin https://github.com/IHR-USER/ai-football-agent.git
+git remote add origin https://github.com/schmeckm/aspire-make-tippspiel.git
 git push -u origin main
 ```
 
-> Ersetzen Sie `IHR-USER/ai-football-agent` durch Ihr echtes Repository.
+> Replace `schmeckm/aspire-make-tippspiel` with your actual repository if different.
 
 ---
 
-## Schritt 2: Umgebungsvariablen vorbereiten
+## Step 2: Prepare Environment Variables
 
-Kopie der Vorlage:
+Copy the template:
 
 ```powershell
 copy .env.docker.example .env
 ```
 
-Für **Produktion mit PostgreSQL** mindestens setzen:
+For **production with PostgreSQL**, set at minimum:
 
-| Variable | Beispiel | Beschreibung |
-|----------|----------|--------------|
-| `JWT_SECRET` | langer Zufallsstring | Pflicht, kein Default-Wert |
-| `DB_PASSWORD` | sicheres Passwort | PostgreSQL-Passwort |
-| `DB_USER` | `wm2026` | DB-Benutzer |
-| `DB_NAME` | `wm2026` | Datenbankname |
-| `APP_URL` | `https://tippspiel.example.com` | Öffentliche URL (E-Mails, Links) |
-| `CORS_ORIGIN` | gleich wie `APP_URL` | CORS für API/WebSocket |
-| `FOOTBALL_API_KEY` | Ihr API-Key | Optional, für Live-Sync |
-| `OPENAI_API_KEY` | Ihr Key (`sk-proj-...`, **ohne** führendes `=`) | Optional, für KI-Features |
-| `SMTP_*` | Mailserver | Für Registrierung / Passwort-Reset |
-| `GOOGLE_CLIENT_ID` | OAuth Client ID | Für Google SSO (beide Google-Variablen nötig) |
-| `GOOGLE_CLIENT_SECRET` | OAuth Secret | **Ohne führendes `=`** |
-| `GOOGLE_CALLBACK_URL` | `https://…/api/auth/google/callback` | Muss in Google Console eingetragen sein |
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `JWT_SECRET` | long random string | Required, no default value |
+| `DB_PASSWORD` | secure password | PostgreSQL password |
+| `DB_USER` | `wm2026` | DB user |
+| `DB_NAME` | `wm2026` | Database name |
+| `APP_URL` | `https://tippspiel.example.com` | Public URL (emails, links) |
+| `CORS_ORIGIN` | same as `APP_URL` | CORS for API/WebSocket |
+| `FOOTBALL_API_KEY` | your API key | Optional, for live sync |
+| `OPENAI_API_KEY` | your key (`sk-proj-...`, **no** leading `=`) | Optional, for AI features |
+| `SMTP_*` | mail server | For registration / password reset |
+| `GOOGLE_CLIENT_ID` | OAuth client ID | For Google SSO (both Google vars required) |
+| `GOOGLE_CLIENT_SECRET` | OAuth secret | **No leading `=`** |
+| `GOOGLE_CALLBACK_URL` | `https://…/api/auth/google/callback` | Must be registered in Google Console |
 
-**Google SSO:** Raw-IPs werden von Google abgelehnt – statt `http://136.244.90.128:8081` z. B. `http://136-244-90-128.sslip.io:8081` für `APP_URL`, `CORS_ORIGIN` und `GOOGLE_CALLBACK_URL` nutzen.
+**Google SSO:** Raw IPs are rejected by Google — instead of `http://136.244.90.128:8081`, use e.g. `http://136-244-90-128.sslip.io:8081` for `APP_URL`, `CORS_ORIGIN`, and `GOOGLE_CALLBACK_URL`.
 
-`FRONTEND_PORT` steuert den externen Port (Standard `8080`).
+`FRONTEND_PORT` controls the external port (default `8080`).
 
 ---
 
-## Schritt 3: Stack in Portainer deployen
+## Step 3: Deploy Stack in Portainer
 
-### Variante A: Git Repository (empfohlen)
+### Option A: Git Repository (recommended)
 
 1. Portainer → **Stacks** → **Add stack**
-2. Name: z. B. `wm2026-tippspiel`
+2. Name: e.g. `wm2026-tippspiel`
 3. **Build method**: Git repository
-4. Repository URL: `https://github.com/IHR-USER/ai-football-agent`
+4. Repository URL: `https://github.com/schmeckm/aspire-make-tippspiel`
 5. Repository reference: `main`
 6. **Compose path**: `docker-compose.prod.yml`
-7. **Environment variables**: Werte aus `.env` eintragen (oder „Load variables from .env file“)
+7. **Environment variables**: enter values from `.env` (or "Load variables from .env file")
 8. **Deploy the stack**
 
-Portainer klont das Repo, baut die Images und startet:
+Portainer clones the repo, builds images, and starts:
 
-- `postgres` – PostgreSQL 16 (Daten in Volume `postgres-data`)
+- `postgres` – PostgreSQL 16 (data in volume `postgres-data`)
 - `backend` – Node.js API
-- `frontend` – Nginx mit Vue-Build (Port `8080` → App)
+- `frontend` – Nginx with Vue build (port `8080` → app)
 
-### Variante B: Manuell auf dem Server
+### Option B: Manual on the Server
 
 ```bash
-git clone https://github.com/IHR-USER/ai-football-agent.git
-cd ai-football-agent
+git clone https://github.com/schmeckm/aspire-make-tippspiel.git
+cd aspire-make-tippspiel
 cp .env.docker.example .env
-# .env bearbeiten
+# edit .env
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 ---
 
-## Schritt 4: Datenbank initialisieren (einmalig)
+## Step 4: Initialize the Database (one-time)
 
-Nach dem ersten Start Tabellen anlegen und Demo-/Startdaten laden:
+After the first start, create tables and load demo/seed data:
 
 ```bash
 docker compose -f docker-compose.prod.yml exec backend node database/seed.js
 ```
 
-In Portainer: Container `backend` → **Console** → Command:
+In Portainer: container `backend` → **Console** → command:
 
 ```
 node database/seed.js
 ```
 
-Standard-Admin (falls im Seed enthalten): siehe `backend/database/demoData.js`.
+Default admin (if included in seed): see `backend/database/demoData.js`.
 
 ---
 
-## Schritt 5: HTTPS / Reverse Proxy (empfohlen)
+## Step 5: HTTPS / Reverse Proxy (recommended)
 
-Die App lauscht intern auf Port `8080`. Vor Portainer typisch:
+The app listens internally on port `8080`. In front of Portainer, typically:
 
-- **Nginx Proxy Manager** oder **Traefik** als Reverse Proxy
+- **Nginx Proxy Manager** or **Traefik** as reverse proxy
 - Domain → `http://server-ip:8080`
-- Let's Encrypt Zertifikat aktivieren
-- `APP_URL` und `CORS_ORIGIN` auf `https://…` setzen und Stack neu deployen
+- Enable Let's Encrypt certificate
+- Set `APP_URL` and `CORS_ORIGIN` to `https://…` and redeploy the stack
 
 ---
 
-## Updates deployen
+## Deploying Updates
 
-Bei Git-basiertem Stack in Portainer:
+For a Git-based stack in Portainer:
 
-1. Änderungen pushen: `git push`
-2. Portainer → Stack → **Pull and redeploy** (oder Webhook)
+1. Push changes: `git push`
+2. Portainer → Stack → **Pull and redeploy** (or webhook)
 
-Manuell:
+Manually:
 
 ```bash
 git pull
@@ -155,92 +155,92 @@ docker compose -f docker-compose.prod.yml up -d --build
 
 ## Volumes & Backups
 
-| Volume | Inhalt |
-|--------|--------|
-| `postgres-data` | PostgreSQL-Daten |
-| `backend-uploads` | Profilbilder, Uploads |
-| `backend-backups` | DB-Dumps, SQLite-Kopien, Uploads-Backups |
+| Volume | Content |
+|--------|---------|
+| `postgres-data` | PostgreSQL data |
+| `backend-uploads` | Profile pictures, uploads |
+| `backend-backups` | DB dumps, SQLite copies, upload backups |
 
-### Automatische Backups (Scheduler)
+### Automatic Backups (scheduler)
 
-| Job | Zeitplan | Inhalt |
-|-----|----------|--------|
-| Postgres/SQLite | Täglich 03:00 | Vollständiger DB-Dump bzw. SQLite-Dateikopie |
-| Postgres | Sonntag 02:00 | Zusätzlicher wöchentlicher Dump |
-| Uploads | Täglich 03:30 | Kopie des `/app/uploads`-Ordners |
-| Retention | automatisch | PG: 14 Tage, SQLite/Uploads: 7 Tage (konfigurierbar) |
+| Job | Schedule | Content |
+|-----|----------|---------|
+| Postgres/SQLite | Daily 03:00 | Full DB dump or SQLite file copy |
+| Postgres | Sunday 02:00 | Additional weekly dump |
+| Uploads | Daily 03:30 | Copy of `/app/uploads` folder |
+| Retention | automatic | PG: 14 days, SQLite/uploads: 7 days (configurable) |
 
-Optional: `BACKUP_OFFSITE_DIR` setzen – Backups werden nach jedem Lauf dorthin kopiert (z. B. gemountetes NAS oder Cloud-Sync-Ordner).
+Optional: set `BACKUP_OFFSITE_DIR` — backups are copied there after each run (e.g. mounted NAS or cloud sync folder).
 
-PostgreSQL-Backup manuell:
+Manual PostgreSQL backup:
 
 ```bash
 docker compose -f docker-compose.prod.yml exec backend node database/postgres-backup-cli.js
 ```
 
-### Disaster Recovery – PostgreSQL wiederherstellen
+### Disaster Recovery – Restore PostgreSQL
 
-**Voraussetzung:** Stack gestoppt oder Wartungsfenster; aktuelles Backup vorhanden unter `backend/backups/postgres/`.
+**Prerequisite:** stack stopped or maintenance window; current backup available under `backend/backups/postgres/`.
 
-1. Backup-Datei identifizieren (neueste `.sql`-Datei im Volume `backend-backups`):
+1. Identify backup file (latest `.sql` file in volume `backend-backups`):
 
 ```bash
 docker compose -f docker-compose.prod.yml exec backend ls -la /app/backups/postgres/
 ```
 
-2. **Leere DB wiederherstellen** (bestehende Daten werden überschrieben):
+2. **Restore to empty DB** (existing data will be overwritten):
 
 ```bash
 docker compose -f docker-compose.prod.yml stop backend
 
 docker compose -f docker-compose.prod.yml exec postgres psql -U wm2026 -d wm2026 -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 
-docker compose -f docker-compose.prod.yml exec -T postgres psql -U wm2026 -d wm2026 < /pfad/zum/postgres-YYYY-MM-DD.sql
+docker compose -f docker-compose.prod.yml exec -T postgres psql -U wm2026 -d wm2026 < /path/to/postgres-YYYY-MM-DD.sql
 ```
 
-In Portainer: SQL-Datei in den `postgres`-Container kopieren, dann:
+In Portainer: copy SQL file into the `postgres` container, then:
 
 ```bash
 psql -U wm2026 -d wm2026 -f /tmp/postgres-YYYY-MM-DD.sql
 ```
 
-3. **Uploads wiederherstellen** (falls nötig):
+3. **Restore uploads** (if needed):
 
 ```bash
 docker compose -f docker-compose.prod.yml exec backend cp -r /app/backups/uploads/uploads-YYYY-MM-DD/* /app/uploads/
 ```
 
-4. Backend neu starten:
+4. Restart backend:
 
 ```bash
 docker compose -f docker-compose.prod.yml start backend
 ```
 
-5. **Verifikation:**
+5. **Verification:**
 
 ```bash
-curl https://ihre-domain.de/api/health
+curl https://your-domain.com/api/health
 docker compose -f docker-compose.prod.yml exec backend node -e "const {User}=require('./models'); User.count().then(c=>console.log('Users:',c))"
 ```
 
-### Restore-Test (empfohlen: quartalsweise)
+### Restore Test (recommended: quarterly)
 
-1. Prod-Backup auf Staging-Server kopieren
-2. Staging-Stack mit gleicher `docker-compose.prod.yml` starten
-3. Restore durchführen (siehe oben)
-4. Login, Hitliste und Stichprobe Tipps prüfen
-
----
-
-## Wichtige Produktions-Regeln
-
-- **`DB_DIALECT=postgres` ist Pflicht** – SQLite startet in `NODE_ENV=production` nicht mehr
-- **Nur eine Backend-Instanz** – Cron-Jobs und WebSockets sind nicht für horizontale Skalierung ausgelegt
-- **`JWT_SECRET` und `DB_PASSWORD`** müssen starke, einzigartige Werte sein
+1. Copy prod backup to staging server
+2. Start staging stack with same `docker-compose.prod.yml`
+3. Perform restore (see above)
+4. Verify login, leaderboard, and sample predictions
 
 ---
 
-## Lokaler Test vor dem Deploy
+## Important Production Rules
+
+- **`DB_DIALECT=postgres` is required** — SQLite no longer starts in `NODE_ENV=production`
+- **Single backend instance only** — cron jobs and WebSockets are not designed for horizontal scaling
+- **`JWT_SECRET` and `DB_PASSWORD`** must be strong, unique values
+
+---
+
+## Local Test Before Deploy
 
 ```powershell
 docker compose -f docker-compose.prod.yml up --build
@@ -253,24 +253,24 @@ App: http://localhost:8080
 
 ## Troubleshooting
 
-| Problem | Lösung |
-|---------|--------|
-| Stack startet nicht | `JWT_SECRET` und `DB_PASSWORD` gesetzt? |
-| 502 / API Fehler | Backend-Logs in Portainer prüfen |
-| WebSocket / Live-Scores | Nginx leitet `/socket.io/` weiter (siehe `frontend/nginx.conf`) |
-| Profilbilder / Uploads | Nginx leitet `/uploads/` ans Backend weiter (siehe `frontend/nginx.conf`) |
-| E-Mail-Links falsch | `APP_URL` muss öffentliche HTTPS-URL sein |
-| CORS-Fehler | `CORS_ORIGIN` = exakte Frontend-URL |
-| `{"google":false}` | `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` in **Stack-Umgebung** setzen **und** in `docker-compose.prod.yml` unter `backend.environment` durchreichen; Stack neu deployen. Prüfen: `printenv \| grep GOOGLE` im Backend-Container |
+| Problem | Solution |
+|---------|----------|
+| Stack won't start | Are `JWT_SECRET` and `DB_PASSWORD` set? |
+| 502 / API error | Check backend logs in Portainer |
+| WebSocket / live scores | Nginx proxies `/socket.io/` (see `frontend/nginx.conf`) |
+| Profile pictures / uploads | Nginx proxies `/uploads/` to backend (see `frontend/nginx.conf`) |
+| Email links wrong | `APP_URL` must be the public HTTPS URL |
+| CORS error | `CORS_ORIGIN` = exact frontend URL |
+| `{"google":false}` | Set `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` in **stack environment** **and** pass through in `docker-compose.prod.yml` under `backend.environment`; redeploy stack. Check: `printenv \| grep GOOGLE` in backend container |
 
 ---
 
-## Dateien im Überblick
+## File Overview
 
-| Datei | Zweck |
-|-------|--------|
-| `docker-compose.prod.yml` | Produktion: Postgres + Backend + Frontend |
-| `docker-compose.yml` | Lokal: SQLite oder Postgres-Profil |
-| `.env.docker.example` | Vorlage für Umgebungsvariablen |
-| `backend/Dockerfile` | Backend-Image |
-| `frontend/Dockerfile` | Frontend-Build + Nginx |
+| File | Purpose |
+|------|---------|
+| `docker-compose.prod.yml` | Production: Postgres + backend + frontend |
+| `docker-compose.yml` | Local: SQLite or Postgres profile |
+| `.env.docker.example` | Environment variable template |
+| `backend/Dockerfile` | Backend image |
+| `frontend/Dockerfile` | Frontend build + Nginx |

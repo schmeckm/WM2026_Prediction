@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Contributing Guide
+    url: https://github.com/schmeckm/aspire-make-tippspiel/blob/main/CONTRIBUTING.md
+    about: Richtlinien für Beiträge und Entwicklungs-Setup
+  - name: Security Policy
+    url: https://github.com/schmeckm/aspire-make-tippspiel/blob/main/SECURITY.md
+    about: Sicherheitslücken vertraulich melden

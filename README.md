@@ -1,189 +1,225 @@
-# WM 2026 Tippspiel
+<p align="center">
+  <img src="frontend/public/wm2026-emblem.svg" width="100" alt="FIFA World Cup 2026 emblem" />
+</p>
 
-**Version 1.0.1** 
+<h1 align="center">WM 2026 Prediction Game</h1>
 
-> Private Fußball-Tipp-Webanwendung für die FIFA Weltmeisterschaft 2026 — mit Live-Ergebnissen, Bonusfragen, Teamwertung, KI-Coach und vollständigem Admin-Bereich.
+<p align="center">
+  Football prediction web app for company teams — live scores, bonus questions, team rankings, AI coach &amp; full admin panel
+</p>
 
-**Repository:** [github.com/schmeckm/aspire-make-tippspiel](https://github.com/schmeckm/aspire-make-tippspiel)
+<p align="center">
+  <a href="https://github.com/schmeckm/aspire-make-tippspiel/actions/workflows/ci.yml"><img src="https://github.com/schmeckm/aspire-make-tippspiel/actions/workflows/ci.yml/badge.svg" alt="CI Status" /></a>
+  <a href="https://github.com/schmeckm/aspire-make-tippspiel/actions/workflows/docker-publish.yml"><img src="https://github.com/schmeckm/aspire-make-tippspiel/actions/workflows/docker-publish.yml/badge.svg" alt="Docker Publish" /></a>
+  <img src="https://img.shields.io/badge/version-1.0.5-blue" alt="Version 1.0.5" />
+  <img src="https://img.shields.io/badge/node-20%2B-green" alt="Node.js 20+" />
+  <img src="https://img.shields.io/badge/vue-3-42b883" alt="Vue 3" />
+  <img src="https://img.shields.io/badge/license-proprietary-lightgrey" alt="Proprietary License" />
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick Start</a> ·
+  <a href="docs/DEPLOY-GITHUB-PORTAINER.md">Deployment</a> ·
+  <a href="docs/GITHUB-SETUP.md">GitHub Setup</a> ·
+  <a href="CHANGELOG.md">Changelog</a> ·
+  <a href="https://github.com/schmeckm/aspire-make-tippspiel">GitHub</a>
+</p>
 
 ---
 
-## Inhaltsverzeichnis
+## Table of Contents
 
-- [Überblick](#überblick)
+- [Screenshots](#screenshots)
+- [Overview](#overview)
 - [Features](#features)
-- [Spielregeln](#spielregeln)
-- [Technologie-Stack](#technologie-stack)
-- [Schnellstart](#schnellstart)
-- [Konfiguration](#konfiguration)
+- [Scoring Rules](#scoring-rules)
+- [Tech Stack](#tech-stack)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
 - [Deployment](#deployment)
-- [Architektur](#architektur)
-- [API-Übersicht](#api-übersicht)
-- [Fehlerbehebung](#fehlerbehebung)
-- [Lizenz](#lizenz)
+- [Architecture](#architecture)
+- [API Overview](#api-overview)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
 ---
 
-## Überblick
+## Screenshots
 
-Das Tippspiel richtet sich an **interne Firmen-Teams** (z. B. IT, Finance, HR). Jeder Teilnehmer tippt eigenständig alle **104 WM-Spiele** (72 Gruppenspiele + 32 K.-o.-Partien). Punkte, Hitliste und Teamwertung werden **deterministisch im Backend** berechnet — optional ergänzt durch KI-Hilfen, die keine offiziellen Ergebnisse erzeugen.
+> Add screenshots under `docs/images/` and link them here. See [docs/images/README.md](docs/images/README.md).
+
+<p align="center">
+  <img src="docs/images/dashboard.svg" width="45%" alt="Dashboard" />
+  <img src="docs/images/matches.svg" width="45%" alt="Matches" />
+</p>
+
+<p align="center">
+  <img src="docs/images/bracket.svg" width="45%" alt="Knockout bracket" />
+  <img src="docs/images/leaderboard.svg" width="45%" alt="Leaderboard" />
+</p>
+
+---
+
+## Overview
+
+This prediction game is built for **internal company teams** (e.g. IT, Finance, HR). Each participant independently predicts all **104 World Cup matches** (72 group stage + 32 knockout games). Points, leaderboard, and team rankings are calculated **deterministically in the backend** — optionally complemented by AI helpers that do not produce official results.
 
 | | |
 |---|---|
-| **Frontend** | Vue 3 SPA, PWA-fähig, 4 Sprachen (DE/EN/FR/ES) |
-| **Backend** | Node.js REST-API + WebSocket |
-| **Datenbank** | SQLite (Dev) / PostgreSQL (Prod) |
-| **Betrieb** | Manuell (CSV) oder automatisch (Football-API) |
+| **Frontend** | Vue 3 SPA, PWA-ready, 4 languages (DE/EN/FR/ES) |
+| **Backend** | Node.js REST API + WebSocket |
+| **Database** | SQLite (dev) / PostgreSQL (prod) |
+| **Operations** | Manual (CSV) or automatic (Football API) |
 
 ---
 
 ## Features
 
-### Für Spieler
+### For Players
 
-| Feature | Beschreibung |
-|---------|--------------|
-| **Dashboard** | Persönliche Übersicht: nächste Spiele, offene Tipps, Rang, KI-Insights |
-| **Spiele** | Alle 104 WM-Partien mit Filter (offen, beendet, fehlende Tipps), Countdown bis Anpfiff |
-| **Meine Tipps** | Kompakte Übersicht aller abgegebenen Prognosen |
-| **Gruppentabelle** | Live-Tabellen der Gruppen A–L mit Projektionen |
-| **Turnierbaum** | K.-o.-Bracket mit Zoom, Listenansicht und Spielverknüpfung |
-| **Nationalmannschaften** | Kader, Tabellen, Torschützen, Live-Spiele, WM-Duelle (Head-to-Head) |
-| **Bonusfragen** | Sonderwetten (Weltmeister, Vize, Dritter, TSK, Team-Fortschritt) |
-| **Hitliste** | Rangliste mit Filtern (Gesamt, Spiele, Bonus, Gruppe, K.-o.), CSV-Export |
-| **Teamwertung** | Abteilungs-Ranking nach **Ø Punkte pro Mitglied** (nicht Summe) |
-| **Statistiken** | Eigene Leistung mit Chart.js-Diagrammen |
-| **Preise** | Sichtbare Preise für Platz 1–3 (vom Admin freigeschaltet) |
-| **Profil** | Avatar, Lieblingsteam, Torschützenkönig, Sprache, Dark Mode, optional 2FA |
-| **Spielregeln** | Offizielle RTE-Guideline unter `/help` |
-| **KI-Coach** | Chat zu Strategie, fehlenden Tipps und Punkten |
-| **Benachrichtigungen** | In-App-Meldungen mit Live-Updates via WebSocket |
-| **PWA** | Installierbar auf Smartphone/Tablet |
+| Feature | Description |
+|---------|-------------|
+| **Dashboard** | Personal overview: upcoming matches, open predictions, rank, AI insights |
+| **Matches** | All 104 World Cup games with filters (open, finished, missing picks), kickoff countdown |
+| **My Predictions** | Compact overview of all submitted forecasts |
+| **Group Standings** | Live tables for groups A–L with projections |
+| **Knockout Bracket** | Bracket with zoom, list view, and match linking |
+| **National Teams** | Squads, tables, scorers, live matches, World Cup head-to-head history |
+| **Bonus Questions** | Special bets (champion, runner-up, third place, top scorer, team progress) |
+| **Leaderboard** | Rankings with filters (overall, matches, bonus, group, knockout), CSV export |
+| **Team Ranking** | Department ranking by **average points per member** (not total sum) |
+| **Statistics** | Personal performance with Chart.js diagrams |
+| **Prizes** | Visible prizes for places 1–3 (enabled by admin) |
+| **Profile** | Avatar, favorite team, top scorer pick, language, dark mode, optional 2FA |
+| **Rules** | Official guidelines at `/help` |
+| **AI Coach** | Chat about strategy, missing predictions, and points |
+| **Notifications** | In-app messages with live updates via WebSocket |
+| **PWA** | Installable on smartphone/tablet |
 
-### Authentifizierung & Profil
+### Authentication & Profile
 
-- E-Mail/Passwort-Registrierung mit Verifizierung
-- **Google SSO** (optional, über `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`)
-- Passwort zurücksetzen per E-Mail
-- **Zwei-Faktor-Authentifizierung** (TOTP) im Profil
-- Erinnerung bei unvollständigem Profil (Lieblingsteam + Torschütze)
+- Email/password registration with verification
+- **Google SSO** (optional, via `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`)
+- Password reset via email
+- **Two-factor authentication** (TOTP) in profile
+- Reminder for incomplete profile (favorite team + top scorer)
 
-### Öffentlicher Display-Modus
+### Public Display Mode
 
-Für Beamer/TV ohne Login:
+For projector/TV without login:
 
-| Route | Inhalt |
-|-------|--------|
-| `/display` | Hitliste & Highlights |
-| `/display/bracket` | Turnierbaum |
+| Route | Content |
+|-------|---------|
+| `/display` | Leaderboard & highlights |
+| `/display/bracket` | Knockout bracket |
 
-Aktivierung und Zugriff über Admin-Einstellungen (`displayModeEnabled`).
+Enabled and access-controlled via admin settings (`displayModeEnabled`).
 
-### KI-Funktionen (optional)
+### AI Features (optional)
 
-> **Die KI ist keine Quelle der Wahrheit.** Sie berechnet keine Punkte, erfindet keine Ergebnisse und ändert keine Tipps.
+> **AI is not a source of truth.** It does not calculate points, invent results, or change predictions.
 
-| Feature | Zielgruppe | Beschreibung |
-|---------|------------|--------------|
-| Spielvorschau | Spieler | Neutrale Meinung pro Partie |
-| KI-Coach | Spieler | Chat zu Tipps, Rang und Strategie |
-| Hitlisten-Kommentar | Spieler | Kurze Zusammenfassung der Rangbewegungen |
-| Dashboard-Insights | Spieler | Personalisierte Hinweiskarten |
-| Admin-Assistent | Admin | Diagnose, Empfehlungen, Texte |
-| Bonus-Vorschläge | Admin | Vorschläge für neue Bonusfragen |
-| Reminder-Texte | Admin | E-Mail- und In-App-Texte für Erinnerungen |
+| Feature | Audience | Description |
+|---------|----------|-------------|
+| Match preview | Players | Neutral opinion per match |
+| AI coach | Players | Chat about predictions, rank, and strategy |
+| Leaderboard commentary | Players | Short summary of rank movements |
+| Dashboard insights | Players | Personalized hint cards |
+| Admin assistant | Admin | Diagnostics, recommendations, copy |
+| Bonus suggestions | Admin | Suggestions for new bonus questions |
+| Reminder copy | Admin | Email and in-app reminder text |
 
-Aktivierung über `OPENAI_API_KEY` in `backend/.env`. Einzelne Features können separat deaktiviert werden.
+Enable via `OPENAI_API_KEY` in `backend/.env`. Individual features can be disabled separately.
 
-### Admin-Bereich
+### Admin Panel
 
-| Bereich | Funktionen |
-|---------|------------|
-| **Dashboard** | Systemübersicht, Schnellaktionen, KI-Insights |
-| **Benutzer** | Anlegen, Rollen, Sperren, Admin-Rechte |
-| **Teams** | Abteilungen verwalten |
-| **Spiele** | Spielplan bearbeiten, sperren, korrigieren |
-| **Ergebnisse** | Manuelle Ergebniserfassung |
-| **Tipps** | Alle Prognosen einsehen und verwalten |
-| **Import** | CSV-Spielplan importieren |
-| **Synchronisierung** | Football-API: Spielplan, Ergebnisse, Live-Scores, Spielerbilder |
-| **Bonusfragen** | Erstellen, auflösen, Turnier-Vorschläge übernehmen |
-| **Punkteregeln** | Exakt / Tordifferenz / Tendenz konfigurierbar |
-| **Preise** | Platz 1–3 definieren und freischalten |
-| **E-Mail** | SMTP-Erinnerungen für fehlende Tipps |
-| **Benachrichtigungen** | In-App-Nachrichten an alle oder einzelne Nutzer |
-| **Statistiken** | Gesamtübersicht, Vollständigkeit, fehlende Tipps |
-| **Favoriten** | Lieblingsteams und Torschützen der Nutzer |
-| **Spielerbilder** | Sync über TheSportsDB / Wikimedia |
-| **Backup** | JSON-Export/Import, **Excel-Notfall-Export** (Hitliste, Tipps, Bonus, Spiele) |
-| **Audit-Log** | Protokoll aller Admin-Aktionen |
-| **System** | Einstellungen, Display-Modus, App-Titel |
-| **KI-Assistent** | Admin-KI mit Interaktions-Log |
+| Area | Functions |
+|------|-----------|
+| **Dashboard** | System overview, quick actions, AI insights |
+| **Users** | Create, roles, lock, admin rights |
+| **Teams** | Manage departments |
+| **Matches** | Edit schedule, lock, correct |
+| **Results** | Manual result entry |
+| **Predictions** | View and manage all forecasts |
+| **Import** | CSV schedule import |
+| **Sync** | Football API: fixtures, results, live scores, player images |
+| **Bonus Questions** | Create, resolve, apply tournament suggestions |
+| **Scoring Rules** | Exact / goal difference / tendency configurable |
+| **Prizes** | Define and publish places 1–3 |
+| **Email** | SMTP reminders for missing predictions |
+| **Notifications** | In-app messages to all or individual users |
+| **Statistics** | Overview, completeness, missing predictions |
+| **Favorites** | Users' favorite teams and top scorers |
+| **Player Images** | Sync via TheSportsDB / Wikimedia |
+| **Backup** | JSON export/import, **Excel emergency export** (leaderboard, predictions, bonus, matches) |
+| **Audit Log** | Log of all admin actions |
+| **System** | Settings, display mode, app title |
+| **AI Assistant** | Admin AI with interaction log |
 
-### Automatisierung
+### Automation
 
-| Job | Zeitplan | Beschreibung |
-|-----|----------|--------------|
-| Spielplan-Sync | Täglich 06:00 | Fixe Spielpläne aktualisieren |
-| Spielplan-Sync (Turnier) | Alle 6 Stunden | Während WM-Zeitraum |
-| Ergebnis-Sync | Alle 15 Minuten | Während WM-Zeitraum |
-| Live-Sync | Alle 5 Minuten | Nur bei laufenden Spielen |
-| E-Mail-Erinnerungen | Täglich 09:00 | Fehlende Tipps & Bonusfragen |
-| Hitliste-Snapshot | Stündlich | Rangverlauf speichern |
-
----
-
-## Spielregeln
-
-### Punkte pro Spiel
-
-Nach Abpfiff zählt nur die **beste Trefferkategorie**:
-
-| Treffer | Punkte (Standard) |
-|---------|-------------------|
-| Exaktes Ergebnis | 4 |
-| Richtige Tordifferenz (bei Sieg) | 3 |
-| Richtige Tendenz (Sieg/Unentschieden) | 2 |
-| Falscher Tipp | 0 |
-
-### Bonusfragen (Standard)
-
-| Frage | Punkte |
-|-------|--------|
-| Weltmeister | 8 |
-| Vize-Weltmeister | 4 |
-| Dritter | 2 |
-| Torschützenkönig | 4 |
-| Wie weit kommt dein Lieblingsteam? | 2 |
-
-### Teamwertung
-
-Jede Abteilung wird nach **Durchschnittspunkten pro registriertem Mitglied** bewertet — die größte Abteilung gewinnt nicht automatisch.
-
-### Tipp-Pflicht
-
-Technisch sind nicht alle Spiele Pflicht (fehlende Tipps = 0 Punkte). **RTE-Regel:** Jeder Teilnehmer tippt alle 104 Spiele selbst.
-
-Die vollständigen Regeln stehen in der App unter **Spielregeln** (`/help`).
+| Job | Schedule | Description |
+|-----|----------|-------------|
+| Fixture sync | Daily 06:00 | Update fixed schedules |
+| Fixture sync (tournament) | Every 6 hours | During World Cup period |
+| Result sync | Every 15 minutes | During World Cup period |
+| Live sync | Every 5 minutes | Only during live matches |
+| Email reminders | Daily 09:00 | Missing predictions & bonus questions |
+| Leaderboard snapshot | Hourly | Save rank history |
 
 ---
 
-## Technologie-Stack
+## Scoring Rules
 
-| Bereich | Technologien |
-|---------|--------------|
+### Points per Match
+
+After full time, only the **best matching category** counts:
+
+| Outcome | Points (default) |
+|---------|------------------|
+| Exact score | 4 |
+| Correct goal difference (when predicting a win) | 3 |
+| Correct tendency (win/draw) | 2 |
+| Wrong prediction | 0 |
+
+### Bonus Questions (default)
+
+| Question | Points |
+|----------|--------|
+| World champion | 8 |
+| Runner-up | 4 |
+| Third place | 2 |
+| Top scorer | 4 |
+| How far does your favorite team go? | 2 |
+
+### Team Ranking
+
+Each department is rated by **average points per registered member** — the largest department does not automatically win.
+
+### Prediction Requirement
+
+Technically, not all matches are mandatory (missing predictions = 0 points). **House rule:** Every participant predicts all 104 matches themselves.
+
+Full rules are available in the app under **Rules** (`/help`).
+
+---
+
+## Tech Stack
+
+| Area | Technologies |
+|------|--------------|
 | **Frontend** | Vue 3, Vite, Pinia, Vue Router, Vue I18n, Axios, Chart.js, Socket.IO Client, PWA |
 | **Backend** | Node.js, Express, Sequelize, Socket.IO, node-cron, nodemailer, OpenAI, ExcelJS |
-| **Datenbank** | SQLite (Entwicklung) / PostgreSQL (Produktion) |
+| **Database** | SQLite (development) / PostgreSQL (production) |
 | **Auth** | JWT, bcrypt, Google OIDC, TOTP (speakeasy) |
-| **Monitoring** | Sentry (optional), Prometheus-Metriken |
-| **CI/CD** | GitHub Actions (Docker Build) |
+| **Monitoring** | Sentry (optional), Prometheus metrics |
+| **CI/CD** | GitHub Actions (Docker build) |
 
 ---
 
-## Schnellstart
+## Quick Start
 
-### Voraussetzungen
+### Prerequisites
 
 - Node.js 20+
 - npm
@@ -206,60 +242,60 @@ npm install
 npm run dev
 ```
 
-| Dienst | URL |
-|--------|-----|
+| Service | URL |
+|---------|-----|
 | Frontend | http://localhost:5173 |
 | Backend | http://localhost:3000 |
 | Health | http://localhost:3000/api/health |
 
-### Demo-Zugänge (nach `npm run seed`)
+### Demo Accounts (after `npm run seed`)
 
-| Rolle | E-Mail | Passwort |
-|-------|--------|----------|
+| Role | Email | Password |
+|------|-------|----------|
 | Admin | admin@example.com | admin123 |
 | User | max.mueller@example.com | user123 |
 
-### Datenbank-Befehle
+### Database Commands
 
 ```bash
 cd backend
-npm run db:migrate          # Schema ergänzen (ohne Datenverlust)
-npm run db:seed-teams       # Standard-Firmen-Teams
-npm run db:reset -- --confirm   # Vollständiger Reset (nur Dev!)
-npm run seed                # Demo-Daten (nur leere DB)
+npm run db:migrate          # Apply schema changes (no data loss)
+npm run db:seed-teams       # Default company teams
+npm run db:reset -- --confirm   # Full reset (dev only!)
+npm run seed                # Demo data (empty DB only)
 ```
 
 ---
 
-## Konfiguration
+## Configuration
 
-Alle Variablen mit Kommentaren: [`backend/.env.example`](backend/.env.example)
+All variables with comments: [`backend/.env.example`](backend/.env.example)
 
-### Wichtige Einstellungen
+### Key Settings
 
 ```env
-# Basis
+# Core
 PORT=3000
-JWT_SECRET=ihr-geheimer-schlüssel
+JWT_SECRET=your-secret-key
 APP_URL=http://localhost:5173
 
-# Datenbank
+# Database
 DB_DIALECT=sqlite
 DB_PATH=./database/wm2026.sqlite
-# Produktion: DB_DIALECT=postgres + DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
+# Production: DB_DIALECT=postgres + DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
 
-# Football-API (optional — ohne Key: CSV/Manuell-Modus)
+# Football API (optional — without key: CSV/manual mode)
 FOOTBALL_API_PROVIDER=football-data
 FOOTBALL_API_KEY=
 FOOTBALL_API_SYNC_ENABLED=false
 
-# E-Mail (optional — ohne SMTP: Mock-Modus in Konsole)
+# Email (optional — without SMTP: mock mode in console)
 SMTP_HOST=
 SMTP_PORT=587
 SMTP_USER=
 SMTP_PASSWORD=
 
-# KI (optional)
+# AI (optional)
 OPENAI_API_KEY=
 AI_FEATURES_ENABLED=true
 
@@ -269,39 +305,39 @@ GOOGLE_CLIENT_SECRET=
 GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
 ```
 
-### Football-API
+### Football API
 
-**Standard:** CSV-Import + manuelle Ergebnisse — die App funktioniert **ohne API-Key** vollständig.
+**Default:** CSV import + manual results — the app works **fully without an API key**.
 
-| Provider | `FOOTBALL_API_PROVIDER` | Empfehlung |
-|----------|-------------------------|------------|
-| football-data.org v4 | `football-data` | **Empfohlen** |
+| Provider | `FOOTBALL_API_PROVIDER` | Recommendation |
+|----------|-------------------------|----------------|
+| football-data.org v4 | `football-data` | **Recommended** |
 | API-Football | `api-football` | Alternative |
 | Sportmonks | `sportmonks` | Alternative |
 | TheStatsAPI | `thestatsapi` | Alternative |
 
-Das Frontend ruft externe APIs **niemals** direkt auf. Admin-Sync unter `/admin/sync`.
+The frontend **never** calls external APIs directly. Admin sync is at `/admin/sync`.
 
-**Überschreib-Schutz:**
+**Overwrite protection:**
 
-- `isManuallyLocked = true` → API überschreibt nicht
-- `isApiManaged = false` → Spiel wird beim Sync übersprungen
-- Alle Sync-Vorgänge in `SyncLog` protokolliert
+- `isManuallyLocked = true` → API will not overwrite
+- `isApiManaged = false` → match skipped during sync
+- All sync operations logged in `SyncLog`
 
-### KI-Kostenkontrolle
+### AI Cost Control
 
-| Maßnahme | Beschreibung |
-|----------|--------------|
-| Caching | Vorschauen und Kommentare in `AICommentary` |
-| Token-Limit | `AI_MAX_TOKENS=800` |
-| Rate-Limits | Coach: 20/Tag, Admin: 50/Tag, Bonus: 20/Tag |
-| Modell | `gpt-4o-mini` (Standard) |
+| Measure | Description |
+|---------|-------------|
+| Caching | Previews and commentary in `AICommentary` |
+| Token limit | `AI_MAX_TOKENS=800` |
+| Rate limits | Coach: 20/day, Admin: 50/day, Bonus: 20/day |
+| Model | `gpt-4o-mini` (default) |
 
 ---
 
 ## Deployment
 
-### Docker (lokal)
+### Docker (local)
 
 ```bash
 # SQLite
@@ -312,20 +348,20 @@ docker compose exec backend node database/seed.js
 docker compose --profile postgres up --build
 ```
 
-### Produktion (GitHub + Portainer)
+### Production (GitHub + Portainer)
 
-Ausführliche Anleitung: [**docs/DEPLOY-GITHUB-PORTAINER.md**](docs/DEPLOY-GITHUB-PORTAINER.md)
+Full guide: [**docs/DEPLOY-GITHUB-PORTAINER.md**](docs/DEPLOY-GITHUB-PORTAINER.md)
 
 ```bash
 git clone https://github.com/schmeckm/aspire-make-tippspiel.git
-# Stack in Portainer mit docker-compose.prod.yml deployen
+# Deploy stack in Portainer with docker-compose.prod.yml
 ```
 
-**Google SSO in Produktion:** Keine Raw-IPs verwenden — stattdessen z. B. `sslip.io`-Hostname für `APP_URL`, `CORS_ORIGIN` und `GOOGLE_CALLBACK_URL`.
+**Google SSO in production:** Do not use raw IPs — use e.g. an `sslip.io` hostname for `APP_URL`, `CORS_ORIGIN`, and `GOOGLE_CALLBACK_URL`.
 
 ---
 
-## Architektur
+## Architecture
 
 ```mermaid
 flowchart TB
@@ -341,12 +377,12 @@ flowchart TB
         AI[OpenAI Service]
     end
 
-    subgraph data [Daten]
+    subgraph data [Data]
         DB[(SQLite / PostgreSQL)]
         Redis[(Redis – optional)]
     end
 
-    subgraph external [Extern – optional]
+    subgraph external [External – optional]
         FAPI[Football API]
         SMTP[SMTP Server]
         OAI[OpenAI API]
@@ -366,11 +402,11 @@ flowchart TB
 
 ---
 
-## API-Übersicht
+## API Overview
 
-Vollständige Endpunkte in den Route-Dateien unter `backend/routes/`.
+Full endpoints are in route files under `backend/routes/`.
 
-### Kern (Spieler)
+### Core (Players)
 
 ```
 GET  /api/matches
@@ -382,7 +418,7 @@ GET  /api/scoring-rules
 GET  /api/statistics/me
 ```
 
-### KI (Spieler)
+### AI (Players)
 
 ```
 GET  /api/ai/status
@@ -392,7 +428,7 @@ GET  /api/ai/leaderboard-summary
 GET  /api/ai/dashboard-insights
 ```
 
-### Admin (Auswahl)
+### Admin (selection)
 
 ```
 POST /api/admin/sync/fixtures
@@ -403,7 +439,7 @@ POST /api/admin/backup/export-excel
 POST /api/admin/ai/assistant
 ```
 
-### Display (öffentlich)
+### Display (public)
 
 ```
 GET  /api/display/leaderboard
@@ -412,27 +448,30 @@ GET  /api/display/bracket
 
 ---
 
-## Fehlerbehebung
+## Troubleshooting
 
-| Problem | Lösung |
-|---------|--------|
-| API-Sync schlägt fehl | `FOOTBALL_API_KEY` und Provider prüfen, Verbindung unter `/admin/sync` testen |
-| Keine E-Mails | SMTP in `.env` konfigurieren oder Mock-Log in Konsole prüfen |
-| WebSocket verbindet nicht | Backend neu starten, `VITE_SOCKET_URL` / Proxy prüfen |
-| DB-Schema veraltet | `npm run db:migrate` oder Backend-Neustart mit Migration |
-| Port 3000 belegt | `PORT=3001` in `.env` |
-| KI antwortet nicht | `OPENAI_API_KEY` prüfen, `AI_FEATURES_ENABLED=true` |
-| Google SSO Fehler | Callback-URL und `APP_URL` müssen exakt zur Domain passen |
-| Spielerbilder-Sync hängt | Sync in Admin fortsetzen; hängende Jobs werden nach Timeout als stale erkannt |
+| Problem | Solution |
+|---------|----------|
+| API sync fails | Check `FOOTBALL_API_KEY` and provider, test connection at `/admin/sync` |
+| No emails | Configure SMTP in `.env` or check mock log in console |
+| WebSocket won't connect | Restart backend, check `VITE_SOCKET_URL` / proxy |
+| DB schema outdated | Run `npm run db:migrate` or restart backend with migration |
+| Port 3000 in use | Set `PORT=3001` in `.env` |
+| AI not responding | Check `OPENAI_API_KEY`, set `AI_FEATURES_ENABLED=true` |
+| Google SSO error | Callback URL and `APP_URL` must exactly match the domain |
+| Player image sync stuck | Resume sync in admin; stale jobs are detected after timeout |
 
 ---
 
-## Lizenz
+## License
 
-Internes Projekt — nur für private/interne Nutzung.
+Proprietary software — for private/internal use only. See [LICENSE](LICENSE).
 
 ---
 
 <p align="center">
-  <a href="https://github.com/schmeckm/aspire-make-tippspiel">GitHub Repository</a>
+  <sub>WM 2026 Prediction Game · Version 1.0.5</sub><br />
+  <a href="https://github.com/schmeckm/aspire-make-tippspiel">GitHub Repository</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a> ·
+  <a href="SECURITY.md">Security</a>
 </p>
