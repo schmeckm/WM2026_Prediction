@@ -28,6 +28,7 @@ const {
   buildExportFilename,
 } = require('../services/excelExportService');
 const { getMatchSummaryForDate } = require('../services/resultsCopilotService');
+const { getOnlineUsers } = require('../services/presenceService');
 
 const router = express.Router();
 
@@ -56,6 +57,16 @@ const backupUpload = multer({
 });
 
 router.use(authMiddleware, adminMiddleware);
+
+router.get('/presence', async (req, res) => {
+  try {
+    const presence = await getOnlineUsers();
+    res.json(presence);
+  } catch (error) {
+    console.error('Presence error:', error);
+    sendError(res, req, 500, 'errors.internalServer');
+  }
+});
 
 router.get('/dashboard', async (req, res) => {
   try {

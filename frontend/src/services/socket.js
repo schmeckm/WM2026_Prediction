@@ -3,6 +3,25 @@ import { useAuthStore } from '../stores/authStore';
 
 let socket = null;
 let displaySocket = null;
+let presenceHeartbeatTimer = null;
+
+const PRESENCE_HEARTBEAT_MS = 45_000;
+
+function startPresenceHeartbeat() {
+  stopPresenceHeartbeat();
+  presenceHeartbeatTimer = setInterval(() => {
+    if (socket?.connected) {
+      socket.emit('presence-heartbeat');
+    }
+  }, PRESENCE_HEARTBEAT_MS);
+}
+
+function stopPresenceHeartbeat() {
+  if (presenceHeartbeatTimer) {
+    clearInterval(presenceHeartbeatTimer);
+    presenceHeartbeatTimer = null;
+  }
+}
 
 export function connectSocket() {
   const authStore = useAuthStore();
@@ -21,6 +40,12 @@ export function connectSocket() {
     }
     socket.emit('join-leaderboard');
     socket.emit('join-matches');
+    socket.emit('presence-heartbeat');
+    startPresenceHeartbeat();
+  });
+
+  socket.on('disconnect', () => {
+    stopPresenceHeartbeat();
   });
 
   return socket;
@@ -44,6 +69,7 @@ export function connectDisplaySocket() {
 }
 
 export function disconnectSocket() {
+  stopPresenceHeartbeat();
   if (socket) {
     socket.disconnect();
     socket = null;

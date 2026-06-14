@@ -30,6 +30,8 @@
         <div class="stat-card accent"><div class="stat-value">{{ stats.missingPredictions }}</div><div class="stat-label">{{ t('adminPages.dashboard.stats.missing') }}</div></div>
       </div>
 
+      <AdminOnlinePanel />
+
       <div class="card mb-2">
         <div class="card-header">
           <h3>⚡ {{ t('adminPages.resultsCopilot.title') }}</h3>
@@ -73,6 +75,7 @@ import AlertMessage from '../../components/AlertMessage.vue';
 import ErrorState from '../../components/ErrorState.vue';
 import AdminManualModeBanner from '../../components/AdminManualModeBanner.vue';
 import AdminResultsCopilot from '../../components/AdminResultsCopilot.vue';
+import AdminOnlinePanel from '../../components/AdminOnlinePanel.vue';
 
 const { t } = useI18n();
 

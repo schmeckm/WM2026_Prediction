@@ -1181,6 +1181,10 @@
       "recalculating": "Berechne...",
       "loadFailed": "Admin-Dashboard konnte nicht geladen werden.",
       "top10": "Top 10 Hitliste",
+      "presence": {
+        "title": "{count} online im Portal",
+        "empty": "Gerade ist niemand im Portal aktiv."
+      },
       "stats": {
         "users": "Benutzer",
         "teams": "Teams",

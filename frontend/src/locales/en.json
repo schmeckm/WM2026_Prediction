@@ -1179,6 +1179,10 @@
       "recalculating": "Calculating...",
       "loadFailed": "Could not load admin dashboard.",
       "top10": "Top 10 leaderboard",
+      "presence": {
+        "title": "{count} online in the portal",
+        "empty": "Nobody is active in the portal right now."
+      },
       "stats": {
         "users": "Users",
         "teams": "Teams",

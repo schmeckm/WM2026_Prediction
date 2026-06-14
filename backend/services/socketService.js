@@ -64,8 +64,11 @@ async function init(server, options = {}) {
   });
 
   io.on('connection', (socket) => {
+    const presenceService = require('./presenceService');
+
     if (socket.authenticated) {
       socket.join(`user:${socket.userId}`);
+      presenceService.touch(socket.userId).catch(() => {});
     }
 
     socket.on('join', (userId) => {
@@ -83,6 +86,17 @@ async function init(server, options = {}) {
     socket.on('join-matches', () => {
       if (!socket.authenticated) return;
       socket.join('matches');
+    });
+
+    socket.on('presence-heartbeat', () => {
+      if (!socket.authenticated) return;
+      presenceService.touch(socket.userId).catch(() => {});
+    });
+
+    socket.on('disconnect', () => {
+      if (socket.authenticated && socket.userId) {
+        presenceService.remove(socket.userId).catch(() => {});
+      }
     });
   });
 
