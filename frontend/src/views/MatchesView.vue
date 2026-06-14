@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <div class="page-header page-header--with-actions">
+  <div class="matches-page">
+    <div class="page-header page-header--with-actions matches-page-header">
       <h1>{{ t('matches.title') }}</h1>
-      <div class="view-toggle" role="group" :aria-label="t('matches.viewMode')">
+      <div class="view-toggle matches-view-toggle" role="group" :aria-label="t('matches.viewMode')">
         <button
           type="button"
-          :class="['btn btn-sm', viewMode === 'cards' ? 'btn-primary' : 'btn-secondary']"
+          :class="['btn btn-sm matches-view-btn matches-view-cards-btn', viewMode === 'cards' ? 'btn-primary' : 'btn-secondary']"
           :aria-pressed="viewMode === 'cards'"
           @click="setViewMode('cards')"
         >
@@ -13,7 +13,7 @@
         </button>
         <button
           type="button"
-          :class="['btn btn-sm', viewMode === 'table' ? 'btn-primary' : 'btn-secondary']"
+          :class="['btn btn-sm matches-view-btn matches-view-table-btn', viewMode === 'table' ? 'btn-primary' : 'btn-secondary']"
           :aria-pressed="viewMode === 'table'"
           @click="setViewMode('table')"
         >
@@ -22,51 +22,114 @@
       </div>
     </div>
 
-    <div v-if="lockWarning" class="alert alert-warning lock-warning" role="status">
+    <div v-if="lockWarning" class="alert alert-warning lock-warning matches-lock-warning" role="status">
       {{ lockWarning }}
     </div>
 
-    <div class="filter-bar">
-      <button
-        v-for="f in filters"
-        :key="f.value"
-        :class="['filter-btn', { active: activeFilter === f.value }]"
-        :aria-pressed="activeFilter === f.value"
-        @click="setFilter(f.value)"
-      >
-        {{ f.label }}
-      </button>
-    </div>
-
-    <div v-if="hasActiveFilters" class="alert alert-info filter-active-banner" role="status">
-      <span>{{ filterActiveLabel }}</span>
-      <button type="button" class="btn btn-secondary btn-sm" @click="resetFilters">
-        {{ t('matches.filters.reset') }}
-      </button>
-    </div>
-
-    <div class="group-filter-section">
-      <span class="group-filter-label">{{ t('matches.filters.groupBy') }}</span>
-      <div class="group-chip-bar" role="group" :aria-label="t('matches.filters.groupBy')">
+    <!-- Desktop filters (>= 768px): preserve existing layout -->
+    <div class="matches-filters matches-filters--desktop">
+      <div class="filter-bar">
         <button
-          type="button"
-          :class="['filter-btn group-chip', { active: !activeGroup }]"
-          :aria-pressed="!activeGroup"
-          @click="setGroup('')"
+          v-for="f in filters"
+          :key="f.value"
+          :class="['filter-btn', { active: activeFilter === f.value }]"
+          :aria-pressed="activeFilter === f.value"
+          @click="setFilter(f.value)"
         >
-          {{ t('matches.filters.allGroups') }}
-        </button>
-        <button
-          v-for="g in availableGroups"
-          :key="g"
-          type="button"
-          :class="['filter-btn group-chip', { active: activeGroup === g }]"
-          :aria-pressed="activeGroup === g"
-          @click="setGroup(g)"
-        >
-          {{ g }}
+          {{ f.label }}
         </button>
       </div>
+
+      <div v-if="hasActiveFilters" class="alert alert-info filter-active-banner" role="status">
+        <span>{{ filterActiveLabel }}</span>
+        <button type="button" class="btn btn-secondary btn-sm" @click="resetFilters">
+          {{ t('matches.filters.reset') }}
+        </button>
+      </div>
+
+      <div class="group-filter-section">
+        <span class="group-filter-label">{{ t('matches.filters.groupBy') }}</span>
+        <div class="group-chip-bar" role="group" :aria-label="t('matches.filters.groupBy')">
+          <button
+            type="button"
+            :class="['filter-btn group-chip', { active: !activeGroup }]"
+            :aria-pressed="!activeGroup"
+            @click="setGroup('')"
+          >
+            {{ t('matches.filters.allGroups') }}
+          </button>
+          <button
+            v-for="g in availableGroups"
+            :key="g"
+            type="button"
+            :class="['filter-btn group-chip', { active: activeGroup === g }]"
+            :aria-pressed="activeGroup === g"
+            @click="setGroup(g)"
+          >
+            {{ g }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile filters (< 768px): compact + collapsible advanced section -->
+    <div class="matches-filters matches-filters--mobile matches-sticky-filters">
+      <div v-if="hasActiveFilters && activeFilter" class="matches-filters-mobile-active" role="status">
+        <span class="matches-filters-mobile-active__label">{{ filterActiveLabel }}</span>
+        <button type="button" class="btn btn-secondary btn-sm matches-filter-reset-btn" @click="resetFilters">
+          {{ t('matches.filters.reset') }}
+        </button>
+      </div>
+
+      <div class="matches-scroll-fade matches-scroll-fade--primary">
+        <div class="filter-bar matches-filterbar-scroll" role="group" :aria-label="t('matches.title')">
+          <button
+            v-for="f in filters"
+            :key="`m-${f.value}`"
+            :class="['filter-btn', { active: activeFilter === f.value }]"
+            :aria-pressed="activeFilter === f.value"
+            @click="setFilter(f.value)"
+          >
+            {{ f.label }}
+          </button>
+        </div>
+      </div>
+
+      <details class="matches-filters-details">
+        <summary class="matches-filters-summary">
+          <span class="matches-filters-summary__label">
+            {{ activeGroup ? `${t('matches.group')}: ${activeGroup}` : t('matches.filters.allGroups') }}
+          </span>
+          <span class="matches-filters-summary__chev" aria-hidden="true">▾</span>
+        </summary>
+        <div class="matches-filters-details__body">
+          <div class="group-filter-section group-filter-section--compact">
+            <span class="group-filter-label">{{ t('matches.filters.groupBy') }}</span>
+            <div class="matches-scroll-fade matches-scroll-fade--secondary">
+              <div class="group-chip-bar matches-chipbar-scroll" role="group" :aria-label="t('matches.filters.groupBy')">
+                <button
+                  type="button"
+                  :class="['filter-btn group-chip', { active: !activeGroup }]"
+                  :aria-pressed="!activeGroup"
+                  @click="setGroup('')"
+                >
+                  {{ t('matches.filters.allGroups') }}
+                </button>
+                <button
+                  v-for="g in availableGroups"
+                  :key="`m-${g}`"
+                  type="button"
+                  :class="['filter-btn group-chip', { active: activeGroup === g }]"
+                  :aria-pressed="activeGroup === g"
+                  @click="setGroup(g)"
+                >
+                  {{ g }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
     </div>
 
     <template v-if="initialLoading">
@@ -99,7 +162,7 @@
       </div>
       <div
         v-else
-        class="card matches-list"
+        class="card matches-list matches-table-mode"
         :class="{ 'matches-list--refreshing': filterLoading }"
         :aria-busy="filterLoading"
       >
@@ -372,6 +435,12 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.matches-page {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 .page-header--with-actions {
   display: flex;
   align-items: center;
@@ -383,6 +452,36 @@ onUnmounted(() => {
 .view-toggle {
   display: flex;
   gap: 0.5rem;
+}
+
+.matches-filters--mobile {
+  display: none;
+}
+
+.matches-scroll-fade {
+  position: relative;
+  overflow: hidden;
+}
+
+.matches-scroll-fade::before,
+.matches-scroll-fade::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1.5rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.matches-scroll-fade::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--color-bg) 0%, transparent 100%);
+}
+
+.matches-scroll-fade::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--color-bg) 0%, transparent 100%);
 }
 
 .lock-warning,
@@ -422,6 +521,10 @@ onUnmounted(() => {
   padding-inline: 0.65rem;
 }
 
+.matches-list {
+  min-width: 0;
+}
+
 .matches-list--refreshing {
   opacity: 0.55;
   pointer-events: none;
@@ -429,12 +532,190 @@ onUnmounted(() => {
 }
 
 @media (max-width: 768px) {
-  .view-toggle {
-    width: 100%;
+  .matches-page-header.page-header--with-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0;
+    border-bottom: none;
   }
 
-  .view-toggle .btn {
+  .matches-page-header h1 {
+    font-size: 1.375rem;
+    line-height: 1.15;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .matches-view-toggle {
+    gap: 0.25rem;
+    justify-self: end;
+  }
+
+  .matches-view-btn {
+    min-height: 44px;
+    padding: 0.375rem 0.625rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Table mode is forced to cards on mobile; hide toggle to avoid confusion. */
+  .matches-view-table-btn {
+    display: none;
+  }
+
+  .matches-view-cards-btn {
+    min-width: auto;
+    white-space: nowrap;
+  }
+
+  .matches-lock-warning {
+    margin-bottom: 0.5rem;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .matches-filters--desktop {
+    display: none;
+  }
+
+  .matches-sticky-filters {
+    display: block;
+    margin-bottom: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--color-bg);
+    padding: 0.25rem 0 0.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
+  }
+
+  .matches-filters-mobile-active {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .matches-filters-mobile-active__label {
+    min-width: 0;
     flex: 1;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .matches-filter-reset-btn {
+    flex-shrink: 0;
+  }
+
+  .matches-filters-details {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .matches-filters-summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    min-height: 44px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .matches-filters-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .matches-filters-summary__label {
+    min-width: 0;
+    flex: 1;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .matches-filters-summary__chev {
+    flex: 0 0 auto;
+    opacity: 0.75;
+    transition: transform 0.15s ease;
+  }
+
+  details[open] .matches-filters-summary__chev {
+    transform: rotate(180deg);
+  }
+
+  .matches-filters-details__body {
+    padding: 0.5rem 0.75rem 0.625rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .group-filter-section--compact {
+    margin-bottom: 0;
+    gap: 0.375rem;
+  }
+
+  .group-filter-section--compact .group-filter-label {
+    font-size: 0.75rem;
+  }
+
+  .matches-filterbar-scroll,
+  .matches-chipbar-scroll {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    max-width: 100%;
+    padding-bottom: 0.125rem;
+    scrollbar-width: none;
+  }
+
+  .matches-filterbar-scroll::-webkit-scrollbar,
+  .matches-chipbar-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .matches-filterbar-scroll .filter-btn,
+  .matches-chipbar-scroll .filter-btn {
+    flex: 0 0 auto;
+  }
+
+  .group-filter-section {
+    margin-bottom: 0;
+  }
+
+  .group-chip-bar {
+    flex-wrap: nowrap;
+    gap: 0.375rem;
+  }
+
+  .group-chip {
+    flex: 0 0 auto;
+    min-width: 2.5rem;
+  }
+
+  .filter-bar {
+    flex-wrap: nowrap;
+    margin-bottom: 0.5rem;
+  }
+
+  .matches-table-mode {
+    display: none;
   }
 }
 </style>

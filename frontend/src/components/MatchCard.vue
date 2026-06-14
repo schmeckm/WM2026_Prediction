@@ -7,96 +7,107 @@
       'match-card--next': nextUp,
     }"
   >
-    <div class="match-card-header">
-      <span>{{ matchRoundLabel(match) }}</span>
-      <div class="match-card-header-end">
-        <div class="match-card-ref">
-          <span class="match-ref">#{{ match.matchNumber }}</span>
-          <span
-            v-if="match.externalApiId"
-            class="match-ref-external"
-            :title="t('matchTable.externalRef')"
-          >{{ match.externalApiId }}</span>
+    <div class="match-card-top">
+      <div class="match-card-header">
+        <span class="match-card-round">{{ matchRoundLabel(match) }}</span>
+        <div class="match-card-header-end">
+          <div class="match-card-ref">
+            <span class="match-ref">#{{ match.matchNumber }}</span>
+            <span
+              v-if="match.externalApiId"
+              class="match-ref-external"
+              :title="t('matchTable.externalRef')"
+            >{{ match.externalApiId }}</span>
+          </div>
+          <span :class="['badge', `badge-${match.status}`]"><LiveScoreBadge :status="match.status" /></span>
         </div>
-        <span :class="['badge', `badge-${match.status}`]"><LiveScoreBadge :status="match.status" /></span>
       </div>
     </div>
-    <div class="match-teams">
-      <div class="match-team">
-        <TeamFlag :name="match.homeTeam" link-to-squad />
-      </div>
-      <div class="match-score-display" :class="scoreClass(match)">
-        <template v-if="shouldShowScore(match)">
-          {{ displayScore(match).home }} : {{ displayScore(match).away }}
-        </template>
-        <template v-else>{{ t('common.vs') }}</template>
-      </div>
-      <div class="match-team">
-        <TeamFlag :name="match.awayTeam" link-to-squad />
+
+    <div class="match-card-middle">
+      <div class="match-teams">
+        <div class="match-team">
+          <TeamFlag :name="match.homeTeam" link-to-squad />
+        </div>
+        <div class="match-score-display" :class="scoreClass(match)">
+          <template v-if="shouldShowScore(match)">
+            {{ displayScore(match).home }} : {{ displayScore(match).away }}
+          </template>
+          <template v-else>{{ t('common.vs') }}</template>
+        </div>
+        <div class="match-team">
+          <TeamFlag :name="match.awayTeam" link-to-squad />
+        </div>
       </div>
     </div>
-    <div class="match-meta">
-      📅 {{ formatDate(match.kickoffTime) }} · 🕐 {{ formatTime(match.kickoffTime) }}
-      <span v-if="match.stadium" class="match-venue">
-        ·
-        <button
-          v-if="match.stadiumImageUrl"
-          type="button"
-          class="match-stadium-thumb-btn"
-          :title="t('matches.stadiumPreview')"
-          :aria-label="t('matches.stadiumPreview')"
-          @click="showVenueModal = true"
-        >
-          <img
-            :src="match.stadiumImageUrl"
-            :alt="match.stadium"
-            class="match-stadium-thumb"
-            loading="lazy"
-            decoding="async"
-          />
-        </button>
-        <span v-else class="match-stadium-thumb-placeholder" aria-hidden="true">🏟️</span>
-        <span class="match-venue-text">
-          {{ match.stadium }}<template v-if="match.city">, {{ match.city }}</template>
+
+    <div class="match-card-lower">
+      <div class="match-meta">
+        📅 {{ formatDate(match.kickoffTime) }} · 🕐 {{ formatTime(match.kickoffTime) }}
+        <span v-if="match.stadium" class="match-venue">
+          ·
+          <button
+            v-if="match.stadiumImageUrl"
+            type="button"
+            class="match-stadium-thumb-btn"
+            :title="t('matches.stadiumPreview')"
+            :aria-label="t('matches.stadiumPreview')"
+            @click="showVenueModal = true"
+          >
+            <img
+              :src="match.stadiumImageUrl"
+              :alt="match.stadium"
+              class="match-stadium-thumb"
+              loading="lazy"
+              decoding="async"
+            />
+          </button>
+          <span v-else class="match-stadium-thumb-placeholder" aria-hidden="true">🏟️</span>
+          <span class="match-venue-text">
+            {{ match.stadium }}<template v-if="match.city">, {{ match.city }}</template>
+          </span>
         </span>
-      </span>
-      <CountdownBadge v-if="match.status === 'scheduled'" :kickoff-time="match.kickoffTime" />
+        <CountdownBadge v-if="match.status === 'scheduled'" :kickoff-time="match.kickoffTime" />
+      </div>
+      <div v-if="match.prediction" class="match-card-tips">
+        <span class="badge badge-info">{{ t('matches.yourTip') }}: {{ match.prediction.predictedHomeScore }} : {{ match.prediction.predictedAwayScore }}</span>
+        <span v-if="match.prediction.points !== null" class="badge badge-success">
+          {{ formatPoints(match.prediction.points) }} {{ t('common.points') }}
+        </span>
+      </div>
     </div>
-    <div v-if="match.prediction" class="text-center mb-2">
-      <span class="badge badge-info">{{ t('matches.yourTip') }}: {{ match.prediction.predictedHomeScore }} : {{ match.prediction.predictedAwayScore }}</span>
-      <span v-if="match.prediction.points !== null" class="badge badge-success" style="margin-left: 0.5rem;">
-        {{ formatPoints(match.prediction.points) }} {{ t('common.points') }}
-      </span>
+
+    <div class="match-card-actions">
+      <div v-if="showForm && match.canPredict" class="match-actions">
+        <PredictionForm
+          :match="match"
+          :prediction="match.prediction"
+          @saved="$emit('saved')"
+        />
+      </div>
+      <div v-else-if="!match.canPredict" class="match-locked text-center">
+        <span class="match-lock-icon" :title="lockTitle">🔒</span>
+        <span v-if="match.prediction" class="badge badge-info">
+          {{ t('matches.yourTip') }}: {{ match.prediction.predictedHomeScore }} : {{ match.prediction.predictedAwayScore }}
+        </span>
+        <span v-else class="text-muted">{{ t('matches.noTipGiven') }}</span>
+        <div class="text-muted match-lock-reason">{{ lockTitle }}</div>
+      </div>
+      <div v-else-if="!match.hasPrediction" class="text-center text-muted">
+        {{ t('matches.noTipGiven') }}
+      </div>
+      <div v-if="match.highlightsUrl" class="match-card-highlights">
+        <button
+          type="button"
+          class="btn btn-secondary btn-sm"
+          @click="openHighlights"
+        >
+          {{ t('matches.highlights') }}
+        </button>
+      </div>
+      <MatchWhatIfPanel v-if="match.status === 'finished'" :match="match" />
+      <AIMatchPreview v-if="showAiPreview && !match.stadiumImageUrl" :match-id="match.id" />
     </div>
-    <div v-if="showForm && match.canPredict" class="match-actions">
-      <PredictionForm
-        :match="match"
-        :prediction="match.prediction"
-        @saved="$emit('saved')"
-      />
-    </div>
-    <div v-else-if="!match.canPredict" class="match-locked text-center">
-      <span class="match-lock-icon" :title="lockTitle">🔒</span>
-      <span v-if="match.prediction" class="badge badge-info">
-        {{ t('matches.yourTip') }}: {{ match.prediction.predictedHomeScore }} : {{ match.prediction.predictedAwayScore }}
-      </span>
-      <span v-else class="text-muted">{{ t('matches.noTipGiven') }}</span>
-      <div class="text-muted match-lock-reason">{{ lockTitle }}</div>
-    </div>
-    <div v-else-if="!match.hasPrediction" class="text-center text-muted">
-      {{ t('matches.noTipGiven') }}
-    </div>
-    <div v-if="match.highlightsUrl" class="text-center" style="margin-top: 0.5rem;">
-      <button
-        type="button"
-        class="btn btn-secondary btn-sm"
-        @click="openHighlights"
-      >
-        {{ t('matches.highlights') }}
-      </button>
-    </div>
-    <MatchWhatIfPanel v-if="match.status === 'finished'" :match="match" />
-    <AIMatchPreview v-if="showAiPreview && !match.stadiumImageUrl" :match-id="match.id" />
     <MatchVenueModal
       :open="showVenueModal"
       :match="match"
@@ -290,6 +301,27 @@ function scoreClass(match) {
 </script>
 
 <style scoped>
+.match-card-round {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.match-card-tips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 0.5rem;
+}
+
+.match-card-highlights {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
 .match-score-display--live {
   color: var(--color-text);
 }
@@ -305,7 +337,7 @@ function scoreClass(match) {
 
 .match-card--next {
   border-color: var(--color-success);
-  box-shadow: var(--shadow-md), 0 0 0 2px color-mix(in srgb, var(--color-success) 35%, transparent);
+  box-shadow: var(--shadow-md), inset 0 0 0 2px color-mix(in srgb, var(--color-success) 35%, transparent);
 }
 
 .video-wrap {

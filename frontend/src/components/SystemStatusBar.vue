@@ -45,6 +45,7 @@
           </svg>
           <span>{{ t('systemHealth.github') }}</span>
         </a>
+        <span class="system-status-user">markus.schmeckenbecher@gmail.com</span>
         <a
           v-if="commitUrl && commitShort"
           :href="commitUrl"
@@ -118,6 +119,13 @@ const {
   align-items: center;
   gap: 0.75rem;
   flex-shrink: 0;
+}
+
+.system-status-user {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
 }
 
 .system-status-github {

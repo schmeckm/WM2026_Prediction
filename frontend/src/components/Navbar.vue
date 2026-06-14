@@ -167,6 +167,11 @@ async function handleLogout() {
     padding: 0 0.75rem;
   }
 
+  .navbar-start {
+    min-width: 0;
+    flex: 1;
+  }
+
   .navbar-user-text,
   .navbar-logout {
     display: none;
@@ -193,6 +198,7 @@ async function handleLogout() {
 
   .navbar-user {
     gap: 0.375rem;
+    flex-shrink: 0;
   }
 
   .navbar-user-block {
@@ -204,6 +210,10 @@ async function handleLogout() {
     font-size: 0.9375rem;
     font-weight: 800;
     letter-spacing: -0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: clamp(7.5rem, 32vw, 13rem);
   }
 }
 </style>
