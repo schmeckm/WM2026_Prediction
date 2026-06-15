@@ -42,13 +42,25 @@ function parseRepo(repo) {
 }
 
 function buildFeedbackIssueBody(feedback) {
-  const lines = [
+  const lines = [];
+  const user = feedback.user;
+  if (user) {
+    const name = [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
+    if (name || user.email) {
+      lines.push(`**Reporter**: ${name || '–'}${user.email ? ` (${user.email})` : ''}`);
+    }
+    if (user.team?.name) lines.push(`**Team**: ${user.team.name}`);
+  }
+  if (feedback.createdAt) {
+    lines.push(`**Submitted**: ${new Date(feedback.createdAt).toISOString()}`);
+  }
+  lines.push(
     `**Type**: ${feedback.type}`,
     `**Status**: ${feedback.status}`,
     '',
     feedback.description || '',
     '',
-  ];
+  );
   if (feedback.pageUrl) lines.push(`**Page**: ${feedback.pageUrl}`);
   if (feedback.appVersion) lines.push(`**App version**: ${feedback.appVersion}`);
   if (feedback.userAgent) lines.push(`**User agent**: ${feedback.userAgent}`);

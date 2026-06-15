@@ -71,7 +71,14 @@ router.put('/:id', async (req, res) => {
       return sendError(res, req, 400, 'errors.requiredFields');
     }
 
-    const feedback = await Feedback.findByPk(id);
+    const feedback = await Feedback.findByPk(id, {
+      include: [{
+        model: User,
+        as: 'user',
+        attributes: ['id', 'firstName', 'lastName', 'email', 'teamId'],
+        include: [{ model: Team, as: 'team', attributes: ['id', 'name'] }],
+      }],
+    });
     if (!feedback) return sendError(res, req, 404, 'errors.feedbackNotFound');
 
     await feedback.update({ status });
@@ -93,7 +100,14 @@ router.post('/:id/github-issue', async (req, res) => {
     const id = clampInt(req.params.id, null, 1, 1000000000);
     if (!id) return sendError(res, req, 400, 'errors.requiredFields');
 
-    const feedback = await Feedback.findByPk(id);
+    const feedback = await Feedback.findByPk(id, {
+      include: [{
+        model: User,
+        as: 'user',
+        attributes: ['id', 'firstName', 'lastName', 'email', 'teamId'],
+        include: [{ model: Team, as: 'team', attributes: ['id', 'name'] }],
+      }],
+    });
     if (!feedback) return sendError(res, req, 404, 'errors.feedbackNotFound');
     if (feedback.githubIssueUrl || feedback.githubIssueNumber) {
       return res.json({

@@ -126,6 +126,7 @@ const routes = [
       { path: 'email', name: 'AdminEmail', component: () => import('../views/admin/AdminEmailView.vue') },
       { path: 'statistics', name: 'AdminStatistics', component: () => import('../views/admin/AdminStatisticsView.vue') },
       { path: 'notifications', name: 'AdminNotifications', component: () => import('../views/admin/AdminNotificationsView.vue') },
+      { path: 'feedback', name: 'AdminFeedback', component: () => import('../views/admin/AdminFeedbackView.vue') },
       { path: 'audit-log', name: 'AdminAuditLog', component: () => import('../views/admin/AdminAuditLogView.vue') },
       { path: 'backup', name: 'AdminBackup', component: () => import('../views/admin/AdminBackupView.vue') },
       { path: 'system', name: 'AdminSystem', component: () => import('../views/admin/AdminSystemView.vue') },

@@ -112,6 +112,9 @@ services:
       SENTRY_RELEASE: ${SENTRY_RELEASE:-}
       SENTRY_TRACES_SAMPLE_RATE: ${SENTRY_TRACES_SAMPLE_RATE:-0.1}
       SENTRY_CRON_TIMEZONE: ${SENTRY_CRON_TIMEZONE:-Europe/Zurich}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      GITHUB_REPO: ${GITHUB_REPO:-schmeckm/WM2026_Prediction}
+      GITHUB_FEEDBACK_LABELS: ${GITHUB_FEEDBACK_LABELS:-feedback}
     volumes:
       - backend-uploads:/app/uploads
       - backend-backups:/app/backups

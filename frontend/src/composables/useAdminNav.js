@@ -25,6 +25,7 @@ export function useAdminNavLinks() {
     { to: '/admin/ai-assistant', label: t('nav.aiAssistant'), icon: 'bot' },
     { to: '/admin/statistics', label: t('nav.statistics'), icon: 'chart' },
     { to: '/admin/notifications', label: t('nav.notifications'), icon: 'bell' },
+    { to: '/admin/feedback', label: t('nav.userFeedback'), icon: 'file-text' },
     { to: '/admin/audit-log', label: t('nav.auditLog'), icon: 'file-text' },
     { to: '/admin/backup', label: t('nav.dataBackup'), icon: 'backup' },
     { to: '/admin/system', label: t('nav.systemStatus'), icon: 'activity' },
