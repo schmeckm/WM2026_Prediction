@@ -1724,7 +1724,8 @@
       "unknownUser": "Unknown",
       "pageUrl": "Page",
       "appVersion": "App version",
-      "showing": "{shown} of {total} entries"
+      "showing": "{shown} of {total} entries",
+      "githubNotConfigured": "GitHub is not configured. Set GITHUB_TOKEN and GITHUB_REPO in Portainer and redeploy the stack."
     },
     "auditLog": {
       "title": "Audit log",

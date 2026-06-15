@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
 const { Feedback, User, Team } = require('../models');
-const { sendError, sendSuccess } = require('../utils/apiResponse');
+const { sendError, sendSuccess, translate } = require('../utils/apiResponse');
 const { createGithubIssue, buildFeedbackIssueBody } = require('../services/githubIssueService');
 
 const router = express.Router();
@@ -18,6 +18,15 @@ function clampInt(value, fallback, min, max) {
   if (!Number.isFinite(n)) return fallback;
   return Math.min(Math.max(n, min), max);
 }
+
+router.get('/config', (_req, res) => {
+  const token = String(process.env.GITHUB_TOKEN || '').trim();
+  const repo = String(process.env.GITHUB_REPO || '').trim();
+  res.json({
+    githubConfigured: Boolean(token && repo),
+    githubRepo: repo || null,
+  });
+});
 
 router.get('/', async (req, res) => {
   try {
@@ -145,7 +154,12 @@ router.post('/:id/github-issue', async (req, res) => {
     });
   } catch (error) {
     console.error('GitHub issue create error:', error);
-    return sendError(res, req, 500, 'errors.githubIssueCreateFailed');
+    const detail = error.details?.message || error.message;
+    return res.status(500).json({
+      error: translate(req, 'errors.githubIssueCreateFailed'),
+      code: 'errors.githubIssueCreateFailed',
+      detail: typeof detail === 'string' ? detail : undefined,
+    });
   }
 });
 

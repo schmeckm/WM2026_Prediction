@@ -9,6 +9,12 @@
 
     <p class="text-muted feedback-intro">{{ t('adminPages.feedback.intro') }}</p>
 
+    <AlertMessage
+      v-if="githubConfigLoaded && !githubConfigured"
+      :message="t('adminPages.feedback.githubNotConfigured')"
+      type="warning"
+    />
+
     <AlertMessage v-if="message" :message="message" type="success" />
     <AlertMessage v-if="error" :message="error" type="error" />
 
@@ -131,7 +137,7 @@
     </div>
 
     <ConfirmModal
-      v-if="confirmState.open"
+      :open="confirmState.open"
       :title="confirmState.title"
       :message="confirmState.message"
       :confirm-label="confirmState.confirmLabel"
@@ -148,6 +154,7 @@ import { useI18n } from 'vue-i18n';
 import api from '../../services/api';
 import { useFormatters } from '../../composables/useFormatters';
 import { useConfirmModal } from '../../composables/useConfirmModal';
+import { useToastStore } from '../../stores/toastStore';
 import AlertMessage from '../../components/AlertMessage.vue';
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
 import ConfirmModal from '../../components/ConfirmModal.vue';
@@ -155,6 +162,7 @@ import ConfirmModal from '../../components/ConfirmModal.vue';
 const { t } = useI18n();
 const { formatDateTime } = useFormatters();
 const { confirmState, openConfirm, closeConfirm, onConfirm } = useConfirmModal();
+const toastStore = useToastStore();
 
 const items = ref([]);
 const total = ref(0);
@@ -163,6 +171,8 @@ const busyId = ref(null);
 const message = ref('');
 const error = ref('');
 const expandedId = ref(null);
+const githubConfigured = ref(false);
+const githubConfigLoaded = ref(false);
 const filters = ref({ status: 'open', type: '', q: '' });
 
 let searchTimer;
@@ -197,6 +207,17 @@ function toggleExpanded(id) {
 function onSearchInput() {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(load, 300);
+}
+
+async function loadGithubConfig() {
+  try {
+    const { data } = await api.get('/admin/feedback/config');
+    githubConfigured.value = Boolean(data?.githubConfigured);
+  } catch {
+    githubConfigured.value = false;
+  } finally {
+    githubConfigLoaded.value = true;
+  }
 }
 
 async function load() {
@@ -245,9 +266,16 @@ async function approveItem(item) {
   try {
     const { data } = await api.post(`/admin/feedback/${item.id}/github-issue`);
     message.value = data?.message || t('adminPages.feedback.approveSuccess');
+    toastStore.success(message.value);
+    if (data?.issueUrl) {
+      window.open(data.issueUrl, '_blank', 'noopener,noreferrer');
+    }
     await load();
   } catch (err) {
-    error.value = err.response?.data?.error || t('adminPages.feedback.approveFailed');
+    const base = err.response?.data?.error || t('adminPages.feedback.approveFailed');
+    const detail = err.response?.data?.detail;
+    error.value = detail ? `${base} (${detail})` : base;
+    toastStore.error(error.value);
   } finally {
     busyId.value = null;
   }
@@ -268,7 +296,9 @@ async function closeItem(item) {
   }
 }
 
-onMounted(load);
+onMounted(async () => {
+  await Promise.all([loadGithubConfig(), load()]);
+});
 </script>
 
 <style scoped>
