@@ -42,6 +42,11 @@
 
     <LoadingSpinner v-if="loading" />
     <ErrorState v-else-if="error" :message="error" @retry="loadLeaderboard" />
+    <div v-else-if="showKnockoutNotStarted" class="card">
+      <div class="card-body text-center text-muted knockout-hint">
+        <p>{{ t('leaderboard.knockoutNotStarted') }}</p>
+      </div>
+    </div>
     <div v-else class="card">
       <div class="card-body">
         <LeaderboardTable
@@ -92,7 +97,21 @@ const activeFilter = ref('overall');
 const leaderboard = ref([]);
 const loading = ref(true);
 const error = ref('');
+const knockoutStarted = ref(true);
 let unsub = null;
+
+const showKnockoutNotStarted = computed(
+  () => activeFilter.value === 'knockout' && !knockoutStarted.value,
+);
+
+async function loadTournamentPhase() {
+  try {
+    const { data } = await api.get('/leaderboard/tournament-phase');
+    knockoutStarted.value = !!data?.knockoutStarted;
+  } catch {
+    knockoutStarted.value = true;
+  }
+}
 
 async function loadLeaderboard() {
   loading.value = true;
@@ -124,8 +143,12 @@ async function exportCsv() {
 }
 
 onMounted(() => {
+  loadTournamentPhase();
   loadLeaderboard();
-  unsub = onSocketEvent('leaderboard:update', loadLeaderboard);
+  unsub = onSocketEvent('leaderboard:update', () => {
+    loadTournamentPhase();
+    loadLeaderboard();
+  });
 });
 
 onUnmounted(() => unsub?.());
@@ -144,6 +167,11 @@ onUnmounted(() => unsub?.());
 .leaderboard-columns-help__list {
   margin: 0 0 0.75rem;
   padding-left: 1.25rem;
+  line-height: 1.6;
+}
+
+.knockout-hint {
+  padding: 2rem 1rem;
   line-height: 1.6;
 }
 </style>

@@ -126,6 +126,7 @@
     "exportCsv": "CSV Dışa Aktar",
     "loadFailed": "Lider tablosu yüklenemedi.",
     "exportFailed": "CSV dışa aktarma başarısız.",
+    "knockoutNotStarted": "Eleme aşaması henüz başlamadı. Lider tablosu, ilk eleme maçı canlı veya bittiğinde görünecektir.",
     "filters": {
       "overall": "Genel",
       "match": "Maç puanları",

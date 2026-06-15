@@ -752,6 +752,7 @@
     "exportCsv": "Exportar CSV",
     "loadFailed": "No se pudo cargar la clasificación.",
     "exportFailed": "Error al exportar CSV.",
+    "knockoutNotStarted": "La fase eliminatoria aún no ha comenzado. La clasificación aparecerá cuando el primer partido de eliminatorias esté en juego o finalizado.",
     "filters": {
       "overall": "General",
       "match": "Puntos de partido",

@@ -918,6 +918,7 @@
     "exportCsv": "CSV Export",
     "loadFailed": "Leaderboard could not be loaded.",
     "exportFailed": "CSV export failed.",
+    "knockoutNotStarted": "The knockout stage has not started yet. The leaderboard will appear once the first knockout match is live or finished.",
     "filters": {
       "overall": "Overall",
       "match": "Match points",

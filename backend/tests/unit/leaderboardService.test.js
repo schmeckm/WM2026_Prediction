@@ -2,7 +2,7 @@ require('../helpers/testEnv');
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
 const { sequelize, User, Team } = require('../../models');
-const { getTeamRanking } = require('../../services/leaderboardService');
+const { getTeamRanking, getTournamentPhaseStatus, getLeaderboard } = require('../../services/leaderboardService');
 const { seedTestData } = require('../helpers/seedTestData');
 
 describe('leaderboardService.getTeamRanking', () => {
@@ -30,5 +30,26 @@ describe('leaderboardService.getTeamRanking', () => {
     assert.ok(entry);
     assert.equal(entry.userCount, assignedCount);
     assert.ok(entry.userCount >= 2, 'admins assigned to a team should count as members');
+  });
+});
+
+describe('leaderboardService tournament phase filters', () => {
+  before(async () => {
+    await sequelize.sync({ force: true });
+    await seedTestData();
+  });
+
+  it('reports knockout as not started when only group matches are active', async () => {
+    const status = await getTournamentPhaseStatus();
+    assert.equal(status.knockoutStarted, false);
+    assert.equal(status.groupStageActive, true);
+  });
+
+  it('uses only stage match points for knockout leaderboard filter', async () => {
+    const leaderboard = await getLeaderboard({ filter: 'knockout', skipCache: true });
+    assert.ok(leaderboard.length > 0);
+    for (const entry of leaderboard) {
+      assert.equal(entry.totalPoints, entry.matchPoints);
+    }
   });
 });

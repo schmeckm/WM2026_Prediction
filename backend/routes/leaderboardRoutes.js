@@ -1,11 +1,25 @@
 const express = require('express');
 const { sendError, translate } = require('../utils/apiResponse');
-const { getLeaderboard, getTeamRanking, exportLeaderboardCsv } = require('../services/leaderboardService');
+const { getLeaderboard, getTeamRanking, exportLeaderboardCsv, getTournamentPhaseStatus } = require('../services/leaderboardService');
 const authMiddleware = require('../middleware/authMiddleware');
 const optionalAuthMiddleware = require('../middleware/optionalAuthMiddleware');
 const { getSetting } = require('../services/settingsService');
 
 const router = express.Router();
+
+router.get('/tournament-phase', optionalAuthMiddleware, async (req, res) => {
+  try {
+    const leaderboardPublic = await getSetting('leaderboardPublic', false);
+    if (!req.user && !leaderboardPublic) {
+      return sendError(res, req, 401, 'errors.notAuthenticated');
+    }
+    const status = await getTournamentPhaseStatus();
+    res.json(status);
+  } catch (error) {
+    console.error(error);
+    sendError(res, req, 500, 'errors.leaderboardLoadFailed');
+  }
+});
 
 router.get('/', optionalAuthMiddleware, async (req, res) => {
   try {

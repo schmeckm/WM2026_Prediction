@@ -746,6 +746,7 @@
     "exportCsv": "Export CSV",
     "loadFailed": "Impossible de charger le classement.",
     "exportFailed": "Échec de l'export CSV.",
+    "knockoutNotStarted": "La phase à élimination directe n'a pas encore commencé. Le classement s'affichera dès que le premier match de cette phase sera en cours ou terminé.",
     "filters": {
       "overall": "Global",
       "match": "Points match",

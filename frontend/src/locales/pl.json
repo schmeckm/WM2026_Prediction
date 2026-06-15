@@ -973,7 +973,15 @@
     "tips": "Typy",
     "completion": "Ukończ. %",
     "empty": "Brak wpisów.",
-    "loadFailed": "Nie udało się wczytać rankingu."
+    "loadFailed": "Nie udało się wczytać rankingu.",
+    "knockoutNotStarted": "Faza pucharowa jeszcze się nie rozpoczęła. Ranking pojawi się, gdy pierwszy mecz pucharowy będzie trwał lub zakończony.",
+    "filters": {
+      "overall": "Ogółem",
+      "match": "Punkty meczowe",
+      "bonus": "Punkty bonusowe",
+      "group": "Faza grupowa",
+      "knockout": "Faza pucharowa"
+    }
   },
   "teamDashboard": {
     "title": "Mój zespół",

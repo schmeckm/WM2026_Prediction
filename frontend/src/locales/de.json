@@ -926,6 +926,7 @@
     "exportCsv": "CSV Export",
     "loadFailed": "Hitliste konnte nicht geladen werden.",
     "exportFailed": "CSV-Export fehlgeschlagen.",
+    "knockoutNotStarted": "Die K.o.-Phase hat noch nicht begonnen. Die Hitliste wird angezeigt, sobald das erste K.o.-Spiel läuft oder beendet ist.",
     "filters": {
       "overall": "Gesamt",
       "match": "Spielpunkte",

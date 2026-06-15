@@ -338,7 +338,7 @@ async function getLeaderboard(options = {}) {
     totalMatches,
   }));
 
-  if (filter === 'match') {
+  if (filter === 'match' || filter === 'group' || filter === 'knockout') {
     entries.forEach((e) => { e.totalPoints = e.matchPoints; });
   } else if (filter === 'bonus') {
     entries.forEach((e) => { e.totalPoints = e.bonusPoints; });
@@ -570,9 +570,33 @@ function exportLeaderboardCsv(leaderboard) {
   return BOM + csv;
 }
 
+async function getTournamentPhaseStatus() {
+  const knockoutStarted = await Match.findOne({
+    where: {
+      stage: { [Op.notLike]: '%Group%' },
+      status: { [Op.in]: ['live', 'halftime', 'finished'] },
+    },
+    attributes: ['id'],
+  });
+
+  const groupStageActive = await Match.findOne({
+    where: {
+      stage: { [Op.like]: '%Group%' },
+      status: { [Op.in]: ['scheduled', 'live', 'halftime'] },
+    },
+    attributes: ['id'],
+  });
+
+  return {
+    knockoutStarted: !!knockoutStarted,
+    groupStageActive: !!groupStageActive,
+  };
+}
+
 module.exports = {
   getLeaderboard,
   getTeamRanking,
+  getTournamentPhaseStatus,
   recalculateAllPoints,
   recalculateBonusPoints,
   bonusAnswersMatch,
