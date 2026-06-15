@@ -1,9 +1,26 @@
 const rateLimit = require('express-rate-limit');
 const { createRateLimitStore } = require('./redisRateLimitStore');
 
+function rateLimitKey(req) {
+  const auth = req.headers.authorization;
+  if (auth?.startsWith('Bearer ')) {
+    try {
+      const segment = auth.slice(7).split('.')[1];
+      if (segment) {
+        const payload = JSON.parse(Buffer.from(segment, 'base64url').toString('utf8'));
+        if (payload?.userId) return `user:${payload.userId}`;
+      }
+    } catch {
+      // fall through to IP
+    }
+  }
+  return req.ip;
+}
+
 function buildLimiter(options) {
   const store = createRateLimitStore(options.windowMs);
   return rateLimit({
+    keyGenerator: rateLimitKey,
     ...options,
     ...(store ? { store, passOnStoreError: true } : {}),
   });
@@ -27,7 +44,7 @@ function isLocalDevRequest(req) {
 
 const apiLimiter = buildLimiter({
   windowMs: 1 * 60 * 1000,
-  max: isProduction ? 300 : 2000,
+  max: isProduction ? 600 : 2000,
   skip: (req) => req.path === '/health' || (!isProduction && isLocalDevRequest(req)),
   message: { error: 'Rate limit erreicht.' },
   standardHeaders: true,
@@ -36,7 +53,8 @@ const apiLimiter = buildLimiter({
 
 const leaderboardLimiter = buildLimiter({
   windowMs: 1 * 60 * 1000,
-  max: 60,
+  max: 120,
+  skip: (req) => req.path === '/tournament-phase',
   message: { error: 'Zu viele Hitlisten-Anfragen. Bitte kurz warten.' },
   standardHeaders: true,
   legacyHeaders: false,

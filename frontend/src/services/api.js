@@ -10,6 +10,7 @@ const api = axios.create({
 });
 
 let refreshPromise = null;
+let lastRateLimitToastAt = 0;
 
 async function tryRefreshToken() {
   const authStore = useAuthStore();
@@ -50,8 +51,12 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 429) {
-      const toastStore = useToastStore();
-      toastStore.warning(i18n.global.t('common.tooManyRequests'));
+      const now = Date.now();
+      if (now - lastRateLimitToastAt > 30_000) {
+        lastRateLimitToastAt = now;
+        const toastStore = useToastStore();
+        toastStore.warning(i18n.global.t('common.tooManyRequests'));
+      }
     }
 
     const originalRequest = error.config;

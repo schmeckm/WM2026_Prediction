@@ -74,7 +74,7 @@ async function loadPresence() {
 
 onMounted(() => {
   loadPresence();
-  pollTimer = setInterval(loadPresence, 30_000);
+  pollTimer = setInterval(loadPresence, 60_000);
 });
 
 onUnmounted(() => {

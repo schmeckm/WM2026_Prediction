@@ -99,6 +99,7 @@ const loading = ref(true);
 const error = ref('');
 const knockoutStarted = ref(true);
 let unsub = null;
+let reloadTimer = null;
 
 const showKnockoutNotStarted = computed(
   () => activeFilter.value === 'knockout' && !knockoutStarted.value,
@@ -126,8 +127,18 @@ async function loadLeaderboard() {
   }
 }
 
+function scheduleLeaderboardReload() {
+  if (reloadTimer) clearTimeout(reloadTimer);
+  reloadTimer = setTimeout(() => {
+    loadLeaderboard();
+  }, 3000);
+}
+
 function setFilter(value) {
   activeFilter.value = value;
+  if (value === 'knockout') {
+    loadTournamentPhase();
+  }
   loadLeaderboard();
 }
 
@@ -145,13 +156,13 @@ async function exportCsv() {
 onMounted(() => {
   loadTournamentPhase();
   loadLeaderboard();
-  unsub = onSocketEvent('leaderboard:update', () => {
-    loadTournamentPhase();
-    loadLeaderboard();
-  });
+  unsub = onSocketEvent('leaderboard:update', scheduleLeaderboardReload);
 });
 
-onUnmounted(() => unsub?.());
+onUnmounted(() => {
+  unsub?.();
+  if (reloadTimer) clearTimeout(reloadTimer);
+});
 </script>
 
 <style scoped>
