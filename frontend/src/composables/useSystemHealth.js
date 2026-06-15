@@ -1,9 +1,9 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import api from '../services/api';
+import { useFormatters } from './useFormatters';
 
-const POLL_INTERVAL_ONLINE_MS = 30000;
-const POLL_INTERVAL_OFFLINE_MS = 5000;
+const POLL_INTERVAL_ONLINE_MS = 60000;
+const POLL_INTERVAL_OFFLINE_MS = 15000;
 
 const EXTERNAL_API_LABEL_KEYS = {
   football: 'systemHealth.externalFootball',
@@ -14,7 +14,8 @@ const EXTERNAL_API_LABEL_KEYS = {
 
 export function useSystemHealth() {
   const frontendAiEnabled = import.meta.env.VITE_AI_FEATURES_ENABLED !== 'false';
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
+  const { formatDateTime } = useFormatters();
 
   const backendState = ref('checking');
   const frontendState = ref('checking');
@@ -65,12 +66,7 @@ export function useSystemHealth() {
 
   function formatBackupTime(value) {
     if (!value) return t('systemHealth.backupNever');
-    return new Date(value).toLocaleString(locale.value, {
-      day: '2-digit',
-      month: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return formatDateTime(value);
   }
 
   function resolveBackupState(info) {
@@ -179,7 +175,20 @@ export function useSystemHealth() {
   }
 
   async function fetchHealth() {
-    return api.get('/health', { timeout: 12000 });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+    try {
+      const response = await fetch('/api/health', { signal: controller.signal });
+      const data = await response.json();
+      if (!response.ok) {
+        const error = new Error('health_check_failed');
+        error.response = { status: response.status, data };
+        throw error;
+      }
+      return { data };
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
 
   function applyExternalApis(apis = []) {

@@ -1,7 +1,7 @@
 const { redisGet, redisSet, redisDel, ensureRedis } = require('../services/redisClient');
 
 class RedisRateLimitStore {
-  constructor(prefix = 'rl:', windowMs = 60_000) {
+  constructor(prefix, windowMs = 60_000) {
     this.prefix = prefix;
     this.windowMs = windowMs;
     this.localFallback = new Map();
@@ -63,9 +63,12 @@ class RedisRateLimitStore {
   }
 }
 
-function createRateLimitStore(windowMs) {
+function createRateLimitStore(windowMs, prefix) {
+  if (!prefix) {
+    throw new Error('createRateLimitStore requires a unique prefix per limiter');
+  }
   if (process.env.REDIS_URL) {
-    return new RedisRateLimitStore('rl:', windowMs);
+    return new RedisRateLimitStore(prefix, windowMs);
   }
   return undefined;
 }
