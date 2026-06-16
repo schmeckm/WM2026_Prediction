@@ -11,6 +11,8 @@ function formatMarketProbabilitiesLine(match, locale) {
   const probs = getMarketProbabilities(match);
   if (!probs) return '';
   return t('emails.marketProbabilities', locale, {
+    homeTeam: match.homeTeam,
+    awayTeam: match.awayTeam,
     home: probs.home,
     draw: probs.draw,
     away: probs.away,

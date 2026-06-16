@@ -24,6 +24,8 @@ export function formatMarketProbabilities(match, t) {
   const probs = match?.marketOdds?.probabilities;
   if (!probs) return '';
   return t('matches.marketProbabilities', {
+    homeTeam: match.homeTeam,
+    awayTeam: match.awayTeam,
     home: probs.home,
     draw: probs.draw,
     away: probs.away,

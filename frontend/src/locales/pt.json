@@ -691,7 +691,7 @@
     "group": "Grupo",
     "yourTip": "O seu palpite",
     "actualResult": "Resultado do jogo",
-    "marketProbabilities": "Mercado: {home}% · empate {draw}% · {away}%",
+    "marketProbabilities": "Mercado: {homeTeam} {home}% · empate {draw}% · {awayTeam} {away}%",
     "noTip": "Nenhum palpite submetido",
     "noTipGiven": "Nenhum palpite submetido",
     "stadiumPreview": "Ampliar estádio e mostrar info IA",

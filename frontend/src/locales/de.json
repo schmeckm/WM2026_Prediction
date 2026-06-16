@@ -822,7 +822,7 @@
     "group": "Gruppe",
     "yourTip": "Ihr Tipp",
     "actualResult": "Spielergebnis",
-    "marketProbabilities": "Markt: {home}% · X {draw}% · {away}%",
+    "marketProbabilities": "Markt: {homeTeam} {home}% · X {draw}% · {awayTeam} {away}%",
     "noTip": "Kein Tipp abgegeben",
     "noTipGiven": "Kein Tipp abgegeben",
     "stadiumPreview": "Stadion vergrößern & KI-Infos anzeigen",

@@ -653,7 +653,7 @@
     "group": "Groupe",
     "yourTip": "Votre pronostic",
     "actualResult": "Résultat du match",
-    "marketProbabilities": "Marché : {home}% · nul {draw}% · {away}%",
+    "marketProbabilities": "Marché : {homeTeam} {home}% · nul {draw}% · {awayTeam} {away}%",
     "noTip": "Aucun pronostic",
     "noTipGiven": "Aucun pronostic soumis",
     "stadiumPreview": "Agrandir le stade et afficher les infos IA",

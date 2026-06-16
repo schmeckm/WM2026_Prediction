@@ -893,7 +893,7 @@
     "group": "Grupa",
     "yourTip": "Twój typ",
     "actualResult": "Wynik meczu",
-    "marketProbabilities": "Rynek: {home}% · remis {draw}% · {away}%",
+    "marketProbabilities": "Rynek: {homeTeam} {home}% · remis {draw}% · {awayTeam} {away}%",
     "noTip": "Nie wysłano typu",
     "noTipGiven": "Nie wysłano typu",
     "stadiumPreview": "Powiększ stadion i pokaż informacje AI",

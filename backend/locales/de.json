@@ -288,7 +288,7 @@
       "cta": "Hitliste ansehen",
       "text": "Hallo {firstName}! Rang: #{rank}, Punkte: {points}\n{link}"
     },
-    "marketProbabilities": "Markt: {home}% · X {draw}% · {away}%",
+    "marketProbabilities": "Markt: {homeTeam} {home}% · X {draw}% · {awayTeam} {away}%",
     "syncError": {
       "subject": "World Cup 2026 - Wettbewerb – Sync-Fehler",
       "title": "Synchronisierungsfehler",

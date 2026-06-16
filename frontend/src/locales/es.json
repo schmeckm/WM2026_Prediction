@@ -659,7 +659,7 @@
     "group": "Grupo",
     "yourTip": "Tu pronóstico",
     "actualResult": "Resultado del partido",
-    "marketProbabilities": "Mercado: {home}% · X {draw}% · {away}%",
+    "marketProbabilities": "Mercado: {homeTeam} {home}% · X {draw}% · {awayTeam} {away}%",
     "noTip": "Sin pronóstico",
     "noTipGiven": "Sin pronóstico enviado",
     "stadiumPreview": "Ampliar estadio y mostrar info IA",

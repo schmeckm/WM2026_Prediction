@@ -815,7 +815,7 @@
     "group": "Group",
     "yourTip": "Your prediction",
     "actualResult": "Match result",
-    "marketProbabilities": "Market: {home}% · draw {draw}% · {away}%",
+    "marketProbabilities": "Market: {homeTeam} {home}% · draw {draw}% · {awayTeam} {away}%",
     "noTip": "No prediction submitted",
     "noTipGiven": "No prediction submitted",
     "stadiumPreview": "Enlarge stadium & show AI info",

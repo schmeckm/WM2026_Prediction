@@ -85,7 +85,7 @@ describe('morningDigestService', () => {
     assert.match(tpl.html, /Highlights/);
     assert.match(tpl.html, /KI-Rückblick/);
     assert.match(tpl.html, /Deutschland vs USA/);
-    assert.match(tpl.html, /Markt: 52\.3%/);
+    assert.match(tpl.html, /Deutschland 52\.3%/);
     assert.match(tpl.html, /Deine fehlenden Tipps/);
     assert.match(tpl.html, /2 offene Tipps in den nächsten 48 Stunden/);
     assert.match(tpl.html, /Spanien vs Italien/);
