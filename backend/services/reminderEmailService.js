@@ -2,7 +2,11 @@ const emailService = require('./emailService');
 const { getAppUrl } = require('./authTokenService');
 const { t, resolveUserEmailLocale } = require('./i18nService');
 const { escapeHtml, wrapBrandedEmail } = require('./emailLayoutService');
-const { formatMarketProbabilitiesLine } = require('../utils/marketOddsFormat');
+const {
+  formatMarketProbabilitiesLine,
+  formatBookmakerProbabilitiesLine,
+  formatBookmakerFavoriteLine,
+} = require('../utils/marketOddsFormat');
 
 const DATE_LOCALES = {
   de: 'de-DE',
@@ -29,27 +33,53 @@ function formatKickoff(kickoffTime, locale, { timezone } = {}) {
   }).format(date);
 }
 
-function formatMatchListHtml(matches, locale, { timezone, includeMarketOdds = false } = {}) {
+function formatMatchOddsLines(m, locale, { includeMarketOdds = false, bookmakerStyle = false } = {}) {
+  if (!includeMarketOdds) return { marketLine: '', favoriteLine: '' };
+  if (bookmakerStyle) {
+    return {
+      marketLine: formatBookmakerProbabilitiesLine(m, locale),
+      favoriteLine: formatBookmakerFavoriteLine(m, locale),
+    };
+  }
+  return {
+    marketLine: formatMarketProbabilitiesLine(m, locale),
+    favoriteLine: '',
+  };
+}
+
+function formatMatchListHtml(matches, locale, {
+  timezone, includeMarketOdds = false, bookmakerStyle = false,
+} = {}) {
   if (!matches.length) {
     return `<p style="margin:0;">${escapeHtml(t('emails.missingPredictions.noneUpcoming', locale))}</p>`;
   }
   const items = matches.map((m) => {
     const when = formatKickoff(m.kickoffTime, locale, { timezone });
-    const marketLine = includeMarketOdds ? formatMarketProbabilitiesLine(m, locale) : '';
+    const { marketLine, favoriteLine } = formatMatchOddsLines(m, locale, { includeMarketOdds, bookmakerStyle });
     const marketHtml = marketLine
-      ? `<br><span style="color:#64748b;font-size:13px;">${escapeHtml(marketLine)}</span>`
+      ? `<br><span style="color:${bookmakerStyle ? '#cbd5e1' : '#64748b'};font-size:${bookmakerStyle ? '14px' : '13px'};">${escapeHtml(marketLine)}</span>`
+      : (bookmakerStyle
+        ? `<br><span style="color:#94a3b8;font-size:13px;">${escapeHtml(t('emails.bookmakerNoOdds', locale))}</span>`
+        : '');
+    const favoriteHtml = favoriteLine
+      ? `<br><span style="color:#e2e8f0;font-size:13px;font-weight:600;">${escapeHtml(favoriteLine)}</span>`
       : '';
-    return `<li>${escapeHtml(m.homeTeam)} vs ${escapeHtml(m.awayTeam)} – ${escapeHtml(when)}${marketHtml}</li>`;
+    return `<li>${escapeHtml(m.homeTeam)} vs ${escapeHtml(m.awayTeam)} – ${escapeHtml(when)}${marketHtml}${favoriteHtml}</li>`;
   }).join('');
   return `<ul style="margin:12px 0;padding-left:20px;">${items}</ul>`;
 }
 
-function formatMatchListText(matches, locale, { timezone, includeMarketOdds = false } = {}) {
+function formatMatchListText(matches, locale, {
+  timezone, includeMarketOdds = false, bookmakerStyle = false,
+} = {}) {
   if (!matches.length) return t('emails.missingPredictions.noneUpcoming', locale);
   return matches.map((m) => {
     const when = formatKickoff(m.kickoffTime, locale, { timezone });
-    const marketLine = includeMarketOdds ? formatMarketProbabilitiesLine(m, locale) : '';
-    const suffix = marketLine ? ` – ${marketLine}` : '';
+    const { marketLine, favoriteLine } = formatMatchOddsLines(m, locale, { includeMarketOdds, bookmakerStyle });
+    const oddsParts = [marketLine, favoriteLine].filter(Boolean);
+    const suffix = oddsParts.length
+      ? ` – ${oddsParts.join(' · ')}`
+      : (bookmakerStyle ? ` – ${t('emails.bookmakerNoOdds', locale)}` : '');
     return `- ${m.homeTeam} vs ${m.awayTeam} (${when})${suffix}`;
   }).join('\n');
 }

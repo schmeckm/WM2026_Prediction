@@ -281,6 +281,10 @@
       "text": "Merhaba {firstName}! Sıra: #{rank}, Puan: {points}\n{link}"
     },
     "marketProbabilities": "Piyasa: {homeTeam} %{home} · beraberlik %{draw} · {awayTeam} %{away}",
+    "bookmakerProbabilities": "Bahisçiler: {homeTeam} %{home} · beraberlik %{draw} · {awayTeam} %{away}",
+    "bookmakerFavorite": "Favori: {team} (%{percent})",
+    "bookmakerFavoriteDraw": "Favori: Beraberlik (%{percent})",
+    "bookmakerNoOdds": "Henüz bahisçi oranları yok.",
     "syncError": {
       "subject": "Dünya Kupası 2026 - Yarışma – Senkronizasyon hatası",
       "title": "Senkronizasyon hatası",
@@ -323,6 +327,7 @@
       "aiHighlightHeading": "AI özet",
       "noHighlights": "Bugün özel bir öne çıkan yok – yarın tekrar bakın!",
       "todayHeading": "Bugün",
+      "bookmakerIntro": "Bahisçiler bugünkü maçları nasıl görüyor – tahminleriniz için ilham:",
       "missingTipsHeading": "Eksik tahminleriniz",
       "missingTips": "Önümüzdeki 48 saat içinde hâlâ {count} açık tahmininiz var:",
       "cta": "Lider tablosunu görüntüle",

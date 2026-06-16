@@ -281,6 +281,10 @@
       "text": "Hello {firstName}! Rank: #{rank}, Points: {points}\n{link}"
     },
     "marketProbabilities": "Rynek: {homeTeam} {home}% · remis {draw}% · {awayTeam} {away}%",
+    "bookmakerProbabilities": "Bukmacherzy: {homeTeam} {home}% · remis {draw}% · {awayTeam} {away}%",
+    "bookmakerFavorite": "Faworyt: {team} ({percent}%)",
+    "bookmakerFavoriteDraw": "Faworyt: remis ({percent}%)",
+    "bookmakerNoOdds": "Brak kursów bukmacherskich.",
     "syncError": {
       "subject": "World Cup 2026 - Competition – Sync error",
       "title": "Synchronization error",
@@ -323,6 +327,7 @@
       "aiHighlightHeading": "AI recap",
       "noHighlights": "No special highlights today – check back tomorrow!",
       "todayHeading": "Today",
+      "bookmakerIntro": "How bookmakers rate today's matches – use as inspiration for your picks:",
       "missingTipsHeading": "Your missing predictions",
       "missingTips": "You still have {count} open predictions in the next 48 hours:",
       "cta": "View leaderboard",

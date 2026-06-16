@@ -273,6 +273,10 @@
       "text": "Hola {firstName}! Posición: #{rank}, Puntos: {points}\n{link}"
     },
     "marketProbabilities": "Mercado: {homeTeam} {home}% · X {draw}% · {awayTeam} {away}%",
+    "bookmakerProbabilities": "Casas de apuestas: {homeTeam} {home}% · X {draw}% · {awayTeam} {away}%",
+    "bookmakerFavorite": "Favorito: {team} ({percent}%)",
+    "bookmakerFavoriteDraw": "Favorito: Empate ({percent}%)",
+    "bookmakerNoOdds": "Aún no hay cuotas de casas de apuestas.",
     "syncError": {
       "subject": "World Cup 2026 - Competición – Error de sincronización",
       "title": "Error de sincronización",
@@ -315,6 +319,7 @@
       "aiHighlightHeading": "Resumen IA",
       "noHighlights": "Sin destacados especiales hoy – ¡vuelve mañana!",
       "todayHeading": "Hoy",
+      "bookmakerIntro": "Así valoran las casas de apuestas los partidos de hoy – como inspiración para tus pronósticos:",
       "missingTips": "Tienes {count} pronósticos abiertos para próximos partidos.",
       "cta": "Ver clasificación",
       "notificationTitle": "Tu resumen matutino del Mundial",

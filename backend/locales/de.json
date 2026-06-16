@@ -291,6 +291,10 @@
       "text": "Hallo {firstName}! Rang: #{rank}, Punkte: {points}\n{link}"
     },
     "marketProbabilities": "Markt: {homeTeam} {home}% · X {draw}% · {awayTeam} {away}%",
+    "bookmakerProbabilities": "Buchmacher: {homeTeam} {home}% · X {draw}% · {awayTeam} {away}%",
+    "bookmakerFavorite": "Favorit: {team} ({percent}%)",
+    "bookmakerFavoriteDraw": "Favorit: Unentschieden ({percent}%)",
+    "bookmakerNoOdds": "Noch keine Buchmacher-Quoten verfügbar.",
     "syncError": {
       "subject": "World Cup 2026 - Wettbewerb – Sync-Fehler",
       "title": "Synchronisierungsfehler",
@@ -333,6 +337,7 @@
       "aiHighlightHeading": "KI-Rückblick",
       "noHighlights": "Keine besonderen Highlights – schau morgen wieder vorbei!",
       "todayHeading": "Heute",
+      "bookmakerIntro": "So schätzen die Buchmacher die heutigen Spiele ein – als Inspiration für deine Tipps:",
       "missingTipsHeading": "Deine fehlenden Tipps",
       "missingTips": "Du hast noch {count} offene Tipps in den nächsten 48 Stunden:",
       "cta": "Hitliste ansehen",

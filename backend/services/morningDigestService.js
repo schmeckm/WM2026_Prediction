@@ -443,6 +443,7 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
   const todayHtml = formatMatchListHtml(shared.todayMatches, locale, {
     timezone: shared.timezone,
     includeMarketOdds: true,
+    bookmakerStyle: true,
   });
   const leaderboardHtml = formatRankingListHtml(
     shared.topUsers.map((entry) => ({
@@ -480,7 +481,11 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
     ? `
     <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.missingTipsHeading', locale))}</p>
     <p style="margin:0 0 8px;">${escapeHtml(t('emails.morningDigest.missingTips', locale, { count: userData.missingCount }))}</p>
-    ${formatMatchListHtml(userData.missingMatches || [], locale, { timezone: shared.timezone })}
+    ${formatMatchListHtml(userData.missingMatches || [], locale, {
+      timezone: shared.timezone,
+      includeMarketOdds: true,
+      bookmakerStyle: true,
+    })}
   `.trim()
     : '';
 
@@ -500,16 +505,25 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
     ${ruleHighlightsHtml}
     ${aiHtml ? `<p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.aiHighlightHeading', locale))}</p>${aiHtml}` : ''}
     <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.todayHeading', locale))}</p>
+    <p style="margin:0 0 8px;font-size:14px;color:#cbd5e1;">${escapeHtml(t('emails.morningDigest.bookmakerIntro', locale))}</p>
     ${todayHtml}
     ${missingBlock}
   `.trim();
 
   const lastNightText = formatFinishedMatchListText(shared.lastNightMatches, locale);
-  const todayText = formatMatchListText(shared.todayMatches, locale, {
+  const todayText = [
+    t('emails.morningDigest.bookmakerIntro', locale),
+    formatMatchListText(shared.todayMatches, locale, {
+      timezone: shared.timezone,
+      includeMarketOdds: true,
+      bookmakerStyle: true,
+    }),
+  ].join('\n');
+  const missingMatchListText = formatMatchListText(userData.missingMatches || [], locale, {
     timezone: shared.timezone,
     includeMarketOdds: true,
+    bookmakerStyle: true,
   });
-  const missingMatchListText = formatMatchListText(userData.missingMatches || [], locale, { timezone: shared.timezone });
   const highlightsText = formatHighlightsText(shared.ruleHighlights, locale);
   const wmTopScorersText = formatTopWmScorersText(shared.topWmScorers, locale);
 

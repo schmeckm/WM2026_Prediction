@@ -281,6 +281,10 @@
       "text": "Olá {firstName}! Posição: #{rank}, Pontos: {points}\n{link}"
     },
     "marketProbabilities": "Mercado: {homeTeam} {home}% · empate {draw}% · {awayTeam} {away}%",
+    "bookmakerProbabilities": "Casas de apostas: {homeTeam} {home}% · empate {draw}% · {awayTeam} {away}%",
+    "bookmakerFavorite": "Favorito: {team} ({percent}%)",
+    "bookmakerFavoriteDraw": "Favorito: Empate ({percent}%)",
+    "bookmakerNoOdds": "Ainda não há odds de casas de apostas.",
     "syncError": {
       "subject": "World Cup 2026 - Competição – Erro de sincronização",
       "title": "Erro de sincronização",
@@ -323,6 +327,7 @@
       "aiHighlightHeading": "Resumo IA",
       "noHighlights": "Sem destaques especiais hoje – volte amanhã!",
       "todayHeading": "Hoje",
+      "bookmakerIntro": "Como as casas de apostas avaliam os jogos de hoje – como inspiração para os seus palpites:",
       "missingTipsHeading": "Os seus palpites em falta",
       "missingTips": "Ainda tem {count} palpites em aberto nas próximas 48 horas:",
       "cta": "Ver classificação",
