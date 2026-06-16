@@ -207,6 +207,7 @@ Players can read the full rules in-app at `/help`.
 | Backup | `/admin/backup` | JSON backup + Excel emergency export |
 | Feedback | `/admin/feedback` | Review submissions → promote to GitHub Issue |
 | Audit log | `/admin/audit-log` | Full history of admin actions |
+| API documentation | `/admin/api-docs` | Interactive Swagger UI for all REST endpoints |
 | System | `/admin/system` | Health, version, last sync status |
 | AI assistant | `/admin/ai-assistant` | Optional admin helper (requires OpenAI key) |
 
@@ -259,6 +260,18 @@ Enable or disable in app settings (`displayModeEnabled`). Useful for break rooms
 ### Locking matches
 
 If you manually set a result, lock the match to prevent the API sync from overwriting it. Manage locks in **Admin → Matches** or **Results**.
+
+### API documentation (Swagger)
+
+Admins can explore and test the full REST API without leaving the portal:
+
+1. Open **Admin → API Documentation** (`/admin/api-docs`).
+2. Browse endpoints grouped by tags (Auth, Matches, Admin, Sync, …).
+3. Use **Try it out** — requests are sent with your current admin JWT and `X-Language` header.
+
+The machine-readable spec is available at `GET /api/docs/openapi.json` (same admin auth). It is generated automatically from the Express route files under `backend/routes/`. Alias path: `/api/v1/docs/openapi.json`.
+
+Useful for integrations, debugging, and onboarding developers. Response schemas are generic today; extend `backend/openapi/buildOpenApiSpec.js` for richer field documentation.
 
 ---
 
@@ -343,6 +356,9 @@ A: Set both `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Use a **hostname** fo
 
 **Q: How does the feedback → GitHub workflow work?**  
 A: Users submit at `/feedback`. Admins review at `/admin/feedback` and click **OK → GitHub** to create an issue. Requires `GITHUB_TOKEN` with Issues write access and `GITHUB_REPO`.
+
+**Q: Where can I see or test the REST API?**  
+A: Log in as admin and open **Admin → API Documentation** (`/admin/api-docs`). Swagger UI lists all endpoints and supports “Try it out” with your session token. The OpenAPI JSON is at `/api/docs/openapi.json`.
 
 ---
 

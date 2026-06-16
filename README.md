@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/ci.yml"><img src="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/docker-publish.yml"><img src="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/docker-publish.yml/badge.svg" alt="Docker" /></a>
-  <img src="https://img.shields.io/badge/version-1.0.6-blue?style=flat-square" alt="Version" />
+  <img src="https://img.shields.io/badge/version-1.0.7-blue?style=flat-square" alt="Version" />
   <img src="https://img.shields.io/badge/node-20%2B-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node.js" />
   <img src="https://img.shields.io/badge/vue-3-42b883?style=flat-square&logo=vuedotjs&logoColor=white" alt="Vue 3" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License" /></a>
@@ -123,6 +123,7 @@ Alternative providers (same backend abstraction): `api-football`, `sportmonks`, 
 | Backup | JSON + **Excel emergency export** |
 | Feedback | Review submissions · **OK → GitHub Issue** |
 | Audit log | Full admin action history |
+| API documentation | Interactive **Swagger UI** for all REST endpoints (`/admin/api-docs`) |
 | System | Display mode, app settings, health |
 
 </details>
@@ -160,8 +161,11 @@ cd frontend && npm install && npm run dev
 | App | http://localhost:5173 |
 | API | http://localhost:3000 |
 | Health | http://localhost:3000/api/health |
+| API docs (admin) | http://localhost:5173/admin/api-docs |
 
 **Demo login** (after `npm run seed`): `admin@example.com` / `admin123`
+
+Admins can browse and test all REST endpoints in **Admin → API Documentation**. The OpenAPI spec is served at `GET /api/docs/openapi.json` (requires admin JWT).
 
 ---
 
@@ -250,7 +254,7 @@ You are free to use, modify, and distribute the software, provided the copyright
 ---
 
 <p align="center">
-  <sub>WM 2026 Prediction Game · v1.0.6</sub><br />
+  <sub>WM 2026 Prediction Game · v1.0.7</sub><br />
   <a href="https://github.com/schmeckm/WM2026_Prediction">Repository</a> ·
   <a href="LICENSE">MIT License</a> ·
   <a href="CONTRIBUTING.md">Contributing</a> ·

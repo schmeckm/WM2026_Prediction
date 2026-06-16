@@ -309,7 +309,8 @@ Zentrale Entities (Sequelize Models in `backend/models/*`):
   - Aktuell `/api` und `/api/v1` sind parallel gemountet (duplikativ).
   - Boilerplate: klare Strategie (nur `/api/v1`, oder `/api` alias) + deprecation policy.
 - **Type safety / contracts**:
-  - Boilerplate: OpenAPI spec + generated clients, oder mindestens shared DTO schema (zod/yup) für request/response validation.
+  - **OpenAPI spec** (admin Swagger UI + `/api/docs/openapi.json`) ist implementiert; Route-Scanner in `backend/openapi/buildOpenApiSpec.js`.
+  - Optional weiter: detaillierte Request/Response-Schemas, generated clients, oder shared DTO schema (zod/yup).
 - **Validation**:
   - Viele Routes validieren manuell; Boilerplate: request validation middleware (schema-first).
 - **Auth token storage (frontend)**:
