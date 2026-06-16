@@ -25,6 +25,7 @@ const {
 } = require('../services/syncLogService');
 const { syncMarketOdds } = require('../services/oddsSyncService');
 const oddsApiService = require('../services/oddsApiService');
+const { getSetting } = require('../services/settingsService');
 
 const router = express.Router();
 
