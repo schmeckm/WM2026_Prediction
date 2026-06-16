@@ -163,8 +163,8 @@ async function handleLogout() {
 
 @media (max-width: 768px) {
   .navbar {
-    min-height: 3.25rem;
-    padding: 0 0.75rem;
+    min-height: calc(3.25rem + var(--safe-area-top));
+    padding: var(--safe-area-top) 0.75rem 0;
   }
 
   .navbar-start {

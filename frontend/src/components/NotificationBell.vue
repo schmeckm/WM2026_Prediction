@@ -67,7 +67,7 @@ onUnmounted(() => document.removeEventListener('click', closeOnClickOutside));
 }
 .notification-dropdown {
   position: absolute; top: 100%; right: 0;
-  width: min(360px, calc(100vw - 2rem)); max-height: 400px;
+  width: min(360px, calc(100vw - 2rem - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px))); max-height: 400px;
   background: var(--color-surface); border: 1px solid var(--color-border);
   border-radius: var(--radius); box-shadow: var(--shadow-lg);
   z-index: 1000; overflow: hidden;
