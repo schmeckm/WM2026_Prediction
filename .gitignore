@@ -4,6 +4,7 @@ dist/
 .env.*
 !.env.docker.example
 !.env.example
+!.example.env
 *.sqlite
 *.sqlite-journal
 *.sqlite-wal

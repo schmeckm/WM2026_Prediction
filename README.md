@@ -172,7 +172,7 @@ Production runs as a **four-service stack**: PostgreSQL · Redis · Backend · F
 
 ### Portainer (recommended)
 
-1. Copy [`.env.docker.example`](.env.docker.example) → `.env`
+1. Copy [`.env.example`](.env.example) → `.env` (or [`.example.env`](.example.env))
 2. Portainer → **Stacks** → Git repo `https://github.com/schmeckm/WM2026_Prediction`, compose path `docker-compose.prod.yml`
 3. **Load variables from .env file** → Deploy
 4. Optional: `docker compose exec backend node database/seed.js`

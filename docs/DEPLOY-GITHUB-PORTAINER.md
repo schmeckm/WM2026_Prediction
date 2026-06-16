@@ -2,7 +2,7 @@
 
 This guide walks you from the GitHub repository to a running production stack with **PostgreSQL**, **Redis**, **backend**, and **frontend**.
 
-**Template for all variables:** [`.env.docker.example`](../.env.docker.example) (project root — not `backend/.env`)
+**Template for all variables:** [`.env.example`](../.env.example) (also as [`.example.env`](../.example.env) or [`.env.docker.example`](../.env.docker.example))
 
 ---
 
@@ -64,7 +64,7 @@ The stack starts without these, but login, API calls, or links will break if the
 | **User feedback → GitHub** | `GITHUB_TOKEN`, `GITHUB_REPO`, `GITHUB_FEEDBACK_LABELS` | Admin approves portal feedback as GitHub Issues |
 | **First admin bootstrap** | `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_PASSWORD` | Only used when no admin exists yet |
 | **Sentry** | `SENTRY_DSN`, `VITE_SENTRY_DSN` | Error monitoring |
-| **Rate limits** | `API_RATE_LIMIT_MAX`, `RATE_LIMIT_ENABLED` | See `.env.docker.example` |
+| **Rate limits** | `API_RATE_LIMIT_MAX`, `RATE_LIMIT_ENABLED` | See `.env.example` |
 
 ### YouTube API (highlights)
 
@@ -98,7 +98,7 @@ Token needs **Issues: Read and write** on the target repository.
 On your machine (do **not** commit this file):
 
 ```powershell
-copy .env.docker.example .env
+copy .env.example .env
 ```
 
 Fill in at minimum:
@@ -142,7 +142,7 @@ Portainer clones the compose file and starts four services. Backend and frontend
 ```bash
 git clone https://github.com/schmeckm/WM2026_Prediction.git
 cd WM2026_Prediction
-cp .env.docker.example .env
+cp .env.example .env
 # edit .env — set JWT_SECRET, DB_PASSWORD, APP_URL, CORS_ORIGIN
 docker compose -f docker-compose.prod.yml pull
 docker compose -f docker-compose.prod.yml up -d
@@ -240,6 +240,6 @@ Hourly player-data JSON backups run in the backend (`PLAYER_DATA_BACKUP_*`). Adm
 | File | Purpose |
 |------|---------|
 | [`docker-compose.prod.yml`](../docker-compose.prod.yml) | Production stack (Postgres + Redis + backend + frontend) |
-| [`.env.docker.example`](../.env.docker.example) | Environment variable template for Portainer |
+| [`.env.example`](../.env.example) | Environment variable template for Portainer / Docker |
 | [`backend/.env.example`](../backend/.env.example) | Local development only (SQLite) |
 | [`.github/workflows/docker-publish.yml`](../.github/workflows/docker-publish.yml) | CI: build & push GHCR images |
