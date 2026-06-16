@@ -101,6 +101,10 @@ const Match = sequelize.define('Match', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  marketOddsAtKickoffJson: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
 }, {
   indexes: [
     { fields: ['status', 'kickoffTime'] },

@@ -23,7 +23,10 @@ export function displayMatchScore(match) {
 export function formatMarketProbabilities(match, t) {
   const probs = match?.marketOdds?.probabilities;
   if (!probs) return '';
-  return t('matches.marketProbabilities', {
+  const key = match?.marketOdds?.source === 'kickoff' || match?.status === 'finished'
+    ? 'matches.marketProbabilitiesKickoff'
+    : 'matches.marketProbabilities';
+  return t(key, {
     homeTeam: match.homeTeam,
     awayTeam: match.awayTeam,
     home: probs.home,
@@ -32,9 +35,17 @@ export function formatMarketProbabilities(match, t) {
   });
 }
 
-export function showUpcomingMarketOdds(match) {
+export function showMarketOdds(match) {
   if (!match?.marketOdds?.probabilities) return false;
-  if (!['scheduled', 'locked'].includes(match.status)) return false;
-  const kickoff = new Date(match.kickoffTime).getTime();
-  return Number.isFinite(kickoff) && kickoff > Date.now();
+  if (match.status === 'finished') return true;
+  if (!['scheduled', 'locked', 'live', 'halftime'].includes(match.status)) return false;
+  if (match.status === 'scheduled' || match.status === 'locked') {
+    const kickoff = new Date(match.kickoffTime).getTime();
+    return Number.isFinite(kickoff) && kickoff > Date.now();
+  }
+  return true;
+}
+
+export function showUpcomingMarketOdds(match) {
+  return showMarketOdds(match) && match.status !== 'finished';
 }

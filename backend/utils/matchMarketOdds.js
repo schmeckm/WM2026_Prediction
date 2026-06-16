@@ -14,10 +14,23 @@ function parseMarketOddsJson(raw) {
   }
 }
 
+function resolveDisplayMarketOdds(matchJson) {
+  const kickoff = parseMarketOddsJson(matchJson?.marketOddsAtKickoffJson);
+  const latest = parseMarketOddsJson(matchJson?.marketOddsJson);
+  const status = matchJson?.status;
+  const useKickoff = ['finished', 'locked'].includes(status) || (status === 'live' && kickoff);
+  const data = (useKickoff && kickoff) ? kickoff : (latest || kickoff);
+  if (!data) return null;
+  return {
+    ...data,
+    source: (useKickoff && kickoff) ? 'kickoff' : 'live',
+  };
+}
+
 function attachMarketOdds(matchJson) {
   if (!matchJson || typeof matchJson !== 'object') return matchJson;
-  const marketOdds = parseMarketOddsJson(matchJson.marketOddsJson);
-  const { marketOddsJson, ...rest } = matchJson;
+  const marketOdds = resolveDisplayMarketOdds(matchJson);
+  const { marketOddsJson, marketOddsAtKickoffJson, ...rest } = matchJson;
   return marketOdds ? { ...rest, marketOdds } : rest;
 }
 
@@ -27,6 +40,7 @@ function attachMarketOddsList(matches) {
 
 module.exports = {
   parseMarketOddsJson,
+  resolveDisplayMarketOdds,
   attachMarketOdds,
   attachMarketOddsList,
 };

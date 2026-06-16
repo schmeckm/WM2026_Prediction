@@ -755,6 +755,7 @@
       "standings": "Standings",
       "scorers": "Top scorers",
       "live": "Live matches",
+      "market": "Market analysis",
       "duels": "WC head-to-head"
     },
     "liveFilters": {
@@ -773,7 +774,36 @@
     "duelsTeamA": "Team A",
     "duelsTeamB": "Team B",
     "duelsSelectTeam": "Select team…",
-    "duelsCompare": "Load meetings"
+    "duelsCompare": "Load meetings",
+    "market": {
+      "summaryTitle": "Market vs reality overview",
+      "matchesWithOdds": "Matches with market data",
+      "finishedMatches": "Finished matches",
+      "overallAccuracy": "Market hit rate (favorite)",
+      "chartTitle": "Market win % vs actual win %",
+      "marketWinPct": "Avg market win %",
+      "actualWinPct": "Avg actual win %",
+      "groupRankingTitle": "Group ranking: market was right",
+      "groupRankingEmpty": "No finished group matches with market data yet.",
+      "correct": "Hits",
+      "total": "Matches",
+      "accuracy": "Hit rate",
+      "teamTableTitle": "Team comparison",
+      "favoriteAccuracy": "Correct as favorite",
+      "timelineTitle": "Timeline of all matches",
+      "kickoff": "Kickoff",
+      "match": "Match",
+      "marketLine": "Market (kickoff)",
+      "result": "Result",
+      "favorite": "Market favorite",
+      "hit": "Market correct",
+      "drawFavorite": "Draw",
+      "teamFilter": "Team",
+      "allTeams": "All teams",
+      "allGroups": "All groups",
+      "exportCsv": "Export CSV",
+      "empty": "No market data stored yet. Odds are synced before kickoff."
+    }
   },
   "head2head": {
     "title": "Historical World Cup meetings",
@@ -816,6 +846,7 @@
     "yourTip": "Your prediction",
     "actualResult": "Match result",
     "marketProbabilities": "Market: {homeTeam} {home}% · draw {draw}% · {awayTeam} {away}%",
+    "marketProbabilitiesKickoff": "Market (kickoff): {homeTeam} {home}% · draw {draw}% · {awayTeam} {away}%",
     "noTip": "No prediction submitted",
     "noTipGiven": "No prediction submitted",
     "stadiumPreview": "Enlarge stadium & show AI info",

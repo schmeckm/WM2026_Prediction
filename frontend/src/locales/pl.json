@@ -894,6 +894,7 @@
     "yourTip": "Twój typ",
     "actualResult": "Wynik meczu",
     "marketProbabilities": "Rynek: {homeTeam} {home}% · remis {draw}% · {awayTeam} {away}%",
+    "marketProbabilitiesKickoff": "Rynek (rozpoczęcie): {homeTeam} {home}% · remis {draw}% · {awayTeam} {away}%",
     "noTip": "Nie wysłano typu",
     "noTipGiven": "Nie wysłano typu",
     "stadiumPreview": "Powiększ stadion i pokaż informacje AI",
@@ -921,6 +922,49 @@
       "gapBehind": "{points} pkt za",
       "gapAhead": "{points} pkt przed",
       "gapEven": "remis"
+    }
+  },
+  "nationalTeams": {
+    "group": "Grupa",
+    "team": "Drużyna",
+    "played": "M",
+    "goals": "Bramki",
+    "tabs": {
+      "teams": "Kadry",
+      "standings": "Tabele",
+      "scorers": "Strzelcy",
+      "live": "Mecze na żywo",
+      "market": "Analiza rynku",
+      "duels": "Pojedynki MS"
+    },
+    "market": {
+      "summaryTitle": "Przegląd rynek vs rzeczywistość",
+      "matchesWithOdds": "Mecze z danymi rynku",
+      "finishedMatches": "Zakończone mecze",
+      "overallAccuracy": "Trafność rynku (faworyt)",
+      "chartTitle": "% wygranej rynku vs % rzeczywistej",
+      "marketWinPct": "Śr. % wygranej rynku",
+      "actualWinPct": "Śr. % rzeczywistej wygranej",
+      "groupRankingTitle": "Ranking grup: rynek miał rację",
+      "groupRankingEmpty": "Brak zakończonych meczów grupowych z danymi rynku.",
+      "correct": "Trafienia",
+      "total": "Mecze",
+      "accuracy": "Skuteczność",
+      "teamTableTitle": "Porównanie drużyn",
+      "favoriteAccuracy": "Poprawnie jako faworyt",
+      "timelineTitle": "Oś czasu meczów",
+      "kickoff": "Rozpoczęcie",
+      "match": "Mecz",
+      "marketLine": "Rynek (rozpoczęcie)",
+      "result": "Wynik",
+      "favorite": "Faworyt rynku",
+      "hit": "Rynek trafił",
+      "drawFavorite": "Remis",
+      "teamFilter": "Drużyna",
+      "allTeams": "Wszystkie drużyny",
+      "allGroups": "Wszystkie grupy",
+      "exportCsv": "Eksport CSV",
+      "empty": "Brak zapisanych danych rynku. Kursy są synchronizowane przed rozpoczęciem."
     }
   },
   "matchTable": {

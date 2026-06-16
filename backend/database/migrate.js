@@ -125,6 +125,14 @@ async function runMigrations(sequelize) {
     allowNull: true,
   });
 
+  await ensureColumn(queryInterface, matchTableInfo, 'Matches', 'marketOddsAtKickoffJson', {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  });
+
+  const { backfillKickoffMarketOdds } = require('../services/marketAnalysisService');
+  await backfillKickoffMarketOdds();
+
   await ensureIndexes(queryInterface);
 }
 

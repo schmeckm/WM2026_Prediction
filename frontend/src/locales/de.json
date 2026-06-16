@@ -762,6 +762,7 @@
       "standings": "Tabellen",
       "scorers": "Torschützen",
       "live": "Live-Spiele",
+      "market": "Markt-Analyse",
       "duels": "WM-Duelle"
     },
     "liveFilters": {
@@ -780,7 +781,36 @@
     "duelsTeamA": "Mannschaft A",
     "duelsTeamB": "Mannschaft B",
     "duelsSelectTeam": "Mannschaft wählen…",
-    "duelsCompare": "Duelle laden"
+    "duelsCompare": "Duelle laden",
+    "market": {
+      "summaryTitle": "Übersicht Markt vs. Realität",
+      "matchesWithOdds": "Spiele mit Marktdaten",
+      "finishedMatches": "Beendete Spiele",
+      "overallAccuracy": "Markt-Trefferquote (Favorit)",
+      "chartTitle": "Markt-Sieg% vs. echte Sieg%",
+      "marketWinPct": "Ø Markt-Sieg%",
+      "actualWinPct": "Ø echte Sieg%",
+      "groupRankingTitle": "Gruppen-Ranking: Markt lag richtig",
+      "groupRankingEmpty": "Noch keine abgeschlossenen Gruppenspiele mit Marktdaten.",
+      "correct": "Treffer",
+      "total": "Spiele",
+      "accuracy": "Trefferquote",
+      "teamTableTitle": "Teams im Vergleich",
+      "favoriteAccuracy": "Als Favorit korrekt",
+      "timelineTitle": "Zeitverlauf aller Spiele",
+      "kickoff": "Anpfiff",
+      "match": "Spiel",
+      "marketLine": "Markt (Anpfiff)",
+      "result": "Ergebnis",
+      "favorite": "Markt-Favorit",
+      "hit": "Markt lag richtig",
+      "drawFavorite": "Unentschieden",
+      "teamFilter": "Team",
+      "allTeams": "Alle Teams",
+      "allGroups": "Alle Gruppen",
+      "exportCsv": "CSV exportieren",
+      "empty": "Noch keine Marktdaten gespeichert. Quoten werden vor Anpfiff synchronisiert."
+    }
   },
   "head2head": {
     "title": "Historische WM-Duelle",
@@ -823,6 +853,7 @@
     "yourTip": "Ihr Tipp",
     "actualResult": "Spielergebnis",
     "marketProbabilities": "Markt: {homeTeam} {home}% · X {draw}% · {awayTeam} {away}%",
+    "marketProbabilitiesKickoff": "Markt (Anpfiff): {homeTeam} {home}% · X {draw}% · {awayTeam} {away}%",
     "noTip": "Kein Tipp abgegeben",
     "noTipGiven": "Kein Tipp abgegeben",
     "stadiumPreview": "Stadion vergrößern & KI-Infos anzeigen",

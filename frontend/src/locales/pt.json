@@ -635,6 +635,7 @@
       "standings": "Classificação",
       "scorers": "Melhores marcadores",
       "live": "Jogos em direto",
+      "market": "Análise de mercado",
       "duels": "Confrontos no CM"
     },
     "liveFilters": {
@@ -653,7 +654,36 @@
     "duelsTeamA": "Equipa A",
     "duelsTeamB": "Equipa B",
     "duelsSelectTeam": "Selecionar equipa…",
-    "duelsCompare": "Carregar confrontos"
+    "duelsCompare": "Carregar confrontos",
+    "market": {
+      "summaryTitle": "Visão geral mercado vs realidade",
+      "matchesWithOdds": "Jogos com dados de mercado",
+      "finishedMatches": "Jogos terminados",
+      "overallAccuracy": "Taxa de acerto do mercado (favorito)",
+      "chartTitle": "% vitória mercado vs % vitória real",
+      "marketWinPct": "Ø % vitória mercado",
+      "actualWinPct": "Ø % vitória real",
+      "groupRankingTitle": "Ranking por grupo: mercado acertou",
+      "groupRankingEmpty": "Ainda sem jogos de grupo terminados com dados.",
+      "correct": "Acertos",
+      "total": "Jogos",
+      "accuracy": "Taxa de acerto",
+      "teamTableTitle": "Comparação por equipas",
+      "favoriteAccuracy": "Correto como favorito",
+      "timelineTitle": "Linha do tempo dos jogos",
+      "kickoff": "Pontapé de saída",
+      "match": "Jogo",
+      "marketLine": "Mercado (início)",
+      "result": "Resultado",
+      "favorite": "Favorito do mercado",
+      "hit": "Mercado correto",
+      "drawFavorite": "Empate",
+      "teamFilter": "Equipa",
+      "allTeams": "Todas as equipas",
+      "allGroups": "Todos os grupos",
+      "exportCsv": "Exportar CSV",
+      "empty": "Ainda sem dados de mercado. As odds são sincronizadas antes do início."
+    }
   },
   "head2head": {
     "title": "Confrontos históricos no Campeonato do Mundo",
@@ -692,6 +722,7 @@
     "yourTip": "O seu palpite",
     "actualResult": "Resultado do jogo",
     "marketProbabilities": "Mercado: {homeTeam} {home}% · empate {draw}% · {awayTeam} {away}%",
+    "marketProbabilitiesKickoff": "Mercado (início): {homeTeam} {home}% · empate {draw}% · {awayTeam} {away}%",
     "noTip": "Nenhum palpite submetido",
     "noTipGiven": "Nenhum palpite submetido",
     "stadiumPreview": "Ampliar estádio e mostrar info IA",

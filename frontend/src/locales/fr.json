@@ -599,6 +599,7 @@
       "standings": "Classements",
       "scorers": "Buteurs",
       "live": "Matchs live",
+      "market": "Analyse marché",
       "duels": "Duels CM"
     },
     "liveFilters": {
@@ -617,7 +618,36 @@
     "duelsTeamA": "Équipe A",
     "duelsTeamB": "Équipe B",
     "duelsSelectTeam": "Choisir une équipe…",
-    "duelsCompare": "Charger les duels"
+    "duelsCompare": "Charger les duels",
+    "market": {
+      "summaryTitle": "Aperçu marché vs réalité",
+      "matchesWithOdds": "Matchs avec données marché",
+      "finishedMatches": "Matchs terminés",
+      "overallAccuracy": "Taux de réussite marché (favori)",
+      "chartTitle": "% victoire marché vs % victoire réelle",
+      "marketWinPct": "Ø % victoire marché",
+      "actualWinPct": "Ø % victoire réelle",
+      "groupRankingTitle": "Classement par groupe : marché avait raison",
+      "groupRankingEmpty": "Pas encore de matchs de groupe terminés avec données.",
+      "correct": "Réussites",
+      "total": "Matchs",
+      "accuracy": "Taux de réussite",
+      "teamTableTitle": "Comparaison par équipe",
+      "favoriteAccuracy": "Correct en tant que favori",
+      "timelineTitle": "Chronologie des matchs",
+      "kickoff": "Coup d'envoi",
+      "match": "Match",
+      "marketLine": "Marché (coup d'envoi)",
+      "result": "Résultat",
+      "favorite": "Favori marché",
+      "hit": "Marché correct",
+      "drawFavorite": "Nul",
+      "teamFilter": "Équipe",
+      "allTeams": "Toutes les équipes",
+      "allGroups": "Tous les groupes",
+      "exportCsv": "Exporter CSV",
+      "empty": "Pas encore de données marché. Les cotes sont synchronisées avant le coup d'envoi."
+    }
   },
   "head2head": {
     "title": "Duels historiques en Coupe du Monde",
@@ -654,6 +684,7 @@
     "yourTip": "Votre pronostic",
     "actualResult": "Résultat du match",
     "marketProbabilities": "Marché : {homeTeam} {home}% · nul {draw}% · {awayTeam} {away}%",
+    "marketProbabilitiesKickoff": "Marché (coup d'envoi) : {homeTeam} {home}% · nul {draw}% · {awayTeam} {away}%",
     "noTip": "Aucun pronostic",
     "noTipGiven": "Aucun pronostic soumis",
     "stadiumPreview": "Agrandir le stade et afficher les infos IA",

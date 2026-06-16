@@ -13,7 +13,11 @@ async function lockPastKickoffMatches() {
 
   let locked = 0;
   for (const match of matches) {
-    await match.update({ status: 'locked' });
+    const updates = { status: 'locked' };
+    if (match.marketOddsJson && !match.marketOddsAtKickoffJson) {
+      updates.marketOddsAtKickoffJson = match.marketOddsJson;
+    }
+    await match.update(updates);
     locked += 1;
   }
 

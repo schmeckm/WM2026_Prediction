@@ -69,7 +69,7 @@
         </span>
         <CountdownBadge v-if="match.status === 'scheduled'" :kickoff-time="match.kickoffTime" />
       </div>
-      <p v-if="showUpcomingMarketOdds(match)" class="match-card-market-probs">
+      <p v-if="showMarketOdds(match)" class="match-card-market-probs">
         {{ formatMarketProbabilities(match, t) }}
       </p>
       <div v-if="match.prediction || hasDisplayableResult(match)" class="match-card-tips">
@@ -195,7 +195,7 @@ import MatchVenueModal from './MatchVenueModal.vue';
 import MatchWhatIfPanel from './MatchWhatIfPanel.vue';
 import { useFormatters } from '../composables/useFormatters';
 import { useMatchMeta } from '../composables/useMatchMeta';
-import { hasDisplayableResult, displayMatchScore, formatMarketProbabilities, showUpcomingMarketOdds } from '../composables/useMatchExtras';
+import { hasDisplayableResult, displayMatchScore, formatMarketProbabilities, showMarketOdds } from '../composables/useMatchExtras';
 import { getPredictionLockReason } from '../utils/predictionLockReason';
 
 const showVenueModal = ref(false);

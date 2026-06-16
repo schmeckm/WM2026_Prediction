@@ -10,6 +10,7 @@ const {
   getPublicFavoritesOverview,
 } = require('../services/statisticsService');
 const { getTeamRanking } = require('../services/leaderboardService');
+const { getMarketAnalysis, buildMarketAnalysisCsv } = require('../services/marketAnalysisService');
 
 const router = express.Router();
 
@@ -61,6 +62,31 @@ router.get('/favorites', authMiddleware, async (req, res) => {
     res.json(overview);
   } catch (error) {
     sendError(res, req, 500, 'errors.favoritesOverviewLoadFailed');
+  }
+});
+
+router.get('/market-analysis', authMiddleware, async (req, res) => {
+  try {
+    const team = String(req.query.team || '').trim() || null;
+    const groupName = String(req.query.groupName || '').trim().toUpperCase() || null;
+    const data = await getMarketAnalysis({ team, groupName });
+    res.json(data);
+  } catch (error) {
+    sendError(res, req, 500, 'errors.marketAnalysisLoadFailed');
+  }
+});
+
+router.get('/market-analysis/export', authMiddleware, async (req, res) => {
+  try {
+    const team = String(req.query.team || '').trim() || null;
+    const groupName = String(req.query.groupName || '').trim().toUpperCase() || null;
+    const data = await getMarketAnalysis({ team, groupName });
+    const csv = buildMarketAnalysisCsv(data);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="market-analysis.csv"');
+    res.send(`\uFEFF${csv}`);
+  } catch (error) {
+    sendError(res, req, 500, 'errors.marketAnalysisExportFailed');
   }
 });
 

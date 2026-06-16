@@ -69,6 +69,7 @@ export function useNationalTeams() {
     { id: 'standings', label: t('nationalTeams.tabs.standings') },
     { id: 'scorers', label: t('nationalTeams.tabs.scorers') },
     { id: 'live', label: t('nationalTeams.tabs.live') },
+    { id: 'market', label: t('nationalTeams.tabs.market') },
     { id: 'duels', label: t('nationalTeams.tabs.duels') },
   ]);
 

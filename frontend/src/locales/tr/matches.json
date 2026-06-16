@@ -18,6 +18,7 @@
     "yourTip": "Tahmininiz",
     "actualResult": "Maç sonucu",
     "marketProbabilities": "Piyasa: {homeTeam} %{home} · beraberlik %{draw} · {awayTeam} %{away}",
+    "marketProbabilitiesKickoff": "Piyasa (başlama): {homeTeam} %{home} · beraberlik %{draw} · {awayTeam} %{away}",
     "noTip": "Tahmin gönderilmedi",
     "noTipGiven": "Tahmin gönderilmedi",
     "stadiumPreview": "Stadyumu büyüt ve AI bilgisi göster",

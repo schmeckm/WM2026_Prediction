@@ -70,6 +70,8 @@
       :duel-data="duelData"
       @compare="compareDuels"
     />
+
+    <NationalTeamsMarketTab v-else-if="activeTab === 'market'" />
   </div>
 </template>
 
@@ -81,6 +83,7 @@ import NationalTeamsStandingsTab from '../components/nationalTeams/NationalTeams
 import NationalTeamsScorersTab from '../components/nationalTeams/NationalTeamsScorersTab.vue';
 import NationalTeamsLiveTab from '../components/nationalTeams/NationalTeamsLiveTab.vue';
 import NationalTeamsDuelsTab from '../components/nationalTeams/NationalTeamsDuelsTab.vue';
+import NationalTeamsMarketTab from '../components/nationalTeams/NationalTeamsMarketTab.vue';
 import { useNationalTeams } from '../composables/useNationalTeams';
 
 const { t } = useI18n();

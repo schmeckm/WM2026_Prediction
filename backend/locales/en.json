@@ -129,6 +129,8 @@
     "notificationNotFound": "Notification not found.",
     "notificationMarkFailed": "Failed to mark notification.",
     "statisticsLoadFailed": "Statistics could not be loaded.",
+    "marketAnalysisLoadFailed": "Market analysis could not be loaded.",
+    "marketAnalysisExportFailed": "Market analysis export failed.",
     "overviewLoadFailed": "Overview could not be loaded.",
     "favoritesOverviewLoadFailed": "Favorites overview could not be loaded.",
     "bonusQuestionsLoadFailed": "Bonus questions could not be loaded.",

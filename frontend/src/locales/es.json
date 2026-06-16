@@ -605,6 +605,7 @@
       "standings": "Clasificación",
       "scorers": "Goleadores",
       "live": "Partidos en vivo",
+      "market": "Análisis de mercado",
       "duels": "Duelos CM"
     },
     "liveFilters": {
@@ -623,7 +624,36 @@
     "duelsTeamA": "Equipo A",
     "duelsTeamB": "Equipo B",
     "duelsSelectTeam": "Elegir equipo…",
-    "duelsCompare": "Cargar duelos"
+    "duelsCompare": "Cargar duelos",
+    "market": {
+      "summaryTitle": "Resumen mercado vs realidad",
+      "matchesWithOdds": "Partidos con datos de mercado",
+      "finishedMatches": "Partidos terminados",
+      "overallAccuracy": "Acierto del mercado (favorito)",
+      "chartTitle": "% victoria mercado vs % victoria real",
+      "marketWinPct": "Ø % victoria mercado",
+      "actualWinPct": "Ø % victoria real",
+      "groupRankingTitle": "Ranking por grupo: mercado acertó",
+      "groupRankingEmpty": "Aún no hay partidos de grupo terminados con datos.",
+      "correct": "Aciertos",
+      "total": "Partidos",
+      "accuracy": "Tasa de acierto",
+      "teamTableTitle": "Comparación por equipos",
+      "favoriteAccuracy": "Correcto como favorito",
+      "timelineTitle": "Línea de tiempo de partidos",
+      "kickoff": "Inicio",
+      "match": "Partido",
+      "marketLine": "Mercado (inicio)",
+      "result": "Resultado",
+      "favorite": "Favorito del mercado",
+      "hit": "Mercado acertó",
+      "drawFavorite": "Empate",
+      "teamFilter": "Equipo",
+      "allTeams": "Todos los equipos",
+      "allGroups": "Todos los grupos",
+      "exportCsv": "Exportar CSV",
+      "empty": "Aún no hay datos de mercado. Las cuotas se sincronizan antes del inicio."
+    }
   },
   "head2head": {
     "title": "Duelos históricos en el Mundial",
@@ -660,6 +690,7 @@
     "yourTip": "Tu pronóstico",
     "actualResult": "Resultado del partido",
     "marketProbabilities": "Mercado: {homeTeam} {home}% · X {draw}% · {awayTeam} {away}%",
+    "marketProbabilitiesKickoff": "Mercado (inicio): {homeTeam} {home}% · X {draw}% · {awayTeam} {away}%",
     "noTip": "Sin pronóstico",
     "noTipGiven": "Sin pronóstico enviado",
     "stadiumPreview": "Ampliar estadio y mostrar info IA",

@@ -89,6 +89,7 @@
       "standings": "Puan durumu",
       "scorers": "Gol krallığı",
       "live": "Canlı maçlar",
+      "market": "Piyasa analizi",
       "duels": "DK kafa kafaya"
     },
     "liveFilters": {
@@ -107,7 +108,36 @@
     "duelsTeamA": "Takım A",
     "duelsTeamB": "Takım B",
     "duelsSelectTeam": "Takım seç…",
-    "duelsCompare": "Karşılaşmaları yükle"
+    "duelsCompare": "Karşılaşmaları yükle",
+    "market": {
+      "summaryTitle": "Piyasa vs gerçeklik özeti",
+      "matchesWithOdds": "Piyasa verili maçlar",
+      "finishedMatches": "Biten maçlar",
+      "overallAccuracy": "Piyasa isabet oranı (favori)",
+      "chartTitle": "Piyasa galibiyet % vs gerçek galibiyet %",
+      "marketWinPct": "Ø piyasa galibiyet %",
+      "actualWinPct": "Ø gerçek galibiyet %",
+      "groupRankingTitle": "Grup sıralaması: piyasa doğruydu",
+      "groupRankingEmpty": "Henüz piyasa verili bitmiş grup maçı yok.",
+      "correct": "İsabet",
+      "total": "Maç",
+      "accuracy": "İsabet oranı",
+      "teamTableTitle": "Takım karşılaştırması",
+      "favoriteAccuracy": "Favori olarak doğru",
+      "timelineTitle": "Maç zaman çizelgesi",
+      "kickoff": "Başlama",
+      "match": "Maç",
+      "marketLine": "Piyasa (başlama)",
+      "result": "Sonuç",
+      "favorite": "Piyasa favorisi",
+      "hit": "Piyasa doğru",
+      "drawFavorite": "Beraberlik",
+      "teamFilter": "Takım",
+      "allTeams": "Tüm takımlar",
+      "allGroups": "Tüm gruplar",
+      "exportCsv": "CSV dışa aktar",
+      "empty": "Henüz piyasa verisi yok. Oranlar başlama öncesi senkronize edilir."
+    }
   },
   "head2head": {
     "title": "Dünya Kupası geçmiş karşılaşmaları",

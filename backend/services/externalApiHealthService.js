@@ -161,19 +161,23 @@ function getGoogleSsoStatus() {
 }
 
 async function probeOddsApi() {
-  if (!oddsApiService.isConfigured()) {
+  const oddsConfig = oddsApiService.getConfig();
+  const enabled = oddsConfig.enabled;
+  const configured = oddsApiService.isConfigured();
+
+  if (!configured) {
     return buildStatus('odds', {
-      configured: false,
-      enabled: true,
+      configured: Boolean(oddsConfig.apiKey),
+      enabled,
       active: false,
-      reason: 'not_configured',
+      reason: !enabled ? 'disabled' : 'not_configured',
     });
   }
 
   if (process.env.NODE_ENV === 'test') {
     return buildStatus('odds', {
       configured: true,
-      enabled: true,
+      enabled,
       active: true,
       reason: 'ok',
     });
@@ -183,7 +187,7 @@ async function probeOddsApi() {
     const result = await withTimeout(oddsApiService.testConnection());
     return buildStatus('odds', {
       configured: true,
-      enabled: true,
+      enabled,
       active: result.ok,
       reason: result.ok ? 'ok' : 'unreachable',
       detail: result.sportActive === false ? 'sport_inactive' : null,
@@ -192,7 +196,7 @@ async function probeOddsApi() {
   } catch (error) {
     return buildStatus('odds', {
       configured: true,
-      enabled: true,
+      enabled,
       active: false,
       reason: 'unreachable',
       detail: error.message?.slice(0, 160) || null,
