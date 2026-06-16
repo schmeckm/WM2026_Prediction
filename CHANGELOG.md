@@ -5,6 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.6] - 2026-06-15
+
+### Added
+
+- Admin **User feedback** page (`/admin/feedback`) with **OK → GitHub Issue** workflow
+- YouTube highlight search and optional auto-fill (`YOUTUBE_API_KEY`, `AUTO_HIGHLIGHTS_*`)
+- Admin online presence panel
+- Redis in production stack (rate limits, presence)
+
+### Changed
+
+- README and deploy guide updated with mandatory/recommended env vars for Portainer
+- Rate limiting: per-user keys, isolated Redis counters per limiter
+- Knockout leaderboard only active after knockout phase starts
+
 ## [1.0.5] - 2026-06-14
 
 ### Added
@@ -39,6 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Docker Compose for development and production
 - CI/CD with GitHub Actions
 
+[1.0.6]: https://github.com/schmeckm/WM2026_Prediction/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/schmeckm/WM2026_Prediction/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/schmeckm/WM2026_Prediction/compare/v1.0.1...v1.0.4
 [1.0.1]: https://github.com/schmeckm/WM2026_Prediction/releases/tag/v1.0.1

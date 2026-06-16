@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/ci.yml"><img src="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/ci.yml/badge.svg" alt="CI Status" /></a>
   <a href="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/docker-publish.yml"><img src="https://github.com/schmeckm/WM2026_Prediction/actions/workflows/docker-publish.yml/badge.svg" alt="Docker Publish" /></a>
-  <img src="https://img.shields.io/badge/version-1.0.5-blue" alt="Version 1.0.5" />
+  <img src="https://img.shields.io/badge/version-1.0.6-blue" alt="Version 1.0.6" />
   <img src="https://img.shields.io/badge/node-20%2B-green" alt="Node.js 20+" />
   <img src="https://img.shields.io/badge/vue-3-42b883" alt="Vue 3" />
   <img src="https://img.shields.io/badge/license-proprietary-lightgrey" alt="Proprietary License" />
@@ -66,10 +66,11 @@ This prediction game is built for **internal company teams** (e.g. IT, Finance, 
 
 | | |
 |---|---|
-| **Frontend** | Vue 3 SPA, PWA-ready, 4 languages (DE/EN/FR/ES) |
+| **Frontend** | Vue 3 SPA, PWA-ready, 7 languages (DE/EN/FR/ES/PT/PL/TR) |
 | **Backend** | Node.js REST API + WebSocket |
 | **Database** | SQLite (dev) / PostgreSQL (prod) |
-| **Operations** | Manual (CSV) or automatic (Football API) |
+| **Cache** | Redis (prod — rate limits, presence, live features) |
+| **Operations** | Manual (CSV) or automatic (Football API + YouTube) |
 
 ---
 
@@ -94,6 +95,7 @@ This prediction game is built for **internal company teams** (e.g. IT, Finance, 
 | **Rules** | Official guidelines at `/help` |
 | **AI Coach** | Chat about strategy, missing predictions, and points |
 | **Notifications** | In-app messages with live updates via WebSocket |
+| **Report a gap** | Users submit bugs/changes/features at `/feedback` |
 | **PWA** | Installable on smartphone/tablet |
 
 ### Authentication & Profile
@@ -135,10 +137,10 @@ Enable via `OPENAI_API_KEY` in `backend/.env`. Individual features can be disabl
 
 | Area | Functions |
 |------|-----------|
-| **Dashboard** | System overview, quick actions, AI insights |
+| **Dashboard** | System overview, quick actions, AI insights, **who is online** |
 | **Users** | Create, roles, lock, admin rights |
 | **Teams** | Manage departments |
-| **Matches** | Edit schedule, lock, correct |
+| **Matches** | Edit schedule, lock, correct; **YouTube highlight** search & auto-fill |
 | **Results** | Manual result entry |
 | **Predictions** | View and manage all forecasts |
 | **Import** | CSV schedule import |
@@ -148,6 +150,7 @@ Enable via `OPENAI_API_KEY` in `backend/.env`. Individual features can be disabl
 | **Prizes** | Define and publish places 1–3 |
 | **Email** | SMTP reminders for missing predictions |
 | **Notifications** | In-app messages to all or individual users |
+| **User feedback** | Review portal submissions; **OK → GitHub Issue** |
 | **Statistics** | Overview, completeness, missing predictions |
 | **Favorites** | Users' favorite teams and top scorers |
 | **Player Images** | Sync via TheSportsDB / Wikimedia |
@@ -166,6 +169,34 @@ Enable via `OPENAI_API_KEY` in `backend/.env`. Individual features can be disabl
 | Live sync | Every 5 minutes | Only during live matches |
 | Email reminders | Daily 09:00 | Missing predictions & bonus questions |
 | Leaderboard snapshot | Hourly | Save rank history |
+| Player data backup | Hourly | JSON backup of users, teams, predictions |
+| Auto highlights | Configurable | YouTube highlight suggestions for finished matches (`AUTO_HIGHLIGHTS_*`) |
+
+### YouTube Highlights (optional)
+
+Requires `YOUTUBE_API_KEY` ([YouTube Data API v3](https://console.cloud.google.com/)):
+
+| Mode | Description |
+|------|-------------|
+| **Manual search** | Admin finds highlight videos per match in match administration |
+| **Auto-fill** | Cron job (`AUTO_HIGHLIGHTS_ENABLED=true`) attaches suggestions after matches finish |
+
+```env
+YOUTUBE_API_KEY=
+YOUTUBE_REGION_CODE=CH
+AUTO_HIGHLIGHTS_ENABLED=false
+AUTO_HIGHLIGHTS_CRON=15 */2 * * *
+```
+
+### User Feedback → GitHub (optional)
+
+Players report gaps at `/feedback`. Admins manage them at `/admin/feedback` and promote approved items to GitHub Issues:
+
+```env
+GITHUB_TOKEN=ghp_...
+GITHUB_REPO=schmeckm/WM2026_Prediction
+GITHUB_FEEDBACK_LABELS=feedback
+```
 
 ---
 
@@ -211,9 +242,10 @@ Full rules are available in the app under **Rules** (`/help`).
 | **Frontend** | Vue 3, Vite, Pinia, Vue Router, Vue I18n, Axios, Chart.js, Socket.IO Client, PWA |
 | **Backend** | Node.js, Express, Sequelize, Socket.IO, node-cron, nodemailer, OpenAI, ExcelJS |
 | **Database** | SQLite (development) / PostgreSQL (production) |
+| **Cache** | Redis 7 (production — rate limits, presence) |
 | **Auth** | JWT, bcrypt, Google OIDC, TOTP (speakeasy) |
 | **Monitoring** | Sentry (optional), Prometheus metrics |
-| **CI/CD** | GitHub Actions (Docker build) |
+| **CI/CD** | GitHub Actions → GHCR Docker images |
 
 ---
 
@@ -269,40 +301,23 @@ npm run seed                # Demo data (empty DB only)
 
 ## Configuration
 
-All variables with comments: [`backend/.env.example`](backend/.env.example)
+| File | Use case |
+|------|----------|
+| [`backend/.env.example`](backend/.env.example) | Local development (SQLite) |
+| [`.env.docker.example`](.env.docker.example) | **Production / Portainer** (copy to `.env`, never commit) |
 
-### Key Settings
+### Local development (quick reference)
 
 ```env
-# Core
 PORT=3000
 JWT_SECRET=your-secret-key
 APP_URL=http://localhost:5173
-
-# Database
 DB_DIALECT=sqlite
 DB_PATH=./database/wm2026.sqlite
-# Production: DB_DIALECT=postgres + DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
-
-# Football API (optional — without key: CSV/manual mode)
-FOOTBALL_API_PROVIDER=football-data
 FOOTBALL_API_KEY=
-FOOTBALL_API_SYNC_ENABLED=false
-
-# Email (optional — without SMTP: mock mode in console)
-SMTP_HOST=
-SMTP_PORT=587
-SMTP_USER=
-SMTP_PASSWORD=
-
-# AI (optional)
 OPENAI_API_KEY=
-AI_FEATURES_ENABLED=true
-
-# Google SSO (optional)
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
-GOOGLE_CALLBACK_URL=http://localhost:3000/api/auth/google/callback
 ```
 
 ### Football API
@@ -337,27 +352,83 @@ The frontend **never** calls external APIs directly. Admin sync is at `/admin/sy
 
 ## Deployment
 
-### Docker (local)
+### Docker (local development)
 
 ```bash
 # SQLite
 docker compose up --build
 docker compose exec backend node database/seed.js
 
-# PostgreSQL
+# PostgreSQL profile
 docker compose --profile postgres up --build
 ```
 
-### Production (GitHub + Portainer)
+### Production (GitHub + Portainer + GHCR)
 
-Full guide: [**docs/DEPLOY-GITHUB-PORTAINER.md**](docs/DEPLOY-GITHUB-PORTAINER.md)
+**Full guide:** [**docs/DEPLOY-GITHUB-PORTAINER.md**](docs/DEPLOY-GITHUB-PORTAINER.md)
 
-```bash
-git clone https://github.com/schmeckm/WM2026_Prediction.git
-# Deploy stack in Portainer with docker-compose.prod.yml
+The production stack (`docker-compose.prod.yml`) runs **PostgreSQL**, **Redis**, **backend**, and **frontend**. Images are published to GHCR on every push to `main`:
+
+```
+ghcr.io/schmeckm/wm2026_prediction-backend:latest
+ghcr.io/schmeckm/wm2026_prediction-frontend:latest
 ```
 
-**Google SSO in production:** Do not use raw IPs — use e.g. an `sslip.io` hostname for `APP_URL`, `CORS_ORIGIN`, and `GOOGLE_CALLBACK_URL`.
+#### Quick start (Portainer)
+
+1. Copy [`.env.docker.example`](.env.docker.example) → `.env` and fill in variables (see tables below)
+2. Portainer → **Stacks** → **Add stack**
+3. Git repo: `https://github.com/schmeckm/WM2026_Prediction`, branch `main`, compose path `docker-compose.prod.yml`
+4. **Load variables from .env file** (or paste variables manually)
+5. **Deploy the stack**
+6. Optional first-time: `docker compose exec backend node database/seed.js` or set `BOOTSTRAP_ADMIN_EMAIL` / `BOOTSTRAP_ADMIN_PASSWORD`
+
+#### Mandatory environment variables
+
+| Variable | Required by | Description |
+|----------|-------------|-------------|
+| `JWT_SECRET` | Docker Compose (`:?`) | Random secret, min. 32 characters — **stack fails without it** |
+| `DB_PASSWORD` | Docker Compose (`:?`) | PostgreSQL password — **stack fails without it** |
+
+#### Required for a working public URL
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `APP_URL` | `https://tippspiel.example.com` | Public app URL (emails, OAuth, links) |
+| `CORS_ORIGIN` | same as `APP_URL` | Must **exactly** match browser origin |
+| `FRONTEND_PORT` | `8080` | External port (host → frontend container) |
+
+#### Recommended
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `TRUST_PROXY` | `true` | Behind reverse proxy — correct client IPs for rate limits |
+| `DB_NAME` / `DB_USER` | `wm2026` / `postgres` | PostgreSQL credentials |
+| `REDIS_URL` | `redis://redis:6379` | Leave default in Docker stack |
+
+#### Optional integrations
+
+| Feature | Key variables |
+|---------|---------------|
+| Football live sync | `FOOTBALL_API_KEY`, `FOOTBALL_API_SYNC_ENABLED` |
+| YouTube highlights | `YOUTUBE_API_KEY`, `YOUTUBE_REGION_CODE`, `AUTO_HIGHLIGHTS_*` |
+| OpenAI / AI coach | `OPENAI_API_KEY`, `AI_FEATURES_ENABLED` |
+| Email | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` |
+| Google SSO | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL` |
+| Feedback → GitHub | `GITHUB_TOKEN`, `GITHUB_REPO`, `GITHUB_FEEDBACK_LABELS` |
+| First admin | `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_PASSWORD` |
+| Sentry | `SENTRY_DSN`, `VITE_SENTRY_DSN` |
+
+> **Google SSO in production:** Do not use raw IPs — use e.g. `136-244-90-128.sslip.io` for `APP_URL`, `CORS_ORIGIN`, and `GOOGLE_CALLBACK_URL`.
+
+#### Updating production
+
+```bash
+git push   # triggers GitHub Actions image build
+# Portainer → Stack → Pull and redeploy
+```
+
+**Never commit** `.env` or `backend/.env` to Git.
 
 ---
 
@@ -379,11 +450,13 @@ flowchart TB
 
     subgraph data [Data]
         DB[(SQLite / PostgreSQL)]
-        Redis[(Redis – optional)]
+        Redis[(Redis – production)]
     end
 
     subgraph external [External – optional]
         FAPI[Football API]
+        YT[YouTube Data API]
+        GH[GitHub Issues API]
         SMTP[SMTP Server]
         OAI[OpenAI API]
     end
@@ -395,6 +468,8 @@ flowchart TB
     Cron --> API
     Cron --> FAPI
     API --> FAPI
+    API --> YT
+    API --> GH
     API --> SMTP
     AI --> OAI
     SIO --> Redis
@@ -410,9 +485,12 @@ Full endpoints are in route files under `backend/routes/`.
 
 ```
 GET  /api/matches
+GET  /api/matches/:id/highlight-suggestions
 POST /api/predictions
 GET  /api/leaderboard
+GET  /api/leaderboard/tournament-phase
 GET  /api/leaderboard/export
+POST /api/feedback
 GET  /api/bonus-questions
 GET  /api/scoring-rules
 GET  /api/statistics/me
@@ -433,6 +511,9 @@ GET  /api/ai/dashboard-insights
 ```
 POST /api/admin/sync/fixtures
 POST /api/admin/sync/results
+GET  /api/admin/feedback
+POST /api/admin/feedback/:id/github-issue
+GET  /api/admin/presence
 POST /api/admin/bonus-questions/:id/resolve
 GET  /api/admin/audit-log
 POST /api/admin/backup/export-excel
@@ -452,14 +533,19 @@ GET  /api/display/bracket
 
 | Problem | Solution |
 |---------|----------|
+| Stack won't start | Set `JWT_SECRET` and `DB_PASSWORD` in Portainer / `.env` |
 | API sync fails | Check `FOOTBALL_API_KEY` and provider, test connection at `/admin/sync` |
+| YouTube highlights empty | Set `YOUTUBE_API_KEY`; enable YouTube Data API v3 in Google Cloud |
+| Feedback → GitHub fails | Set `GITHUB_TOKEN` + `GITHUB_REPO`; token needs Issues write access |
+| Rate limit for everyone | Set `TRUST_PROXY=true`; reverse proxy must send `X-Forwarded-For` |
 | No emails | Configure SMTP in `.env` or check mock log in console |
-| WebSocket won't connect | Restart backend, check `VITE_SOCKET_URL` / proxy |
+| WebSocket won't connect | Restart backend, check Nginx `/socket.io/` proxy |
 | DB schema outdated | Run `npm run db:migrate` or restart backend with migration |
 | Port 3000 in use | Set `PORT=3001` in `.env` |
 | AI not responding | Check `OPENAI_API_KEY`, set `AI_FEATURES_ENABLED=true` |
 | Google SSO error | Callback URL and `APP_URL` must exactly match the domain |
 | Player image sync stuck | Resume sync in admin; stale jobs are detected after timeout |
+| Old UI after deploy | Portainer **Pull and redeploy**; hard refresh (`Ctrl+F5`) |
 
 ---
 
@@ -470,7 +556,7 @@ Proprietary software — for private/internal use only. See [LICENSE](LICENSE).
 ---
 
 <p align="center">
-  <sub>WM 2026 Prediction Game · Version 1.0.5</sub><br />
+  <sub>WM 2026 Prediction Game · Version 1.0.6</sub><br />
   <a href="https://github.com/schmeckm/WM2026_Prediction">GitHub Repository</a> ·
   <a href="CONTRIBUTING.md">Contributing</a> ·
   <a href="SECURITY.md">Security</a>

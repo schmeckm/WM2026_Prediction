@@ -42,6 +42,7 @@ services:
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       DISPLAY_ALLOWED_IPS: ${DISPLAY_ALLOWED_IPS:-}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      TRUST_PROXY: ${TRUST_PROXY:-true}
       DB_DIALECT: postgres
       DB_HOST: postgres
       DB_PORT: 5432
