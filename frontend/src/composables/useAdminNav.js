@@ -28,6 +28,7 @@ export function useAdminNavLinks() {
     { to: '/admin/feedback', label: t('nav.userFeedback'), icon: 'file-text' },
     { to: '/admin/audit-log', label: t('nav.auditLog'), icon: 'file-text' },
     { to: '/admin/backup', label: t('nav.dataBackup'), icon: 'backup' },
+    { to: '/admin/api-docs', label: t('nav.apiDocs'), icon: 'file-text' },
     { to: '/admin/system', label: t('nav.systemStatus'), icon: 'activity' },
   ]);
 }

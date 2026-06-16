@@ -84,6 +84,7 @@
     "auditLog": "Audit Log",
     "userFeedback": "User Feedback",
     "dataBackup": "Data Backup",
+    "apiDocs": "API Documentation",
     "systemStatus": "System Status",
     "backToApp": "Back to App",
     "logout": "Sign out",
@@ -1839,6 +1840,11 @@
       "syncTypeUnknown": "Sync",
       "syncErrorFetchFailedHint": "Network error calling an external API. Often right after deploy/restart or due to firewall/DNS. The scheduler will retry automatically.",
       "syncErrorTimeoutHint": "External API timeout – often temporary."
+    },
+    "apiDocs": {
+      "title": "API documentation",
+      "subtitle": "Interactive Swagger UI for all REST endpoints under /api. Requests use your admin token.",
+      "loadFailed": "Could not load API documentation."
     },
     "aiAssistant": { "title": "AI assistant", "subtitle": "Admin help for diagnostics and copy" }
   },

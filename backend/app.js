@@ -48,6 +48,7 @@ const activityRoutes = require('./routes/activityRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
 const adminFeedbackRoutes = require('./routes/adminFeedbackRoutes');
 const billingRoutes = require('./routes/billingRoutes');
+const docsRoutes = require('./routes/docsRoutes');
 const authMiddleware = require('./middleware/authMiddleware');
 const adminMiddleware = require('./middleware/adminMiddleware');
 const { localeMiddleware } = require('./middleware/localeMiddleware');
@@ -205,6 +206,7 @@ const apiRouteBundle = {
   feedbackRoutes,
   adminFeedbackRoutes,
   billingRoutes,
+  docsRoutes,
   authMiddleware,
   adminMiddleware,
   settingsUpdateHandler: settingsRoutes.updateSettings,

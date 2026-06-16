@@ -79,6 +79,7 @@
     "csvImport": "Import CSV",
     "auditLog": "Journal d'Audit",
     "dataBackup": "Sauvegarde des données",
+    "apiDocs": "Documentation API",
     "systemStatus": "État du Système",
     "backToApp": "Retour à l'App",
     "logout": "Déconnexion",
@@ -1523,6 +1524,11 @@
       "missingPredictionsToday": "Pronostics manquants aujourd'hui"
     },
     "system": { "title": "État du système" },
+    "apiDocs": {
+      "title": "Documentation API",
+      "subtitle": "Swagger UI interactive pour tous les endpoints REST sous /api.",
+      "loadFailed": "Impossible de charger la documentation API."
+    },
     "aiAssistant": { "title": "Assistant IA", "subtitle": "Aide admin pour diagnostic et textes" }
   },
   "adminPlayerImages": {

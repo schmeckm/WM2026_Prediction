@@ -95,6 +95,7 @@
     "aiAssistant": "Asystent AI",
     "auditLog": "Dziennik audytu",
     "dataBackup": "Kopia danych",
+    "apiDocs": "Dokumentacja API",
     "systemStatus": "Status systemu",
     "backToApp": "Wróć do aplikacji",
     "logout": "Wyloguj"
@@ -180,6 +181,11 @@
       "lastSyncErrorLine": "{type} ({time}): {message}",
       "syncErrorFetchFailedHint": "Wygląda na problem sieciowy/DNS. Sprawdź połączenie serwera z Internetem oraz konfigurację proxy/firewall.",
       "syncErrorTimeoutHint": "Żądanie przekroczyło limit czasu. Sprawdź sieć lub spróbuj ponownie później."
+    },
+    "apiDocs": {
+      "title": "Dokumentacja API",
+      "subtitle": "Interaktywna Swagger UI dla wszystkich endpointów REST pod /api.",
+      "loadFailed": "Nie udało się załadować dokumentacji API."
     },
     "email": {
       "title": "E‑mail",

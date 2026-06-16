@@ -80,6 +80,7 @@
     "csvImport": "Importação CSV",
     "auditLog": "Registo de Auditoria",
     "dataBackup": "Cópia de Segurança",
+    "apiDocs": "Documentação API",
     "systemStatus": "Estado do Sistema",
     "backToApp": "Voltar à App",
     "logout": "Terminar sessão",
@@ -1628,6 +1629,11 @@
       "syncTypeUnknown": "Sincronização",
       "syncErrorFetchFailedHint": "Erro de rede ao chamar uma API externa. Frequentemente logo após implementação/reinício ou devido a firewall/DNS. O agendador tentará novamente automaticamente.",
       "syncErrorTimeoutHint": "Tempo limite da API externa – frequentemente temporário."
+    },
+    "apiDocs": {
+      "title": "Documentação API",
+      "subtitle": "Swagger UI interativa para todos os endpoints REST em /api.",
+      "loadFailed": "Não foi possível carregar a documentação API."
     },
     "aiAssistant": { "title": "Assistente IA", "subtitle": "Ajuda de administração para diagnóstico e textos" }
   },

@@ -130,6 +130,7 @@ const routes = [
       { path: 'audit-log', name: 'AdminAuditLog', component: () => import('../views/admin/AdminAuditLogView.vue') },
       { path: 'backup', name: 'AdminBackup', component: () => import('../views/admin/AdminBackupView.vue') },
       { path: 'system', name: 'AdminSystem', component: () => import('../views/admin/AdminSystemView.vue') },
+      { path: 'api-docs', name: 'AdminApiDocs', component: () => import('../views/admin/AdminApiDocsView.vue') },
       { path: 'ai-assistant', name: 'AdminAIAssistant', component: () => import('../views/admin/AdminAIAssistantView.vue') },
     ],
   },
