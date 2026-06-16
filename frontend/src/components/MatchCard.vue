@@ -72,14 +72,23 @@
       <p v-if="showMarketOdds(match)" class="match-card-market-probs">
         {{ formatMarketProbabilities(match, t) }}
       </p>
-      <div v-if="match.prediction || hasDisplayableResult(match)" class="match-card-tips">
-        <span v-if="match.prediction" class="badge badge-info">{{ t('matches.yourTip') }}: {{ match.prediction.predictedHomeScore }} : {{ match.prediction.predictedAwayScore }}</span>
-        <span v-if="hasDisplayableResult(match)" class="badge badge-secondary">
-          {{ t('matches.actualResult') }}: {{ displayMatchScore(match).home }} : {{ displayMatchScore(match).away }}
-        </span>
-        <span v-if="match.prediction?.points !== null && match.prediction?.points !== undefined" class="badge badge-success">
-          {{ formatPoints(match.prediction.points) }} {{ t('common.points') }}
-        </span>
+      <div
+        v-if="match.prediction || hasDisplayableResult(match) || !match.canPredict"
+        class="match-card-tips-block"
+      >
+        <div v-if="match.prediction || hasDisplayableResult(match)" class="match-card-tips">
+          <span v-if="match.prediction" class="badge badge-info">{{ t('matches.yourTip') }}: {{ match.prediction.predictedHomeScore }} : {{ match.prediction.predictedAwayScore }}</span>
+          <span v-if="hasDisplayableResult(match)" class="badge badge-secondary">
+            {{ t('matches.actualResult') }}: {{ displayMatchScore(match).home }} : {{ displayMatchScore(match).away }}
+          </span>
+          <span v-if="match.prediction?.points !== null && match.prediction?.points !== undefined" class="badge badge-success">
+            {{ formatPoints(match.prediction.points) }} {{ t('common.points') }}
+          </span>
+        </div>
+        <div v-if="!match.canPredict" class="match-lock-reason text-center text-muted">
+          <span class="match-lock-icon" :title="lockTitle">🔒</span>
+          {{ lockTitle }}
+        </div>
       </div>
     </div>
 
@@ -91,9 +100,9 @@
           @saved="$emit('saved')"
         />
       </div>
-      <div v-else-if="!match.canPredict" class="match-locked text-center">
+      <div v-else-if="!match.canPredict && !match.prediction && !hasDisplayableResult(match)" class="match-locked text-center">
         <span class="match-lock-icon" :title="lockTitle">🔒</span>
-        <span v-if="!match.prediction && !hasDisplayableResult(match)" class="text-muted">{{ t('matches.noTipGiven') }}</span>
+        <span class="text-muted">{{ t('matches.noTipGiven') }}</span>
         <div class="text-muted match-lock-reason">{{ lockTitle }}</div>
       </div>
       <div v-else-if="!match.hasPrediction" class="text-center text-muted">
@@ -312,13 +321,22 @@ function scoreClass(match) {
   white-space: nowrap;
 }
 
+.match-card-tips-block {
+  margin-bottom: 0.5rem;
+}
+
 .match-card-tips {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 0.375rem;
-  margin-bottom: 0.5rem;
+}
+
+.match-card-tips-block .match-lock-reason,
+.match-locked .match-lock-reason {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
 }
 
 .match-card-market-probs {
@@ -339,11 +357,6 @@ function scoreClass(match) {
 
 .match-score-display--finished {
   color: var(--color-success);
-}
-
-.match-lock-reason {
-  margin-top: 0.35rem;
-  font-size: 0.85rem;
 }
 
 .match-card--next {

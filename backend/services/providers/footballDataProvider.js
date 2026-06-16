@@ -167,7 +167,10 @@ async function apiRequest(config, path, queryParams = {}) {
       if (response.status === 429) {
         setThrottled(15 * 60 * 1000, 'http_429');
         const body = await response.text().catch(() => '');
-        throw new Error(`football-data.org Rate-Limit erreicht (429)${body ? `: ${body.slice(0, 120)}` : ''}`);
+        const err = new Error(`football-data.org Rate-Limit erreicht (429)${body ? `: ${body.slice(0, 120)}` : ''}`);
+        err.status = 429;
+        err.code = 'RATE_LIMIT';
+        throw err;
       }
 
       if (!response.ok) {
@@ -251,6 +254,8 @@ async function fetchLiveMatchesRequest(config) {
     try {
       const merged = new Map();
       const rateLimitsCollected = [];
+      let hadSuccessfulRequest = false;
+      const statusErrors = [];
 
       for (const status of statusCandidates) {
         try {
@@ -258,16 +263,18 @@ async function fetchLiveMatchesRequest(config) {
             competitions: competition,
             status,
           });
+          hadSuccessfulRequest = true;
           rateLimitsCollected.push(result.rateLimits);
           for (const m of result.data?.matches || []) {
             if (m?.id != null) merged.set(m.id, m);
           }
         } catch (err) {
-          lastError = err;
+          statusErrors.push(err);
         }
       }
 
-      if (merged.size > 0) {
+      // Succeed when we got live data or at least one status query worked (no live games is OK).
+      if (merged.size > 0 || hadSuccessfulRequest) {
         return {
           data: { matches: Array.from(merged.values()) },
           rateLimits: rateLimitsCollected[rateLimitsCollected.length - 1] || null,
@@ -275,8 +282,8 @@ async function fetchLiveMatchesRequest(config) {
         };
       }
 
-      // If nothing was returned and one status call errored, bubble up the last error.
-      if (lastError) throw lastError;
+      const statusError = statusErrors[statusErrors.length - 1];
+      if (statusError) throw statusError;
       return { data: { matches: [] }, rateLimits: rateLimitsCollected.at(-1) || null, url: `/matches?competitions=${competition}` };
     } catch (error) {
       lastError = error;
@@ -285,7 +292,7 @@ async function fetchLiveMatchesRequest(config) {
     }
   }
 
-  throw lastError;
+  throw lastError || new Error('football-data.org live matches request failed');
 }
 
 async function fetchTeams(config) {

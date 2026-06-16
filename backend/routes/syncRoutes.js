@@ -32,15 +32,21 @@ const router = express.Router();
 router.use(authMiddleware, adminMiddleware);
 
 function handleSyncError(error, res, req) {
-  const status = error.code === 'NO_API_KEY' ? 503 : 500;
-  const isProduction = process.env.NODE_ENV === 'production';
-  const { translate } = require('../utils/apiResponse');
-  res.status(status).json({
-    error: isProduction
-      ? translate(req, 'errors.syncFailed')
-      : (error.message || translate(req, 'errors.syncFailed')),
-    code: error.code,
-  });
+  const message = error.message || translate(req, 'errors.syncFailed');
+  let status = 500;
+  let code = error.code;
+
+  if (error.code === 'NO_API_KEY') {
+    status = 503;
+  } else if (error.status === 403 || /\b403\b/.test(message)) {
+    status = 503;
+    code = code || 'API_AUTH_FAILED';
+  } else if (error.status === 429 || /\b429\b|Rate-Limit/i.test(message)) {
+    status = 503;
+    code = code || 'RATE_LIMIT';
+  }
+
+  res.status(status).json({ error: message, code });
 }
 
 router.get('/status', async (req, res) => {

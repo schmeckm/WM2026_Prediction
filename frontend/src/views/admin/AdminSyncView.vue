@@ -537,7 +537,7 @@ async function syncLive() {
   error.value = '';
   message.value = '';
   try {
-    const { data } = await api.post('/admin/sync/live-scores');
+    const { data } = await api.post('/admin/sync/live-scores', { force: true });
     message.value = data.message || t('adminPages.sync.liveSynced');
     await load();
   } catch (e) {
