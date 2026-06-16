@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Renamed GitHub repository from `aspire-make-tippspiel` to `WM2026_Prediction`
+- Renamed GitHub repository to `WM2026_Prediction`
 - Updated Docker image names to `ghcr.io/schmeckm/wm2026_prediction-*`
 - Updated deploy guide to repository `WM2026_Prediction`
 - All repository documentation translated to English

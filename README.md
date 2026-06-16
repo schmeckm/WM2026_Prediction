@@ -23,6 +23,7 @@
   <a href="#match-data--external-apis">Match Data</a> ·
   <a href="#deployment">Deployment</a> ·
   <a href="docs/DEPLOY-GITHUB-PORTAINER.md">Portainer Guide</a> ·
+  <a href="docs/HANDBOOK.md">Admin Handbook</a> ·
   <a href="CHANGELOG.md">Changelog</a> ·
   <a href="LICENSE">License (MIT)</a>
 </p>
