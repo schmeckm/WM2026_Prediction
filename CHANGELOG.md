@@ -16,7 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- README and deploy guide updated with mandatory/recommended env vars for Portainer
+- README redesigned with MIT license, match-data provider section, and cleaner structure
+- License changed from proprietary to **MIT**
+- Deploy guide updated with mandatory/recommended env vars for Portainer
 - Rate limiting: per-user keys, isolated Redis counters per limiter
 - Knockout leaderboard only active after knockout phase starts
 

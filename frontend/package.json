@@ -11,7 +11,7 @@
   },
   "keywords": ["football", "world-cup", "tippspiel", "vue3", "pwa"],
   "author": "schmeckm",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "engines": {
     "node": ">=20"
   },
