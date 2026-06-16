@@ -318,7 +318,7 @@
       "teamHeading": "En iyi takımlar",
       "wmTopScorersHeading": "Dünya Kupası gol krallığı (Top 3)",
       "noWmTopScorers": "Henüz Dünya Kupası golcü verisi yok.",
-      "wmTopScorerLine": "{rank}. {player} ({team}) – {goals} gol",
+      "wmTopScorerLine": "{player} ({team}) – {goals} gol",
       "highlightHeading": "Öne çıkanlar",
       "aiHighlightHeading": "AI özet",
       "noHighlights": "Bugün özel bir öne çıkan yok – yarın tekrar bakın!",

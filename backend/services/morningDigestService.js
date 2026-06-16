@@ -119,9 +119,8 @@ function formatTopWmScorersHtml(scorers, locale) {
   if (!scorers?.length) {
     return `<p style="margin:0;">${escapeHtml(t('emails.morningDigest.noWmTopScorers', locale))}</p>`;
   }
-  const items = scorers.map((entry, idx) => {
+  const items = scorers.map((entry) => {
     const line = t('emails.morningDigest.wmTopScorerLine', locale, {
-      rank: idx + 1,
       player: entry.player?.name || '–',
       team: entry.team?.name || '–',
       goals: entry.goals ?? 0,
@@ -135,12 +134,11 @@ function formatTopWmScorersText(scorers, locale) {
   if (!scorers?.length) return t('emails.morningDigest.noWmTopScorers', locale);
   return scorers.map((entry, idx) => {
     const line = t('emails.morningDigest.wmTopScorerLine', locale, {
-      rank: idx + 1,
       player: entry.player?.name || '–',
       team: entry.team?.name || '–',
       goals: entry.goals ?? 0,
     });
-    return `- ${line}`;
+    return `${idx + 1}. ${line}`;
   }).join('\n');
 }
 

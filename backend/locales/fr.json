@@ -310,7 +310,7 @@
       "teamHeading": "Meilleures équipes",
       "wmTopScorersHeading": "Meilleurs buteurs du Mondial",
       "noWmTopScorers": "Pas encore de données sur les buteurs du Mondial.",
-      "wmTopScorerLine": "{rank}. {player} ({team}) – {goals} buts",
+      "wmTopScorerLine": "{player} ({team}) – {goals} buts",
       "highlightHeading": "Temps forts",
       "aiHighlightHeading": "Récap IA",
       "noHighlights": "Pas de temps fort particulier aujourd'hui – revenez demain !",

@@ -310,7 +310,7 @@
       "teamHeading": "Mejores equipos",
       "wmTopScorersHeading": "Máximos goleadores del Mundial",
       "noWmTopScorers": "Aún no hay datos de goleadores del Mundial.",
-      "wmTopScorerLine": "{rank}. {player} ({team}) – {goals} goles",
+      "wmTopScorerLine": "{player} ({team}) – {goals} goles",
       "highlightHeading": "Destacados",
       "aiHighlightHeading": "Resumen IA",
       "noHighlights": "Sin destacados especiales hoy – ¡vuelve mañana!",

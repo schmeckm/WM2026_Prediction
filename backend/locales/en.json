@@ -328,7 +328,7 @@
       "teamHeading": "Top teams",
       "wmTopScorersHeading": "World Cup top scorers",
       "noWmTopScorers": "No World Cup top scorer data available yet.",
-      "wmTopScorerLine": "{rank}. {player} ({team}) – {goals} goals",
+      "wmTopScorerLine": "{player} ({team}) – {goals} goals",
       "highlightHeading": "Highlights",
       "aiHighlightHeading": "AI recap",
       "noHighlights": "No special highlights today – check back tomorrow!",

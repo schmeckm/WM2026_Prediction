@@ -328,7 +328,7 @@
       "teamHeading": "Top-Teams",
       "wmTopScorersHeading": "WM Top-Torschützen",
       "noWmTopScorers": "Noch keine Torschützen-Daten für die WM verfügbar.",
-      "wmTopScorerLine": "{rank}. {player} ({team}) – {goals} Tore",
+      "wmTopScorerLine": "{player} ({team}) – {goals} Tore",
       "highlightHeading": "Highlights",
       "aiHighlightHeading": "KI-Rückblick",
       "noHighlights": "Keine besonderen Highlights – schau morgen wieder vorbei!",

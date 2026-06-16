@@ -65,7 +65,7 @@ function formatRankingListHtml(items, locale, nameKey = 'name', pointsKey = 'poi
     const points = item[pointsKey] ?? item.totalPoints ?? item.averagePoints ?? 0;
     return `<li>#${item.rank} ${escapeHtml(name)} – ${escapeHtml(String(points))} ${escapeHtml(t('emails.statusUpdate.points', locale))}</li>`;
   }).join('');
-  return `<ol style="margin:12px 0;padding-left:20px;">${rows}</ol>`;
+  return `<ul style="margin:12px 0;padding-left:20px;">${rows}</ul>`;
 }
 
 function templateManualTipReminder(user, missingCount, upcomingMatches) {

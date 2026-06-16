@@ -88,7 +88,7 @@ describe('morningDigestService', () => {
     assert.match(tpl.html, /Brasilien 2:1 Marokko/);
     assert.match(tpl.html, /Top-Spieler/);
     assert.match(tpl.html, /WM Top-Torschützen/);
-    assert.match(tpl.html, /Kylian Mbappé/);
+    assert.match(tpl.html, /WM Top-Torschützen<\/p>\s*<ol[^>]*><li>Kylian Mbappé \(Frankreich\) – 4 Tore<\/li>/);
     assert.match(tpl.html, /Highlights/);
     assert.match(tpl.html, /KI-Rückblick/);
     assert.match(tpl.html, /Deutschland vs USA/);

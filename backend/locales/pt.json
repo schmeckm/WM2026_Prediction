@@ -318,7 +318,7 @@
       "teamHeading": "Melhores equipas",
       "wmTopScorersHeading": "Melhores marcadores do Mundial",
       "noWmTopScorers": "Ainda não há dados de marcadores do Mundial.",
-      "wmTopScorerLine": "{rank}. {player} ({team}) – {goals} golos",
+      "wmTopScorerLine": "{player} ({team}) – {goals} golos",
       "highlightHeading": "Destaques",
       "aiHighlightHeading": "Resumo IA",
       "noHighlights": "Sem destaques especiais hoje – volte amanhã!",
