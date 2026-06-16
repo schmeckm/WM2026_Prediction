@@ -52,6 +52,11 @@ describe('morningDigestService', () => {
     aiHighlights: {
       de: { content: 'Spannende Nacht im Tippspiel!', disclaimer: 'KI-Hinweis' },
     },
+    topWmScorers: [
+      { player: { name: 'Kylian Mbappé' }, team: { name: 'Frankreich' }, goals: 4 },
+      { player: { name: 'Lionel Messi' }, team: { name: 'Argentinien' }, goals: 3 },
+      { player: { name: 'Harry Kane' }, team: { name: 'England' }, goals: 3 },
+    ],
   };
 
   it('returns a configured digest timezone', () => {
@@ -82,6 +87,8 @@ describe('morningDigestService', () => {
     assert.match(tpl.html, /Guten Morgen, Max!/);
     assert.match(tpl.html, /Brasilien 2:1 Marokko/);
     assert.match(tpl.html, /Top-Spieler/);
+    assert.match(tpl.html, /WM Top-Torschützen/);
+    assert.match(tpl.html, /Kylian Mbappé/);
     assert.match(tpl.html, /Highlights/);
     assert.match(tpl.html, /KI-Rückblick/);
     assert.match(tpl.html, /Deutschland vs USA/);
@@ -90,6 +97,7 @@ describe('morningDigestService', () => {
     assert.match(tpl.html, /2 offene Tipps in den nächsten 48 Stunden/);
     assert.match(tpl.html, /Spanien vs Italien/);
     assert.match(tpl.text, /Max/);
+    assert.match(tpl.text, /Kylian Mbappé/);
     assert.match(tpl.text, /Spanien vs Italien/);
   });
 

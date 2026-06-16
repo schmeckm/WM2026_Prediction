@@ -96,13 +96,9 @@ router.get('/standings', async (req, res) => {
 
 router.get('/scorers', async (req, res) => {
   try {
-    if (!isFootballApiAvailable()) {
-      return sendError(res, req, 503, 'errors.footballApiNotConfigured');
-    }
-
     const { limit, season } = req.query;
-    const scorers = await getScorers({ limit, season });
-    res.json(scorers);
+    const result = await getScorers({ limit, season });
+    res.json(result);
   } catch (error) {
     console.error('Football scorers error:', error.message);
     sendError(res, req, error.code === 'NO_API_KEY' ? 503 : 502, 'errors.footballScorersLoadFailed');

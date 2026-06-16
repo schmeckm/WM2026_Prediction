@@ -316,6 +316,9 @@
       "teamNotRanked": "\"{teamName}\" takımınız henüz sıralamada değil.",
       "leaderboardHeading": "En iyi oyuncular",
       "teamHeading": "En iyi takımlar",
+      "wmTopScorersHeading": "Dünya Kupası gol krallığı (Top 3)",
+      "noWmTopScorers": "Henüz Dünya Kupası golcü verisi yok.",
+      "wmTopScorerLine": "{rank}. {player} ({team}) – {goals} gol",
       "highlightHeading": "Öne çıkanlar",
       "aiHighlightHeading": "AI özet",
       "noHighlights": "Bugün özel bir öne çıkan yok – yarın tekrar bakın!",
@@ -325,7 +328,7 @@
       "cta": "Lider tablosunu görüntüle",
       "notificationTitle": "Sabah Dünya Kupası güncellemeniz",
       "notificationBody": "Dün gece {matchCount} maç – durumunuzu kontrol edin.",
-      "text": "Günaydın {firstName}!\n\nDün gece:\n{lastNightText}\n\nDurumunuz: #{rank}, {points} puan. {rankDelta}. Dün gece: +{pointsEarned} puan.\nTakım: {teamName} (#{teamRank})\n\nÖne çıkanlar:\n{highlightsText}\n{aiText}\n\nBugün:\n{todayText}\n\nEksik tahminler ({missingCount}):\n{missingMatchListText}\n{link}",
+      "text": "Günaydın {firstName}!\n\nDün gece:\n{lastNightText}\n\nDurumunuz: #{rank}, {points} puan. {rankDelta}. Dün gece: +{pointsEarned} puan.\nTakım: {teamName} (#{teamRank})\n\nDünya Kupası gol krallığı (Top 3):\n{wmTopScorersText}\n\nÖne çıkanlar:\n{highlightsText}\n{aiText}\n\nBugün:\n{todayText}\n\nEksik tahminler ({missingCount}):\n{missingMatchListText}\n{link}",
       "highlight": {
         "matchOfNight": "Gecenin maçı: {homeTeam} {homeScore}:{awayScore} {awayTeam} – {totalPoints} puan dağıtıldı.",
         "mostExactTips": "{homeTeam} vs {awayTeam} için {count} tam tahmin.",

@@ -929,6 +929,10 @@
     "team": "Drużyna",
     "played": "M",
     "goals": "Bramki",
+    "scorersEmpty": "Brak strzelców – pojawią się wraz z turniejem.",
+    "topScorersTitle": "Top 3 strzelców",
+    "topScorersSourceFootball": "Źródło: football-data.org",
+    "topScorersSourceTheSportsDb": "Źródło: TheSportsDB (szczegóły bramek)",
     "tabs": {
       "teams": "Kadry",
       "standings": "Tabele",

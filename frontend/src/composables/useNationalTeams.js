@@ -16,6 +16,8 @@ export function useNationalTeams() {
   const selectedTeam = ref(null);
   const standings = ref([]);
   const scorers = ref([]);
+  const topScorers = ref([]);
+  const scorersSource = ref('none');
   const liveMatches = ref([]);
   const loadingTeams = ref(true);
   const loadingTeamDetail = ref(false);
@@ -334,7 +336,9 @@ export function useNationalTeams() {
     error.value = '';
     try {
       const { data } = await api.get('/football/scorers', { params: { limit: 20 } });
-      scorers.value = data;
+      scorers.value = data.scorers || [];
+      topScorers.value = data.top3 || data.scorers?.slice(0, 3) || [];
+      scorersSource.value = data.source || 'none';
     } catch (err) {
       error.value = err.response?.data?.error || t('nationalTeams.loadFailed');
     } finally {
@@ -418,6 +422,8 @@ export function useNationalTeams() {
     selectedTeam,
     standings,
     scorers,
+    topScorers,
+    scorersSource,
     liveMatches,
     loadingTeams,
     loadingTeamDetail,

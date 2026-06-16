@@ -308,6 +308,9 @@
       "teamNotRanked": "Tu equipo \"{teamName}\" aún no está clasificado.",
       "leaderboardHeading": "Mejores jugadores",
       "teamHeading": "Mejores equipos",
+      "wmTopScorersHeading": "Máximos goleadores del Mundial",
+      "noWmTopScorers": "Aún no hay datos de goleadores del Mundial.",
+      "wmTopScorerLine": "{rank}. {player} ({team}) – {goals} goles",
       "highlightHeading": "Destacados",
       "aiHighlightHeading": "Resumen IA",
       "noHighlights": "Sin destacados especiales hoy – ¡vuelve mañana!",
@@ -316,7 +319,7 @@
       "cta": "Ver clasificación",
       "notificationTitle": "Tu resumen matutino del Mundial",
       "notificationBody": "{matchCount} partidos anoche – consulta tu posición.",
-      "text": "¡Buenos días {firstName}!\n\nAnoche:\n{lastNightText}\n\nTu posición: {rank}, {points} pts. {rankDelta}. Anoche: +{pointsEarned} pts.\nEquipo: {teamName} (puesto {teamRank})\n\nDestacados:\n{highlightsText}\n{aiText}\n\nHoy:\n{todayText}\n\nPronósticos abiertos: {missingCount}\n{link}",
+      "text": "¡Buenos días {firstName}!\n\nAnoche:\n{lastNightText}\n\nTu posición: {rank}, {points} pts. {rankDelta}. Anoche: +{pointsEarned} pts.\nEquipo: {teamName} (puesto {teamRank})\n\nMáximos goleadores del Mundial:\n{wmTopScorersText}\n\nDestacados:\n{highlightsText}\n{aiText}\n\nHoy:\n{todayText}\n\nPronósticos abiertos: {missingCount}\n{link}",
       "highlight": {
         "matchOfNight": "Partido de la noche: {homeTeam} {homeScore}:{awayScore} {awayTeam} – {totalPoints} puntos repartidos.",
         "mostExactTips": "{count} pronósticos exactos en {homeTeam} vs {awayTeam}.",

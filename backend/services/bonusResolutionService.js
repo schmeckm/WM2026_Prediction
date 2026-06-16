@@ -2,7 +2,7 @@ const { Match } = require('../models');
 const { teamsMatch } = require('../data/wm2026ScheduleLookup');
 const { normalizeProgressOption } = require('../utils/bonusProgressOptions');
 const { findTeamByName, getTeamById } = require('./footballTeamService');
-const { getScorers, isFootballApiAvailable } = require('./footballCompetitionService');
+const { getScorers } = require('./footballCompetitionService');
 
 const PROGRESS_RANK = {
   groupStage: 0,
@@ -134,12 +134,8 @@ async function getPodiumFromMatches() {
 }
 
 async function getTopScorerSuggestion() {
-  if (!isFootballApiAvailable()) {
-    return { topScorer: null, available: false, source: 'api_unavailable' };
-  }
-
   try {
-    const scorers = await getScorers({ limit: 10 });
+    const { scorers, source } = await getScorers({ limit: 10 });
     const leader = scorers[0];
     if (!leader?.player?.name) {
       return { topScorer: null, available: false, source: 'api_empty' };
@@ -152,7 +148,7 @@ async function getTopScorerSuggestion() {
         goals: leader.goals ?? null,
       },
       available: true,
-      source: 'football_api',
+      source: source === 'football-data' ? 'football_api' : source,
     };
   } catch {
     return { topScorer: null, available: false, source: 'api_error' };

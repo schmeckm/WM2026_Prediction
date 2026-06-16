@@ -48,6 +48,8 @@
       v-else-if="activeTab === 'scorers'"
       :loading="loadingScorers"
       :scorers="scorers"
+      :top-scorers="topScorers"
+      :source="scorersSource"
     />
 
     <NationalTeamsLiveTab
@@ -94,6 +96,8 @@ const {
   selectedTeam,
   standings,
   scorers,
+  topScorers,
+  scorersSource,
   liveMatches,
   loadingTeams,
   loadingTeamDetail,

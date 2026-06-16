@@ -22,6 +22,7 @@ const { getLatestLeaderboardSummary } = require('./aiLeaderboardService');
 const { checkAiAvailability } = require('./llmService');
 const oddsApiService = require('./oddsApiService');
 const { syncMarketOdds } = require('./oddsSyncService');
+const { getScorers } = require('./footballCompetitionService');
 
 const TOP_PLAYERS = 5;
 const TOP_TEAMS = 3;
@@ -112,6 +113,45 @@ function formatHighlightsHtml(highlights, locale) {
 function formatHighlightsText(highlights, locale) {
   if (!highlights.length) return t('emails.morningDigest.noHighlights', locale);
   return highlights.map((h) => `- ${t(`emails.morningDigest.highlight.${h.key}`, locale, h.params)}`).join('\n');
+}
+
+function formatTopWmScorersHtml(scorers, locale) {
+  if (!scorers?.length) {
+    return `<p style="margin:0;">${escapeHtml(t('emails.morningDigest.noWmTopScorers', locale))}</p>`;
+  }
+  const items = scorers.map((entry, idx) => {
+    const line = t('emails.morningDigest.wmTopScorerLine', locale, {
+      rank: idx + 1,
+      player: entry.player?.name || '–',
+      team: entry.team?.name || '–',
+      goals: entry.goals ?? 0,
+    });
+    return `<li>${escapeHtml(line)}</li>`;
+  }).join('');
+  return `<ol style="margin:12px 0;padding-left:20px;">${items}</ol>`;
+}
+
+function formatTopWmScorersText(scorers, locale) {
+  if (!scorers?.length) return t('emails.morningDigest.noWmTopScorers', locale);
+  return scorers.map((entry, idx) => {
+    const line = t('emails.morningDigest.wmTopScorerLine', locale, {
+      rank: idx + 1,
+      player: entry.player?.name || '–',
+      team: entry.team?.name || '–',
+      goals: entry.goals ?? 0,
+    });
+    return `- ${line}`;
+  }).join('\n');
+}
+
+async function loadTopWmScorers() {
+  try {
+    const { top3 } = await getScorers({ limit: 3 });
+    return top3 || [];
+  } catch (error) {
+    console.warn('[MorningDigest] WM top scorers not loaded:', error.message);
+    return [];
+  }
 }
 
 async function getYesterdayRanks() {
@@ -327,6 +367,7 @@ async function buildSharedDigestData() {
   const usersById = new Map(allUsers.map((u) => [u.id, u]));
   const ruleHighlights = buildRuleHighlights(lastNightMatches, predictions, scoringRules, usersById);
   const aiHighlights = await loadAiHighlightsByLocale();
+  const topWmScorers = await loadTopWmScorers();
 
   return {
     timezone,
@@ -338,6 +379,7 @@ async function buildSharedDigestData() {
     pointsEarned,
     topUsers: leaderboard.slice(0, TOP_PLAYERS),
     topTeams: teamRanking.slice(0, TOP_TEAMS),
+    topWmScorers,
     ruleHighlights,
     aiHighlights,
   };
@@ -424,6 +466,7 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
   );
 
   const ruleHighlightsHtml = formatHighlightsHtml(shared.ruleHighlights, locale);
+  const wmTopScorersHtml = formatTopWmScorersHtml(shared.topWmScorers, locale);
   const aiBlock = shared.aiHighlights[locale];
   let aiHtml = '';
   let aiText = '';
@@ -453,6 +496,8 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
     ${leaderboardHtml}
     <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.teamHeading', locale))}</p>
     ${teamHtml}
+    <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.wmTopScorersHeading', locale))}</p>
+    ${wmTopScorersHtml}
     <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.highlightHeading', locale))}</p>
     ${ruleHighlightsHtml}
     ${aiHtml ? `<p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.aiHighlightHeading', locale))}</p>${aiHtml}` : ''}
@@ -468,6 +513,7 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
   });
   const missingMatchListText = formatMatchListText(userData.missingMatches || [], locale, { timezone: shared.timezone });
   const highlightsText = formatHighlightsText(shared.ruleHighlights, locale);
+  const wmTopScorersText = formatTopWmScorersText(shared.topWmScorers, locale);
 
   return {
     subject: t('emails.morningDigest.subject', locale),
@@ -488,6 +534,7 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
       pointsEarned: userData.pointsEarned,
       teamName: userData.teamEntry?.teamName ?? user.team?.name ?? '–',
       teamRank: userData.teamEntry?.rank ?? '–',
+      wmTopScorersText,
       highlightsText,
       aiText,
       todayText,

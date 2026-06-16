@@ -316,6 +316,9 @@
       "teamNotRanked": "A sua equipa \"{teamName}\" ainda não está classificada.",
       "leaderboardHeading": "Melhores jogadores",
       "teamHeading": "Melhores equipas",
+      "wmTopScorersHeading": "Melhores marcadores do Mundial",
+      "noWmTopScorers": "Ainda não há dados de marcadores do Mundial.",
+      "wmTopScorerLine": "{rank}. {player} ({team}) – {goals} golos",
       "highlightHeading": "Destaques",
       "aiHighlightHeading": "Resumo IA",
       "noHighlights": "Sem destaques especiais hoje – volte amanhã!",
@@ -325,7 +328,7 @@
       "cta": "Ver classificação",
       "notificationTitle": "A sua atualização matinal do Campeonato do Mundo",
       "notificationBody": "{matchCount} jogos ontem à noite – verifique a sua posição.",
-      "text": "Bom dia {firstName}!\n\nOntem à noite:\n{lastNightText}\n\nA sua posição: #{rank}, {points} pts. {rankDelta}. Ontem à noite: +{pointsEarned} pts.\nEquipa: {teamName} (#{teamRank})\n\nDestaques:\n{highlightsText}\n{aiText}\n\nHoje:\n{todayText}\n\nPalpites em falta ({missingCount}):\n{missingMatchListText}\n{link}",
+      "text": "Bom dia {firstName}!\n\nOntem à noite:\n{lastNightText}\n\nA sua posição: #{rank}, {points} pts. {rankDelta}. Ontem à noite: +{pointsEarned} pts.\nEquipa: {teamName} (#{teamRank})\n\nMelhores marcadores do Mundial:\n{wmTopScorersText}\n\nDestaques:\n{highlightsText}\n{aiText}\n\nHoje:\n{todayText}\n\nPalpites em falta ({missingCount}):\n{missingMatchListText}\n{link}",
       "highlight": {
         "matchOfNight": "Jogo da noite: {homeTeam} {homeScore}:{awayScore} {awayTeam} – {totalPoints} pontos atribuídos.",
         "mostExactTips": "{count} palpites exatos para {homeTeam} vs {awayTeam}.",

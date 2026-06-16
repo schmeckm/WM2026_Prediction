@@ -326,6 +326,9 @@
       "teamNotRanked": "Dein Team \"{teamName}\" ist noch nicht in der Teamwertung platziert.",
       "leaderboardHeading": "Top-Spieler",
       "teamHeading": "Top-Teams",
+      "wmTopScorersHeading": "WM Top-Torschützen",
+      "noWmTopScorers": "Noch keine Torschützen-Daten für die WM verfügbar.",
+      "wmTopScorerLine": "{rank}. {player} ({team}) – {goals} Tore",
       "highlightHeading": "Highlights",
       "aiHighlightHeading": "KI-Rückblick",
       "noHighlights": "Keine besonderen Highlights – schau morgen wieder vorbei!",
@@ -335,7 +338,7 @@
       "cta": "Hitliste ansehen",
       "notificationTitle": "Dein WM-Morgen-Update",
       "notificationBody": "{matchCount} Spiele in der letzten Nacht – schau dir deinen Stand an.",
-      "text": "Guten Morgen {firstName}!\n\nLetzte Nacht:\n{lastNightText}\n\nDein Stand: Platz {rank}, {points} Pkt. {rankDelta}. Gestern: +{pointsEarned} Pkt.\nTeam: {teamName} (Platz {teamRank})\n\nHighlights:\n{highlightsText}\n{aiText}\n\nHeute:\n{todayText}\n\nFehlende Tipps ({missingCount}):\n{missingMatchListText}\n{link}",
+      "text": "Guten Morgen {firstName}!\n\nLetzte Nacht:\n{lastNightText}\n\nDein Stand: Platz {rank}, {points} Pkt. {rankDelta}. Gestern: +{pointsEarned} Pkt.\nTeam: {teamName} (Platz {teamRank})\n\nWM Top-Torschützen:\n{wmTopScorersText}\n\nHighlights:\n{highlightsText}\n{aiText}\n\nHeute:\n{todayText}\n\nFehlende Tipps ({missingCount}):\n{missingMatchListText}\n{link}",
       "highlight": {
         "matchOfNight": "Spiel der Nacht: {homeTeam} {homeScore}:{awayScore} {awayTeam} – insgesamt {totalPoints} Punkte verteilt.",
         "mostExactTips": "{count} Exakt-Tipps bei {homeTeam} vs {awayTeam}.",
