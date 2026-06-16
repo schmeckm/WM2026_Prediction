@@ -50,6 +50,7 @@
                   aria-label="locked"
                 >🔒</span>
                 {{ match.prediction.predictedHomeScore }} : {{ match.prediction.predictedAwayScore }}
+                <MatchPredictionMeta :match="match" />
               </span>
               <span v-else class="text-muted">
                 <span
@@ -59,6 +60,7 @@
                   aria-label="locked"
                 >🔒</span>
                 –
+                <MatchPredictionMeta :match="match" />
               </span>
             </td>
             <td v-if="showPrediction">
@@ -131,6 +133,7 @@
                   aria-label="locked"
                 >🔒</span>
                 {{ match.prediction.predictedHomeScore }} : {{ match.prediction.predictedAwayScore }}
+                <MatchPredictionMeta :match="match" />
                 <div v-if="editable && !match.canPredict" class="lock-reason text-muted">
                   {{ predictionLockTitle(match) }}
                 </div>
@@ -143,6 +146,7 @@
                   aria-label="locked"
                 >🔒</span>
                 –
+                <MatchPredictionMeta :match="match" />
                 <div v-if="editable && !match.canPredict" class="lock-reason">
                   {{ predictionLockTitle(match) }}
                 </div>
@@ -182,6 +186,7 @@ import { useMatchMeta } from '../composables/useMatchMeta';
 import TeamFlag from './TeamFlag.vue';
 import MatchRefCell from './MatchRefCell.vue';
 import PredictionForm from './PredictionForm.vue';
+import MatchPredictionMeta from './MatchPredictionMeta.vue';
 import { getPredictionLockReason } from '../utils/predictionLockReason';
 
 const props = defineProps({

@@ -20,6 +20,8 @@ const { isMorningDigestEnabled } = require('./emailReminderSettingsService');
 const notificationService = require('./notificationService');
 const { getLatestLeaderboardSummary } = require('./aiLeaderboardService');
 const { checkAiAvailability } = require('./llmService');
+const oddsApiService = require('./oddsApiService');
+const { syncMarketOdds } = require('./oddsSyncService');
 
 const TOP_PLAYERS = 5;
 const TOP_TEAMS = 3;
@@ -398,7 +400,10 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
   }
 
   const lastNightHtml = formatFinishedMatchListHtml(shared.lastNightMatches, locale);
-  const todayHtml = formatMatchListHtml(shared.todayMatches, locale, { timezone: shared.timezone });
+  const todayHtml = formatMatchListHtml(shared.todayMatches, locale, {
+    timezone: shared.timezone,
+    includeMarketOdds: true,
+  });
   const leaderboardHtml = formatRankingListHtml(
     shared.topUsers.map((entry) => ({
       rank: entry.rank,
@@ -457,7 +462,10 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
   `.trim();
 
   const lastNightText = formatFinishedMatchListText(shared.lastNightMatches, locale);
-  const todayText = formatMatchListText(shared.todayMatches, locale, { timezone: shared.timezone });
+  const todayText = formatMatchListText(shared.todayMatches, locale, {
+    timezone: shared.timezone,
+    includeMarketOdds: true,
+  });
   const missingMatchListText = formatMatchListText(userData.missingMatches || [], locale, { timezone: shared.timezone });
   const highlightsText = formatHighlightsText(shared.ruleHighlights, locale);
 
@@ -524,6 +532,14 @@ async function sendMorningDigests({ force = false } = {}) {
     return { skipped: true, message: 'Morning Digest deaktiviert oder SMTP nicht bereit.' };
   }
 
+  if (oddsApiService.isConfigured()) {
+    try {
+      await syncMarketOdds();
+    } catch (error) {
+      console.warn('[MorningDigest] Markt-Quoten vor Digest nicht aktualisiert:', error.message);
+    }
+  }
+
   const shared = await buildSharedDigestData();
   if (!(await shouldSendDigestToday(shared.timezone, { force }))) {
     return { skipped: true, message: 'Morning Digest wurde heute bereits gesendet.' };
@@ -585,6 +601,14 @@ async function sendMorningDigestsToUsers(userIds, { force = true } = {}) {
   const users = await loadUsersByIds(userIds);
   if (users.length === 0) {
     return { sent: 0, skipped: 0, recipients: [], message: 'Keine gültigen Empfänger ausgewählt.' };
+  }
+
+  if (oddsApiService.isConfigured()) {
+    try {
+      await syncMarketOdds();
+    } catch (error) {
+      console.warn('[MorningDigest] Markt-Quoten vor Digest nicht aktualisiert:', error.message);
+    }
   }
 
   const shared = await buildSharedDigestData();

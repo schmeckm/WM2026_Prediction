@@ -69,9 +69,15 @@
         </span>
         <CountdownBadge v-if="match.status === 'scheduled'" :kickoff-time="match.kickoffTime" />
       </div>
-      <div v-if="match.prediction" class="match-card-tips">
-        <span class="badge badge-info">{{ t('matches.yourTip') }}: {{ match.prediction.predictedHomeScore }} : {{ match.prediction.predictedAwayScore }}</span>
-        <span v-if="match.prediction.points !== null" class="badge badge-success">
+      <p v-if="showUpcomingMarketOdds(match)" class="match-card-market-probs">
+        {{ formatMarketProbabilities(match, t) }}
+      </p>
+      <div v-if="match.prediction || hasDisplayableResult(match)" class="match-card-tips">
+        <span v-if="match.prediction" class="badge badge-info">{{ t('matches.yourTip') }}: {{ match.prediction.predictedHomeScore }} : {{ match.prediction.predictedAwayScore }}</span>
+        <span v-if="hasDisplayableResult(match)" class="badge badge-secondary">
+          {{ t('matches.actualResult') }}: {{ displayMatchScore(match).home }} : {{ displayMatchScore(match).away }}
+        </span>
+        <span v-if="match.prediction?.points !== null && match.prediction?.points !== undefined" class="badge badge-success">
           {{ formatPoints(match.prediction.points) }} {{ t('common.points') }}
         </span>
       </div>
@@ -91,6 +97,11 @@
           {{ t('matches.yourTip') }}: {{ match.prediction.predictedHomeScore }} : {{ match.prediction.predictedAwayScore }}
         </span>
         <span v-else class="text-muted">{{ t('matches.noTipGiven') }}</span>
+        <div v-if="hasDisplayableResult(match)" class="match-card-tips match-card-tips--locked">
+          <span v-if="hasDisplayableResult(match)" class="badge badge-secondary">
+            {{ t('matches.actualResult') }}: {{ displayMatchScore(match).home }} : {{ displayMatchScore(match).away }}
+          </span>
+        </div>
         <div class="text-muted match-lock-reason">{{ lockTitle }}</div>
       </div>
       <div v-else-if="!match.hasPrediction" class="text-center text-muted">
@@ -184,6 +195,7 @@ import MatchVenueModal from './MatchVenueModal.vue';
 import MatchWhatIfPanel from './MatchWhatIfPanel.vue';
 import { useFormatters } from '../composables/useFormatters';
 import { useMatchMeta } from '../composables/useMatchMeta';
+import { hasDisplayableResult, displayMatchScore, formatMarketProbabilities, showUpcomingMarketOdds } from '../composables/useMatchExtras';
 import { getPredictionLockReason } from '../utils/predictionLockReason';
 
 const showVenueModal = ref(false);
@@ -315,6 +327,17 @@ function scoreClass(match) {
   align-items: center;
   gap: 0.375rem;
   margin-bottom: 0.5rem;
+}
+
+.match-card-tips--locked {
+  margin-top: 0.35rem;
+}
+
+.match-card-market-probs {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  line-height: 1.35;
 }
 
 .match-card-highlights {

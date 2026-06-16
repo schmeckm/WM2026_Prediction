@@ -29,6 +29,9 @@ describe('morningDigestService', () => {
       homeTeam: 'Deutschland',
       awayTeam: 'USA',
       kickoffTime: new Date('2026-06-16T18:00:00Z'),
+      marketOddsJson: JSON.stringify({
+        probabilities: { home: 52.3, draw: 24.1, away: 23.6 },
+      }),
     }],
     topUsers: [{ rank: 1, firstName: 'Anna', lastName: 'Müller', totalPoints: 50 }],
     topTeams: [{ rank: 1, teamName: 'Team X', averagePoints: 40 }],
@@ -82,6 +85,7 @@ describe('morningDigestService', () => {
     assert.match(tpl.html, /Highlights/);
     assert.match(tpl.html, /KI-Rückblick/);
     assert.match(tpl.html, /Deutschland vs USA/);
+    assert.match(tpl.html, /Markt: 52\.3%/);
     assert.match(tpl.html, /Deine fehlenden Tipps/);
     assert.match(tpl.html, /2 offene Tipps in den nächsten 48 Stunden/);
     assert.match(tpl.html, /Spanien vs Italien/);

@@ -280,6 +280,7 @@
       "cta": "Ver classificação",
       "text": "Olá {firstName}! Posição: #{rank}, Pontos: {points}\n{link}"
     },
+    "marketProbabilities": "Mercado: {home}% · empate {draw}% · {away}%",
     "syncError": {
       "subject": "World Cup 2026 - Competição – Erro de sincronização",
       "title": "Erro de sincronização",

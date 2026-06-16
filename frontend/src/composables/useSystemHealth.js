@@ -8,6 +8,7 @@ const POLL_INTERVAL_OFFLINE_MS = 15000;
 const EXTERNAL_API_LABEL_KEYS = {
   football: 'systemHealth.externalFootball',
   theSportsDb: 'systemHealth.externalTheSportsDb',
+  odds: 'systemHealth.externalOdds',
   email: 'systemHealth.externalEmail',
   google: 'systemHealth.externalGoogle',
 };
@@ -54,6 +55,7 @@ export function useSystemHealth() {
       if (api.id === 'football') return t('systemHealth.detailFootballNotConfigured');
       if (api.id === 'email') return t('systemHealth.detailEmailNotConfigured');
       if (api.id === 'google') return t('systemHealth.detailGoogleNotConfigured');
+      if (api.id === 'odds') return t('systemHealth.detailOddsNotConfigured');
       return t('systemHealth.detailExternalNotConfigured');
     }
     if (api.reason === 'disabled') return t('systemHealth.detailExternalDisabled');

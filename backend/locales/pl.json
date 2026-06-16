@@ -280,6 +280,7 @@
       "cta": "View leaderboard",
       "text": "Hello {firstName}! Rank: #{rank}, Points: {points}\n{link}"
     },
+    "marketProbabilities": "Rynek: {home}% · remis {draw}% · {away}%",
     "syncError": {
       "subject": "World Cup 2026 - Competition – Sync error",
       "title": "Synchronization error",

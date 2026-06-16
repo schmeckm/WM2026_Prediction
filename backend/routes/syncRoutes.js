@@ -23,7 +23,8 @@ const {
   startSyncLog,
   failSyncLog,
 } = require('../services/syncLogService');
-const { getSetting } = require('../services/settingsService');
+const { syncMarketOdds } = require('../services/oddsSyncService');
+const oddsApiService = require('../services/oddsApiService');
 
 const router = express.Router();
 
@@ -214,6 +215,27 @@ router.post('/recalculate-points', async (req, res) => {
     res.json({ message: 'Punkte neu berechnet.', ...result });
   } catch (error) {
     sendError(res, req, 500, 'errors.recalculateFailed');
+  }
+});
+
+router.post('/test-odds-api', async (req, res) => {
+  try {
+    const result = await oddsApiService.testConnection();
+    res.json(result);
+  } catch (error) {
+    handleSyncError(error, res, req);
+  }
+});
+
+router.post('/market-odds', async (req, res) => {
+  try {
+    const result = await syncMarketOdds({ userId: req.user.id, req });
+    res.json(result);
+  } catch (error) {
+    if (error.code === 'NO_API_KEY') {
+      return res.status(503).json({ error: error.message, code: error.code });
+    }
+    handleSyncError(error, res, req);
   }
 });
 

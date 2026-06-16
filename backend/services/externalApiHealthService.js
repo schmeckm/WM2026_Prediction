@@ -4,6 +4,7 @@ const { isEmailConfigured } = require('./emailService');
 const { isGoogleEnabled } = require('./oauthService');
 const { fetchTheSportsDb } = require('./providers/theSportsDbClient');
 const playerImageProviderService = require('./playerImageProviderService');
+const oddsApiService = require('./oddsApiService');
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const PROBE_TIMEOUT_MS = 6000;
@@ -11,7 +12,7 @@ const PROBE_TIMEOUT_MS = 6000;
 let cache = { at: 0, apis: null };
 let probeInFlight = null;
 
-function buildStatus(id, { configured, enabled, active, reason, detail }) {
+function buildStatus(id, { configured, enabled, active, reason, detail, quotaRemaining }) {
   let state = 'inactive';
   if (enabled && configured && active) state = 'online';
   else if (enabled && configured && !active) state = 'offline';
@@ -24,6 +25,7 @@ function buildStatus(id, { configured, enabled, active, reason, detail }) {
     state,
     reason: reason || null,
     detail: detail || null,
+    quotaRemaining: quotaRemaining ?? null,
   };
 }
 
@@ -158,16 +160,58 @@ function getGoogleSsoStatus() {
   });
 }
 
+async function probeOddsApi() {
+  if (!oddsApiService.isConfigured()) {
+    return buildStatus('odds', {
+      configured: false,
+      enabled: true,
+      active: false,
+      reason: 'not_configured',
+    });
+  }
+
+  if (process.env.NODE_ENV === 'test') {
+    return buildStatus('odds', {
+      configured: true,
+      enabled: true,
+      active: true,
+      reason: 'ok',
+    });
+  }
+
+  try {
+    const result = await withTimeout(oddsApiService.testConnection());
+    return buildStatus('odds', {
+      configured: true,
+      enabled: true,
+      active: result.ok,
+      reason: result.ok ? 'ok' : 'unreachable',
+      detail: result.sportActive === false ? 'sport_inactive' : null,
+      quotaRemaining: result.quota?.requestsRemaining ?? null,
+    });
+  } catch (error) {
+    return buildStatus('odds', {
+      configured: true,
+      enabled: true,
+      active: false,
+      reason: 'unreachable',
+      detail: error.message?.slice(0, 160) || null,
+    });
+  }
+}
+
 async function probeExternalApis() {
   const config = await footballProviderService.getProviderConfig();
-  const [football, theSportsDb] = await Promise.all([
+  const [football, theSportsDb, odds] = await Promise.all([
     probeFootballApi(config),
     probeTheSportsDbApi(),
+    probeOddsApi(),
   ]);
 
   return [
     football,
     theSportsDb,
+    odds,
     getEmailApiStatus(),
     getGoogleSsoStatus(),
   ];

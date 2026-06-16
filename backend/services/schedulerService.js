@@ -3,6 +3,8 @@ const { Match } = require('../models');
 const { syncFixtures } = require('./fixtureSyncService');
 const { syncResults } = require('./resultSyncService');
 const { syncLiveScores } = require('./liveScoreSyncService');
+const { syncMarketOdds } = require('./oddsSyncService');
+const oddsApiService = require('./oddsApiService');
 const { syncPlayerImagesWave } = require('./playerImageSyncService');
 const { sendMissingPredictionReminders, sendBonusQuestionReminders, sendSyncErrorToAdmin, sendUpcomingMatchesSummary, sendLeaderboardUpdates } = require('./reminderService');
 const { sendMorningDigests } = require('./morningDigestService');
@@ -140,6 +142,18 @@ async function startScheduler() {
   const reminderCron = buildReminderCron(reminderTime, reminderFrequency);
   const morningDigestTime = await getSetting('morningDigestTime', '07:30');
   const morningDigestCron = buildReminderCron(morningDigestTime, 'daily');
+
+  // Market odds: hourly during tournament (rolling updates), daily cron off-season
+  const oddsCron = process.env.ODDS_API_CRON || '0 6 * * *';
+  const oddsRollingCron = process.env.ODDS_API_ROLLING_CRON || '0 * * * *';
+  jobs.push(cron.schedule(oddsRollingCron, async () => {
+    if (!oddsApiService.isConfigured() || !isTournamentActive()) return;
+    await safeRun(() => syncMarketOdds(), 'Markt-Quoten-Sync (stündlich)');
+  }, { timezone: CRON_TZ }));
+  jobs.push(cron.schedule(oddsCron, async () => {
+    if (!oddsApiService.isConfigured() || isTournamentActive()) return;
+    await safeRun(() => syncMarketOdds(), 'Markt-Quoten-Sync (täglich)');
+  }, { timezone: CRON_TZ }));
 
   // Daily fixture sync at 06:00 (before tournament)
   jobs.push(cron.schedule('0 6 * * *', () => {

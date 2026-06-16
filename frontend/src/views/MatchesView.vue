@@ -26,6 +26,8 @@
       {{ lockWarning }}
     </div>
 
+    <MatchesExternalApiStatus class="matches-api-status-bar" />
+
     <!-- Desktop filters (>= 768px): preserve existing layout -->
     <div class="matches-filters matches-filters--desktop">
       <div class="filter-bar">
@@ -188,6 +190,7 @@ import { onSocketEvent } from '../services/socket';
 import MatchCard from '../components/MatchCard.vue';
 import MatchCardSkeleton from '../components/MatchCardSkeleton.vue';
 import MatchTable from '../components/MatchTable.vue';
+import MatchesExternalApiStatus from '../components/MatchesExternalApiStatus.vue';
 import ErrorState from '../components/ErrorState.vue';
 import EmptyState from '../components/EmptyState.vue';
 
@@ -222,6 +225,8 @@ const viewMode = ref(localStorage.getItem(VIEW_MODE_KEY) || 'cards');
 const now = ref(Date.now());
 let unsub = null;
 let lockTimer = null;
+let oddsPollTimer = null;
+const ODDS_POLL_MS = 15 * 60 * 1000;
 
 const lockWarning = computed(() => {
   const urgent = matches.value.filter((match) => {
@@ -302,7 +307,9 @@ function updateMatch(updated) {
   const idx = matches.value.findIndex((m) => m.id === updated.id);
   if (idx >= 0) {
     const existing = matches.value[idx];
-    matches.value[idx] = { ...existing, ...updated, prediction: existing.prediction };
+    const merged = { ...existing, ...updated, prediction: existing.prediction };
+    if (updated.marketOdds) merged.marketOdds = updated.marketOdds;
+    matches.value[idx] = merged;
     syncLockTimer();
   }
 }
@@ -412,6 +419,11 @@ onMounted(async () => {
   }
   syncLockTimer();
   unsub = onSocketEvent('match:update', updateMatch);
+  oddsPollTimer = setInterval(() => {
+    if (document.visibilityState === 'visible') {
+      loadMatches();
+    }
+  }, ODDS_POLL_MS);
 });
 
 watch(needsLockTimer, syncLockTimer);
@@ -431,6 +443,7 @@ watch(
 onUnmounted(() => {
   unsub?.();
   if (lockTimer) clearInterval(lockTimer);
+  if (oddsPollTimer) clearInterval(oddsPollTimer);
 });
 </script>
 

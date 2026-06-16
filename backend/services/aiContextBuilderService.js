@@ -41,6 +41,18 @@ async function buildMatchContext(matchId, userId = null) {
     ctx.headToHead = headToHead;
   }
 
+  if (match.status !== 'finished') {
+    const { getMarketOddsForMatch } = require('./oddsApiService');
+    const marketOdds = await getMarketOddsForMatch(match.toJSON());
+    if (marketOdds.available) {
+      ctx.marketOdds = {
+        bookmaker: marketOdds.bookmaker,
+        probabilities: marketOdds.probabilities,
+        decimalOdds: marketOdds.decimalOdds,
+      };
+    }
+  }
+
   return ctx;
 }
 

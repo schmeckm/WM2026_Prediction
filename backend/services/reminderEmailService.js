@@ -2,6 +2,7 @@ const emailService = require('./emailService');
 const { getAppUrl } = require('./authTokenService');
 const { t, resolveUserEmailLocale } = require('./i18nService');
 const { escapeHtml, wrapBrandedEmail } = require('./emailLayoutService');
+const { formatMarketProbabilitiesLine } = require('../utils/marketOddsFormat');
 
 const DATE_LOCALES = {
   de: 'de-DE',
@@ -28,22 +29,28 @@ function formatKickoff(kickoffTime, locale, { timezone } = {}) {
   }).format(date);
 }
 
-function formatMatchListHtml(matches, locale, { timezone } = {}) {
+function formatMatchListHtml(matches, locale, { timezone, includeMarketOdds = false } = {}) {
   if (!matches.length) {
     return `<p style="margin:0;">${escapeHtml(t('emails.missingPredictions.noneUpcoming', locale))}</p>`;
   }
   const items = matches.map((m) => {
     const when = formatKickoff(m.kickoffTime, locale, { timezone });
-    return `<li>${escapeHtml(m.homeTeam)} vs ${escapeHtml(m.awayTeam)} – ${escapeHtml(when)}</li>`;
+    const marketLine = includeMarketOdds ? formatMarketProbabilitiesLine(m, locale) : '';
+    const marketHtml = marketLine
+      ? `<br><span style="color:#64748b;font-size:13px;">${escapeHtml(marketLine)}</span>`
+      : '';
+    return `<li>${escapeHtml(m.homeTeam)} vs ${escapeHtml(m.awayTeam)} – ${escapeHtml(when)}${marketHtml}</li>`;
   }).join('');
   return `<ul style="margin:12px 0;padding-left:20px;">${items}</ul>`;
 }
 
-function formatMatchListText(matches, locale, { timezone } = {}) {
+function formatMatchListText(matches, locale, { timezone, includeMarketOdds = false } = {}) {
   if (!matches.length) return t('emails.missingPredictions.noneUpcoming', locale);
   return matches.map((m) => {
     const when = formatKickoff(m.kickoffTime, locale, { timezone });
-    return `- ${m.homeTeam} vs ${m.awayTeam} (${when})`;
+    const marketLine = includeMarketOdds ? formatMarketProbabilitiesLine(m, locale) : '';
+    const suffix = marketLine ? ` – ${marketLine}` : '';
+    return `- ${m.homeTeam} vs ${m.awayTeam} (${when})${suffix}`;
   }).join('\n');
 }
 

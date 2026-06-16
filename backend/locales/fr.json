@@ -272,6 +272,7 @@
       "cta": "Voir le classement",
       "text": "Bonjour {firstName} ! Rang : #{rank}, Points : {points}\n{link}"
     },
+    "marketProbabilities": "Marché : {home}% · nul {draw}% · {away}%",
     "syncError": {
       "subject": "World Cup 2026 - Compétition – Erreur de synchronisation",
       "title": "Erreur de synchronisation",

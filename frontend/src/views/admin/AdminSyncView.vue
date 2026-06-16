@@ -79,6 +79,40 @@
         </div>
       </div>
 
+      <div class="card mb-2">
+        <div class="card-header"><h3>{{ t('adminPages.sync.oddsApiTitle') }}</h3></div>
+        <div class="card-body provider-form">
+          <p class="hint text-muted">{{ t('adminPages.sync.oddsApiHint') }}</p>
+          <dl class="provider-details">
+            <dt>{{ t('adminPages.sync.oddsSportKey') }}</dt>
+            <dd><code>{{ status.oddsApi?.sportKey || 'soccer_fifa_world_cup' }}</code></dd>
+            <dt>{{ t('adminPages.sync.oddsRegions') }}</dt>
+            <dd><code>{{ status.oddsApi?.regions || 'eu' }}</code></dd>
+            <dt>{{ t('adminPages.sync.oddsMarkets') }}</dt>
+            <dd><code>{{ status.oddsApi?.markets || 'h2h' }}</code></dd>
+            <dt>{{ t('adminPages.sync.oddsQuotaCost') }}</dt>
+            <dd>{{ status.oddsApi?.quotaCostPerOddsSync ?? 1 }} {{ t('adminPages.sync.oddsCredits') }}</dd>
+            <dt>{{ t('adminPages.sync.oddsQuotaRemaining') }}</dt>
+            <dd>{{ status.oddsApi?.quota?.requestsRemaining ?? '–' }}</dd>
+            <dt>{{ t('adminPages.sync.oddsCron') }}</dt>
+            <dd><code>{{ status.oddsApi?.cron || '0 6 * * *' }}</code></dd>
+            <dt>{{ t('adminPages.sync.oddsLastSync') }}</dt>
+            <dd>{{ formatDate(status.oddsApi?.lastSuccessfulSync?.finishedAt || status.oddsApi?.lastSync?.finishedAt) }}</dd>
+          </dl>
+          <p v-if="oddsEndpoints.length" class="hint text-muted odds-endpoints">
+            <span v-for="(line, idx) in oddsEndpoints" :key="idx">{{ line }}<br></span>
+          </p>
+          <div class="btn-group">
+            <button class="btn btn-accent btn-sm" :disabled="syncing || !status.oddsApi?.configured" @click="testOddsApi">
+              {{ t('adminPages.sync.testOddsApi') }}
+            </button>
+            <button class="btn btn-primary btn-sm" :disabled="syncing || !status.oddsApi?.configured" @click="syncMarketOdds">
+              {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.syncMarketOdds') }}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="btn-group mb-2">
         <button class="btn btn-primary" :disabled="syncing || !status.apiConfigured" @click="syncOfficialSchedule">
           {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.syncOfficialSchedule') }}
@@ -186,6 +220,16 @@ const playerImageProgressStats = computed(() => (
     ? parsePlayerImageLogDetails(activePlayerImageLog.value)
     : { total: 0, loaded: 0, processed: 0, resolved: 0, skipped: 0, percent: 0 }
 ));
+
+const oddsEndpoints = computed(() => {
+  const sport = status.value.oddsApi?.sportKey || 'soccer_fifa_world_cup';
+  if (!status.value.oddsApi?.configured) return [];
+  return [
+    t('adminPages.sync.oddsEndpointSports'),
+    t('adminPages.sync.oddsEndpointEvents', { sport }),
+    t('adminPages.sync.oddsEndpointOdds', { sport }),
+  ];
+});
 
 function formatDate(d) {
   if (!d) return '–';
@@ -311,6 +355,52 @@ async function testTheSportsDb() {
     messageType.value = 'success';
   } catch (e) {
     error.value = e.response?.data?.error || t('adminPages.sync.theSportsDbTestFailed');
+  } finally {
+    syncing.value = false;
+  }
+}
+
+async function testOddsApi() {
+  syncing.value = true;
+  error.value = '';
+  message.value = '';
+  try {
+    const { data } = await api.post('/admin/sync/test-odds-api');
+    message.value = data.ok
+      ? t('adminPages.sync.oddsApiConnectedDetailed', {
+        remaining: data.requestsRemaining ?? '–',
+        events: data.upcomingEvents ?? '–',
+        cost: data.quotaCostPerOddsSync ?? 1,
+      })
+      : t('adminPages.sync.oddsApiTestFailed');
+    messageType.value = data.ok ? 'success' : 'warning';
+    if (data.ok) {
+      status.value = {
+        ...status.value,
+        oddsApi: {
+          ...status.value.oddsApi,
+          quota: data.quota || status.value.oddsApi?.quota,
+        },
+      };
+    }
+  } catch (e) {
+    error.value = e.response?.data?.error || t('adminPages.sync.oddsApiTestFailed');
+  } finally {
+    syncing.value = false;
+  }
+}
+
+async function syncMarketOdds() {
+  syncing.value = true;
+  error.value = '';
+  message.value = '';
+  try {
+    const { data } = await api.post('/admin/sync/market-odds');
+    message.value = data.message || t('adminPages.sync.marketOddsSynced');
+    messageType.value = (data.errorCount || 0) > 0 ? 'warning' : 'success';
+    await load();
+  } catch (e) {
+    error.value = e.response?.data?.error || t('adminPages.sync.oddsSyncFailed');
   } finally {
     syncing.value = false;
   }

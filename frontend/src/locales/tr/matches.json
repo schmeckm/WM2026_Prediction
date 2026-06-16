@@ -16,6 +16,8 @@
     "empty": "Bu filtre için maç bulunamadı.",
     "group": "Grup",
     "yourTip": "Tahmininiz",
+    "actualResult": "Maç sonucu",
+    "marketProbabilities": "Piyasa: %{home} · beraberlik %{draw} · %{away}",
     "noTip": "Tahmin gönderilmedi",
     "noTipGiven": "Tahmin gönderilmedi",
     "stadiumPreview": "Stadyumu büyüt ve AI bilgisi göster",
@@ -26,6 +28,7 @@
     "viewTable": "Tablo",
     "lockWarningMissing": "Uyarı: {count} açık maç 15 dakikadan kısa sürede kilitleniyor – hâlâ tahmin eksik!",
     "lockWarningSoon": "Uyarı: {count} maç 15 dakikadan kısa sürede başlıyor – tahminler yakında kilitlenecek.",
+    "apiStatus": { "title": "Veri kaynakları" },
     "whatIf": {
       "show": "What-if",
       "hide": "What-if gizle",

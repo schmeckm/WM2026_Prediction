@@ -136,15 +136,19 @@ async function getRelevantLastSyncError() {
 async function getSyncStatusSummary() {
   const { Op } = require('sequelize');
   const footballProviderService = require('./footballProviderService');
+  const oddsApiService = require('./oddsApiService');
   const { getRateLimitState } = require('./footballDataRateLimitService');
   const config = await footballProviderService.getProviderConfig();
+  const oddsConfig = oddsApiService.getConfig();
 
-  const [lastFixtureSync, lastResultSync, lastLiveSync, lastSuccessfulFixture, lastSuccessfulResult, successCount, failedCount, recentErrors] = await Promise.all([
+  const [lastFixtureSync, lastResultSync, lastLiveSync, lastMarketOddsSync, lastSuccessfulFixture, lastSuccessfulResult, lastSuccessfulMarketOdds, successCount, failedCount, recentErrors] = await Promise.all([
     getLastSync('fixtures'),
     getLastSync(['results', 'live_scores']),
     getLastSync('live_scores'),
+    getLastSync('market_odds'),
     getLastSuccessfulSync('fixtures'),
     getLastSuccessfulSync('results'),
+    getLastSuccessfulSync('market_odds'),
     SyncLog.count({ where: { status: 'success' } }),
     SyncLog.count({ where: { status: { [Op.in]: ['failed', 'partial'] } } }),
     getSyncErrors({ limit: 5 }),
@@ -163,11 +167,25 @@ async function getSyncStatusSummary() {
     competitionNumericId: config.competitionNumericId,
     season: config.season,
     timezone: config.timezone,
+    oddsApi: {
+      configured: oddsApiService.isConfigured(),
+      enabled: oddsConfig.enabled,
+      sportKey: oddsConfig.sportKey,
+      regions: oddsConfig.regions,
+      markets: oddsConfig.markets,
+      quotaCostPerOddsSync: oddsConfig.quotaCostPerOddsRequest,
+      quota: oddsApiService.getQuotaState(),
+      cron: process.env.ODDS_API_CRON || '0 6 * * *',
+      lastSync: lastMarketOddsSync,
+      lastSuccessfulSync: lastSuccessfulMarketOdds,
+    },
     lastFixtureSync,
     lastResultSync,
     lastLiveSync,
+    lastMarketOddsSync,
     lastSuccessfulFixture,
     lastSuccessfulResult,
+    lastSuccessfulMarketOdds,
     successCount,
     failedCount,
     recentErrors,

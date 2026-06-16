@@ -280,6 +280,7 @@
       "cta": "Lider tablosunu görüntüle",
       "text": "Merhaba {firstName}! Sıra: #{rank}, Puan: {points}\n{link}"
     },
+    "marketProbabilities": "Piyasa: %{home} · beraberlik %{draw} · %{away}",
     "syncError": {
       "subject": "Dünya Kupası 2026 - Yarışma – Senkronizasyon hatası",
       "title": "Senkronizasyon hatası",

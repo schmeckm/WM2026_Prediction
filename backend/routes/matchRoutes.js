@@ -11,6 +11,7 @@ const socketService = require('../services/socketService');
 const { isMatchEditable } = require('../services/matchLockService');
 const { countPredictionsForMatch } = require('../services/predictionProtectionService');
 const { attachStadiumImage, attachStadiumImages } = require('../services/matchPresentationService');
+const { attachMarketOdds, attachMarketOddsList } = require('../utils/matchMarketOdds');
 const { getGroupStandings } = require('../services/groupStandingsService');
 const { validatePredictionScores } = require('../utils/predictionValidation');
 
@@ -100,7 +101,7 @@ router.get('/', authMiddleware, async (req, res) => {
     });
     const predictionMap = new Map(userPredictions.map((p) => [p.matchId, p]));
 
-    let result = attachStadiumImages(matches.map((match) => {
+    let result = attachMarketOddsList(attachStadiumImages(matches.map((match) => {
       const prediction = predictionMap.get(match.id);
       const editable = isMatchEditable(match);
       return {
@@ -109,7 +110,7 @@ router.get('/', authMiddleware, async (req, res) => {
         canPredict: editable,
         hasPrediction: !!prediction,
       };
-    }));
+    })));
 
     if (filter === 'open') {
       result = result.filter((m) => m.canPredict);
@@ -145,13 +146,29 @@ router.get('/:id/predictions', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/:id/market-odds', authMiddleware, async (req, res) => {
+  try {
+    const match = await Match.findByPk(req.params.id);
+    if (!match) {
+      return sendError(res, req, 404, 'errors.matchNotFound');
+    }
+
+    const { getMarketOddsForMatch } = require('../services/oddsApiService');
+    const marketOdds = await getMarketOddsForMatch(match.toJSON());
+    res.json(marketOdds);
+  } catch (error) {
+    console.error('Market odds error:', error);
+    sendError(res, req, 500, 'errors.internalServer');
+  }
+});
+
 router.get('/:id', authMiddleware, async (req, res) => {
   try {
     const match = await Match.findByPk(req.params.id);
     if (!match) {
       return sendError(res, req, 404, 'errors.matchNotFound');
     }
-    res.json(attachStadiumImage(match.toJSON()));
+    res.json(attachMarketOdds(attachStadiumImage(match.toJSON())));
   } catch (error) {
     sendError(res, req, 500, 'errors.matchLoadFailed');
   }

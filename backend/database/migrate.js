@@ -120,6 +120,11 @@ async function runMigrations(sequelize) {
     allowNull: true,
   });
 
+  await ensureColumn(queryInterface, matchTableInfo, 'Matches', 'marketOddsJson', {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  });
+
   await ensureIndexes(queryInterface);
 }
 
