@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
+import { applyPortalAccent } from '../utils/applyPortalAccent';
+import { normalizePortalAccent } from '../utils/portalAccentColors';
 
 const STORAGE_KEY = 'theme';
 const THEME_MIGRATION_KEY = 'theme-migration-v';
@@ -21,6 +23,8 @@ export const useThemeStore = defineStore('theme', () => {
     theme.value = value === 'dark' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', theme.value);
     localStorage.setItem(STORAGE_KEY, theme.value);
+    const accent = normalizePortalAccent(localStorage.getItem('portalAccent') || 'green');
+    applyPortalAccent(accent, theme.value);
   }
 
   function toggleTheme() {

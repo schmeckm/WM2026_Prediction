@@ -101,6 +101,11 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(16),
     allowNull: true,
   },
+  portalAccent: {
+    type: DataTypes.STRING(16),
+    allowNull: false,
+    defaultValue: 'green',
+  },
   totpEnabled: {
     type: DataTypes.BOOLEAN,
     allowNull: false,

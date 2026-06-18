@@ -235,6 +235,18 @@
     "darkMode": "Modo oscuro",
     "darkModeOn": "Activado",
     "darkModeOff": "Desactivado",
+    "portalAccent": "Color del portal",
+    "portalAccentHint": "Elige el color de acento para botones, enlaces y resaltados en todo el portal.",
+    "portalAccents": {
+      "green": "Verde",
+      "blue": "Azul",
+      "cyan": "Cian",
+      "orange": "Naranja",
+      "purple": "Morado",
+      "pink": "Rosa",
+      "red": "Rojo",
+      "gold": "Dorado"
+    },
     "saveProfile": "Guardar perfil",
     "updated": "Perfil actualizado correctamente.",
     "updateFailed": "No se pudo guardar el perfil.",

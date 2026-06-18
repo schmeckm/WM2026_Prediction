@@ -392,6 +392,18 @@
     "darkMode": "Dunkles Design",
     "darkModeOn": "Aktiv",
     "darkModeOff": "Aus",
+    "portalAccent": "Portal-Farbe",
+    "portalAccentHint": "Wählen Sie die Akzentfarbe für Buttons, Links und Hervorhebungen im gesamten Portal.",
+    "portalAccents": {
+      "green": "Grün",
+      "blue": "Blau",
+      "cyan": "Cyan",
+      "orange": "Orange",
+      "purple": "Lila",
+      "pink": "Pink",
+      "red": "Rot",
+      "gold": "Gold"
+    },
     "imageHint": "JPG, PNG, WebP oder GIF, max. 2 MB",
     "removeImage": "Profilbild entfernen",
     "imageTooLarge": "Bild ist zu groß (max. 2 MB).",

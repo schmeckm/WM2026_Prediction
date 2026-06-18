@@ -357,6 +357,18 @@
     "darkMode": "Dark mode",
     "darkModeOn": "On",
     "darkModeOff": "Off",
+    "portalAccent": "Portal color",
+    "portalAccentHint": "Choose the accent color for buttons, links, and highlights across the portal.",
+    "portalAccents": {
+      "green": "Green",
+      "blue": "Blue",
+      "cyan": "Cyan",
+      "orange": "Orange",
+      "purple": "Purple",
+      "pink": "Pink",
+      "red": "Red",
+      "gold": "Gold"
+    },
     "saveProfile": "Save profile",
     "updated": "Profile updated successfully.",
     "updateFailed": "Profile could not be saved.",

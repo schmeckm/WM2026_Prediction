@@ -6,6 +6,7 @@ import router from './router';
 import i18n, { getStoredLocale, loadLocaleMessages } from './i18n';
 import './styles/main.css';
 import { useThemeStore } from './stores/themeStore';
+import { usePortalAccentStore } from './stores/portalAccentStore';
 import { initSentry } from './sentry';
 import { useAuthStore } from './stores/authStore';
 
@@ -51,6 +52,10 @@ router.onError((error) => {
   }
 });
 
+router.afterEach(() => {
+  usePortalAccentStore().reapply();
+});
+
 async function bootstrap() {
   const storedLocale = getStoredLocale();
   await loadLocaleMessages(storedLocale);
@@ -62,10 +67,15 @@ async function bootstrap() {
   app.use(i18n);
   app.use(router);
   useThemeStore().initTheme();
+  const portalAccentStore = usePortalAccentStore();
+  portalAccentStore.init();
   app.mount('#app');
 
   // Refresh persisted user payload (avoids stale localStorage image URLs → repeated 404s).
   const authStore = useAuthStore();
+  if (authStore.user?.portalAccent) {
+    portalAccentStore.initFromUser(authStore.user);
+  }
   if (authStore.isAuthenticated) {
     authStore.fetchMe().catch(() => {});
   }

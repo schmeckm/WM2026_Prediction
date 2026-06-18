@@ -229,6 +229,18 @@
     "darkMode": "Mode sombre",
     "darkModeOn": "Activé",
     "darkModeOff": "Désactivé",
+    "portalAccent": "Couleur du portail",
+    "portalAccentHint": "Choisissez la couleur d'accent pour les boutons, liens et surlignages du portail.",
+    "portalAccents": {
+      "green": "Vert",
+      "blue": "Bleu",
+      "cyan": "Cyan",
+      "orange": "Orange",
+      "purple": "Violet",
+      "pink": "Rose",
+      "red": "Rouge",
+      "gold": "Or"
+    },
     "saveProfile": "Enregistrer le profil",
     "updated": "Profil mis à jour avec succès.",
     "updateFailed": "Impossible d'enregistrer le profil.",

@@ -18,6 +18,7 @@ const { validateImageFile } = require('../utils/fileValidation');
 const { deleteUserAccount } = require('../services/userAccountService');
 const { normalizeAvatarColor } = require('../services/avatarColorService');
 const { normalizeAvatarEmoji } = require('../services/avatarEmojiService');
+const { normalizePortalAccent } = require('../services/portalAccentService');
 const { validatePassword } = require('../utils/passwordValidation');
 const { invalidateLeaderboardCache } = require('../services/leaderboardService');
 
@@ -219,7 +220,7 @@ router.put('/:id', async (req, res) => {
     const {
       firstName, lastName, email, password, role, teamId, language,
       favoriteNationalTeamId, favoriteNationalTeamName,
-      topScorerPlayerId, topScorerPlayerName, avatarColor, avatarEmoji,
+      topScorerPlayerId, topScorerPlayerName, avatarColor, avatarEmoji, portalAccent,
     } = req.body;
 
     if (firstName) user.firstName = firstName.trim();
@@ -268,6 +269,9 @@ router.put('/:id', async (req, res) => {
     }
     if (avatarEmoji !== undefined) {
       user.avatarEmoji = normalizeAvatarEmoji(avatarEmoji);
+    }
+    if (portalAccent !== undefined) {
+      user.portalAccent = normalizePortalAccent(portalAccent);
     }
 
     await user.save();

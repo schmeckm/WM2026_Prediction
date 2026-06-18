@@ -17,6 +17,7 @@ const USER_COLUMNS = [
   { name: 'imageUrl', spec: { type: DataTypes.STRING, allowNull: true } },
   { name: 'avatarColor', spec: { type: DataTypes.STRING(16), allowNull: false, defaultValue: 'default' } },
   { name: 'avatarEmoji', spec: { type: DataTypes.STRING(16), allowNull: true } },
+  { name: 'portalAccent', spec: { type: DataTypes.STRING(16), allowNull: false, defaultValue: 'green' } },
   { name: 'authProvider', spec: { type: DataTypes.STRING(16), allowNull: false, defaultValue: 'local' } },
   { name: 'providerId', spec: { type: DataTypes.STRING, allowNull: true } },
   { name: 'totpEnabled', spec: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false } },

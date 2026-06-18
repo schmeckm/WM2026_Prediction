@@ -149,6 +149,25 @@
             </button>
           </div>
           <div class="form-group">
+            <label class="profile-portal-accent-label">{{ t('profile.portalAccent') }}</label>
+            <p class="text-muted profile-portal-accent-hint">{{ t('profile.portalAccentHint') }}</p>
+            <div class="profile-portal-accent-grid" role="radiogroup" :aria-label="t('profile.portalAccent')">
+              <button
+                v-for="option in portalAccentOptions"
+                :key="option.id"
+                type="button"
+                class="profile-portal-accent-btn"
+                :class="{ active: form.portalAccent === option.id }"
+                :style="{ backgroundColor: option.swatch }"
+                :title="t(option.labelKey)"
+                :aria-label="t(option.labelKey)"
+                :aria-checked="form.portalAccent === option.id"
+                role="radio"
+                @click="form.portalAccent = option.id"
+              />
+            </div>
+          </div>
+          <div class="form-group">
             <label for="team">{{ t('auth.teamDepartment') }}</label>
             <select id="team" v-model.number="form.teamId" class="form-control">
               <option :value="null">{{ t('common.noTeam') }}</option>
@@ -410,6 +429,7 @@ import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/authStore';
 import { useLocaleStore } from '../stores/localeStore';
 import { useThemeStore } from '../stores/themeStore';
+import { usePortalAccentStore } from '../stores/portalAccentStore';
 import api from '../services/api';
 import AlertMessage from '../components/AlertMessage.vue';
 import LocalePicker from '../components/LocalePicker.vue';
@@ -418,6 +438,7 @@ import ConfirmModal from '../components/ConfirmModal.vue';
 import PageQrCode from '../components/PageQrCode.vue';
 import { useConfirmModal } from '../composables/useConfirmModal';
 import { AVATAR_COLOR_OPTIONS, resolveAvatarColorStyle } from '../utils/avatarColors';
+import { PORTAL_ACCENT_OPTIONS } from '../utils/portalAccentColors';
 import { AVATAR_FACE_OPTIONS } from '../utils/avatarFaces';
 import { useProfileCompletion } from '../composables/useProfileCompletion';
 
@@ -425,6 +446,7 @@ const { t } = useI18n();
 const router = useRouter();
 const authStore = useAuthStore();
 const themeStore = useThemeStore();
+const portalAccentStore = usePortalAccentStore();
 const localeStore = useLocaleStore();
 const { confirmState, openConfirm, closeConfirm, onConfirm } = useConfirmModal();
 const { needsCompletion, missingFavoriteTeam, missingTopScorer } = useProfileCompletion();
@@ -432,6 +454,7 @@ const showAdvanced = ref(false);
 
 const avatarColorOptions = AVATAR_COLOR_OPTIONS;
 const avatarFaceOptions = AVATAR_FACE_OPTIONS;
+const portalAccentOptions = PORTAL_ACCENT_OPTIONS;
 
 const form = ref({
   firstName: '',
@@ -443,6 +466,7 @@ const form = ref({
   topScorerPlayerId: null,
   avatarColor: 'default',
   avatarEmoji: 'initials',
+  portalAccent: 'green',
   password: '',
 });
 
@@ -508,6 +532,7 @@ function applyFormFromUser(user) {
     topScorerPlayerId: normalizePlayerId(user.topScorerPlayerId),
     avatarColor: user.avatarColor || 'default',
     avatarEmoji: user.avatarEmoji || 'initials',
+    portalAccent: user.portalAccent || 'green',
     password: '',
   };
 }
@@ -646,6 +671,10 @@ onMounted(async () => {
 
 watch(() => form.value.language, (code) => {
   localeStore.applyLocale(code);
+});
+
+watch(() => form.value.portalAccent, (accent) => {
+  portalAccentStore.preview(accent);
 });
 
 function onImageSelected(event) {
@@ -829,6 +858,7 @@ async function handleSave() {
       topScorerPlayerName: topScorerName,
       avatarColor: form.value.avatarColor,
       avatarEmoji: form.value.avatarEmoji === 'initials' ? null : form.value.avatarEmoji,
+      portalAccent: form.value.portalAccent,
     };
     if (form.value.password) payload.password = form.value.password;
     if (selectedImage.value) {
@@ -1063,6 +1093,41 @@ async function handleSave() {
   color: var(--color-text-muted);
   min-width: 4.5rem;
   text-align: left;
+}
+
+.profile-portal-accent-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.profile-portal-accent-hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+}
+
+.profile-portal-accent-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+
+.profile-portal-accent-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.profile-portal-accent-btn:hover {
+  transform: scale(1.08);
+}
+
+.profile-portal-accent-btn.active {
+  border-color: var(--color-text);
+  box-shadow: 0 0 0 2px var(--color-bg), 0 0 12px rgba(0, 0, 0, 0.35);
 }
 
 .profile-avatar-face-emoji {

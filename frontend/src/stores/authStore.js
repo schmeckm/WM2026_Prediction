@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import api from '../services/api';
 import { getStoredLocale, normalizeLocale, setStoredLocale } from '../i18n';
 import { useLocaleStore } from './localeStore';
+import { usePortalAccentStore } from './portalAccentStore';
 import { isProfileWmComplete } from '../composables/useProfileCompletion';
 
 export const useAuthStore = defineStore('auth', () => {
@@ -39,6 +40,7 @@ export const useAuthStore = defineStore('auth', () => {
     setStoredLocale(userLocale);
     localeStore.applyLocale(userLocale);
     profileLoginReminderDue.value = !isProfileWmComplete(newUser);
+    usePortalAccentStore().initFromUser(newUser);
   }
 
   function clearLocalAuth() {
@@ -50,6 +52,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
+    usePortalAccentStore().reset();
   }
 
   function logout() {
@@ -111,6 +114,7 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = data.user;
     localStorage.setItem('user', JSON.stringify(data.user));
     useLocaleStore().syncFromUser(data.user);
+    usePortalAccentStore().initFromUser(data.user);
     return data.user;
   }
 
@@ -119,6 +123,9 @@ export const useAuthStore = defineStore('auth', () => {
     syncUser(data);
     if (payload.language) {
       useLocaleStore().applyLocale(payload.language);
+    }
+    if (payload.portalAccent !== undefined) {
+      usePortalAccentStore().initFromUser(data);
     }
     return data;
   }
