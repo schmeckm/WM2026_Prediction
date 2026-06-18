@@ -47,6 +47,9 @@
     "menu": "Menu",
     "menuMore": "More",
     "administration": "Administration",
+    "sectionPrimary": "Overview",
+    "sectionTournament": "Tournament & Info",
+    "sectionAccount": "Account & Support",
     "dashboard": "Dashboard",
     "tipCopilot": "Tip Co-Pilot",
     "matches": "Matches",
@@ -642,6 +645,7 @@
   "teamDashboard": {
     "title": "My team",
     "teamPerformance": "Team performance",
+    "lineup": "Lineup 🍊",
     "fullRanking": "Team ranking",
     "avgPoints": "Avg. points",
     "totalPoints": "Team points",
@@ -676,6 +680,20 @@
     "highlightBestExactText": "{name} has {count} exact tips.",
     "highlightBestCorrectTitle": "Most correct tips",
     "highlightBestCorrectText": "{name} has {count} correct tips."
+  },
+  "teamPitch": {
+    "title": "Team lineup",
+    "tagline": "Who's tipping along – who's on an orange break. All in good fun, zero shaming.",
+    "beta": "Preview",
+    "fieldAria": "Team pitch with active predictors",
+    "emptyPitch": "Nobody on the pitch yet – the first tip gets you in the game!",
+    "nudgeTooltip": "Almost fully on board – one more tip makes the difference",
+    "nudgeHint": "Almost there ⚡",
+    "benchTitle": "Orange bench",
+    "benchSub": "Sideline break – jump back in anytime with your next tip.",
+    "benchEmpty": "Everyone's on the pitch",
+    "benchHint": "Back soon?",
+    "footer": "No name-calling – just team spirit. One tip and you're back on the grass."
   },
   "groupStandings": {
     "title": "Group standings",

@@ -19,6 +19,8 @@
       <ErrorState v-else-if="error" :message="error" @retry="loadData" />
 
       <template v-else>
+        <TeamPitchPanel v-if="members.length" :members="members" />
+
         <div v-if="teamEntry" class="card team-performance-header">
           <div class="card-body">
             <div class="team-performance-header-row">
@@ -194,6 +196,7 @@ import LoadingSpinner from '../components/LoadingSpinner.vue';
 import ErrorState from '../components/ErrorState.vue';
 import TeamAvatar from '../components/TeamAvatar.vue';
 import UserAvatar from '../components/UserAvatar.vue';
+import TeamPitchPanel from '../components/TeamPitchPanel.vue';
 import { useAuthStore } from '../stores/authStore';
 import { useFormatters } from '../composables/useFormatters';
 import { useScoringRules } from '../composables/useScoringRules';

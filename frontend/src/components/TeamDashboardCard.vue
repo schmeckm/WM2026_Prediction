@@ -6,6 +6,9 @@
         <router-link to="/team-performance" class="btn btn-secondary btn-sm">
           {{ t('teamDashboard.teamPerformance') }}
         </router-link>
+        <router-link to="/team-performance#team-pitch" class="btn btn-secondary btn-sm">
+          {{ t('teamDashboard.lineup') }}
+        </router-link>
         <router-link to="/team-ranking" class="btn btn-secondary btn-sm">
           {{ t('teamDashboard.fullRanking') }}
         </router-link>

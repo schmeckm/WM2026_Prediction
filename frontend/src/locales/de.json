@@ -47,6 +47,9 @@
     "menu": "Menü",
     "menuMore": "Mehr",
     "administration": "Administration",
+    "sectionPrimary": "Übersicht",
+    "sectionTournament": "Turnier & Infos",
+    "sectionAccount": "Konto & Service",
     "dashboard": "Dashboard",
     "tipCopilot": "Tipp Co-Pilot",
     "matches": "Spiele",
@@ -649,6 +652,7 @@
   "teamDashboard": {
     "title": "Mein Team",
     "teamPerformance": "Team-Performance",
+    "lineup": "Aufstellung 🍊",
     "fullRanking": "Team-Ranking",
     "avgPoints": "Ø Punkte",
     "totalPoints": "Team-Punkte",
@@ -660,7 +664,7 @@
   },
   "teamPerformance": {
     "title": "Team-Performance",
-    "subtitle": "Wer tippt in deinem Team besonders gut?",
+    "subtitle": "Euer Team – spielerisch, fair, ohne Bloßstellung.",
     "privacyHint": "Team-Stats dienen der Motivation. Konkrete Ergebnis-Tipps werden vor Anpfiff nicht angezeigt.",
     "noTeam": "Noch keinem Team zugeordnet.",
     "goToProfile": "Im Profil Team wählen",
@@ -683,6 +687,20 @@
     "highlightBestExactText": "{name} hat {count} Exakt-Tipps.",
     "highlightBestCorrectTitle": "Meiste richtige Tipps",
     "highlightBestCorrectText": "{name} hat {count} richtige Tipps."
+  },
+  "teamPitch": {
+    "title": "Team-Aufstellung",
+    "tagline": "Wer tippt mit – wer holt sich gerade eine Orangenpause. Alles spielerisch, null Shaming.",
+    "beta": "Vorschau",
+    "fieldAria": "Team-Spielfeld mit aktiven Tippenden",
+    "emptyPitch": "Noch niemand auf dem Platz – der erste Tipp bringt euch ins Spiel!",
+    "nudgeTooltip": "Fast durchgehend dabei – ein Tipp mehr macht den Unterschied",
+    "nudgeHint": "Noch kurz Gas geben ⚡",
+    "benchTitle": "Orangenbank",
+    "benchSub": "Pause vom Rasen – jederzeit wieder einwechselbar mit dem nächsten Tipp.",
+    "benchEmpty": "Alle sind auf dem Platz",
+    "benchHint": "Bald wieder dabei?",
+    "footer": "Kein Namecalling – nur Teamgeist. Ein Tipp, und du bist zurück auf dem Rasen."
   },
   "groupStandings": {
     "title": "Gruppentabellen",

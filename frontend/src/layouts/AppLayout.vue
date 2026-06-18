@@ -2,7 +2,7 @@
   <div class="layout-app" data-area="app">
     <a href="#main-content" class="skip-to-content">{{ t('common.skipToContent') }}</a>
     <div v-if="sidebarOpen" class="sidebar-backdrop" @click="closeSidebar" />
-    <Sidebar ref="sidebarRef" :links="userLinks" :admin-links="adminLinks" />
+    <Sidebar ref="sidebarRef" :nav-sections="userLinks" :admin-links="adminLinks" />
     <div class="layout-main">
       <Navbar @toggle-sidebar="toggleSidebar" />
       <main id="main-content" class="layout-content">

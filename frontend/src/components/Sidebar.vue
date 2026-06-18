@@ -5,18 +5,35 @@
     </div>
     <div class="sidebar-scroll">
       <nav class="sidebar-nav" :aria-label="adminMode ? t('nav.administration') : t('nav.navigation')">
-        <div v-if="!adminMode" class="sidebar-section">{{ t('nav.navigation') }}</div>
-        <router-link
-          v-for="link in links"
-          :key="link.to"
-          :to="link.to"
-          class="sidebar-link"
-          active-class="active"
-          @click="close"
-        >
-          <span class="icon"><NavIcon :name="link.icon" /></span>
-          {{ link.label }}
-        </router-link>
+        <template v-if="!adminMode">
+          <template v-for="section in navSections" :key="section.label">
+            <div class="sidebar-section">{{ section.label }}</div>
+            <router-link
+              v-for="link in section.links"
+              :key="link.to"
+              :to="link.to"
+              class="sidebar-link"
+              active-class="active"
+              @click="close"
+            >
+              <span class="icon"><NavIcon :name="link.icon" /></span>
+              {{ link.label }}
+            </router-link>
+          </template>
+        </template>
+        <template v-else>
+          <router-link
+            v-for="link in links"
+            :key="link.to"
+            :to="link.to"
+            class="sidebar-link"
+            active-class="active"
+            @click="close"
+          >
+            <span class="icon"><NavIcon :name="link.icon" /></span>
+            {{ link.label }}
+          </router-link>
+        </template>
 
         <template v-if="!adminMode && authStore.isAdmin && adminLinks">
           <div class="sidebar-section">{{ t('nav.administration') }}</div>
@@ -54,7 +71,8 @@ import AppBrandMark from './AppBrandMark.vue';
 import NavIcon from './NavIcon.vue';
 
 defineProps({
-  links: { type: Array, required: true },
+  links: { type: Array, default: () => [] },
+  navSections: { type: Array, default: () => [] },
   adminLinks: { type: Array, default: () => [] },
   adminMode: { type: Boolean, default: false },
 });
