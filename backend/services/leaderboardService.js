@@ -392,38 +392,73 @@ async function saveLeaderboardSnapshot() {
   return snapshotTime;
 }
 
+function roundAverage(value) {
+  return Math.round(value * 100) / 100;
+}
+
+function buildTeamRankingContributors(teamUsers, { mode, minPredictions }) {
+  if (mode === 'all_members') {
+    return teamUsers;
+  }
+  return teamUsers.filter((entry) => Number(entry.submittedPredictions || 0) >= minPredictions);
+}
+
+async function resolveTeamRankingSettings() {
+  const mode = await getSetting('teamRankingMode', 'active_predictors_only');
+  const minPredictions = parseInt(await getSetting('teamActiveMinPredictions', 1), 10);
+  return {
+    mode: mode === 'all_members' ? 'all_members' : 'active_predictors_only',
+    minPredictions: Number.isFinite(minPredictions) && minPredictions >= 1 ? minPredictions : 1,
+  };
+}
+
+function buildTeamRankingEntry(team, teamUsers, rankingSettings) {
+  const userCount = team.users.length;
+  const contributors = buildTeamRankingContributors(teamUsers, rankingSettings);
+  const activeUserCount = contributors.length;
+  const inactiveUserCount = Math.max(0, userCount - activeUserCount);
+
+  const totalPoints = contributors.reduce((sum, u) => sum + u.totalPoints, 0);
+  const exactResults = contributors.reduce((sum, u) => sum + u.exactResults, 0);
+  const averagePoints = activeUserCount > 0 ? roundAverage(totalPoints / activeUserCount) : null;
+
+  const bestUser = [...contributors].sort((a, b) => b.totalPoints - a.totalPoints)[0]
+    || [...teamUsers].sort((a, b) => b.totalPoints - a.totalPoints)[0];
+
+  const avgCompletion = activeUserCount > 0
+    ? Math.round(contributors.reduce((sum, u) => sum + u.completionPercentage, 0) / activeUserCount)
+    : 0;
+
+  return {
+    teamId: team.id,
+    teamName: team.name,
+    imageUrl: team.imageUrl || null,
+    userCount,
+    activeUserCount,
+    inactiveUserCount,
+    teamRankingMode: rankingSettings.mode,
+    totalPoints,
+    averagePoints,
+    exactResults,
+    bestUser: bestUser ? `${bestUser.firstName} ${bestUser.lastName}` : null,
+    completionRate: avgCompletion,
+  };
+}
+
 async function getTeamRanking(options = {}) {
   const leaderboard = await getLeaderboard(options);
   const teams = await Team.findAll({ include: [{ model: User, as: 'users' }] });
+  const rankingSettings = await resolveTeamRankingSettings();
 
   const teamEntries = teams.map((team) => {
     const teamUsers = leaderboard.filter((entry) => entry.teamId === team.id);
-    const totalPoints = teamUsers.reduce((sum, u) => sum + u.totalPoints, 0);
-    const exactResults = teamUsers.reduce((sum, u) => sum + u.exactResults, 0);
-    const userCount = team.users.length;
-    const averagePoints = userCount > 0 ? Math.round((totalPoints / userCount) * 100) / 100 : 0;
-    const bestUser = teamUsers.sort((a, b) => b.totalPoints - a.totalPoints)[0];
-
-    const totalPredictions = teamUsers.reduce((sum, u) => sum + u.submittedPredictions, 0);
-    const avgCompletion = userCount > 0
-      ? Math.round(teamUsers.reduce((sum, u) => sum + u.completionPercentage, 0) / userCount)
-      : 0;
-
-    return {
-      teamId: team.id,
-      teamName: team.name,
-      imageUrl: team.imageUrl || null,
-      userCount,
-      totalPoints,
-      averagePoints,
-      exactResults,
-      bestUser: bestUser ? `${bestUser.firstName} ${bestUser.lastName}` : null,
-      completionRate: avgCompletion,
-    };
+    return buildTeamRankingEntry(team, teamUsers, rankingSettings);
   });
 
   teamEntries.sort((a, b) => {
-    if (b.averagePoints !== a.averagePoints) return b.averagePoints - a.averagePoints;
+    const avgA = a.averagePoints ?? -1;
+    const avgB = b.averagePoints ?? -1;
+    if (avgB !== avgA) return avgB - avgA;
     return b.totalPoints - a.totalPoints;
   });
 
@@ -606,4 +641,7 @@ module.exports = {
   exportLeaderboardCsv,
   getBonusPoints,
   invalidateLeaderboardCache,
+  buildTeamRankingContributors,
+  buildTeamRankingEntry,
+  resolveTeamRankingSettings,
 };

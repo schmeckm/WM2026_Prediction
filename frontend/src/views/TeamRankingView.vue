@@ -17,6 +17,9 @@
 
     <div v-else class="card">
       <div class="card-body">
+        <p v-if="rankingModeActive" class="text-muted team-ranking-hint">
+          {{ t('teamRanking.fairplayHint') }}
+        </p>
         <div class="table-wrapper team-ranking-desktop">
           <table>
             <thead>
@@ -24,6 +27,7 @@
                 <th>{{ t('leaderboard.rank') }}</th>
                 <th>{{ t('teamRanking.team') }}</th>
                 <th>{{ t('teamRanking.members') }}</th>
+                <th>{{ t('teamRanking.activeMembers') }}</th>
                 <th>{{ t('teamRanking.totalPoints') }}</th>
                 <th>{{ t('teamRanking.avgPoints') }}</th>
                 <th>{{ t('teamRanking.exactTips') }}</th>
@@ -49,12 +53,13 @@
                   </div>
                 </td>
                 <td>{{ formatNumber(team.userCount) }}</td>
+                <td>{{ formatActiveMembers(team) }}</td>
                 <td>{{ formatPoints(team.totalPoints) }}</td>
-                <td><strong>{{ formatPoints(team.averagePoints) }}</strong></td>
+                <td><strong>{{ formatAvgPoints(team.averagePoints) }}</strong></td>
                 <td>{{ formatNumber(team.exactResults) }}</td>
               </tr>
               <tr v-if="ranking.length === 0">
-                <td colspan="6" class="text-center text-muted">{{ t('teamRanking.empty') }}</td>
+                <td colspan="7" class="text-center text-muted">{{ t('teamRanking.empty') }}</td>
               </tr>
             </tbody>
           </table>
@@ -78,8 +83,9 @@
             </div>
             <dl class="team-ranking-card-fields">
               <dt>{{ t('teamRanking.members') }}</dt><dd>{{ formatNumber(team.userCount) }}</dd>
+              <dt>{{ t('teamRanking.activeMembers') }}</dt><dd>{{ formatActiveMembers(team) }}</dd>
               <dt>{{ t('teamRanking.totalPoints') }}</dt><dd>{{ formatPoints(team.totalPoints) }}</dd>
-              <dt>{{ t('teamRanking.avgPoints') }}</dt><dd><strong>{{ formatPoints(team.averagePoints) }}</strong></dd>
+              <dt>{{ t('teamRanking.avgPoints') }}</dt><dd><strong>{{ formatAvgPoints(team.averagePoints) }}</strong></dd>
               <dt>{{ t('teamRanking.exactTips') }}</dt><dd>{{ formatNumber(team.exactResults) }}</dd>
             </dl>
           </article>
@@ -91,7 +97,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
@@ -108,6 +114,19 @@ const authStore = useAuthStore();
 const ranking = ref([]);
 const loading = ref(true);
 const error = ref('');
+
+const rankingModeActive = computed(() => ranking.value.some(
+  (team) => team.teamRankingMode === 'active_predictors_only',
+));
+
+function formatAvgPoints(value) {
+  return value == null ? '–' : formatPoints(value);
+}
+
+function formatActiveMembers(team) {
+  if (team.activeUserCount != null) return formatNumber(team.activeUserCount);
+  return formatNumber(team.userCount);
+}
 
 function rankClass(rank) {
   const n = Number(rank);
@@ -206,6 +225,11 @@ onMounted(loadRanking);
 
 .team-ranking-mobile {
   display: none;
+}
+
+.team-ranking-hint {
+  font-size: 0.875rem;
+  margin: 0 0 1rem;
 }
 
 .team-ranking-card {

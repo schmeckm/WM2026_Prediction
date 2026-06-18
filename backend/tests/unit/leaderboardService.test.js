@@ -1,14 +1,17 @@
 require('../helpers/testEnv');
 const { describe, it, before } = require('node:test');
 const assert = require('node:assert/strict');
-const { sequelize, User, Team } = require('../../models');
-const { getTeamRanking, getTournamentPhaseStatus, getLeaderboard } = require('../../services/leaderboardService');
+const { sequelize, User, Team, Match, Prediction } = require('../../models');
+const { getTeamRanking, getTournamentPhaseStatus, getLeaderboard, buildTeamRankingContributors } = require('../../services/leaderboardService');
+const { setSetting } = require('../../services/settingsService');
 const { seedTestData } = require('../helpers/seedTestData');
 
 describe('leaderboardService.getTeamRanking', () => {
   before(async () => {
     await sequelize.sync({ force: true });
     await seedTestData();
+    await setSetting('teamRankingMode', 'active_predictors_only');
+    await setSetting('teamActiveMinPredictions', 1);
   });
 
   it('counts all assigned team members, including admins excluded from the leaderboard', async () => {
@@ -30,6 +33,62 @@ describe('leaderboardService.getTeamRanking', () => {
     assert.ok(entry);
     assert.equal(entry.userCount, assignedCount);
     assert.ok(entry.userCount >= 2, 'admins assigned to a team should count as members');
+  });
+
+  it('excludes non-predictors from team average in active_predictors_only mode', async () => {
+    await sequelize.sync({ force: true });
+    await seedTestData();
+    await setSetting('teamRankingMode', 'active_predictors_only');
+    await setSetting('teamActiveMinPredictions', 1);
+
+    const team = await Team.findOne({ where: { name: 'IT' } });
+    const match = await Match.findOne();
+    const activeUser = await User.findOne({ where: { email: 'verified@example.com' } });
+
+    await User.create({
+      firstName: 'Inactive',
+      lastName: 'Member',
+      email: 'inactive@test.local',
+      password: 'user123',
+      role: 'user',
+      teamId: team.id,
+      emailVerified: true,
+    });
+
+    await Prediction.create({
+      userId: activeUser.id,
+      matchId: match.id,
+      predictedHomeScore: 2,
+      predictedAwayScore: 1,
+      submittedAt: new Date(),
+    });
+
+    await match.update({ status: 'finished', homeScore: 2, awayScore: 1 });
+
+    const activeRanking = await getTeamRanking({ skipCache: true });
+    const activeEntry = activeRanking.find((row) => row.teamId === team.id);
+
+    assert.ok(activeEntry);
+    assert.equal(activeEntry.activeUserCount, 1);
+    assert.equal(activeEntry.averagePoints, 4);
+
+    await setSetting('teamRankingMode', 'all_members');
+    const legacyRanking = await getTeamRanking({ skipCache: true });
+    const legacyEntry = legacyRanking.find((row) => row.teamId === team.id);
+
+    assert.ok(legacyEntry);
+    assert.equal(legacyEntry.averagePoints, 2);
+  });
+
+  it('uses all leaderboard members in all_members mode', async () => {
+    const contributors = buildTeamRankingContributors(
+      [
+        { submittedPredictions: 5, totalPoints: 50 },
+        { submittedPredictions: 0, totalPoints: 0 },
+      ],
+      { mode: 'all_members', minPredictions: 1 },
+    );
+    assert.equal(contributors.length, 2);
   });
 });
 

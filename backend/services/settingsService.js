@@ -37,6 +37,8 @@ const DEFAULT_SETTINGS = {
     { rank: 2, title: '2. Platz', description: '', value: '', imageUrl: '' },
     { rank: 3, title: '3. Platz', description: '', value: '', imageUrl: '' },
   ],
+  teamRankingMode: 'active_predictors_only',
+  teamActiveMinPredictions: 1,
 };
 
 const PUBLIC_SETTING_KEYS = new Set([
@@ -117,7 +119,7 @@ async function setSetting(key, value) {
     valueJson: jsonValue,
   });
 
-  if (key === 'includeAdminsInLeaderboard') {
+  if (key === 'includeAdminsInLeaderboard' || key === 'teamRankingMode' || key === 'teamActiveMinPredictions') {
     try {
       const { invalidateLeaderboardCache } = require('./leaderboardService');
       invalidateLeaderboardCache();
@@ -183,6 +185,22 @@ async function updateSettings(updates) {
     }
     if (booleanKeys.has(key) && typeof value !== 'boolean') {
       rejected.push(key);
+      continue;
+    }
+    if (key === 'teamRankingMode') {
+      const allowed = ['active_predictors_only', 'all_members'];
+      if (!allowed.includes(value)) {
+        rejected.push(key);
+        continue;
+      }
+    }
+    if (key === 'teamActiveMinPredictions') {
+      const parsed = parseInt(value, 10);
+      if (!Number.isFinite(parsed) || parsed < 1) {
+        rejected.push(key);
+        continue;
+      }
+      filtered[key] = parsed;
       continue;
     }
     filtered[key] = key === 'prizes' ? normalizePrizes(value) : value;
