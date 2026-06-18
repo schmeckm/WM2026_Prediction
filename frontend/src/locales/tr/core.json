@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "Dünya Kupası 2026 - Yarışma",
+    "title": "FIFA WORLD CUP 26",
     "subtitle": "Tahmin Oyunu"
   },
   "languages": {
@@ -49,6 +49,11 @@
     "sectionPrimary": "Genel Bakış",
     "sectionTournament": "Turnuva ve Bilgiler",
     "sectionAccount": "Hesap ve Destek",
+    "adminSectionOverview": "Admin genel bakış",
+    "adminSectionTournament": "Maçlar ve sonuçlar",
+    "adminSectionScoring": "Puanlar ve sıralamalar",
+    "adminSectionUsers": "Kullanıcılar ve takımlar",
+    "adminSectionSystem": "Sistem ve araçlar",
     "dashboard": "Pano",
     "tipCopilot": "Tahmin Eş Pilotu",
     "matches": "Maçlar",

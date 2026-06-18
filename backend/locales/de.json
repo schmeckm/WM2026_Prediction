@@ -97,6 +97,8 @@
     "dashboardLoadFailed": "Dashboard konnte nicht geladen werden.",
     "recalculateFailed": "Punkte konnten nicht neu berechnet werden.",
     "sendFailed": "Senden fehlgeschlagen.",
+    "announcementNoChannel": "Bitte mindestens einen Kanal wählen (Portal oder E-Mail).",
+    "announcementNoRecipients": "Keine gültigen Empfänger gefunden.",
     "noCsvFile": "Keine CSV-Datei hochgeladen.",
     "csvImportFailed": "CSV-Import fehlgeschlagen.",
     "backupLoadFailed": "Backup-Übersicht konnte nicht geladen werden.",
@@ -225,7 +227,8 @@
     "healthOk": "WM 2026 Tippspiel API läuft.",
     "predictionDeleted": "Tipp gelöscht.",
     "feedbackSubmitted": "Danke! Dein Feedback wurde gesendet.",
-    "githubIssueCreated": "GitHub Issue wurde erstellt."
+    "githubIssueCreated": "GitHub Issue wurde erstellt.",
+    "adminAnnouncementSent": "{inAppSent} Portal-Benachrichtigungen und {emailsSent} E-Mails gesendet."
   },
   "emails": {
     "layout": {
@@ -367,6 +370,14 @@
       "noEntries": "Noch keine Einträge.",
       "cta": "Hitliste ansehen",
       "text": "Hallo {firstName}! Dein Rang: {rank}, Punkte: {points}. Team: {teamName} (Platz {teamRank}). {link}"
+    },
+    "adminAnnouncement": {
+      "subject": "World Cup 2026 - Wettbewerb – {title}",
+      "greeting": "Hallo {firstName}!",
+      "cta": "Zum Tippspiel",
+      "ctaWithLink": "Mehr erfahren",
+      "footer": "Diese Nachricht wurde vom Administrator gesendet.",
+      "text": "Hallo {firstName}!\n\n{title}\n\n{message}\n\n{link}"
     },
     "test": {
       "subject": "World Cup 2026 - Wettbewerb – Test-E-Mail",

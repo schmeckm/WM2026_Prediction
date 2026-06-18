@@ -11,6 +11,45 @@
     >
       <strong>{{ expandedItem.label }}:</strong> {{ expandedItem.detail }}
     </div>
+    <div
+      v-if="releaseNotesOpen"
+      class="system-status-release-notes"
+      role="region"
+      :aria-label="t('systemHealth.releaseNotesTitle')"
+    >
+      <div class="system-status-release-notes-header">
+        <strong>{{ t('systemHealth.releaseNotesTitle') }}</strong>
+        <span class="system-status-release-notes-subtitle">
+          {{ t('systemHealth.releaseNotesSubtitle', { count: releaseNotes.length }) }}
+        </span>
+      </div>
+      <ul class="system-status-release-notes-list">
+        <li
+          v-for="entry in releaseNotes"
+          :key="entry.sha"
+          class="system-status-release-note"
+          :class="{ core: entry.core }"
+        >
+          <span
+            class="system-status-release-note-type"
+            :class="entry.type"
+          >
+            {{ releaseNoteTypeLabel(entry.type) }}
+          </span>
+          <a
+            :href="entry.url"
+            class="system-status-release-note-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ entry.title }}
+          </a>
+          <span class="system-status-release-note-meta">
+            {{ formatReleaseDate(entry.date) }} · {{ entry.shortSha }}
+          </span>
+        </li>
+      </ul>
+    </div>
     <div class="system-status-bar-inner">
       <div class="system-status-items">
         <button
@@ -56,16 +95,29 @@
           {{ commitShort }}
         </a>
         <span v-if="version" class="system-status-version">v{{ version }}</span>
+        <button
+          v-if="releaseNotes.length"
+          type="button"
+          class="system-status-release-notes-toggle"
+          :aria-expanded="releaseNotesOpen"
+          @click="releaseNotesOpen = !releaseNotesOpen"
+        >
+          {{ releaseNotesOpen ? t('systemHealth.releaseNotesHide') : t('systemHealth.releaseNotesShow') }}
+        </button>
       </div>
     </div>
   </footer>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSystemHealth } from '../composables/useSystemHealth';
+import { useFormatters } from '../composables/useFormatters';
+import releaseNotesData from '../data/releaseNotes.json';
 
 const { t } = useI18n();
+const { formatDate } = useFormatters();
 const {
   items,
   version,
@@ -74,6 +126,20 @@ const {
   expandedItem,
   toggleDetail,
 } = useSystemHealth();
+
+const releaseNotes = releaseNotesData.entries || [];
+const releaseNotesOpen = ref(false);
+
+function releaseNoteTypeLabel(type) {
+  const key = `systemHealth.releaseNoteType.${type}`;
+  const translated = t(key);
+  return translated === key ? t('systemHealth.releaseNoteType.other') : translated;
+}
+
+function formatReleaseDate(value) {
+  if (!value) return '';
+  return formatDate(value);
+}
 </script>
 
 <style scoped>
@@ -95,6 +161,118 @@ const {
   color: var(--color-text);
   font-size: 0.75rem;
   line-height: 1.4;
+}
+
+.system-status-release-notes {
+  margin-bottom: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: rgba(13, 110, 253, 0.06);
+  border: 1px solid rgba(13, 110, 253, 0.15);
+}
+
+.system-status-release-notes-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.system-status-release-notes-subtitle {
+  color: var(--color-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.system-status-release-notes-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 11rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.system-status-release-note {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.system-status-release-note.core .system-status-release-note-type {
+  font-weight: 700;
+}
+
+.system-status-release-note-type {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.system-status-release-note-type.feature {
+  color: var(--color-primary);
+  background: rgba(13, 110, 253, 0.12);
+}
+
+.system-status-release-note-type.fix {
+  color: var(--color-danger);
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.system-status-release-note-type.docs {
+  color: var(--color-text-muted);
+  background: rgba(108, 117, 125, 0.12);
+}
+
+.system-status-release-note-type.other {
+  color: var(--color-text-muted);
+  background: rgba(108, 117, 125, 0.08);
+}
+
+.system-status-release-note-link {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 600;
+  min-width: 0;
+}
+
+.system-status-release-note-link:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.system-status-release-note-meta {
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  font-size: 0.62rem;
+}
+
+.system-status-release-notes-toggle {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.system-status-release-notes-toggle:hover {
+  text-decoration: underline;
 }
 
 .system-status-bar-inner {
@@ -303,6 +481,25 @@ const {
 
   .system-status-commit {
     font-size: 0.65rem;
+  }
+
+  .system-status-release-notes-toggle {
+    font-size: 0.65rem;
+  }
+
+  .system-status-release-notes-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+
+  .system-status-release-note {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+
+  .system-status-release-note-meta {
+    grid-row: auto;
   }
 
   .system-status-item {

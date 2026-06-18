@@ -284,7 +284,23 @@ async function ensureIndexSafe(queryInterface, tableName, fields, options = {}) 
   }
 }
 
+async function ensureNotificationColumns(queryInterface) {
+  let notificationTableInfo;
+  try {
+    notificationTableInfo = await queryInterface.describeTable('Notifications');
+  } catch {
+    return;
+  }
+
+  await ensureColumn(queryInterface, notificationTableInfo, 'Notifications', 'showOnLogin', {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  });
+}
+
 async function ensureIndexes(queryInterface) {
+  await ensureNotificationColumns(queryInterface);
   await ensureIndexSafe(queryInterface, 'Predictions', ['userId']);
   await ensureIndexSafe(queryInterface, 'Notifications', ['userId', 'isRead', 'createdAt']);
   await ensureIndexSafe(queryInterface, 'LeaderboardSnapshots', ['snapshotTime']);

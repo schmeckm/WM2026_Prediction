@@ -97,6 +97,8 @@
     "dashboardLoadFailed": "Dashboard could not be loaded.",
     "recalculateFailed": "Points could not be recalculated.",
     "sendFailed": "Sending failed.",
+    "announcementNoChannel": "Please select at least one channel (portal or email).",
+    "announcementNoRecipients": "No valid recipients found.",
     "noCsvFile": "No CSV file uploaded.",
     "csvImportFailed": "CSV import failed.",
     "backupLoadFailed": "Backup overview could not be loaded.",
@@ -225,7 +227,8 @@
     "healthOk": "WM 2026 prediction game API is running.",
     "predictionDeleted": "Prediction deleted.",
     "feedbackSubmitted": "Thanks! Your feedback was submitted.",
-    "githubIssueCreated": "GitHub issue created."
+    "githubIssueCreated": "GitHub issue created.",
+    "adminAnnouncementSent": "Sent {inAppSent} in-app notifications and {emailsSent} emails."
   },
   "emails": {
     "layout": {
@@ -367,6 +370,14 @@
       "noEntries": "No entries yet.",
       "cta": "View leaderboard",
       "text": "Hello {firstName}! Your rank: {rank}, points: {points}. Team: {teamName} (rank {teamRank}). {link}"
+    },
+    "adminAnnouncement": {
+      "subject": "World Cup 2026 - Competition – {title}",
+      "greeting": "Hello {firstName}!",
+      "cta": "Open prediction game",
+      "ctaWithLink": "Learn more",
+      "footer": "This message was sent by an administrator.",
+      "text": "Hello {firstName}!\n\n{title}\n\n{message}\n\n{link}"
     },
     "test": {
       "subject": "World Cup 2026 - Competition – Test email",

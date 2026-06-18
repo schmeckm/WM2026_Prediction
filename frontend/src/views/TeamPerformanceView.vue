@@ -1,189 +1,235 @@
 <template>
   <div>
     <div class="page-header">
-      <h1>{{ t('teamPerformance.title') }}</h1>
-      <span class="text-muted">{{ t('teamPerformance.subtitle') }}</span>
-    </div>
-
-    <div v-if="!teamId" class="card">
-      <div class="card-body">
-        <p class="text-muted mb-0">
-          {{ t('teamPerformance.noTeam') }}
-          <router-link to="/profile">{{ t('teamPerformance.goToProfile') }}</router-link>
-        </p>
+      <div>
+        <h1>{{ t('teamPerformance.title') }}</h1>
+        <span class="text-muted">{{ pageSubtitle }}</span>
       </div>
     </div>
 
+    <div class="filter-bar team-performance-scope-bar">
+      <button
+        v-for="scope in scopeFilters"
+        :key="scope.value"
+        type="button"
+        :class="['filter-btn', { active: activeScope === scope.value }]"
+        :aria-pressed="activeScope === scope.value"
+        :disabled="scope.disabled"
+        @click="setScope(scope.value)"
+      >
+        {{ scope.label }}
+      </button>
+    </div>
+
+    <LoadingSpinner v-if="loading" />
+    <ErrorState v-else-if="error" :message="error" @retry="loadData" />
+
     <template v-else>
-      <LoadingSpinner v-if="loading" />
-      <ErrorState v-else-if="error" :message="error" @retry="loadData" />
+      <TeamPitchPanel
+        v-if="displayMembers.length"
+        :members="displayMembers"
+        :show-team-name="activeScope === 'all'"
+        :title-key="activeScope === 'all' ? 'teamPitch.titleAllTeams' : 'teamPitch.title'"
+        :tagline-key="activeScope === 'all' ? 'teamPitch.taglineAllTeams' : 'teamPitch.tagline'"
+      />
 
-      <template v-else>
-        <TeamPitchPanel v-if="members.length" :members="members" />
+      <div v-if="activeScope === 'all'" class="card team-performance-header">
+        <div class="card-body">
+          <div class="team-performance-header-row">
+            <div class="team-performance-header-title">
+              <strong class="team-performance-team-name">{{ t('teamPerformance.allTeamsOverview') }}</strong>
+              <div class="text-muted">
+                {{ t('teamPerformance.teamCount', { count: teamRanking.length }) }}
+                ·
+                {{ t('teamPerformance.lineupSummary', { pitch: zoneSummary.pitch, yellow: zoneSummary.yellow, red: zoneSummary.red }) }}
+              </div>
+            </div>
+            <router-link to="/team-ranking" class="btn btn-secondary btn-sm">
+              {{ t('teamDashboard.fullRanking') }}
+            </router-link>
+          </div>
+          <p class="text-muted team-performance-hint mb-0">
+            {{ t('teamPerformance.allTeamsHint') }}
+          </p>
+        </div>
+      </div>
 
-        <div v-if="teamEntry" class="card team-performance-header">
+      <div v-else-if="!teamId" class="card">
+        <div class="card-body">
+          <p class="text-muted mb-0">
+            {{ t('teamPerformance.noTeam') }}
+            <router-link to="/profile">{{ t('teamPerformance.goToProfile') }}</router-link>
+          </p>
+        </div>
+      </div>
+
+      <div v-else-if="teamEntry" class="card team-performance-header">
+        <div class="card-body">
+          <div class="team-performance-header-row">
+            <TeamAvatar :image-url="teamEntry.imageUrl" :name="teamEntry.teamName" size="md" />
+            <div class="team-performance-header-title">
+              <strong class="team-performance-team-name">{{ teamEntry.teamName }}</strong>
+              <div class="text-muted">
+                {{ t('teamPerformance.teamRank', { rank: teamEntry.rank }) }}
+                ·
+                {{ t('teamPerformance.memberCount', { count: teamEntry.userCount }) }}
+              </div>
+            </div>
+            <span class="badge badge-info">#{{ teamEntry.rank }}</span>
+          </div>
+
+          <div class="team-performance-stats-grid">
+            <div class="stat-card">
+              <div class="stat-value">{{ formatPoints(teamEntry.averagePoints) }}</div>
+              <div class="stat-label">{{ t('teamPerformance.avgPoints') }}</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ formatPoints(teamEntry.totalPoints) }}</div>
+              <div class="stat-label">{{ t('teamPerformance.totalPoints') }}</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ formatNumber(teamEntry.exactResults) }}</div>
+              <div class="stat-label">{{ t('teamPerformance.exactTips') }}</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">{{ formatNumber(teamEntry.completionRate) }}%</div>
+              <div class="stat-label">{{ t('teamPerformance.completion') }}</div>
+            </div>
+          </div>
+
+          <p class="text-muted team-performance-hint mb-0">
+            {{ t('teamPerformance.privacyHint') }}
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h3>⭐ {{ t('teamPerformance.highlightsTitle') }}</h3>
+          </div>
           <div class="card-body">
-            <div class="team-performance-header-row">
-              <TeamAvatar :image-url="teamEntry.imageUrl" :name="teamEntry.teamName" size="md" />
-              <div class="team-performance-header-title">
-                <strong class="team-performance-team-name">{{ teamEntry.teamName }}</strong>
-                <div class="text-muted">
-                  {{ t('teamPerformance.teamRank', { rank: teamEntry.rank }) }}
-                  ·
-                  {{ t('teamPerformance.memberCount', { count: teamEntry.userCount }) }}
-                </div>
-              </div>
-              <span class="badge badge-info">#{{ teamEntry.rank }}</span>
-            </div>
-
-            <div class="team-performance-stats-grid">
-              <div class="stat-card">
-                <div class="stat-value">{{ formatPoints(teamEntry.averagePoints) }}</div>
-                <div class="stat-label">{{ t('teamPerformance.avgPoints') }}</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value">{{ formatPoints(teamEntry.totalPoints) }}</div>
-                <div class="stat-label">{{ t('teamPerformance.totalPoints') }}</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value">{{ formatNumber(teamEntry.exactResults) }}</div>
-                <div class="stat-label">{{ t('teamPerformance.exactTips') }}</div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-value">{{ formatNumber(teamEntry.completionRate) }}%</div>
-                <div class="stat-label">{{ t('teamPerformance.completion') }}</div>
-              </div>
-            </div>
-
-            <p class="text-muted team-performance-hint mb-0">
-              {{ t('teamPerformance.privacyHint') }}
-            </p>
+            <ul v-if="highlights.length" class="highlights-list">
+              <li v-for="h in highlights" :key="h.key">
+                <strong>{{ h.title }}</strong>
+                <div class="text-muted">{{ h.text }}</div>
+              </li>
+            </ul>
+            <p v-else class="text-muted mb-0">{{ t('teamPerformance.noHighlights') }}</p>
           </div>
         </div>
 
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-header">
-              <h3>⭐ {{ t('teamPerformance.highlightsTitle') }}</h3>
-            </div>
-            <div class="card-body">
-              <ul v-if="highlights.length" class="highlights-list">
-                <li v-for="h in highlights" :key="h.key">
-                  <strong>{{ h.title }}</strong>
-                  <div class="text-muted">{{ h.text }}</div>
-                </li>
-              </ul>
-              <p v-else class="text-muted mb-0">{{ t('teamPerformance.noHighlights') }}</p>
-            </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>👥 {{ t('teamPerformance.membersTitle') }}</h3>
           </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3>👥 {{ t('teamPerformance.membersTitle') }}</h3>
-            </div>
-            <div class="card-body">
-              <details class="card team-performance-columns-help">
-                <summary class="card-header team-performance-columns-help__summary">
-                  {{ t('help.sections.scoring.title') }}
-                </summary>
-                <div class="card-body">
-                  <ul class="team-performance-columns-help__list">
-                    <li>{{ t('help.scoring.exact', points) }}</li>
-                    <li>{{ t('help.scoring.goalDiff', points) }}</li>
-                    <li>{{ t('help.scoring.tendency', points) }}</li>
-                    <li class="text-muted">
-                      {{ t('leaderboard.correct') }} = {{ t('leaderboard.exact') }} + {{ t('leaderboard.goalDiff') }} + {{ t('leaderboard.tendency') }}
-                    </li>
-                  </ul>
-                  <router-link to="/rules-help" class="btn btn-secondary btn-sm">
-                    {{ t('help.title') }}
-                  </router-link>
-                </div>
-              </details>
-
-              <div class="table-wrapper team-performance-desktop">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>{{ t('leaderboard.rank') }}</th>
-                      <th>{{ t('leaderboard.name') }}</th>
-                      <th>{{ t('leaderboard.total') }}</th>
-                      <th :title="`${t('leaderboard.correct')} = ${t('leaderboard.exact')} + ${t('leaderboard.goalDiff')} + ${t('leaderboard.tendency')}`">{{ t('leaderboard.correct') }}</th>
-                      <th :title="t('help.scoring.exact', points)">{{ t('leaderboard.exact') }}</th>
-                      <th :title="t('help.scoring.goalDiff', points)">{{ t('leaderboard.goalDiff') }}</th>
-                      <th :title="t('help.scoring.tendency', points)">{{ t('leaderboard.tendency') }}</th>
-                      <th>{{ t('leaderboard.tips') }}</th>
-                      <th>{{ t('leaderboard.completion') }}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="m in members"
-                      :key="m.userId"
-                      :class="{ 'team-performance-row-current': m.userId === authStore.user?.id }"
-                    >
-                      <td>{{ m.rank }}</td>
-                      <td>
-                        <div class="member-name-cell">
-                          <UserAvatar
-                            :image-url="m.imageUrl"
-                            :avatar-color="m.avatarColor"
-                            :avatar-emoji="m.avatarEmoji"
-                            :first-name="m.firstName"
-                            :last-name="m.lastName"
-                            size="xs"
-                          />
-                          <strong>{{ m.firstName }} {{ m.lastName }}</strong>
-                          <span v-if="m.userId === authStore.user?.id" class="badge badge-info">{{ t('leaderboard.you') }}</span>
-                        </div>
-                      </td>
-                      <td><strong>{{ formatPoints(m.totalPoints) }}</strong></td>
-                      <td>{{ formatNumber(m.correctTips) }}</td>
-                      <td>{{ formatNumber(m.exactResults) }}</td>
-                      <td>{{ formatNumber(m.goalDifferences) }}</td>
-                      <td>{{ formatNumber(m.tendencies) }}</td>
-                      <td>{{ formatNumber(m.submittedPredictions) }}</td>
-                      <td>{{ m.completionPercentage != null ? `${formatPercent(m.completionPercentage)}%` : '–' }}</td>
-                    </tr>
-                    <tr v-if="members.length === 0">
-                      <td colspan="9" class="text-center text-muted">{{ t('teamPerformance.empty') }}</td>
-                    </tr>
-                  </tbody>
-                </table>
+          <div class="card-body">
+            <details class="card team-performance-columns-help">
+              <summary class="card-header team-performance-columns-help__summary">
+                {{ t('help.sections.scoring.title') }}
+              </summary>
+              <div class="card-body">
+                <ul class="team-performance-columns-help__list">
+                  <li>{{ t('help.scoring.exact', points) }}</li>
+                  <li>{{ t('help.scoring.goalDiff', points) }}</li>
+                  <li>{{ t('help.scoring.tendency', points) }}</li>
+                  <li class="text-muted">
+                    {{ t('leaderboard.correct') }} = {{ t('leaderboard.exact') }} + {{ t('leaderboard.goalDiff') }} + {{ t('leaderboard.tendency') }}
+                  </li>
+                </ul>
+                <router-link to="/help" class="btn btn-secondary btn-sm">
+                  {{ t('help.nav') }}
+                </router-link>
               </div>
+            </details>
 
-              <div class="team-performance-mobile">
-                <article v-for="m in members" :key="`mobile-${m.userId}`" class="member-card">
-                  <div class="member-card-header">
-                    <span class="badge badge-info">#{{ m.rank }}</span>
-                    <div class="member-name-cell">
-                      <UserAvatar
-                        :image-url="m.imageUrl"
-                        :avatar-color="m.avatarColor"
-                        :avatar-emoji="m.avatarEmoji"
-                        :first-name="m.firstName"
-                        :last-name="m.lastName"
-                        size="xs"
-                      />
-                      <strong>{{ m.firstName }} {{ m.lastName }}</strong>
-                    </div>
+            <div class="table-wrapper team-performance-desktop">
+              <table>
+                <thead>
+                  <tr>
+                    <th>{{ t('leaderboard.rank') }}</th>
+                    <th>{{ t('leaderboard.name') }}</th>
+                    <th v-if="activeScope === 'all'">{{ t('leaderboard.team') }}</th>
+                    <th>{{ t('leaderboard.total') }}</th>
+                    <th :title="`${t('leaderboard.correct')} = ${t('leaderboard.exact')} + ${t('leaderboard.goalDiff')} + ${t('leaderboard.tendency')}`">{{ t('leaderboard.correct') }}</th>
+                    <th :title="t('help.scoring.exact', points)">{{ t('leaderboard.exact') }}</th>
+                    <th :title="t('help.scoring.goalDiff', points)">{{ t('leaderboard.goalDiff') }}</th>
+                    <th :title="t('help.scoring.tendency', points)">{{ t('leaderboard.tendency') }}</th>
+                    <th>{{ t('leaderboard.tips') }}</th>
+                    <th>{{ t('leaderboard.completion') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="m in displayMembers"
+                    :key="m.userId"
+                    :class="{ 'team-performance-row-current': m.userId === authStore.user?.id }"
+                  >
+                    <td>{{ m.rank }}</td>
+                    <td>
+                      <div class="member-name-cell">
+                        <UserAvatar
+                          :image-url="m.imageUrl"
+                          :avatar-color="m.avatarColor"
+                          :avatar-emoji="m.avatarEmoji"
+                          :first-name="m.firstName"
+                          :last-name="m.lastName"
+                          size="xs"
+                        />
+                        <strong>{{ m.firstName }} {{ m.lastName }}</strong>
+                        <span v-if="m.userId === authStore.user?.id" class="badge badge-info">{{ t('leaderboard.you') }}</span>
+                      </div>
+                    </td>
+                    <td v-if="activeScope === 'all'">{{ m.teamName || '–' }}</td>
+                    <td><strong>{{ formatPoints(m.totalPoints) }}</strong></td>
+                    <td>{{ formatNumber(m.correctTips) }}</td>
+                    <td>{{ formatNumber(m.exactResults) }}</td>
+                    <td>{{ formatNumber(m.goalDifferences) }}</td>
+                    <td>{{ formatNumber(m.tendencies) }}</td>
+                    <td>{{ formatNumber(m.submittedPredictions) }}</td>
+                    <td>{{ m.completionPercentage != null ? `${formatPercent(m.completionPercentage)}%` : '–' }}</td>
+                  </tr>
+                  <tr v-if="displayMembers.length === 0">
+                    <td :colspan="activeScope === 'all' ? 10 : 9" class="text-center text-muted">{{ t('teamPerformance.empty') }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="team-performance-mobile">
+              <article v-for="m in displayMembers" :key="`mobile-${m.userId}`" class="member-card">
+                <div class="member-card-header">
+                  <span class="badge badge-info">#{{ m.rank }}</span>
+                  <div class="member-name-cell">
+                    <UserAvatar
+                      :image-url="m.imageUrl"
+                      :avatar-color="m.avatarColor"
+                      :avatar-emoji="m.avatarEmoji"
+                      :first-name="m.firstName"
+                      :last-name="m.lastName"
+                      size="xs"
+                    />
+                    <strong>{{ m.firstName }} {{ m.lastName }}</strong>
                   </div>
-                  <dl class="member-card-fields">
-                    <dt>{{ t('leaderboard.total') }}</dt><dd><strong>{{ formatPoints(m.totalPoints) }}</strong></dd>
-                    <dt>{{ t('leaderboard.correct') }}</dt><dd>{{ formatNumber(m.correctTips) }}</dd>
-                    <dt>{{ t('leaderboard.exact') }}</dt><dd>{{ formatNumber(m.exactResults) }}</dd>
-                    <dt>{{ t('leaderboard.goalDiff') }}</dt><dd>{{ formatNumber(m.goalDifferences) }}</dd>
-                    <dt>{{ t('leaderboard.tendency') }}</dt><dd>{{ formatNumber(m.tendencies) }}</dd>
-                    <dt>{{ t('leaderboard.tips') }}</dt><dd>{{ formatNumber(m.submittedPredictions) }}</dd>
-                    <dt>{{ t('leaderboard.completion') }}</dt><dd>{{ m.completionPercentage != null ? `${formatPercent(m.completionPercentage)}%` : '–' }}</dd>
-                  </dl>
-                </article>
-                <p v-if="members.length === 0" class="text-center text-muted mb-0">{{ t('teamPerformance.empty') }}</p>
-              </div>
+                </div>
+                <dl class="member-card-fields">
+                  <template v-if="activeScope === 'all'">
+                    <dt>{{ t('leaderboard.team') }}</dt><dd>{{ m.teamName || '–' }}</dd>
+                  </template>
+                  <dt>{{ t('leaderboard.total') }}</dt><dd><strong>{{ formatPoints(m.totalPoints) }}</strong></dd>
+                  <dt>{{ t('leaderboard.correct') }}</dt><dd>{{ formatNumber(m.correctTips) }}</dd>
+                  <dt>{{ t('leaderboard.exact') }}</dt><dd>{{ formatNumber(m.exactResults) }}</dd>
+                  <dt>{{ t('leaderboard.goalDiff') }}</dt><dd>{{ formatNumber(m.goalDifferences) }}</dd>
+                  <dt>{{ t('leaderboard.tendency') }}</dt><dd>{{ formatNumber(m.tendencies) }}</dd>
+                  <dt>{{ t('leaderboard.tips') }}</dt><dd>{{ formatNumber(m.submittedPredictions) }}</dd>
+                  <dt>{{ t('leaderboard.completion') }}</dt><dd>{{ m.completionPercentage != null ? `${formatPercent(m.completionPercentage)}%` : '–' }}</dd>
+                </dl>
+              </article>
+              <p v-if="displayMembers.length === 0" class="text-center text-muted mb-0">{{ t('teamPerformance.empty') }}</p>
             </div>
           </div>
         </div>
-      </template>
+      </div>
     </template>
   </div>
 </template>
@@ -200,6 +246,7 @@ import TeamPitchPanel from '../components/TeamPitchPanel.vue';
 import { useAuthStore } from '../stores/authStore';
 import { useFormatters } from '../composables/useFormatters';
 import { useScoringRules } from '../composables/useScoringRules';
+import { summarizeTeamPitchZones } from '../composables/useTeamPitchZones';
 
 const { t } = useI18n();
 const authStore = useAuthStore();
@@ -210,24 +257,49 @@ const loading = ref(true);
 const error = ref('');
 const teamRanking = ref([]);
 const membersRaw = ref([]);
+const activeScope = ref('all');
 
 const teamId = computed(() => authStore.user?.teamId || null);
+
+const scopeFilters = computed(() => [
+  { value: 'all', label: t('teamPerformance.filterAllTeams'), disabled: false },
+  {
+    value: 'myTeam',
+    label: t('teamPerformance.filterMyTeam'),
+    disabled: !teamId.value,
+  },
+]);
+
+const pageSubtitle = computed(() => (
+  activeScope.value === 'all'
+    ? t('teamPerformance.subtitleAllTeams')
+    : t('teamPerformance.subtitle')
+));
+
+const allMembers = computed(() => membersRaw.value.map((m) => ({
+  ...m,
+  correctTips: Number(m.exactResults || 0) + Number(m.goalDifferences || 0) + Number(m.tendencies || 0),
+})));
+
+const displayMembers = computed(() => {
+  if (activeScope.value === 'myTeam' && teamId.value) {
+    return allMembers.value.filter((m) => Number(m.teamId) === Number(teamId.value));
+  }
+  return allMembers.value;
+});
+
+const zoneSummary = computed(() => summarizeTeamPitchZones(displayMembers.value));
 
 const teamEntry = computed(() => {
   if (!teamId.value) return null;
   return teamRanking.value.find((e) => Number(e.teamId) === Number(teamId.value)) || null;
 });
 
-const members = computed(() => membersRaw.value.map((m) => ({
-  ...m,
-  correctTips: Number(m.exactResults || 0) + Number(m.goalDifferences || 0) + Number(m.tendencies || 0),
-})));
-
 const highlights = computed(() => {
-  if (!members.value.length) return [];
-  const byExact = [...members.value].sort((a, b) => b.exactResults - a.exactResults || b.totalPoints - a.totalPoints);
-  const byCorrect = [...members.value].sort((a, b) => b.correctTips - a.correctTips || b.totalPoints - a.totalPoints);
-  const byPoints = [...members.value].sort((a, b) => b.totalPoints - a.totalPoints);
+  if (!displayMembers.value.length) return [];
+  const byExact = [...displayMembers.value].sort((a, b) => b.exactResults - a.exactResults || b.totalPoints - a.totalPoints);
+  const byCorrect = [...displayMembers.value].sort((a, b) => b.correctTips - a.correctTips || b.totalPoints - a.totalPoints);
+  const byPoints = [...displayMembers.value].sort((a, b) => b.totalPoints - a.totalPoints);
 
   const bestPoints = byPoints[0];
   const bestExact = byExact[0];
@@ -267,17 +339,18 @@ const highlights = computed(() => {
   return out;
 });
 
+function setScope(scope) {
+  if (scope === 'myTeam' && !teamId.value) return;
+  activeScope.value = scope;
+}
+
 async function loadData() {
-  if (!teamId.value) {
-    loading.value = false;
-    return;
-  }
   loading.value = true;
   error.value = '';
   try {
     const [rankRes, membersRes] = await Promise.all([
       api.get('/leaderboard/team-ranking'),
-      api.get('/leaderboard', { params: { teamId: teamId.value, filter: 'overall', sortBy: 'total' } }),
+      api.get('/leaderboard', { params: { filter: 'overall', sortBy: 'total' } }),
     ]);
     teamRanking.value = Array.isArray(rankRes.data) ? rankRes.data : [];
     membersRaw.value = Array.isArray(membersRes.data) ? membersRes.data : [];
@@ -292,6 +365,10 @@ onMounted(loadData);
 </script>
 
 <style scoped>
+.team-performance-scope-bar {
+  margin-bottom: 1.25rem;
+}
+
 .team-performance-header-row {
   display: flex;
   align-items: center;

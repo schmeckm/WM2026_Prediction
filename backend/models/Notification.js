@@ -31,6 +31,11 @@ const Notification = sequelize.define('Notification', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  showOnLogin: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
 }, {
   indexes: [
     { fields: ['userId', 'isRead', 'createdAt'] },

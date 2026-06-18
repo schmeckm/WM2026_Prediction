@@ -185,22 +185,38 @@ router.get('/predictions/user/:userId', async (req, res) => {
 router.post('/notifications/send', async (req, res) => {
   try {
     const { validateNotificationPayload } = require('../utils/notificationValidation');
+    const { sendAdminAnnouncement } = require('../services/adminAnnouncementService');
     const validation = validateNotificationPayload(req.body);
     if (!validation.valid) {
       return sendError(res, req, 400, 'errors.requiredFields');
     }
 
-    const { userId, title, message, type, link } = validation.sanitized;
-    if (userId) {
-      await notificationService.createNotification({ userId, title, message, type, link });
-    } else {
-      const users = await User.findAll({ where: { role: 'user' } });
-      await notificationService.createBulkNotifications(
-        users.map((u) => ({ userId: u.id, title, message, type, link })),
-      );
-    }
-    res.json({ message: 'Benachrichtigung(en) gesendet.' });
+    const result = await sendAdminAnnouncement(validation.sanitized);
+    await logAudit({
+      userId: req.user.id,
+      action: 'ADMIN_ANNOUNCEMENT_SEND',
+      newValue: {
+        title: validation.sanitized.title,
+        recipientCount: result.recipientCount,
+        inAppSent: result.inAppSent,
+        emailsSent: result.emailsSent,
+        emailsSkipped: result.emailsSkipped,
+        userId: validation.sanitized.userId,
+      },
+      req,
+    });
+
+    res.json({
+      message: translate(req, 'messages.adminAnnouncementSent', result),
+      ...result,
+    });
   } catch (error) {
+    if (error.code === 'no_delivery_channel') {
+      return sendError(res, req, 400, 'errors.announcementNoChannel');
+    }
+    if (error.code === 'no_recipients') {
+      return sendError(res, req, 400, 'errors.announcementNoRecipients');
+    }
     sendError(res, req, 500, 'errors.sendFailed');
   }
 });

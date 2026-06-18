@@ -1,0 +1,207 @@
+{
+  "generatedAt": "2026-06-18T19:44:31.611Z",
+  "repository": "https://github.com/schmeckm/WM2026_Prediction",
+  "limit": 20,
+  "entries": [
+    {
+      "sha": "3e69df22462918e0e6b067699b2825f565aa216e",
+      "shortSha": "3e69df2",
+      "date": "2026-06-18T21:15:46+02:00",
+      "subject": "feat: add playful team pitch panel with orange bench preview",
+      "type": "feature",
+      "title": "Add playful team pitch panel with orange bench preview",
+      "core": true,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/3e69df22462918e0e6b067699b2825f565aa216e"
+    },
+    {
+      "sha": "69a6a02ee4189776c237e9741c350625a49ea8fa",
+      "shortSha": "69a6a02",
+      "date": "2026-06-18T21:06:58+02:00",
+      "subject": "feat: fairplay team ranking excludes non-predictors from team average",
+      "type": "feature",
+      "title": "Fairplay team ranking excludes non-predictors from team average",
+      "core": true,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/69a6a02ee4189776c237e9741c350625a49ea8fa"
+    },
+    {
+      "sha": "7502bf377d40838764f120f32f1fb6d702fcb4ea",
+      "shortSha": "7502bf3",
+      "date": "2026-06-18T20:48:36+02:00",
+      "subject": "feat: allow users to customize portal accent color from profile",
+      "type": "feature",
+      "title": "Allow users to customize portal accent color from profile",
+      "core": true,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/7502bf377d40838764f120f32f1fb6d702fcb4ea"
+    },
+    {
+      "sha": "4cabf68679cd27dd452b14f2b9f285ac8777a60e",
+      "shortSha": "4cabf68",
+      "date": "2026-06-17T00:04:30+02:00",
+      "subject": "feat: add localized bookmaker odds to morning digest",
+      "type": "feature",
+      "title": "Add localized bookmaker odds to morning digest",
+      "core": true,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/4cabf68679cd27dd452b14f2b9f285ac8777a60e"
+    },
+    {
+      "sha": "9bac1d322506e10a84d7d111f99e40fe455dad1e",
+      "shortSha": "9bac1d3",
+      "date": "2026-06-16T23:59:19+02:00",
+      "subject": "fix: remove duplicate numbering in morning digest lists",
+      "type": "fix",
+      "title": "Remove duplicate numbering in morning digest lists",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/9bac1d322506e10a84d7d111f99e40fe455dad1e"
+    },
+    {
+      "sha": "05f230ff0603bd217b137050c46c20ad117d21e3",
+      "shortSha": "05f230f",
+      "date": "2026-06-16T23:34:27+02:00",
+      "subject": "fix: live-score sync reliability and match card duplicate tips",
+      "type": "fix",
+      "title": "Live-score sync reliability and match card duplicate tips",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/05f230ff0603bd217b137050c46c20ad117d21e3"
+    },
+    {
+      "sha": "fde5f4283f8f528918947dc7ff249c18097b3491",
+      "shortSha": "fde5f42",
+      "date": "2026-06-16T23:24:23+02:00",
+      "subject": "feat: add WM top scorers with digest and image resolution",
+      "type": "feature",
+      "title": "Add WM top scorers with digest and image resolution",
+      "core": true,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/fde5f4283f8f528918947dc7ff249c18097b3491"
+    },
+    {
+      "sha": "a8019926900dbf98df92f52f31f4e0d45985ed1f",
+      "shortSha": "a801992",
+      "date": "2026-06-16T23:12:21+02:00",
+      "subject": "fix: live-score sync 500 and duplicate match card tips",
+      "type": "fix",
+      "title": "Live-score sync 500 and duplicate match card tips",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/a8019926900dbf98df92f52f31f4e0d45985ed1f"
+    },
+    {
+      "sha": "2ee22b2be9cc370fa0446a03dd7224cef8962dc8",
+      "shortSha": "2ee22b2",
+      "date": "2026-06-16T22:59:30+02:00",
+      "subject": "feat: add market vs reality analysis and fix Odds API in production",
+      "type": "feature",
+      "title": "Add market vs reality analysis and fix Odds API in production",
+      "core": true,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/2ee22b2be9cc370fa0446a03dd7224cef8962dc8"
+    },
+    {
+      "sha": "dbb47febb61ff94a671959ba0ee2d07ebafc029f",
+      "shortSha": "dbb47fe",
+      "date": "2026-06-16T22:47:51+02:00",
+      "subject": "feat: show team names in market probability labels",
+      "type": "feature",
+      "title": "Show team names in market probability labels",
+      "core": true,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/dbb47febb61ff94a671959ba0ee2d07ebafc029f"
+    },
+    {
+      "sha": "7dd72ad8ba98fbefac32eb525670a5dbadf5ed6a",
+      "shortSha": "7dd72ad",
+      "date": "2026-06-16T22:43:14+02:00",
+      "subject": "feat: integrate The Odds API for market probabilities",
+      "type": "feature",
+      "title": "Integrate The Odds API for market probabilities",
+      "core": true,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/7dd72ad8ba98fbefac32eb525670a5dbadf5ed6a"
+    },
+    {
+      "sha": "2bcd97b73ec6e9bbe60195e192b3d84a0a51d3eb",
+      "shortSha": "2bcd97b",
+      "date": "2026-06-16T20:27:47+02:00",
+      "subject": "docs: document admin Swagger API docs in README, handbook, and changelog",
+      "type": "docs",
+      "title": "Document admin Swagger API docs in README, handbook, and changelog",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/2bcd97b73ec6e9bbe60195e192b3d84a0a51d3eb"
+    },
+    {
+      "sha": "045b9f47890c773428d3c1fa6909cc8c891430a3",
+      "shortSha": "045b9f4",
+      "date": "2026-06-16T20:20:17+02:00",
+      "subject": "feat(admin): add Swagger API documentation with auto-generated OpenAPI spec",
+      "type": "feature",
+      "title": "Add Swagger API documentation with auto-generated OpenAPI spec",
+      "core": true,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/045b9f47890c773428d3c1fa6909cc8c891430a3"
+    },
+    {
+      "sha": "98ea03ab94988b30843ef6d51638c8670ad934bd",
+      "shortSha": "98ea03a",
+      "date": "2026-06-16T07:37:48+02:00",
+      "subject": "docs: add English admin handbook with installation guide and Q&A",
+      "type": "docs",
+      "title": "Add English admin handbook with installation guide and Q&A",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/98ea03ab94988b30843ef6d51638c8670ad934bd"
+    },
+    {
+      "sha": "deaa9182d068165f50de8e0245a1bf8b6a2a5453",
+      "shortSha": "deaa918",
+      "date": "2026-06-16T07:31:43+02:00",
+      "subject": "docs: .env.example Vorlage mit Pflicht- und Optional-Variablen",
+      "type": "docs",
+      "title": ".env.example Vorlage mit Pflicht- und Optional-Variablen",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/deaa9182d068165f50de8e0245a1bf8b6a2a5453"
+    },
+    {
+      "sha": "8cf85c2b0b00642089976441324021607b407c64",
+      "shortSha": "8cf85c2",
+      "date": "2026-06-16T07:27:24+02:00",
+      "subject": "fix(ui): respect iPhone safe area for navbar and toasts",
+      "type": "fix",
+      "title": "Respect iPhone safe area for navbar and toasts",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/8cf85c2b0b00642089976441324021607b407c64"
+    },
+    {
+      "sha": "108e20e601afd7266d439b6b4a87a691128afbdf",
+      "shortSha": "108e20e",
+      "date": "2026-06-16T07:24:46+02:00",
+      "subject": "docs: professionelles README, MIT-Lizenz, Football-API-Hinweis",
+      "type": "docs",
+      "title": "Professionelles README, MIT-Lizenz, Football-API-Hinweis",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/108e20e601afd7266d439b6b4a87a691128afbdf"
+    },
+    {
+      "sha": "472e552f7dd1a8ea70b03e2226e0ec9a718293cc",
+      "shortSha": "472e552",
+      "date": "2026-06-16T07:22:26+02:00",
+      "subject": "docs: README und Portainer-Deploy-Guide mit Pflicht-Env-Variablen",
+      "type": "docs",
+      "title": "README und Portainer-Deploy-Guide mit Pflicht-Env-Variablen",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/472e552f7dd1a8ea70b03e2226e0ec9a718293cc"
+    },
+    {
+      "sha": "e559182ebaf48cfadbfded0d6e0e25a21fc133be",
+      "shortSha": "e559182",
+      "date": "2026-06-15T20:30:46+02:00",
+      "subject": "fix(admin): Feedback-GitHub-Dialog und Konfigurationshinweis",
+      "type": "fix",
+      "title": "Feedback-GitHub-Dialog und Konfigurationshinweis",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/e559182ebaf48cfadbfded0d6e0e25a21fc133be"
+    },
+    {
+      "sha": "9fcef6689104fc62f80c9787f0fe01aa43dd76ea",
+      "shortSha": "9fcef66",
+      "date": "2026-06-15T08:04:52+02:00",
+      "subject": "feat(admin): User-Feedback-Seite mit GitHub-Issue-Übernahme",
+      "type": "feature",
+      "title": "User-Feedback-Seite mit GitHub-Issue-Übernahme",
+      "core": true,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/9fcef6689104fc62f80c9787f0fe01aa43dd76ea"
+    }
+  ]
+}

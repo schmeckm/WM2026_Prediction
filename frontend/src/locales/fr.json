@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "World Cup 2026 - Compétition",
+    "title": "FIFA WORLD CUP 26",
     "subtitle": "Jeu de Pronostics"
   },
   "languages": {
@@ -50,6 +50,11 @@
     "sectionPrimary": "Vue d'ensemble",
     "sectionTournament": "Tournoi & infos",
     "sectionAccount": "Compte & support",
+    "adminSectionOverview": "Vue d'ensemble admin",
+    "adminSectionTournament": "Matchs & résultats",
+    "adminSectionScoring": "Points & classements",
+    "adminSectionUsers": "Utilisateurs & équipes",
+    "adminSectionSystem": "Système & outils",
     "dashboard": "Tableau de bord",
     "tipCopilot": "Co-Pilot Pronostics",
     "matches": "Matchs",
@@ -218,6 +223,16 @@
     "aiInactive": "Inactive",
     "github": "GitHub",
     "githubAria": "Ouvrir le code source sur GitHub",
+    "releaseNotesTitle": "Notes de version",
+    "releaseNotesSubtitle": "Dernières {count} mises à jour GitHub",
+    "releaseNotesShow": "Notes de version",
+    "releaseNotesHide": "Masquer les notes de version",
+    "releaseNoteType": {
+      "feature": "Fonctionnalité",
+      "fix": "Correctif",
+      "docs": "Docs",
+      "other": "Mise à jour"
+    },
     "detailOddsNotConfigured": "ODDS_API_KEY manquant — pas de probabilités de marché.",
     "detailOddsSportInactive": "Le sport Coupe du monde est inactif chez The Odds API.",
     "detailOddsQuota": "{remaining} crédits API restants (The Odds API).",
@@ -242,7 +257,8 @@
       "purple": "Violet",
       "pink": "Rose",
       "red": "Rouge",
-      "gold": "Or"
+      "gold": "Or",
+      "accenture": "Accenture"
     },
     "saveProfile": "Enregistrer le profil",
     "updated": "Profil mis à jour avec succès.",
@@ -441,7 +457,10 @@
     },
     "noUpcoming": "Aucun match à venir.",
     "top5": "Top 5 classement",
-    "fullLeaderboard": "Classement complet"
+    "fullLeaderboard": "Classement complet",
+    "extras": {
+      "title": "Séries, défis et insights"
+    }
   },
   "challenges": {
     "matchdayChampion": {
@@ -501,6 +520,13 @@
   "teamPerformance": {
     "title": "Performance d'équipe",
     "subtitle": "Qui pronostique particulièrement bien dans ton équipe",
+    "subtitleAllTeams": "Toutes les équipes en un coup d'œil – qui est sur le terrain, qui a jaune ou rouge.",
+    "filterAllTeams": "Toutes les équipes",
+    "filterMyTeam": "Mon équipe",
+    "allTeamsOverview": "Vue d'ensemble du tournoi",
+    "allTeamsHint": "La composition affiche tous les pronostiqueurs de toutes les équipes. « Mon équipe » filtre sur tes collègues.",
+    "teamCount": "{count} équipes",
+    "lineupSummary": "{pitch} sur le terrain · {yellow} jaune · {red} rouge",
     "privacyHint": "Les statistiques d'équipe sont affichées pour motiver. Les pronostics de score ne sont pas affichés avant le coup d'envoi.",
     "noTeam": "Pas encore assigné à une équipe.",
     "goToProfile": "Choisir l'équipe dans le profil",
@@ -523,6 +549,22 @@
     "highlightBestExactText": "{name} a {count} pronostics exacts.",
     "highlightBestCorrectTitle": "Plus de bons pronostics",
     "highlightBestCorrectText": "{name} a {count} pronostics corrects."
+  },
+  "teamPitch": {
+    "title": "Composition d'équipe",
+    "titleAllTeams": "Composition du tournoi",
+    "tagline": "Qui pronostique – qui voit un carton jaune ou rouge. Ludique, zéro humiliation.",
+    "taglineAllTeams": "Toutes les équipes – terrain, jaune, rouge, zéro humiliation.",
+    "beta": "Aperçu",
+    "fieldAria": "Terrain d'équipe avec pronostiqueurs actifs",
+    "emptyPitch": "Personne sur le terrain – le premier pronostic vous lance dans le jeu !",
+    "yellowTooltip": "Avertissement – un pronostic de plus vous garde sur le terrain",
+    "yellowHint": "Carton jaune",
+    "redTitle": "Expulsion",
+    "redSub": "Pause sur le banc – de retour sur le terrain avec votre prochain pronostic.",
+    "redEmpty": "Aucun rouge – tout le monde joue",
+    "redHint": "Bientôt de retour ?",
+    "footer": "Pas de moqueries – esprit d'équipe. Les pronostics vous ramènent sur le terrain."
   },
   "groupStandings": {
     "title": "Classements par groupe",
@@ -924,11 +966,21 @@
       },
       "leaderboard": {
         "title": "Classement",
-        "text": "Le classement affiche votre rang, points matchs, bonus et total. Vous pouvez filtrer par total, matchs ou bonus."
+        "text": "Le classement affiche votre rang, points matchs, bonus et total. Vous pouvez filtrer par total, matchs ou bonus.",
+        "correctHint": "La colonne « Correct » additionne scores exacts, bonnes différences de buts et bonnes tendances. La complétion indique combien de matchs vous avez pronostiqués."
       },
       "teams": {
         "title": "Classement par équipe",
-        "text": "Chaque joueur appartient à une équipe. Le classement par équipe utilise la moyenne des points par membre — la plus grande équipe ne gagne pas automatiquement."
+        "text": "Chaque joueur appartient à une équipe (département). Compte la moyenne des pronostiqueurs actifs — les membres sans pronostic n'entrent pas dans la moyenne d'équipe. La plus grande équipe ne gagne pas automatiquement. Vos points individuels restent inchangés."
+      },
+      "teamPerformance": {
+        "title": "Performance d'équipe & cartons",
+        "intro": "La performance d'équipe montre une composition ludique — terrain, cartons jaune et rouge, zéro humiliation.",
+        "pitch": "Sur le terrain sans carton : pronostics réguliers. Vous restez au vert si vous avez déjà pronostiqué et couvert au moins {yellow} % des matchs déjà passés.",
+        "yellow": "Carton jaune ({red}–{yellowMax} %) : toujours sur le terrain avec un avertissement — un pronostic de plus vous garde dans le jeu.",
+        "red": "Carton rouge (moins de {red} % ou aucun pronostic) : expulsion du terrain — retour avec votre prochain pronostic.",
+        "note": "Vous ne voyez pas les pronostics exacts des autres avant le coup d'envoi. Les cartons motivent, sans humilier.",
+        "link": "Voir la performance d'équipe"
       },
       "ai": {
         "title": "Demander au coach IA",
@@ -991,6 +1043,10 @@
     "bellLabel": "Notifications",
     "toggleDropdown": "Afficher ou masquer les notifications",
     "loadFailed": "Impossible de charger les notifications."
+  },
+  "loginAnnouncement": {
+    "dismiss": "Compris",
+    "openLink": "En savoir plus"
   },
   "display": {
     "subtitle": "Classement en direct",
@@ -1584,9 +1640,26 @@
       "formTitle": "Titre",
       "formMessage": "Message",
       "formLink": "Lien (optionnel)",
-      "send": "Envoyer à tous les utilisateurs",
+      "formType": "Type",
+      "typeInfo": "Info",
+      "typeSuccess": "Succès",
+      "typeWarning": "Avertissement",
+      "typeError": "Important",
+      "recipientMode": "Destinataires",
+      "recipientAll": "Tous les utilisateurs",
+      "recipientSingle": "Un utilisateur",
+      "recipientUser": "Utilisateur",
+      "recipientUserPlaceholder": "Choisir un utilisateur…",
+      "includeAdmins": "Inclure les admins",
+      "sendInApp": "Notification dans le portail",
+      "sendEmail": "E-mail (même mise en page que les e-mails système)",
+      "showOnLogin": "Afficher à la connexion",
+      "deliveryHint": "Au moins un canal doit être sélectionné.",
+      "send": "Envoyer le message",
       "sending": "Envoi…",
-      "sent": "Notification envoyée."
+      "sent": "Notification envoyée.",
+      "sentSummary": "{inAppSent} notifications portail et {emailsSent} e-mails envoyés ({emailsSkipped} sans adresse e-mail ignorés).",
+      "sendFailed": "Échec de l'envoi."
     },
     "auditLog": {
       "title": "Journal d'audit",

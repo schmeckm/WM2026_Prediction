@@ -23,18 +23,16 @@
 </template>
 
 <script setup>
-import { computed, inject } from 'vue';
+import { inject } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import NavIcon from './NavIcon.vue';
-import { useAdminNavLinks } from '../composables/useAdminNav';
+import { useAdminBottomNavLinks } from '../composables/useAdminNav';
 
 const { t } = useI18n();
 const route = useRoute();
 const toggleSidebar = inject('toggleSidebar', () => {});
-const adminLinks = useAdminNavLinks();
-
-const primaryItems = computed(() => adminLinks.value.slice(0, 4));
+const primaryItems = useAdminBottomNavLinks();
 
 function isActive(path) {
   if (path === '/admin') return route.path === '/admin';

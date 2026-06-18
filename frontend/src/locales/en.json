@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "World Cup 2026 - Competition",
+    "title": "FIFA WORLD CUP 26",
     "subtitle": "Prediction Game"
   },
   "languages": {
@@ -50,6 +50,11 @@
     "sectionPrimary": "Overview",
     "sectionTournament": "Tournament & Info",
     "sectionAccount": "Account & Support",
+    "adminSectionOverview": "Admin overview",
+    "adminSectionTournament": "Matches & results",
+    "adminSectionScoring": "Scoring & rankings",
+    "adminSectionUsers": "Users & teams",
+    "adminSectionSystem": "System & tools",
     "dashboard": "Dashboard",
     "tipCopilot": "Tip Co-Pilot",
     "matches": "Matches",
@@ -349,7 +354,17 @@
     "detailBackupAuto": "Last automatic backup: {time}.",
     "detailBackupManual": "Last manual backup: {time}.",
     "github": "GitHub",
-    "githubAria": "Open source code on GitHub"
+    "githubAria": "Open source code on GitHub",
+    "releaseNotesTitle": "Release Notes",
+    "releaseNotesSubtitle": "Last {count} GitHub updates",
+    "releaseNotesShow": "Release Notes",
+    "releaseNotesHide": "Hide release notes",
+    "releaseNoteType": {
+      "feature": "Feature",
+      "fix": "Fix",
+      "docs": "Docs",
+      "other": "Update"
+    }
   },
   "profile": {
     "title": "Profile",
@@ -370,7 +385,8 @@
       "purple": "Purple",
       "pink": "Pink",
       "red": "Red",
-      "gold": "Gold"
+      "gold": "Gold",
+      "accenture": "Accenture"
     },
     "saveProfile": "Save profile",
     "updated": "Profile updated successfully.",
@@ -640,12 +656,15 @@
     "noUpcoming": "No upcoming matches.",
     "top5": "Top 5 leaderboard",
     "fullLeaderboard": "Full leaderboard",
-    "loadFailed": "Could not load dashboard."
+    "loadFailed": "Could not load dashboard.",
+    "extras": {
+      "title": "Streaks, challenges & insights"
+    }
   },
   "teamDashboard": {
     "title": "My team",
     "teamPerformance": "Team performance",
-    "lineup": "Lineup 🍊",
+    "lineup": "Lineup 🟨🟥",
     "fullRanking": "Team ranking",
     "avgPoints": "Avg. points",
     "totalPoints": "Team points",
@@ -657,7 +676,14 @@
   },
   "teamPerformance": {
     "title": "Team Performance",
-    "subtitle": "Who is tipping particularly well in your team",
+    "subtitle": "Your team – playful, fair, no shaming.",
+    "subtitleAllTeams": "All teams at a glance – who's on the pitch, who has a yellow or red card.",
+    "filterAllTeams": "All teams",
+    "filterMyTeam": "My team",
+    "allTeamsOverview": "Tournament overview",
+    "allTeamsHint": "The lineup shows all predictors across every team. Use \"My team\" to focus on your colleagues.",
+    "teamCount": "{count} teams",
+    "lineupSummary": "{pitch} on the pitch · {yellow} yellow · {red} red",
     "privacyHint": "Team stats are shown for motivation. Specific score tips are not shown before kick-off.",
     "noTeam": "Not assigned to a team yet.",
     "goToProfile": "Choose team in profile",
@@ -683,17 +709,19 @@
   },
   "teamPitch": {
     "title": "Team lineup",
-    "tagline": "Who's tipping along – who's on an orange break. All in good fun, zero shaming.",
+    "titleAllTeams": "Tournament lineup",
+    "tagline": "Who's tipping along – who sees a yellow or red card. All in good fun, zero shaming.",
+    "taglineAllTeams": "All teams at a glance – pitch, yellow, red, zero shaming.",
     "beta": "Preview",
     "fieldAria": "Team pitch with active predictors",
     "emptyPitch": "Nobody on the pitch yet – the first tip gets you in the game!",
-    "nudgeTooltip": "Almost fully on board – one more tip makes the difference",
-    "nudgeHint": "Almost there ⚡",
-    "benchTitle": "Orange bench",
-    "benchSub": "Sideline break – jump back in anytime with your next tip.",
-    "benchEmpty": "Everyone's on the pitch",
-    "benchHint": "Back soon?",
-    "footer": "No name-calling – just team spirit. One tip and you're back on the grass."
+    "yellowTooltip": "Warning – one more tip keeps you on the pitch",
+    "yellowHint": "Yellow card",
+    "redTitle": "Sent off",
+    "redSub": "Sideline break – back on the pitch with your next tip.",
+    "redEmpty": "No red cards – everyone's playing",
+    "redHint": "Back soon?",
+    "footer": "No name-calling – just team spirit. Tips get you back on the pitch."
   },
   "groupStandings": {
     "title": "Group standings",
@@ -1119,11 +1147,21 @@
       },
       "leaderboard": {
         "title": "Leaderboard",
-        "text": "The leaderboard shows your rank, match points, bonus points, and total. You can filter by total, match, or bonus points."
+        "text": "The leaderboard shows your rank, match points, bonus points, and total. You can filter by total, match, or bonus points.",
+        "correctHint": "The “Correct” column adds exact scores, correct goal differences, and correct tendencies. Completion shows how many matches you have predicted."
       },
       "teams": {
         "title": "Team ranking",
-        "text": "Each player belongs to a team. The team ranking uses average points per member — the largest department does not win automatically."
+        "text": "Each player belongs to a team (department). The team ranking uses the average points of active predictors — members without tips do not count towards the team average. The largest department does not win automatically. Your individual leaderboard points stay unchanged."
+      },
+      "teamPerformance": {
+        "title": "Team performance & cards",
+        "intro": "Team performance shows a playful lineup — pitch, yellow and red cards, zero shaming.",
+        "pitch": "On the pitch without a card: regular predictors. You stay clear if you have submitted tips and covered at least {yellow}% of past-due matches.",
+        "yellow": "Yellow card ({red}–{yellowMax}%): still on the pitch with a warning — one more tip keeps you in the game.",
+        "red": "Red card (below {red}% or no tips yet): sent off the pitch — back with your next tip.",
+        "note": "You cannot see others' exact score predictions before kick-off. Cards are motivation, not shaming.",
+        "link": "Go to team performance"
       },
       "ai": {
         "title": "Ask the AI coach",
@@ -1186,6 +1224,10 @@
     "bellLabel": "Notifications",
     "toggleDropdown": "Toggle notifications panel",
     "loadFailed": "Could not load notifications."
+  },
+  "loginAnnouncement": {
+    "dismiss": "Got it",
+    "openLink": "Learn more"
   },
   "display": {
     "subtitle": "Live leaderboard",
@@ -1803,9 +1845,26 @@
       "formTitle": "Title",
       "formMessage": "Message",
       "formLink": "Link (optional)",
-      "send": "Send to all users",
+      "formType": "Type",
+      "typeInfo": "Info",
+      "typeSuccess": "Success",
+      "typeWarning": "Warning",
+      "typeError": "Important",
+      "recipientMode": "Recipients",
+      "recipientAll": "All users",
+      "recipientSingle": "Single user",
+      "recipientUser": "User",
+      "recipientUserPlaceholder": "Select user…",
+      "includeAdmins": "Include admins",
+      "sendInApp": "In-app notification",
+      "sendEmail": "Email (same layout as system emails)",
+      "showOnLogin": "Show as login notice",
+      "deliveryHint": "At least one channel must be selected. Emails use the existing branded layout.",
+      "send": "Send message",
       "sending": "Sending...",
-      "sent": "Notification sent."
+      "sent": "Notification sent.",
+      "sentSummary": "Sent {inAppSent} in-app notifications and {emailsSent} emails ({emailsSkipped} skipped without email address).",
+      "sendFailed": "Sending failed."
     },
     "feedback": {
       "title": "User feedback",

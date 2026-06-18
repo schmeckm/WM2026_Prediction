@@ -47,11 +47,21 @@
       },
       "leaderboard": {
         "title": "Lider tablosu",
-        "text": "Lider tablosu sıralamanızı, maç puanlarınızı, bonus puanlarınızı ve toplamı gösterir. Toplam, maç veya bonus puanlarına göre filtreleyebilirsiniz."
+        "text": "Lider tablosu sıralamanızı, maç puanlarınızı, bonus puanlarınızı ve toplamı gösterir. Toplam, maç veya bonus puanlarına göre filtreleyebilirsiniz.",
+        "correctHint": "« Doğru » sütunu tam skorları, doğru averajları ve doğru eğilimleri toplar. Tamamlama oranı kaç maç tahmin ettiğinizi gösterir."
       },
       "teams": {
         "title": "Takım sıralaması",
-        "text": "Her oyuncu bir takıma aittir. Takım sıralaması üye başına ortalama puanı kullanır — en büyük departman otomatik kazanmaz."
+        "text": "Her oyuncu bir takıma (departmana) aittir. Aktif tahmincilerin ortalaması sayılır — tahmin vermeyen üyeler takım ortalamasına dahil edilmez. En büyük departman otomatik kazanmaz. Bireysel puanlarınız değişmez."
+      },
+      "teamPerformance": {
+        "title": "Takım performansı ve kartlar",
+        "intro": "Takım performansı eğlenceli bir kadro gösterir — saha, sarı ve kırmızı kart, sıfır utandırma.",
+        "pitch": "Kartsız sahada: düzenli tahmin yapanlar. Zaten tahmin verdiyseniz ve geçmiş maçların en az {yellow} %'sini kapsadıysanız temiz kalırsınız.",
+        "yellow": "Sarı kart ({red}–{yellowMax} %): hâlâ sahada ama uyarılı — bir tahmin daha sizi oyunda tutar.",
+        "red": "Kırmızı kart ({red} % altında veya henüz tahmin yok): sahadan atılma — bir sonraki tahminle geri dön.",
+        "note": "Başlama vuruşundan önce başkalarının tam skor tahminlerini göremezsiniz. Kartlar motivasyon içindir, utandırma değil.",
+        "link": "Takım performansına git"
       },
       "ai": {
         "title": "AI koça sor",
@@ -114,6 +124,10 @@
     "bellLabel": "Bildirimler",
     "toggleDropdown": "Bildirim panelini aç/kapat",
     "loadFailed": "Bildirimler yüklenemedi."
+  },
+  "loginAnnouncement": {
+    "dismiss": "Anladım",
+    "openLink": "Daha fazla bilgi"
   },
   "display": {
     "subtitle": "Canlı lider tablosu",

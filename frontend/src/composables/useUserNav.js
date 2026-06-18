@@ -32,6 +32,7 @@ export function useUserNavLinks() {
     tournamentLinks.push(
       { to: '/favorites', label: t('nav.communityFavorites'), icon: 'star' },
       { to: '/statistics', label: t('nav.statistics'), icon: 'chart' },
+      { to: '/help', label: t('help.nav'), icon: 'help' },
     );
 
     const accountLinks = [

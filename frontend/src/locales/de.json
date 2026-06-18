@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "World Cup 2026 - Wettbewerb",
+    "title": "FIFA WORLD CUP 26",
     "subtitle": "Tippspiel"
   },
   "languages": {
@@ -50,6 +50,11 @@
     "sectionPrimary": "Übersicht",
     "sectionTournament": "Turnier & Infos",
     "sectionAccount": "Konto & Service",
+    "adminSectionOverview": "Admin-Übersicht",
+    "adminSectionTournament": "Spiele & Ergebnisse",
+    "adminSectionScoring": "Punkte & Ranglisten",
+    "adminSectionUsers": "Nutzer & Teams",
+    "adminSectionSystem": "System & Tools",
     "dashboard": "Dashboard",
     "tipCopilot": "Tipp Co-Pilot",
     "matches": "Spiele",
@@ -356,7 +361,17 @@
     "detailBackupAuto": "Letztes automatisches Backup: {time}.",
     "detailBackupManual": "Letztes manuelles Backup: {time}.",
     "github": "GitHub",
-    "githubAria": "Quellcode auf GitHub öffnen"
+    "githubAria": "Quellcode auf GitHub öffnen",
+    "releaseNotesTitle": "Release Notes",
+    "releaseNotesSubtitle": "Letzte {count} GitHub-Updates",
+    "releaseNotesShow": "Release Notes",
+    "releaseNotesHide": "Release Notes schließen",
+    "releaseNoteType": {
+      "feature": "Feature",
+      "fix": "Fix",
+      "docs": "Docs",
+      "other": "Update"
+    }
   },
   "profile": {
     "title": "Profil",
@@ -405,7 +420,8 @@
       "purple": "Lila",
       "pink": "Pink",
       "red": "Rot",
-      "gold": "Gold"
+      "gold": "Gold",
+      "accenture": "Accenture"
     },
     "imageHint": "JPG, PNG, WebP oder GIF, max. 2 MB",
     "removeImage": "Profilbild entfernen",
@@ -647,12 +663,15 @@
     "noUpcoming": "Keine anstehenden Spiele.",
     "top5": "Top 5 Hitliste",
     "fullLeaderboard": "Vollständige Hitliste",
-    "loadFailed": "Dashboard konnte nicht geladen werden."
+    "loadFailed": "Dashboard konnte nicht geladen werden.",
+    "extras": {
+      "title": "Serien, Challenges & Insights"
+    }
   },
   "teamDashboard": {
     "title": "Mein Team",
     "teamPerformance": "Team-Performance",
-    "lineup": "Aufstellung 🍊",
+    "lineup": "Aufstellung 🟨🟥",
     "fullRanking": "Team-Ranking",
     "avgPoints": "Ø Punkte",
     "totalPoints": "Team-Punkte",
@@ -665,6 +684,13 @@
   "teamPerformance": {
     "title": "Team-Performance",
     "subtitle": "Euer Team – spielerisch, fair, ohne Bloßstellung.",
+    "subtitleAllTeams": "Alle Teams im Überblick – wer tippt mit, wer Gelb oder Rot sieht.",
+    "filterAllTeams": "Alle Teams",
+    "filterMyTeam": "Mein Team",
+    "allTeamsOverview": "Turnier-Übersicht",
+    "allTeamsHint": "Die Aufstellung zeigt alle Tippspieler über alle Teams hinweg. Mit „Mein Team“ filterst du auf deine Kolleg:innen.",
+    "teamCount": "{count} Teams",
+    "lineupSummary": "{pitch} auf dem Platz · {yellow} Gelb · {red} Rot",
     "privacyHint": "Team-Stats dienen der Motivation. Konkrete Ergebnis-Tipps werden vor Anpfiff nicht angezeigt.",
     "noTeam": "Noch keinem Team zugeordnet.",
     "goToProfile": "Im Profil Team wählen",
@@ -690,17 +716,19 @@
   },
   "teamPitch": {
     "title": "Team-Aufstellung",
-    "tagline": "Wer tippt mit – wer holt sich gerade eine Orangenpause. Alles spielerisch, null Shaming.",
+    "titleAllTeams": "Turnier-Aufstellung",
+    "tagline": "Wer tippt mit – wer eine Gelbe oder Rote Karte sieht. Alles spielerisch, null Shaming.",
+    "taglineAllTeams": "Alle Teams auf einen Blick – Rasen, Gelb, Rot, kein Shaming.",
     "beta": "Vorschau",
     "fieldAria": "Team-Spielfeld mit aktiven Tippenden",
     "emptyPitch": "Noch niemand auf dem Platz – der erste Tipp bringt euch ins Spiel!",
-    "nudgeTooltip": "Fast durchgehend dabei – ein Tipp mehr macht den Unterschied",
-    "nudgeHint": "Noch kurz Gas geben ⚡",
-    "benchTitle": "Orangenbank",
-    "benchSub": "Pause vom Rasen – jederzeit wieder einwechselbar mit dem nächsten Tipp.",
-    "benchEmpty": "Alle sind auf dem Platz",
-    "benchHint": "Bald wieder dabei?",
-    "footer": "Kein Namecalling – nur Teamgeist. Ein Tipp, und du bist zurück auf dem Rasen."
+    "yellowTooltip": "Verwarnung – ein Tipp mehr hält dich auf dem Platz",
+    "yellowHint": "Gelbe Karte",
+    "redTitle": "Platzverweis",
+    "redSub": "Pause vom Rasen – mit dem nächsten Tipp bist du wieder dabei.",
+    "redEmpty": "Kein Platzverweis – alle spielen mit",
+    "redHint": "Bald wieder dabei?",
+    "footer": "Kein Namecalling – nur Teamgeist. Tipps holen dich zurück auf den Rasen."
   },
   "groupStandings": {
     "title": "Gruppentabellen",
@@ -1127,11 +1155,21 @@
       },
       "leaderboard": {
         "title": "Hitliste",
-        "text": "In der Hitliste siehst du deinen Rang, deine Spielpunkte, Bonuspunkte und die Gesamtsumme. Du kannst nach Gesamt-, Spiel- oder Bonuspunkten filtern."
+        "text": "In der Hitliste siehst du deinen Rang, Spielpunkte, Bonuspunkte und die Gesamtsumme. Du kannst nach Gesamt-, Spiel- oder Bonuspunkten filtern.",
+        "correctHint": "Die Spalte „Richtig“ zählt exakte Tipps, richtige Tordifferenzen und richtige Tendenzen zusammen. Vollständigkeit zeigt, wie viele Spiele du getippt hast."
       },
       "teams": {
         "title": "Teamwertung",
-        "text": "Jeder Spieler gehört einem Team an. In der Teamwertung zählt der Ø Punkte pro Mitglied – so gewinnt nicht automatisch die größte Abteilung, sondern die mit dem besten Schnitt."
+        "text": "Jeder Spieler gehört einem Team an (Abteilung). Entscheidend ist der Ø Punkte der aktiven Tipper – Mitglieder ohne Tipps fließen nicht in den Team-Schnitt ein. So gewinnt nicht automatisch die größte Abteilung. Deine Einzelpunkte in der Hitliste bleiben unverändert."
+      },
+      "teamPerformance": {
+        "title": "Team-Performance & Karten",
+        "intro": "Unter Team-Performance siehst du die Aufstellung spielerisch visualisiert – Rasen, Gelbe und Rote Karte, kein Shaming.",
+        "pitch": "Auf dem Rasen ohne Karte: Wer regelmäßig tippt. Du bleibst grün, wenn du schon Tipps abgegeben hast und bei bereits vergangenen Spielen mindestens {yellow} % abgedeckt hast.",
+        "yellow": "Gelbe Karte ({red}–{yellowMax} %): Du bist noch auf dem Platz, bekommst aber eine Verwarnung – ein Tipp mehr hält dich im Spiel.",
+        "red": "Rote Karte (unter {red} % oder noch ohne Tipps): Platzverweis vom Rasen – zurück mit dem nächsten Tipp.",
+        "note": "Konkrete Ergebnis-Tipps anderer siehst du vor Anpfiff nicht. Karten sind Motivation, kein Namecalling.",
+        "link": "Zur Team-Performance"
       },
       "ai": {
         "title": "Fragen an den KI-Coach",
@@ -1194,6 +1232,10 @@
     "bellLabel": "Benachrichtigungen",
     "toggleDropdown": "Benachrichtigungen ein-/ausblenden",
     "loadFailed": "Benachrichtigungen konnten nicht geladen werden."
+  },
+  "loginAnnouncement": {
+    "dismiss": "Verstanden",
+    "openLink": "Mehr erfahren"
   },
   "statistics": {
     "title": "Statistiken",
@@ -1800,9 +1842,26 @@
       "formTitle": "Titel",
       "formMessage": "Nachricht",
       "formLink": "Link (optional)",
-      "send": "An alle Benutzer senden",
+      "formType": "Typ",
+      "typeInfo": "Info",
+      "typeSuccess": "Erfolg",
+      "typeWarning": "Hinweis",
+      "typeError": "Wichtig",
+      "recipientMode": "Empfänger",
+      "recipientAll": "Alle Benutzer",
+      "recipientSingle": "Einzelner Benutzer",
+      "recipientUser": "Benutzer",
+      "recipientUserPlaceholder": "Benutzer wählen…",
+      "includeAdmins": "Admins einschließen",
+      "sendInApp": "Portal-Benachrichtigung",
+      "sendEmail": "E-Mail (gleiches Layout wie System-Mails)",
+      "showOnLogin": "Beim Login als Hinweis anzeigen",
+      "deliveryHint": "Mindestens ein Kanal muss aktiv sein. E-Mails nutzen das bestehende Branding-Layout.",
+      "send": "Nachricht senden",
       "sending": "Senden...",
-      "sent": "Benachrichtigung gesendet."
+      "sent": "Benachrichtigung gesendet.",
+      "sentSummary": "{inAppSent} Portal-Benachrichtigungen, {emailsSent} E-Mails gesendet ({emailsSkipped} ohne E-Mail-Adresse übersprungen).",
+      "sendFailed": "Senden fehlgeschlagen."
     },
     "feedback": {
       "title": "User-Feedback",

@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "World Cup 2026 - Competición",
+    "title": "FIFA WORLD CUP 26",
     "subtitle": "Juego de Pronósticos"
   },
   "languages": {
@@ -50,6 +50,11 @@
     "sectionPrimary": "Resumen",
     "sectionTournament": "Torneo e información",
     "sectionAccount": "Cuenta y soporte",
+    "adminSectionOverview": "Resumen admin",
+    "adminSectionTournament": "Partidos y resultados",
+    "adminSectionScoring": "Puntos y clasificaciones",
+    "adminSectionUsers": "Usuarios y equipos",
+    "adminSectionSystem": "Sistema y herramientas",
     "dashboard": "Panel",
     "tipCopilot": "Co-Pilot de Pronósticos",
     "matches": "Partidos",
@@ -224,6 +229,16 @@
     "aiInactive": "Inactiva",
     "github": "GitHub",
     "githubAria": "Abrir código fuente en GitHub",
+    "releaseNotesTitle": "Notas de versión",
+    "releaseNotesSubtitle": "Últimas {count} actualizaciones de GitHub",
+    "releaseNotesShow": "Notas de versión",
+    "releaseNotesHide": "Ocultar notas de versión",
+    "releaseNoteType": {
+      "feature": "Función",
+      "fix": "Corrección",
+      "docs": "Docs",
+      "other": "Actualización"
+    },
     "detailOddsNotConfigured": "Falta ODDS_API_KEY — sin probabilidades de mercado.",
     "detailOddsSportInactive": "El deporte del Mundial está inactivo en The Odds API.",
     "detailOddsQuota": "{remaining} créditos API restantes (The Odds API).",
@@ -248,7 +263,8 @@
       "purple": "Morado",
       "pink": "Rosa",
       "red": "Rojo",
-      "gold": "Dorado"
+      "gold": "Dorado",
+      "accenture": "Accenture"
     },
     "saveProfile": "Guardar perfil",
     "updated": "Perfil actualizado correctamente.",
@@ -447,7 +463,10 @@
     },
     "noUpcoming": "No hay partidos próximos.",
     "top5": "Top 5 clasificación",
-    "fullLeaderboard": "Clasificación completa"
+    "fullLeaderboard": "Clasificación completa",
+    "extras": {
+      "title": "Rachas, desafíos e insights"
+    }
   },
   "challenges": {
     "matchdayChampion": {
@@ -507,6 +526,13 @@
   "teamPerformance": {
     "title": "Rendimiento del equipo",
     "subtitle": "Quién está acertando especialmente bien en tu equipo",
+    "subtitleAllTeams": "Todos los equipos de un vistazo – quién está en el campo y quién tiene amarilla o roja.",
+    "filterAllTeams": "Todos los equipos",
+    "filterMyTeam": "Mi equipo",
+    "allTeamsOverview": "Resumen del torneo",
+    "allTeamsHint": "La alineación muestra a todos los pronosticadores de todos los equipos. Con «Mi equipo» filtras a tus colegas.",
+    "teamCount": "{count} equipos",
+    "lineupSummary": "{pitch} en el campo · {yellow} amarilla · {red} roja",
     "privacyHint": "Las estadísticas del equipo se muestran para motivar. Los pronósticos concretos no se muestran antes del inicio.",
     "noTeam": "Aún no asignado a un equipo.",
     "goToProfile": "Elegir equipo en el perfil",
@@ -529,6 +555,22 @@
     "highlightBestExactText": "{name} tiene {count} aciertos exactos.",
     "highlightBestCorrectTitle": "Más aciertos",
     "highlightBestCorrectText": "{name} tiene {count} aciertos correctos."
+  },
+  "teamPitch": {
+    "title": "Alineación del equipo",
+    "titleAllTeams": "Alineación del torneo",
+    "tagline": "Quién pronostica – quién ve tarjeta amarilla o roja. Con humor, cero vergüenza.",
+    "taglineAllTeams": "Todos los equipos – campo, amarilla, roja, cero vergüenza.",
+    "beta": "Vista previa",
+    "fieldAria": "Campo de equipo con pronosticadores activos",
+    "emptyPitch": "Nadie en el campo – ¡el primer pronóstico os mete en el juego!",
+    "yellowTooltip": "Advertencia – un pronóstico más te mantiene en el campo",
+    "yellowHint": "Tarjeta amarilla",
+    "redTitle": "Expulsión",
+    "redSub": "Pausa en el banquillo – vuelve al campo con tu próximo pronóstico.",
+    "redEmpty": "Sin rojas – todos juegan",
+    "redHint": "¿Pronto de vuelta?",
+    "footer": "Sin humillar – espíritu de equipo. Los pronósticos te devuelven al campo."
   },
   "groupStandings": {
     "title": "Clasificación por grupos",
@@ -930,11 +972,21 @@
       },
       "leaderboard": {
         "title": "Clasificación",
-        "text": "La clasificación muestra tu posición, puntos de partidos, bonus y total. Puedes filtrar por total, partidos o bonus."
+        "text": "La clasificación muestra tu posición, puntos de partidos, bonus y total. Puedes filtrar por total, partidos o bonus.",
+        "correctHint": "La columna « Correctos » suma resultados exactos, diferencias de goles correctas y tendencias correctas. La completitud muestra cuántos partidos has pronosticado."
       },
       "teams": {
         "title": "Ranking por equipos",
-        "text": "Cada jugador pertenece a un equipo. El ranking por equipos usa la media de puntos por miembro; el equipo más grande no gana automáticamente."
+        "text": "Cada jugador pertenece a un equipo (departamento). Cuenta la media de los pronosticadores activos — los miembros sin pronósticos no entran en la media del equipo. El equipo más grande no gana automáticamente. Tus puntos individuales no cambian."
+      },
+      "teamPerformance": {
+        "title": "Rendimiento del equipo y tarjetas",
+        "intro": "El rendimiento del equipo muestra una alineación lúdica — campo, tarjetas amarilla y roja, cero vergüenza.",
+        "pitch": "En el campo sin tarjeta: pronósticos regulares. Permaneces limpio si ya has pronosticado y cubres al menos el {yellow} % de partidos ya vencidos.",
+        "yellow": "Tarjeta amarilla ({red}–{yellowMax} %): sigues en el campo con advertencia — un pronóstico más te mantiene en el juego.",
+        "red": "Tarjeta roja (menos del {red} % o sin pronósticos): expulsión del campo — vuelve con tu próximo pronóstico.",
+        "note": "No ves los pronósticos exactos de otros antes del pitido inicial. Las tarjetas motivan, no avergüenzan.",
+        "link": "Ir al rendimiento del equipo"
       },
       "ai": {
         "title": "Preguntar al coach IA",
@@ -997,6 +1049,10 @@
     "bellLabel": "Notificaciones",
     "toggleDropdown": "Mostrar u ocultar notificaciones",
     "loadFailed": "No se pudieron cargar las notificaciones."
+  },
+  "loginAnnouncement": {
+    "dismiss": "Entendido",
+    "openLink": "Más información"
   },
   "display": {
     "subtitle": "Clasificación en vivo",
@@ -1590,9 +1646,26 @@
       "formTitle": "Título",
       "formMessage": "Mensaje",
       "formLink": "Enlace (opcional)",
-      "send": "Enviar a todos los usuarios",
+      "formType": "Tipo",
+      "typeInfo": "Info",
+      "typeSuccess": "Éxito",
+      "typeWarning": "Aviso",
+      "typeError": "Importante",
+      "recipientMode": "Destinatarios",
+      "recipientAll": "Todos los usuarios",
+      "recipientSingle": "Usuario individual",
+      "recipientUser": "Usuario",
+      "recipientUserPlaceholder": "Seleccionar usuario…",
+      "includeAdmins": "Incluir administradores",
+      "sendInApp": "Notificación en el portal",
+      "sendEmail": "Correo (mismo diseño que los correos del sistema)",
+      "showOnLogin": "Mostrar al iniciar sesión",
+      "deliveryHint": "Debe seleccionarse al menos un canal.",
+      "send": "Enviar mensaje",
       "sending": "Enviando...",
-      "sent": "Notificación enviada."
+      "sent": "Notificación enviada.",
+      "sentSummary": "{inAppSent} notificaciones en portal y {emailsSent} correos enviados ({emailsSkipped} sin correo omitidos).",
+      "sendFailed": "Error al enviar."
     },
     "auditLog": {
       "title": "Registro de auditoría",

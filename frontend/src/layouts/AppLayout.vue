@@ -2,13 +2,14 @@
   <div class="layout-app" data-area="app">
     <a href="#main-content" class="skip-to-content">{{ t('common.skipToContent') }}</a>
     <div v-if="sidebarOpen" class="sidebar-backdrop" @click="closeSidebar" />
-    <Sidebar ref="sidebarRef" :nav-sections="userLinks" :admin-links="adminLinks" />
+    <Sidebar ref="sidebarRef" :nav-sections="userLinks" :admin-nav-sections="adminNavSections" />
     <div class="layout-main">
       <Navbar @toggle-sidebar="toggleSidebar" />
       <main id="main-content" class="layout-content">
-        <ProfileCompletionBanner />
-        <PwaInstallBanner />
-        <router-view />
+    <ProfileCompletionBanner />
+    <PwaInstallBanner />
+    <LoginAnnouncementModal />
+    <router-view />
       </main>
       <SystemStatusBar />
       <BottomNav />
@@ -25,10 +26,11 @@ import BottomNav from '../components/BottomNav.vue';
 import SystemStatusBar from '../components/SystemStatusBar.vue';
 import ProfileCompletionBanner from '../components/ProfileCompletionBanner.vue';
 import PwaInstallBanner from '../components/PwaInstallBanner.vue';
+import LoginAnnouncementModal from '../components/LoginAnnouncementModal.vue';
 import { useNotificationStore } from '../stores/notificationStore';
 import { useAppSettingsStore } from '../stores/appSettingsStore';
 import { useAuthStore } from '../stores/authStore';
-import { useAdminNavLinks } from '../composables/useAdminNav';
+import { useAdminNavSections } from '../composables/useAdminNav';
 import { useUserNavLinks } from '../composables/useUserNav';
 import { useProfileCompletion } from '../composables/useProfileCompletion';
 import { useToast } from '../composables/useToast';
@@ -39,7 +41,7 @@ const { needsCompletion } = useProfileCompletion();
 const toast = useToast();
 const notificationStore = useNotificationStore();
 const appSettings = useAppSettingsStore();
-const adminLinks = useAdminNavLinks();
+const adminNavSections = useAdminNavSections();
 const userLinks = useUserNavLinks();
 const sidebarRef = ref(null);
 const sidebarOpen = ref(false);
@@ -50,8 +52,9 @@ function showProfileLoginReminder() {
   authStore.profileLoginReminderDue = false;
 }
 
-onMounted(() => {
+onMounted(async () => {
   notificationStore.initSocketListener();
+  await notificationStore.fetchNotifications();
   appSettings.load();
   showProfileLoginReminder();
 });

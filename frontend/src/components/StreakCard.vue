@@ -104,10 +104,17 @@ onMounted(load);
 }
 
 .streak-badge {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: 0.75rem;
   background: rgba(255, 255, 255, 0.02);
+}
+
+.streak-badge strong {
+  display: block;
 }
 
 .streak-badge--unlocked {

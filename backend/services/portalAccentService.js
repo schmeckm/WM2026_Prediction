@@ -7,6 +7,7 @@ const PORTAL_ACCENTS = [
   'pink',
   'red',
   'gold',
+  'accenture',
 ];
 
 function normalizePortalAccent(value) {

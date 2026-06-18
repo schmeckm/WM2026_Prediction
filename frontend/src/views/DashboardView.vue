@@ -27,16 +27,6 @@
         {{ lockWarning }}
       </div>
 
-      <AIInsightCard />
-
-      <MatchdayChallengeCard />
-
-      <StreakCard />
-
-      <ActivityFeedCard />
-
-      <TeamDashboardCard />
-
       <div class="stats-grid">
         <div class="stat-card accent">
           <div class="stat-value">#{{ myRank || '–' }}</div>
@@ -61,7 +51,7 @@
         </router-link>
       </div>
 
-      <div class="grid-2">
+      <div class="grid-2 dashboard-primary">
         <div class="card">
           <div class="card-header">
             <h3>⚽ {{ t('dashboard.nextMatches') }}</h3>
@@ -94,6 +84,20 @@
           </div>
         </div>
       </div>
+
+      <div class="grid-2 dashboard-secondary">
+        <ActivityFeedCard />
+        <TeamDashboardCard />
+      </div>
+
+      <details class="dashboard-extras">
+        <summary>{{ t('dashboard.extras.title') }}</summary>
+        <div class="dashboard-extras-content">
+          <AIInsightCard />
+          <MatchdayChallengeCard hide-when-empty />
+          <StreakCard />
+        </div>
+      </details>
     </template>
   </div>
 </template>
@@ -284,5 +288,47 @@ onUnmounted(() => {
   font-size: 0.7rem;
   font-weight: 600;
   color: var(--color-primary);
+}
+
+.dashboard-primary {
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-secondary {
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-extras {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm), var(--glow-card);
+}
+
+.dashboard-extras summary {
+  padding: 0.875rem 1.25rem;
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+  user-select: none;
+}
+
+.dashboard-extras summary::-webkit-details-marker {
+  display: none;
+}
+
+.dashboard-extras[open] summary {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard-extras-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 1rem 1.25rem;
+}
+
+.dashboard-extras-content :deep(.ai-insights) {
+  margin-bottom: 0;
 }
 </style>

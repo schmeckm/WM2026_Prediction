@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div v-if="visible" class="card">
     <div class="card-header">
       <h3>🔥 {{ t('challenges.matchdayChampion.title') }}</h3>
       <span v-if="challenge?.date" class="text-muted">{{ challenge.date }}</span>
@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import LoadingSpinner from './LoadingSpinner.vue';
@@ -48,12 +48,24 @@ import EmptyState from './EmptyState.vue';
 import LeaderboardTable from './LeaderboardTable.vue';
 import { useAuthStore } from '../stores/authStore';
 
+const props = defineProps({
+  hideWhenEmpty: { type: Boolean, default: false },
+});
+
 const { t } = useI18n();
 const authStore = useAuthStore();
 
 const loading = ref(true);
 const error = ref('');
 const challenge = ref(null);
+
+const hasContent = computed(() => (challenge.value?.finishedMatchCount ?? 0) > 0);
+
+const visible = computed(() => {
+  if (!props.hideWhenEmpty) return true;
+  if (loading.value || error.value) return false;
+  return hasContent.value;
+});
 
 async function load() {
   loading.value = true;

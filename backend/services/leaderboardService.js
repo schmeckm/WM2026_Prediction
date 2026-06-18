@@ -103,6 +103,23 @@ function groupByUserId(items) {
   return map;
 }
 
+function isMatchPastDue(match, now = new Date()) {
+  if (!match) return false;
+  const status = String(match.status || '').toLowerCase();
+  if (['live', 'halftime', 'finished'].includes(status)) return true;
+  if (match.kickoffTime && new Date(match.kickoffTime) <= now) return true;
+  return false;
+}
+
+async function resolvePastDueMatchStats(stageWhere = {}) {
+  const stageMatches = await Match.findAll({
+    where: stageWhere,
+    attributes: ['id', 'status', 'kickoffTime'],
+  });
+  const totalPastDueMatches = stageMatches.filter(isMatchPastDue).length;
+  return { totalPastDueMatches };
+}
+
 function buildStageWhere(stageFilter) {
   if (stageFilter === 'group') {
     return { stage: { [Op.like]: '%Group%' } };
@@ -152,6 +169,7 @@ function buildUserLeaderboardEntryFromData(user, scoringRules, options = {}) {
     predictions = [],
     bonusPredictions = [],
     totalMatches = 0,
+    totalPastDueMatches = 0,
   } = options;
 
   let matchPoints = 0;
@@ -159,6 +177,7 @@ function buildUserLeaderboardEntryFromData(user, scoringRules, options = {}) {
   let goalDifferences = 0;
   let tendencies = 0;
   let relevantPredictions = 0;
+  let submittedPastPredictions = 0;
 
   for (const prediction of predictions) {
     if (!prediction.match) continue;
@@ -167,6 +186,10 @@ function buildUserLeaderboardEntryFromData(user, scoringRules, options = {}) {
     if (stageFilter === 'knockout' && prediction.match.stage.includes('Group')) continue;
 
     relevantPredictions++;
+
+    if (isMatchPastDue(prediction.match)) {
+      submittedPastPredictions++;
+    }
 
     if (prediction.match.status === 'finished') {
       const points = calculatePoints(prediction, prediction.match, scoringRules);
@@ -185,6 +208,9 @@ function buildUserLeaderboardEntryFromData(user, scoringRules, options = {}) {
   const completionPercentage = totalMatches > 0
     ? Math.round((relevantPredictions / totalMatches) * 100)
     : 0;
+  const pastCompletionPercentage = totalPastDueMatches > 0
+    ? Math.round((submittedPastPredictions / totalPastDueMatches) * 100)
+    : 100;
 
   const entry = {
     userId: user.id,
@@ -202,7 +228,10 @@ function buildUserLeaderboardEntryFromData(user, scoringRules, options = {}) {
     goalDifferences,
     tendencies,
     submittedPredictions: relevantPredictions,
+    submittedPastPredictions,
+    pastDueMatches: totalPastDueMatches,
     completionPercentage,
+    pastCompletionPercentage,
   };
 
   if (includeEmail) {
@@ -224,7 +253,7 @@ async function buildUserLeaderboardEntry(user, scoringRules, options = {}) {
     include: [{
       model: Match,
       as: 'match',
-      attributes: ['id', 'status', 'stage', 'homeScore', 'awayScore'],
+      attributes: ['id', 'status', 'stage', 'homeScore', 'awayScore', 'kickoffTime'],
       ...(matchWhere ? { where: matchWhere } : {}),
       required: true,
     }],
@@ -236,6 +265,7 @@ async function buildUserLeaderboardEntry(user, scoringRules, options = {}) {
   });
 
   const totalMatches = await Match.count({ where: buildStageWhere(stageFilter) });
+  const { totalPastDueMatches } = await resolvePastDueMatchStats(buildStageWhere(stageFilter));
 
   return buildUserLeaderboardEntryFromData(user, scoringRules, {
     stageFilter,
@@ -243,6 +273,7 @@ async function buildUserLeaderboardEntry(user, scoringRules, options = {}) {
     predictions,
     bonusPredictions,
     totalMatches,
+    totalPastDueMatches,
   });
 }
 
@@ -305,7 +336,9 @@ async function getLeaderboard(options = {}) {
     include: [{ model: Team, as: 'team' }],
   });
   const userIds = users.map((u) => u.id);
-  const totalMatches = await Match.count({ where: stageWhere });
+  const stageWhereForStats = buildStageWhere(stageFilter);
+  const totalMatches = await Match.count({ where: stageWhereForStats });
+  const { totalPastDueMatches } = await resolvePastDueMatchStats(stageWhereForStats);
 
   const [allPredictions, allBonusPredictions] = userIds.length > 0
     ? await Promise.all([
@@ -315,7 +348,7 @@ async function getLeaderboard(options = {}) {
         include: [{
           model: Match,
           as: 'match',
-          attributes: ['id', 'status', 'stage', 'homeScore', 'awayScore'],
+          attributes: ['id', 'status', 'stage', 'homeScore', 'awayScore', 'kickoffTime'],
           ...(matchWhere ? { where: matchWhere } : {}),
           required: true,
         }],
@@ -336,6 +369,7 @@ async function getLeaderboard(options = {}) {
     predictions: predictionsByUser[user.id] || [],
     bonusPredictions: bonusByUser[user.id] || [],
     totalMatches,
+    totalPastDueMatches,
   }));
 
   if (filter === 'match' || filter === 'group' || filter === 'knockout') {

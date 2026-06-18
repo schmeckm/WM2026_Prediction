@@ -87,6 +87,7 @@
         <section class="help-section">
           <h2>{{ t('help.sections.leaderboard.title') }}</h2>
           <p>{{ t('help.sections.leaderboard.text') }}</p>
+          <p class="text-muted">{{ t('help.sections.leaderboard.correctHint') }}</p>
           <h3>{{ t('help.tiebreaker.title') }}</h3>
           <ol class="help-list">
             <li>{{ t('help.tiebreaker.item1') }}</li>
@@ -99,6 +100,18 @@
         <section class="help-section">
           <h2>{{ t('help.sections.teams.title') }}</h2>
           <p>{{ t('help.sections.teams.text') }}</p>
+        </section>
+
+        <section class="help-section">
+          <h2>{{ t('help.sections.teamPerformance.title') }}</h2>
+          <p>{{ t('help.sections.teamPerformance.intro') }}</p>
+          <ul class="help-list">
+            <li>{{ t('help.sections.teamPerformance.pitch', pitchThresholds) }}</li>
+            <li>{{ t('help.sections.teamPerformance.yellow', pitchThresholds) }}</li>
+            <li>{{ t('help.sections.teamPerformance.red', pitchThresholds) }}</li>
+          </ul>
+          <p class="text-muted">{{ t('help.sections.teamPerformance.note') }}</p>
+          <router-link to="/team-performance" class="btn btn-secondary btn-sm">{{ t('help.sections.teamPerformance.link') }}</router-link>
         </section>
 
         <section class="help-section help-section--last">
@@ -117,8 +130,15 @@ import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 
+import { RED_CARD_THRESHOLD, YELLOW_CARD_THRESHOLD } from '../composables/useTeamPitchZones';
+
 const { t } = useI18n();
 const loading = ref(true);
+const pitchThresholds = computed(() => ({
+  red: RED_CARD_THRESHOLD,
+  yellow: YELLOW_CARD_THRESHOLD,
+  yellowMax: YELLOW_CARD_THRESHOLD - 1,
+}));
 const rules = ref({
   exactResultPoints: 4,
   goalDifferencePoints: 3,

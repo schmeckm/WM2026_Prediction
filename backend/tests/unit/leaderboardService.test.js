@@ -90,6 +90,51 @@ describe('leaderboardService.getTeamRanking', () => {
     );
     assert.equal(contributors.length, 2);
   });
+
+  it('tracks past-due prediction coverage separately from overall completion', async () => {
+    await sequelize.sync({ force: true });
+    await seedTestData();
+    await setSetting('teamRankingMode', 'active_predictors_only');
+
+    const team = await Team.findOne({ where: { name: 'IT' } });
+    const finishedMatch = await Match.findOne();
+    const activeUser = await User.findOne({ where: { email: 'verified@example.com' } });
+
+    await finishedMatch.update({
+      status: 'finished',
+      homeScore: 1,
+      awayScore: 0,
+      kickoffTime: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    });
+
+    const upcomingMatch = await Match.create({
+      matchNumber: 9999,
+      stage: 'Group A',
+      groupName: 'A',
+      homeTeam: 'Team A',
+      awayTeam: 'Team B',
+      kickoffTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      status: 'scheduled',
+    });
+
+    await Prediction.create({
+      userId: activeUser.id,
+      matchId: upcomingMatch.id,
+      predictedHomeScore: 2,
+      predictedAwayScore: 1,
+      submittedAt: new Date(),
+    });
+
+    const leaderboard = await getLeaderboard({ teamId: team.id, skipCache: true });
+    const partialUser = leaderboard.find((entry) => entry.userId === activeUser.id);
+
+    assert.ok(partialUser);
+    assert.ok(partialUser.pastDueMatches >= 1);
+    assert.equal(partialUser.submittedPastPredictions, 0);
+    assert.equal(partialUser.pastCompletionPercentage, 0);
+    assert.equal(partialUser.submittedPredictions, 1);
+    assert.ok(partialUser.completionPercentage < 100);
+  });
 });
 
 describe('leaderboardService tournament phase filters', () => {

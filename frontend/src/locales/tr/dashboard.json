@@ -23,7 +23,10 @@
     "noUpcoming": "Yaklaşan maç yok.",
     "top5": "İlk 5 lider tablosu",
     "fullLeaderboard": "Tüm lider tablosu",
-    "loadFailed": "Pano yüklenemedi."
+    "loadFailed": "Pano yüklenemedi.",
+    "extras": {
+      "title": "Seriler, meydan okumalar ve öngörüler"
+    }
   },
   "teamDashboard": {
     "title": "Takımım",
@@ -40,6 +43,13 @@
   "teamPerformance": {
     "title": "Takım performansı",
     "subtitle": "Takımında kim özellikle iyi tahmin yapıyor?",
+    "subtitleAllTeams": "Tüm takımlar bir bakışta – kim sahada, kim sarı veya kırmızı kart görüyor.",
+    "filterAllTeams": "Tüm takımlar",
+    "filterMyTeam": "Takımım",
+    "allTeamsOverview": "Turnuva özeti",
+    "allTeamsHint": "Kadro tüm takımlardaki tahmincileri gösterir. «Takımım» ile meslektaşlarına odaklan.",
+    "teamCount": "{count} takım",
+    "lineupSummary": "{pitch} sahada · {yellow} sarı · {red} kırmızı",
     "privacyHint": "Takım istatistikleri motivasyon için gösterilir. Maç başlamadan önce net skor tahminleri gösterilmez.",
     "noTeam": "Henüz bir takıma atanmadınız.",
     "goToProfile": "Profilde takım seç",

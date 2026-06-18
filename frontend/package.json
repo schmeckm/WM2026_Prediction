@@ -23,8 +23,9 @@
   },
   "scripts": {
     "dev": "vite --host",
-    "build": "npm run generate-pwa-icons && vite build",
+    "build": "npm run generate-pwa-icons && npm run generate-release-notes && vite build",
     "generate-pwa-icons": "node scripts/generate-pwa-icons.mjs",
+    "generate-release-notes": "node scripts/generate-release-notes.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"

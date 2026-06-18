@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "World Cup 2026 - Competição",
+    "title": "FIFA WORLD CUP 26",
     "subtitle": "Jogo de Palpites"
   },
   "languages": {
@@ -50,6 +50,11 @@
     "sectionPrimary": "Visão geral",
     "sectionTournament": "Torneio e informações",
     "sectionAccount": "Conta e suporte",
+    "adminSectionOverview": "Visão geral admin",
+    "adminSectionTournament": "Jogos e resultados",
+    "adminSectionScoring": "Pontos e rankings",
+    "adminSectionUsers": "Usuários e equipes",
+    "adminSectionSystem": "Sistema e ferramentas",
     "dashboard": "Painel",
     "tipCopilot": "Co-Pilot de Palpites",
     "matches": "Jogos",
@@ -243,7 +248,17 @@
     "detailBackupAuto": "Última cópia de segurança automática: {time}.",
     "detailBackupManual": "Última cópia de segurança manual: {time}.",
     "github": "GitHub",
-    "githubAria": "Abrir código-fonte no GitHub"
+    "githubAria": "Abrir código-fonte no GitHub",
+    "releaseNotesTitle": "Notas de versão",
+    "releaseNotesSubtitle": "Últimas {count} atualizações do GitHub",
+    "releaseNotesShow": "Notas de versão",
+    "releaseNotesHide": "Ocultar notas de versão",
+    "releaseNoteType": {
+      "feature": "Recurso",
+      "fix": "Correção",
+      "docs": "Docs",
+      "other": "Atualização"
+    }
   },
   "profile": {
     "title": "Perfil",
@@ -264,7 +279,8 @@
       "purple": "Roxo",
       "pink": "Rosa",
       "red": "Vermelho",
-      "gold": "Dourado"
+      "gold": "Dourado",
+      "accenture": "Accenture"
     },
     "saveProfile": "Guardar perfil",
     "updated": "Perfil atualizado com sucesso.",
@@ -477,7 +493,10 @@
     "noUpcoming": "Não há jogos próximos.",
     "top5": "Top 5 da classificação",
     "fullLeaderboard": "Classificação completa",
-    "loadFailed": "Não foi possível carregar o painel."
+    "loadFailed": "Não foi possível carregar o painel.",
+    "extras": {
+      "title": "Séries, desafios e insights"
+    }
   },
   "challenges": {
     "matchdayChampion": {
@@ -537,6 +556,13 @@
   "teamPerformance": {
     "title": "Desempenho da equipa",
     "subtitle": "Quem está a palpitar especialmente bem na tua equipa",
+    "subtitleAllTeams": "Todas as equipas de relance – quem está em campo e quem tem amarelo ou vermelho.",
+    "filterAllTeams": "Todas as equipas",
+    "filterMyTeam": "A minha equipa",
+    "allTeamsOverview": "Visão geral do torneio",
+    "allTeamsHint": "A formação mostra todos os palpiteiros de todas as equipas. «A minha equipa» filtra os teus colegas.",
+    "teamCount": "{count} equipas",
+    "lineupSummary": "{pitch} em campo · {yellow} amarelo · {red} vermelho",
     "privacyHint": "As estatísticas da equipa são mostradas para motivar. Os palpites concretos não são mostrados antes do início.",
     "noTeam": "Ainda não atribuído a uma equipa.",
     "goToProfile": "Escolher equipa no perfil",
@@ -559,6 +585,22 @@
     "highlightBestExactText": "{name} tem {count} palpites exatos.",
     "highlightBestCorrectTitle": "Mais acertos",
     "highlightBestCorrectText": "{name} tem {count} palpites corretos."
+  },
+  "teamPitch": {
+    "title": "Formação da equipa",
+    "titleAllTeams": "Formação do torneio",
+    "tagline": "Quem palpita – quem vê cartão amarelo ou vermelho. Com humor, zero vergonha.",
+    "taglineAllTeams": "Todas as equipas – relvado, amarelo, vermelho, zero vergonha.",
+    "beta": "Pré-visualização",
+    "fieldAria": "Relvado de equipa com palpiteiros activos",
+    "emptyPitch": "Ninguém no relvado – o primeiro palpite mete-vos no jogo!",
+    "yellowTooltip": "Aviso – mais um palpite mantém-te no relvado",
+    "yellowHint": "Cartão amarelo",
+    "redTitle": "Expulsão",
+    "redSub": "Pausa no banco – de volta ao relvado com o próximo palpite.",
+    "redEmpty": "Sem vermelhos – todos a jogar",
+    "redHint": "Em breve de volta?",
+    "footer": "Sem humilhar – espírito de equipa. Palpites trazem-te de volta ao relvado."
   },
   "groupStandings": {
     "title": "Classificação por grupos",
@@ -964,11 +1006,21 @@
       },
       "leaderboard": {
         "title": "Classificação",
-        "text": "A classificação mostra a sua posição, pontos de jogos, pontos bónus e total. Pode filtrar por total, jogos ou pontos bónus."
+        "text": "A classificação mostra a sua posição, pontos de jogos, pontos bónus e total. Pode filtrar por total, jogos ou pontos bónus.",
+        "correctHint": "A coluna « Correctos » soma resultados exatos, diferenças de golos corretas e tendências corretas. A completude mostra quantos jogos palpitou."
       },
       "teams": {
         "title": "Classificação por equipas",
-        "text": "Cada jogador pertence a uma equipa. A classificação por equipas usa a média de pontos por membro — o maior departamento não ganha automaticamente."
+        "text": "Cada jogador pertence a uma equipa (departamento). Conta a média dos palpiteiros activos — membros sem palpites não entram na média da equipa. O maior departamento não ganha automaticamente. Os seus pontos individuais mantêm-se."
+      },
+      "teamPerformance": {
+        "title": "Desempenho da equipa e cartões",
+        "intro": "O desempenho da equipa mostra uma formação lúdica — relvado, cartões amarelo e vermelho, zero vergonha.",
+        "pitch": "No relvado sem cartão: palpites regulares. Permanece limpo se já palpitou e cobriu pelo menos {yellow} % dos jogos já vencidos.",
+        "yellow": "Cartão amarelo ({red}–{yellowMax} %): ainda no relvado com aviso — mais um palpite mantém-te no jogo.",
+        "red": "Cartão vermelho (menos de {red} % ou sem palpites): expulsão do relvado — volta com o próximo palpite.",
+        "note": "Não vê os palpites exactos dos outros antes do apito inicial. Os cartões motivam, não envergonham.",
+        "link": "Ir ao desempenho da equipa"
       },
       "ai": {
         "title": "Perguntar ao treinador IA",
@@ -1031,6 +1083,10 @@
     "bellLabel": "Notificações",
     "toggleDropdown": "Mostrar/ocultar painel de notificações",
     "loadFailed": "Não foi possível carregar as notificações."
+  },
+  "loginAnnouncement": {
+    "dismiss": "Entendi",
+    "openLink": "Saber mais"
   },
   "display": {
     "subtitle": "Classificação em direto",
@@ -1589,9 +1645,26 @@
       "formTitle": "Título",
       "formMessage": "Mensagem",
       "formLink": "Ligação (opcional)",
-      "send": "Enviar a todos os utilizadores",
+      "formType": "Tipo",
+      "typeInfo": "Info",
+      "typeSuccess": "Sucesso",
+      "typeWarning": "Aviso",
+      "typeError": "Importante",
+      "recipientMode": "Destinatários",
+      "recipientAll": "Todos os utilizadores",
+      "recipientSingle": "Utilizador individual",
+      "recipientUser": "Utilizador",
+      "recipientUserPlaceholder": "Selecionar utilizador…",
+      "includeAdmins": "Incluir administradores",
+      "sendInApp": "Notificação no portal",
+      "sendEmail": "E-mail (mesmo layout dos e-mails do sistema)",
+      "showOnLogin": "Mostrar no login",
+      "deliveryHint": "Tem de selecionar pelo menos um canal.",
+      "send": "Enviar mensagem",
       "sending": "A enviar...",
-      "sent": "Notificação enviada."
+      "sent": "Notificação enviada.",
+      "sentSummary": "{inAppSent} notificações no portal e {emailsSent} e-mails enviados ({emailsSkipped} sem e-mail ignorados).",
+      "sendFailed": "Falha no envio."
     },
     "auditLog": {
       "title": "Registo de auditoria",

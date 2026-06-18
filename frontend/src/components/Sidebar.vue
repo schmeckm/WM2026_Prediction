@@ -1,44 +1,14 @@
 <template>
   <aside class="sidebar" :class="{ open: isOpen }">
     <div class="sidebar-brand">
-      <AppBrandMark compact />
+      <AppBrandMark compact show-subtitle />
     </div>
     <div class="sidebar-scroll">
       <nav class="sidebar-nav" :aria-label="adminMode ? t('nav.administration') : t('nav.navigation')">
-        <template v-if="!adminMode">
-          <template v-for="section in navSections" :key="section.label">
-            <div class="sidebar-section">{{ section.label }}</div>
-            <router-link
-              v-for="link in section.links"
-              :key="link.to"
-              :to="link.to"
-              class="sidebar-link"
-              active-class="active"
-              @click="close"
-            >
-              <span class="icon"><NavIcon :name="link.icon" /></span>
-              {{ link.label }}
-            </router-link>
-          </template>
-        </template>
-        <template v-else>
+        <template v-for="section in activeNavSections" :key="section.label">
+          <div class="sidebar-section">{{ section.label }}</div>
           <router-link
-            v-for="link in links"
-            :key="link.to"
-            :to="link.to"
-            class="sidebar-link"
-            active-class="active"
-            @click="close"
-          >
-            <span class="icon"><NavIcon :name="link.icon" /></span>
-            {{ link.label }}
-          </router-link>
-        </template>
-
-        <template v-if="!adminMode && authStore.isAdmin && adminLinks">
-          <div class="sidebar-section">{{ t('nav.administration') }}</div>
-          <router-link
-            v-for="link in adminLinks"
+            v-for="link in section.links"
             :key="link.to"
             :to="link.to"
             class="sidebar-link"
@@ -50,10 +20,16 @@
           </router-link>
         </template>
       </nav>
-      <div v-if="!adminMode" class="sidebar-footer-links">
-        <router-link to="/help" class="sidebar-link" active-class="active" @click="close">
-          <span class="icon"><NavIcon name="help" /></span>
-          {{ t('help.nav') }}
+      <div class="sidebar-footer-links">
+        <router-link
+          v-if="adminMode"
+          to="/dashboard"
+          class="sidebar-link"
+          active-class="active"
+          @click="close"
+        >
+          <span class="icon"><NavIcon name="arrow-left" /></span>
+          {{ t('nav.backToApp') }}
         </router-link>
       </div>
     </div>
@@ -64,21 +40,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/authStore';
 import AppBrandMark from './AppBrandMark.vue';
 import NavIcon from './NavIcon.vue';
 
-defineProps({
-  links: { type: Array, default: () => [] },
+const props = defineProps({
   navSections: { type: Array, default: () => [] },
-  adminLinks: { type: Array, default: () => [] },
+  adminNavSections: { type: Array, default: () => [] },
   adminMode: { type: Boolean, default: false },
 });
 
-const { t } = useI18n();
 const authStore = useAuthStore();
+
+const activeNavSections = computed(() => {
+  if (props.adminMode) {
+    return props.navSections;
+  }
+
+  const sections = [...props.navSections];
+  if (authStore.isAdmin && props.adminNavSections.length) {
+    sections.push(...props.adminNavSections);
+  }
+  return sections;
+});
+
+const { t } = useI18n();
 const isOpen = ref(false);
 
 function toggle() {

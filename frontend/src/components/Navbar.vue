@@ -12,7 +12,13 @@
       >
         <NavIcon name="arrow-left" />
       </router-link>
-      <AppBrandMark v-if="!adminMode" compact :show-title="false" class="navbar-brand-mark" />
+      <AppBrandMark
+        v-if="!adminMode"
+        compact
+        icon-variant="mark"
+        :show-title="false"
+        class="navbar-brand-mark"
+      />
       <span v-if="adminMode" class="badge badge-admin">{{ t('nav.adminArea') }}</span>
       <span v-else class="navbar-shell-title navbar-shell-title--mobile">{{ t('brand.title') }}</span>
     </div>

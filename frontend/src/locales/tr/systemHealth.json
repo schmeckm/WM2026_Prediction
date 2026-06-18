@@ -45,6 +45,16 @@
     "detailBackupAuto": "Son otomatik yedek: {time}.",
     "detailBackupManual": "Son manuel yedek: {time}.",
     "github": "GitHub",
-    "githubAria": "GitHub'da açık kaynak kodu aç"
+    "githubAria": "GitHub'da açık kaynak kodu aç",
+    "releaseNotesTitle": "Sürüm notları",
+    "releaseNotesSubtitle": "Son {count} GitHub güncellemesi",
+    "releaseNotesShow": "Sürüm notları",
+    "releaseNotesHide": "Sürüm notlarını gizle",
+    "releaseNoteType": {
+      "feature": "Özellik",
+      "fix": "Düzeltme",
+      "docs": "Docs",
+      "other": "Güncelleme"
+    }
   }
 }

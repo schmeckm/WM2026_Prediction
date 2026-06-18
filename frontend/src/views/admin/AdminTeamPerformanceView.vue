@@ -102,8 +102,8 @@
                       {{ t('leaderboard.correct') }} = {{ t('leaderboard.exact') }} + {{ t('leaderboard.goalDiff') }} + {{ t('leaderboard.tendency') }}
                     </li>
                   </ul>
-                  <router-link to="/rules-help" class="btn btn-secondary btn-sm">
-                    {{ t('help.title') }}
+                  <router-link to="/help" class="btn btn-secondary btn-sm">
+                    {{ t('help.nav') }}
                   </router-link>
                 </div>
               </details>

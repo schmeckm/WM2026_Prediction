@@ -1,6 +1,6 @@
 {
   "brand": {
-    "title": "Mistrzostwa Świata 2026 – Konkurs",
+    "title": "FIFA WORLD CUP 26",
     "subtitle": "Gra w typowanie"
   },
   "languages": {
@@ -63,6 +63,11 @@
     "sectionPrimary": "Przegląd",
     "sectionTournament": "Turniej i informacje",
     "sectionAccount": "Konto i wsparcie",
+    "adminSectionOverview": "Panel admina",
+    "adminSectionTournament": "Mecze i wyniki",
+    "adminSectionScoring": "Punkty i rankingi",
+    "adminSectionUsers": "Użytkownicy i drużyny",
+    "adminSectionSystem": "System i narzędzia",
     "dashboard": "Panel",
     "tipCopilot": "Tip Co-Pilot",
     "matches": "Mecze",
@@ -566,13 +571,30 @@
       "statusSkipped": "pominięto"
     },
     "notifications": {
-      "title": "Powiadomienia",
+      "title": "Wyślij powiadomienia",
       "formTitle": "Tytuł",
       "formMessage": "Wiadomość",
       "formLink": "Link (opcjonalnie)",
-      "send": "Wyślij",
+      "formType": "Typ",
+      "typeInfo": "Info",
+      "typeSuccess": "Sukces",
+      "typeWarning": "Ostrzeżenie",
+      "typeError": "Ważne",
+      "recipientMode": "Odbiorcy",
+      "recipientAll": "Wszyscy użytkownicy",
+      "recipientSingle": "Jeden użytkownik",
+      "recipientUser": "Użytkownik",
+      "recipientUserPlaceholder": "Wybierz użytkownika…",
+      "includeAdmins": "Uwzględnij administratorów",
+      "sendInApp": "Powiadomienie w portalu",
+      "sendEmail": "E-mail (ten sam układ co maile systemowe)",
+      "showOnLogin": "Pokaż po zalogowaniu",
+      "deliveryHint": "Wybierz co najmniej jeden kanał.",
+      "send": "Wyślij wiadomość",
       "sending": "Wysyłanie…",
-      "sent": "Wysłano."
+      "sent": "Wysłano.",
+      "sentSummary": "Wysłano {inAppSent} powiadomień w portalu i {emailsSent} e-maili ({emailsSkipped} pominięto bez adresu).",
+      "sendFailed": "Wysyłanie nie powiodło się."
     },
     "aiAssistant": {
       "title": "Asystent AI",
@@ -876,7 +898,10 @@
     "noUpcoming": "Brak nadchodzących meczów.",
     "top5": "Top 5 rankingu",
     "fullLeaderboard": "Pełny ranking",
-    "loadFailed": "Nie udało się wczytać panelu."
+    "loadFailed": "Nie udało się wczytać panelu.",
+    "extras": {
+      "title": "Serie, wyzwania i spostrzeżenia"
+    }
   },
   "matches": {
     "title": "Mecze",
@@ -1078,6 +1103,13 @@
   "teamPerformance": {
     "title": "Wydajność zespołu",
     "subtitle": "Kto typuje szczególnie dobrze w Twoim zespole?",
+    "subtitleAllTeams": "Wszystkie zespoły na raz – kto jest na boisku, a kto ma żółtą lub czerwoną kartkę.",
+    "filterAllTeams": "Wszystkie zespoły",
+    "filterMyTeam": "Mój zespół",
+    "allTeamsOverview": "Przegląd turnieju",
+    "allTeamsHint": "Skład pokazuje wszystkich typerów ze wszystkich zespołów. „Mój zespół” filtruje do Twoich kolegów.",
+    "teamCount": "{count} zespołów",
+    "lineupSummary": "{pitch} na boisku · {yellow} żółte · {red} czerwone",
     "privacyHint": "Statystyki zespołu są pokazywane dla motywacji. Konkretne typy wyników nie są widoczne przed rozpoczęciem meczu.",
     "noTeam": "Jeszcze nie przypisano do zespołu.",
     "goToProfile": "Wybierz zespół w profilu",

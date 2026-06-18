@@ -3,7 +3,17 @@ const MAX_MESSAGE = 1000;
 const MAX_LINK = 255;
 const SAFE_LINK = /^\/[a-zA-Z0-9/_-]*$/;
 
-function validateNotificationPayload({ title, message, link, type }) {
+function validateNotificationPayload({
+  title,
+  message,
+  link,
+  type,
+  userId,
+  sendInApp,
+  sendEmail,
+  showOnLogin,
+  includeAdmins,
+}) {
   const errors = [];
 
   if (!title || typeof title !== 'string' || !title.trim()) {
@@ -29,6 +39,22 @@ function validateNotificationPayload({ title, message, link, type }) {
     errors.push('type');
   }
 
+  let parsedUserId = null;
+  if (userId != null && userId !== '') {
+    const numericUserId = Number.parseInt(userId, 10);
+    if (!Number.isFinite(numericUserId) || numericUserId < 1) {
+      errors.push('userId');
+    } else {
+      parsedUserId = numericUserId;
+    }
+  }
+
+  const resolvedSendInApp = sendInApp !== false;
+  const resolvedSendEmail = sendEmail === true;
+  if (!resolvedSendInApp && !resolvedSendEmail) {
+    errors.push('delivery_channel');
+  }
+
   return {
     valid: errors.length === 0,
     errors,
@@ -37,6 +63,11 @@ function validateNotificationPayload({ title, message, link, type }) {
       message: String(message || '').trim().slice(0, MAX_MESSAGE),
       link: link ? String(link).trim().slice(0, MAX_LINK) : null,
       type: allowedTypes.has(type) ? type : 'info',
+      userId: parsedUserId,
+      sendInApp: resolvedSendInApp,
+      sendEmail: resolvedSendEmail,
+      showOnLogin: resolvedSendInApp && showOnLogin === true,
+      includeAdmins: includeAdmins === true,
     },
   };
 }

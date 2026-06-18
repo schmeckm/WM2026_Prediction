@@ -1,13 +1,16 @@
 const { Notification } = require('../models');
 const socketService = require('./socketService');
 
-async function createNotification({ userId, title, message, type = 'info', link = null }) {
+async function createNotification({
+  userId, title, message, type = 'info', link = null, showOnLogin = false,
+}) {
   const notification = await Notification.create({
     userId,
     title,
     message,
     type,
     link,
+    showOnLogin,
     isRead: false,
   });
 

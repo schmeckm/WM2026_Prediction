@@ -55,6 +55,13 @@ export const PORTAL_ACCENT_OPTIONS = [
     dark: { primary: '#FFD700', primaryDark: '#CCAC00', primaryLight: '#FFE44D' },
     light: { primary: '#B8860B', primaryDark: '#926B09', primaryLight: '#D4A017' },
   },
+  {
+    id: 'accenture',
+    labelKey: 'profile.portalAccents.accenture',
+    swatch: '#A100FF',
+    dark: { primary: '#A100FF', primaryDark: '#8000CC', primaryLight: '#C44DFF' },
+    light: { primary: '#7500C0', primaryDark: '#5C0099', primaryLight: '#9200E8' },
+  },
 ];
 
 const ACCENT_BY_ID = Object.fromEntries(
