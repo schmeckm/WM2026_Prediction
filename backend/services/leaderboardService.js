@@ -331,6 +331,7 @@ async function getLeaderboard(options = {}) {
   const users = await User.findAll({
     where: {
       role: roleWhere,
+      excludedFromGame: false,
       ...(teamId ? { teamId: parseInt(teamId, 10) } : {}),
     },
     include: [{ model: Team, as: 'team' }],

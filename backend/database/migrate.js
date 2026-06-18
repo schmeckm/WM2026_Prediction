@@ -27,6 +27,7 @@ const USER_COLUMNS = [
   { name: 'favoriteNationalTeamName', spec: { type: DataTypes.STRING, allowNull: true } },
   { name: 'topScorerPlayerId', spec: { type: DataTypes.INTEGER, allowNull: true } },
   { name: 'topScorerPlayerName', spec: { type: DataTypes.STRING, allowNull: true } },
+  { name: 'excludedFromGame', spec: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false } },
 ];
 
 async function runMigrations(sequelize) {
@@ -133,6 +134,25 @@ async function runMigrations(sequelize) {
 
   const { backfillKickoffMarketOdds } = require('../services/marketAnalysisService');
   await backfillKickoffMarketOdds();
+
+  let scoringRuleTableInfo;
+  try {
+    scoringRuleTableInfo = await queryInterface.describeTable('ScoringRules');
+  } catch {
+    scoringRuleTableInfo = null;
+  }
+
+  if (scoringRuleTableInfo) {
+    await ensureColumn(queryInterface, scoringRuleTableInfo, 'ScoringRules', 'knockoutStagePointsEnabled', {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    });
+    await ensureColumn(queryInterface, scoringRuleTableInfo, 'ScoringRules', 'knockoutStagePoints', {
+      type: DataTypes.JSON,
+      allowNull: true,
+    });
+  }
 
   await ensureIndexes(queryInterface);
 }

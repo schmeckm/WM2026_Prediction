@@ -126,6 +126,7 @@ async function fetchChallengeUsers({ includeAdmins, teamIdNum }) {
   return User.findAll({
     where: {
       role: roleWhere,
+      excludedFromGame: false,
       ...(teamIdNum ? { teamId: teamIdNum } : {}),
     },
     attributes: ['id', 'firstName', 'lastName', 'imageUrl', 'updatedAt', 'avatarColor', 'avatarEmoji', 'teamId'],

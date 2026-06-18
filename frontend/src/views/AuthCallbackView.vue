@@ -20,9 +20,23 @@ const router = useRouter();
 const authStore = useAuthStore();
 const error = ref('');
 
+/** Dedupe concurrent exchange attempts (e.g. Vue dev double-mount). */
+const ssoExchangeInflight = new Map();
+
 function normalizeCode(raw) {
   if (Array.isArray(raw)) return raw[0] || '';
   return typeof raw === 'string' ? raw : '';
+}
+
+function exchangeOnce(code) {
+  if (ssoExchangeInflight.has(code)) {
+    return ssoExchangeInflight.get(code);
+  }
+  const promise = authStore.exchangeSsoCode(code).finally(() => {
+    ssoExchangeInflight.delete(code);
+  });
+  ssoExchangeInflight.set(code, promise);
+  return promise;
 }
 
 onMounted(async () => {
@@ -32,23 +46,18 @@ onMounted(async () => {
     return;
   }
 
-  if (authStore.isAuthenticated) {
-    router.replace(authStore.isAdmin ? '/admin' : '/dashboard');
-    return;
-  }
-
   const exchangeKey = `sso-exchange:${code}`;
   if (sessionStorage.getItem(exchangeKey) === 'done') {
     router.replace(authStore.isAdmin ? '/admin' : '/dashboard');
     return;
   }
-  if (sessionStorage.getItem(exchangeKey) === 'pending') {
-    return;
-  }
-  sessionStorage.setItem(exchangeKey, 'pending');
 
   try {
-    await authStore.exchangeSsoCode(code);
+    // A fresh SSO code must replace any stale token still in localStorage.
+    if (authStore.isAuthenticated) {
+      authStore.logout();
+    }
+    await exchangeOnce(code);
     sessionStorage.setItem(exchangeKey, 'done');
     router.replace(authStore.isAdmin ? '/admin' : '/dashboard');
   } catch (err) {

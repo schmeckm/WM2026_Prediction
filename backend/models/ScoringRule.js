@@ -27,6 +27,15 @@ const ScoringRule = sequelize.define('ScoringRule', {
     allowNull: false,
     defaultValue: 0,
   },
+  knockoutStagePointsEnabled: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
+  knockoutStagePoints: {
+    type: DataTypes.JSON,
+    allowNull: true,
+  },
 });
 
 module.exports = ScoringRule;

@@ -50,6 +50,71 @@
       </div>
 
       <div class="card mb-2" style="max-width: 640px;">
+        <div class="card-header"><h3>{{ t('adminPages.scoringRules.knockoutPointsTitle') }}</h3></div>
+        <div class="card-body">
+          <p class="text-muted">{{ t('adminPages.scoringRules.knockoutPointsDesc') }}</p>
+          <form @submit.prevent="handleSave">
+            <label class="checkbox-label">
+              <input v-model="form.knockoutStagePointsEnabled" type="checkbox" />
+              {{ t('adminPages.scoringRules.knockoutPointsEnabled') }}
+            </label>
+
+            <div v-if="form.knockoutStagePointsEnabled" class="knockout-points-table-wrap">
+              <table class="knockout-points-table">
+                <thead>
+                  <tr>
+                    <th>{{ t('adminPages.scoringRules.knockoutStageColumn') }}</th>
+                    <th>{{ t('adminPages.scoringRules.exactResult') }}</th>
+                    <th>{{ t('adminPages.scoringRules.goalDifference') }}</th>
+                    <th>{{ t('adminPages.scoringRules.tendency') }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="stageKey in knockoutStageKeys" :key="stageKey">
+                    <td>{{ t(`adminPages.scoringRules.knockoutStages.${stageKey}`) }}</td>
+                    <td>
+                      <input
+                        v-model.number="form.knockoutStagePoints[stageKey].exactResultPoints"
+                        type="number"
+                        min="0"
+                        class="form-control form-control-sm"
+                        required
+                      />
+                    </td>
+                    <td>
+                      <input
+                        v-model.number="form.knockoutStagePoints[stageKey].goalDifferencePoints"
+                        type="number"
+                        min="0"
+                        class="form-control form-control-sm"
+                        required
+                      />
+                    </td>
+                    <td>
+                      <input
+                        v-model.number="form.knockoutStagePoints[stageKey].tendencyPoints"
+                        type="number"
+                        min="0"
+                        class="form-control form-control-sm"
+                        required
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <button type="button" class="btn btn-secondary btn-sm" @click="resetKnockoutDefaults">
+                {{ t('adminPages.scoringRules.knockoutResetDefaults') }}
+              </button>
+            </div>
+
+            <button type="submit" class="btn btn-primary" :disabled="saving" style="margin-top: 1rem;">
+              {{ saving ? t('common.saving') : t('adminPages.scoringRules.saveRules') }}
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card mb-2" style="max-width: 640px;">
         <div class="card-header"><h3>{{ t('adminPages.scoringRules.teamRankingTitle') }}</h3></div>
         <div class="card-body">
           <p class="text-muted">{{ t('adminPages.scoringRules.teamRankingDesc') }}</p>
@@ -124,7 +189,65 @@ const form = ref({
   goalDifferencePoints: 3,
   tendencyPoints: 2,
   wrongPredictionPoints: 0,
+  knockoutStagePointsEnabled: false,
+  knockoutStagePoints: {},
 });
+
+const knockoutStageKeys = [
+  'LAST_32',
+  'LAST_16',
+  'QUARTER_FINALS',
+  'SEMI_FINALS',
+  'THIRD_PLACE',
+  'FINAL',
+];
+
+function buildDefaultKnockoutStagePoints(base = form.value) {
+  const bonuses = {
+    LAST_32: [0, 0, 0],
+    LAST_16: [1, 1, 1],
+    QUARTER_FINALS: [2, 2, 2],
+    SEMI_FINALS: [4, 3, 2],
+    THIRD_PLACE: [2, 2, 2],
+    FINAL: [6, 5, 4],
+  };
+
+  return Object.fromEntries(
+    knockoutStageKeys.map((key) => {
+      const [exactBonus, diffBonus, tendencyBonus] = bonuses[key];
+      return [key, {
+        exactResultPoints: (base.exactResultPoints ?? 4) + exactBonus,
+        goalDifferencePoints: (base.goalDifferencePoints ?? 3) + diffBonus,
+        tendencyPoints: (base.tendencyPoints ?? 2) + tendencyBonus,
+      }];
+    }),
+  );
+}
+
+function normalizeKnockoutStagePoints(rawPoints = {}) {
+  const defaults = buildDefaultKnockoutStagePoints();
+  return Object.fromEntries(
+    knockoutStageKeys.map((key) => {
+      const fallback = defaults[key];
+      const entry = rawPoints[key] || {};
+      return [key, {
+        exactResultPoints: Number.isFinite(Number(entry.exactResultPoints))
+          ? Number(entry.exactResultPoints)
+          : fallback.exactResultPoints,
+        goalDifferencePoints: Number.isFinite(Number(entry.goalDifferencePoints))
+          ? Number(entry.goalDifferencePoints)
+          : fallback.goalDifferencePoints,
+        tendencyPoints: Number.isFinite(Number(entry.tendencyPoints))
+          ? Number(entry.tendencyPoints)
+          : fallback.tendencyPoints,
+      }];
+    }),
+  );
+}
+
+function resetKnockoutDefaults() {
+  form.value.knockoutStagePoints = buildDefaultKnockoutStagePoints();
+}
 
 const teamSettings = ref({
   teamRankingMode: 'active_predictors_only',
@@ -139,7 +262,11 @@ async function loadRules() {
       api.get('/scoring-rules'),
       api.get('/settings'),
     ]);
-    form.value = { ...rulesRes.data };
+    form.value = {
+      ...rulesRes.data,
+      knockoutStagePointsEnabled: !!rulesRes.data.knockoutStagePointsEnabled,
+      knockoutStagePoints: normalizeKnockoutStagePoints(rulesRes.data.knockoutStagePoints),
+    };
     teamSettings.value = {
       teamRankingMode: settingsRes.data.teamRankingMode || 'active_predictors_only',
       teamActiveMinPredictions: settingsRes.data.teamActiveMinPredictions ?? 1,
@@ -200,7 +327,39 @@ async function handleRecalculate() {
 </script>
 
 <style scoped>
-.mb-2 { margin-bottom: 1.5rem; }
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.knockout-points-table-wrap {
+  margin-top: 0.5rem;
+}
+
+.knockout-points-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.75rem;
+}
+
+.knockout-points-table th,
+.knockout-points-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.knockout-points-table th {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.knockout-points-table .form-control-sm {
+  min-width: 4.5rem;
+}
 
 .example-box {
   margin-top: 1.5rem;

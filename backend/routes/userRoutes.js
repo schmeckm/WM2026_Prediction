@@ -62,7 +62,7 @@ router.get('/', adminMiddleware, async (req, res) => {
 
 router.post('/', adminMiddleware, async (req, res) => {
   try {
-    const { firstName, lastName, email, password, role, teamId, language } = req.body;
+    const { firstName, lastName, email, password, role, teamId, language, excludedFromGame } = req.body;
 
     if (!firstName || !lastName || !email || !password) {
       return sendError(res, req, 400, 'errors.requiredFields');
@@ -87,6 +87,7 @@ router.post('/', adminMiddleware, async (req, res) => {
       teamId: teamId || null,
       language: normalizeLocale(language || req.locale),
       emailVerified: true,
+      excludedFromGame: !!excludedFromGame,
     });
 
     const userWithTeam = await User.findByPk(user.id, {
@@ -221,6 +222,7 @@ router.put('/:id', async (req, res) => {
       firstName, lastName, email, password, role, teamId, language,
       favoriteNationalTeamId, favoriteNationalTeamName,
       topScorerPlayerId, topScorerPlayerName, avatarColor, avatarEmoji, portalAccent,
+      excludedFromGame,
     } = req.body;
 
     if (firstName) user.firstName = firstName.trim();
@@ -240,6 +242,9 @@ router.put('/:id', async (req, res) => {
         user.emailVerificationToken = null;
         user.emailVerificationExpires = null;
       }
+    }
+    if (isAdmin && excludedFromGame !== undefined) {
+      user.excludedFromGame = !!excludedFromGame;
     }
     if (teamId !== undefined) user.teamId = parseOptionalInt(teamId);
     if (language !== undefined) {
@@ -275,6 +280,10 @@ router.put('/:id', async (req, res) => {
     }
 
     await user.save();
+
+    if (isAdmin && user.changed('excludedFromGame')) {
+      invalidateLeaderboardCache();
+    }
 
     const updated = await User.findByPk(user.id, {
       include: [{ model: Team, as: 'team' }],

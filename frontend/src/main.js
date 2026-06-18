@@ -9,6 +9,7 @@ import { useThemeStore } from './stores/themeStore';
 import { usePortalAccentStore } from './stores/portalAccentStore';
 import { initSentry } from './sentry';
 import { useAuthStore } from './stores/authStore';
+import { isAuthFlowPath } from './utils/authFlow';
 
 registerSW({ immediate: true });
 
@@ -76,7 +77,7 @@ async function bootstrap() {
   if (authStore.user?.portalAccent) {
     portalAccentStore.initFromUser(authStore.user);
   }
-  if (authStore.isAuthenticated) {
+  if (authStore.isAuthenticated && !isAuthFlowPath()) {
     authStore.fetchMe().catch(() => {});
   }
 

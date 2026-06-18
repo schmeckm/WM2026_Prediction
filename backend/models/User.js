@@ -45,6 +45,11 @@ const User = sequelize.define('User', {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
+  excludedFromGame: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false,
+  },
   language: {
     type: DataTypes.STRING(5),
     allowNull: false,

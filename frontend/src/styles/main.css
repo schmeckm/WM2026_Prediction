@@ -1069,6 +1069,11 @@ tbody tr:hover {
   min-height: 2rem;
 }
 
+.filter-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .filter-btn.active {
   background: var(--sapListSelectionBackground);
   color: var(--color-primary);

@@ -3,6 +3,7 @@ import { useAuthStore } from '../stores/authStore';
 import { useToastStore } from '../stores/toastStore';
 import { getStoredLocale } from '../i18n';
 import i18n from '../i18n';
+import { isAuthFlowPath } from '../utils/authFlow';
 
 const api = axios.create({
   baseURL: '/api',
@@ -61,7 +62,7 @@ api.interceptors.response.use(
 
     const originalRequest = error.config;
     const requestUrl = originalRequest?.url || '';
-    const isAuthRequest = /\/auth\/(login|register|refresh)(\/|$|\?)/.test(requestUrl);
+    const isAuthRequest = /\/auth\/(login|register|refresh|exchange|sso-pending|complete-sso)(\/|$|\?)/.test(requestUrl);
 
     if (error.response?.status === 401 && !isAuthRequest && !originalRequest?._retry) {
       originalRequest._retry = true;
@@ -75,6 +76,9 @@ api.interceptors.response.use(
       const authStore = useAuthStore();
       const errorText = error.response?.data?.error || '';
       const isSessionExpired = /session|expired|abgelaufen|Sitzung|sesión|invalidToken|refresh/i.test(errorText);
+      if (isAuthFlowPath()) {
+        return Promise.reject(error);
+      }
       if (isSessionExpired) {
         const toastStore = useToastStore();
         toastStore.warning(i18n.global.t('auth.sessionExpired'));

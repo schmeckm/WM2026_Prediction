@@ -39,6 +39,16 @@
           </div>
         </section>
 
+        <section v-if="knockoutRows.length" class="help-section">
+          <h2>{{ t('help.sections.knockoutScoring.title') }}</h2>
+          <p>{{ t('help.sections.knockoutScoring.intro') }}</p>
+          <ul class="help-list">
+            <li v-for="row in knockoutRows" :key="row.key">
+              {{ t('help.knockoutScoring.row', row) }}
+            </li>
+          </ul>
+        </section>
+
         <section class="help-section">
           <h2>{{ t('help.sections.deadline.title') }}</h2>
           <p>{{ t('help.sections.deadline.text') }}</p>
@@ -144,6 +154,35 @@ const rules = ref({
   goalDifferencePoints: 3,
   tendencyPoints: 2,
   wrongPredictionPoints: 0,
+  knockoutStagePointsEnabled: false,
+  knockoutStagePoints: {},
+});
+
+const knockoutStageKeys = [
+  'LAST_32',
+  'LAST_16',
+  'QUARTER_FINALS',
+  'SEMI_FINALS',
+  'THIRD_PLACE',
+  'FINAL',
+];
+
+const knockoutRows = computed(() => {
+  if (!rules.value.knockoutStagePointsEnabled) return [];
+  const pointsByStage = rules.value.knockoutStagePoints || {};
+  return knockoutStageKeys
+    .map((key) => {
+      const stagePoints = pointsByStage[key];
+      if (!stagePoints) return null;
+      return {
+        key,
+        stage: t(`adminPages.scoringRules.knockoutStages.${key}`),
+        exact: stagePoints.exactResultPoints,
+        goalDiff: stagePoints.goalDifferencePoints,
+        tendency: stagePoints.tendencyPoints,
+      };
+    })
+    .filter(Boolean);
 });
 
 const points = computed(() => ({

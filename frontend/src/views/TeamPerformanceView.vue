@@ -27,6 +27,7 @@
     <template v-else>
       <TeamPitchPanel
         v-if="displayMembers.length"
+        :key="`pitch-${activeScope}-${displayMembers.length}`"
         :members="displayMembers"
         :show-team-name="activeScope === 'all'"
         :title-key="activeScope === 'all' ? 'teamPitch.titleAllTeams' : 'teamPitch.title'"
@@ -235,7 +236,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
@@ -259,7 +260,13 @@ const teamRanking = ref([]);
 const membersRaw = ref([]);
 const activeScope = ref('all');
 
-const teamId = computed(() => authStore.user?.teamId || null);
+const teamId = computed(() => {
+  const user = authStore.user;
+  if (!user) return null;
+  const id = user.teamId ?? user.team?.id ?? null;
+  if (id == null || id === '') return null;
+  return Number(id);
+});
 
 const scopeFilters = computed(() => [
   { value: 'all', label: t('teamPerformance.filterAllTeams'), disabled: false },
@@ -281,12 +288,22 @@ const allMembers = computed(() => membersRaw.value.map((m) => ({
   correctTips: Number(m.exactResults || 0) + Number(m.goalDifferences || 0) + Number(m.tendencies || 0),
 })));
 
-const displayMembers = computed(() => {
+const displayMembers = computed(() => allMembers.value);
+
+function buildMembersParams() {
+  const params = { filter: 'overall', sortBy: 'total' };
   if (activeScope.value === 'myTeam' && teamId.value) {
-    return allMembers.value.filter((m) => Number(m.teamId) === Number(teamId.value));
+    params.teamId = teamId.value;
   }
-  return allMembers.value;
-});
+  return params;
+}
+
+function memberMatchesTeam(member, resolvedTeamId) {
+  if (!resolvedTeamId) return false;
+  if (member.teamId != null && Number(member.teamId) === resolvedTeamId) return true;
+  const userTeamName = authStore.user?.team?.name;
+  return Boolean(userTeamName && member.teamName === userTeamName);
+}
 
 const zoneSummary = computed(() => summarizeTeamPitchZones(displayMembers.value));
 
@@ -341,19 +358,28 @@ const highlights = computed(() => {
 
 function setScope(scope) {
   if (scope === 'myTeam' && !teamId.value) return;
+  if (activeScope.value === scope) return;
   activeScope.value = scope;
+}
+
+async function loadMembers() {
+  const { data } = await api.get('/leaderboard', { params: buildMembersParams() });
+  let members = Array.isArray(data) ? data : [];
+  if (activeScope.value === 'myTeam' && teamId.value) {
+    members = members.filter((m) => memberMatchesTeam(m, teamId.value));
+  }
+  membersRaw.value = members;
 }
 
 async function loadData() {
   loading.value = true;
   error.value = '';
   try {
-    const [rankRes, membersRes] = await Promise.all([
+    const [rankRes] = await Promise.all([
       api.get('/leaderboard/team-ranking'),
-      api.get('/leaderboard', { params: { filter: 'overall', sortBy: 'total' } }),
+      loadMembers(),
     ]);
     teamRanking.value = Array.isArray(rankRes.data) ? rankRes.data : [];
-    membersRaw.value = Array.isArray(membersRes.data) ? membersRes.data : [];
   } catch (err) {
     error.value = err.response?.data?.error || t('teamPerformance.loadFailed');
   } finally {
@@ -361,7 +387,25 @@ async function loadData() {
   }
 }
 
-onMounted(loadData);
+watch(activeScope, async (scope, previousScope) => {
+  if (scope === previousScope || loading.value) return;
+  try {
+    await loadMembers();
+  } catch (err) {
+    error.value = err.response?.data?.error || t('teamPerformance.loadFailed');
+  }
+});
+
+onMounted(async () => {
+  if (authStore.isAuthenticated && teamId.value == null) {
+    try {
+      await authStore.fetchMe();
+    } catch {
+      // keep cached user payload
+    }
+  }
+  await loadData();
+});
 </script>
 
 <style scoped>

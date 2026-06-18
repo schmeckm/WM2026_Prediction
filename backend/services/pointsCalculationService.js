@@ -1,3 +1,5 @@
+const { resolveEffectiveScoringRules } = require('./scoringRulesService');
+
 function getTendency(homeScore, awayScore) {
   if (homeScore > awayScore) return 'home';
   if (homeScore < awayScore) return 'away';
@@ -11,12 +13,7 @@ function calculatePoints(prediction, match, scoringRules) {
 
   const { predictedHomeScore, predictedAwayScore } = prediction;
   const { homeScore, awayScore } = match;
-  const rules = scoringRules || {
-    exactResultPoints: 4,
-    goalDifferencePoints: 3,
-    tendencyPoints: 2,
-    wrongPredictionPoints: 0,
-  };
+  const rules = resolveEffectiveScoringRules(scoringRules, match?.stage);
 
   if (predictedHomeScore === homeScore && predictedAwayScore === awayScore) {
     return rules.exactResultPoints;
@@ -41,12 +38,7 @@ function classifyPrediction(prediction, match, scoringRules) {
   const points = calculatePoints(prediction, match, scoringRules);
   if (points === null) return null;
 
-  const rules = scoringRules || {
-    exactResultPoints: 4,
-    goalDifferencePoints: 3,
-    tendencyPoints: 2,
-    wrongPredictionPoints: 0,
-  };
+  const rules = resolveEffectiveScoringRules(scoringRules, match?.stage);
 
   if (points === rules.exactResultPoints) return 'exact';
   if (points === rules.goalDifferencePoints) return 'goalDifference';
@@ -58,4 +50,5 @@ module.exports = {
   calculatePoints,
   classifyPrediction,
   getTendency,
+  resolveEffectiveScoringRules,
 };

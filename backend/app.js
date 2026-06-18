@@ -99,6 +99,8 @@ app.use(helmet({
     },
   },
   crossOriginResourcePolicy: { policy: 'cross-origin' },
+  // COOP is ignored on non-HTTPS origins (e.g. http://*.sslip.io) and spams browser warnings.
+  crossOriginOpenerPolicy: false,
 }));
 
 app.use(cors(getCorsOptions()));

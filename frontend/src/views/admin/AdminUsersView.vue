@@ -61,6 +61,11 @@
           <template #cell-team="{ item }">
             {{ item.team?.name || '–' }}
           </template>
+          <template #cell-excludedFromGame="{ item }">
+            <span :class="['badge', item.excludedFromGame ? 'badge-warning' : 'badge-success']">
+              {{ item.excludedFromGame ? t('adminPages.users.excluded') : t('adminPages.users.active') }}
+            </span>
+          </template>
         </AdminTable>
       </div>
     </div>
@@ -159,6 +164,13 @@
                   {{ t('adminPages.users.emailVerifiedLabel') }}
                 </label>
               </div>
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input v-model="form.excludedFromGame" type="checkbox" />
+                  {{ t('adminPages.users.excludedFromGameLabel') }}
+                </label>
+                <p class="text-muted user-image-hint">{{ t('adminPages.users.excludedFromGameHint') }}</p>
+              </div>
               <p v-else class="text-muted user-image-hint">
                 {{ t('adminPages.users.createImageHint') }}
               </p>
@@ -235,10 +247,11 @@ const columns = computed(() => [
   { key: 'emailVerified', label: t('adminPages.users.columns.emailVerified') },
   { key: 'role', label: t('adminPages.users.columns.role') },
   { key: 'team', label: t('adminPages.users.columns.team') },
+  { key: 'excludedFromGame', label: t('adminPages.users.columns.gameStatus') },
 ]);
 
 const form = ref({
-  firstName: '', lastName: '', email: '', password: '', role: 'user', teamId: null, emailVerified: true,
+  firstName: '', lastName: '', email: '', password: '', role: 'user', teamId: null, emailVerified: true, excludedFromGame: false,
 });
 
 function openConfirm({ title, message, confirmLabel, danger, action }) {
@@ -292,7 +305,7 @@ function clearFileSelection() {
 function openCreate() {
   editingUser.value = null;
   form.value = {
-    firstName: '', lastName: '', email: '', password: '', role: 'user', teamId: null, emailVerified: true,
+    firstName: '', lastName: '', email: '', password: '', role: 'user', teamId: null, emailVerified: true, excludedFromGame: false,
   };
   clearFileSelection();
   showModal.value = true;
@@ -308,6 +321,7 @@ function openEdit(user) {
     role: user.role,
     teamId: user.teamId,
     emailVerified: !!user.emailVerified,
+    excludedFromGame: !!user.excludedFromGame,
   };
   clearFileSelection();
   showModal.value = true;

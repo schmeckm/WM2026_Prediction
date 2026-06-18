@@ -135,6 +135,21 @@ describe('leaderboardService.getTeamRanking', () => {
     assert.equal(partialUser.submittedPredictions, 1);
     assert.ok(partialUser.completionPercentage < 100);
   });
+
+  it('excludes users flagged with excludedFromGame from the leaderboard', async () => {
+    const excludedUser = await User.create({
+      firstName: 'Duplicate',
+      lastName: 'Account',
+      email: 'excluded-user@test.local',
+      password: 'user123',
+      role: 'user',
+      emailVerified: true,
+      excludedFromGame: true,
+    });
+
+    const leaderboard = await getLeaderboard({ skipCache: true });
+    assert.equal(leaderboard.some((entry) => entry.userId === excludedUser.id), false);
+  });
 });
 
 describe('leaderboardService tournament phase filters', () => {

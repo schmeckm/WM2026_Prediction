@@ -1122,6 +1122,10 @@
         "title": "Punkte pro Spiel",
         "intro": "Für jedes Spiel tippst du das Ergebnis. Nach dem Abpfiff zählt nur die beste Trefferkategorie – nicht mehrere gleichzeitig:"
       },
+      "knockoutScoring": {
+        "title": "Höhere Punkte in K.o.-Runden",
+        "intro": "Ab der K.o.-Phase gelten erhöhte Punktwerte. Gruppenspiele behalten die Basis-Punkte."
+      },
       "deadline": {
         "title": "Wann darf ich tippen?",
         "text": "Tipps sind bis zum Anpfiff möglich. Danach sind Spiele gesperrt – auch wenn sie live laufen, beendet oder vom Admin gesperrt sind."
@@ -1182,6 +1186,9 @@
       "goalDiff": "Richtige Tordifferenz (nur bei Sieg): {goalDiff} Punkte",
       "tendency": "Richtige Tendenz (Sieg/Unentschieden): {tendency} Punkte",
       "wrong": "Falscher Tipp: {wrong} Punkte"
+    },
+    "knockoutScoring": {
+      "row": "{stage}: exakt {exact} · Differenz {goalDiff} · Tendenz {tendency}"
     },
     "example": {
       "title": "Beispiel",
@@ -1339,6 +1346,10 @@
       "uploadHint": "JPG, PNG, WebP oder GIF, max. 2 MB",
       "removeImage": "Bild entfernen",
       "emailVerifiedLabel": "E-Mail bestätigt",
+      "excludedFromGameLabel": "Vom Spielablauf ausschließen",
+      "excludedFromGameHint": "User kann sich weiter anmelden und tippen, erscheint aber nicht in Rangliste, Teamwertung und Challenges.",
+      "active": "Aktiv",
+      "excluded": "Ausgeschlossen",
       "createImageHint": "Nach dem Erstellen kannst du ein Profilbild hochladen.",
       "imageTooLarge": "Bild ist zu groß (max. 2 MB).",
       "imageRemoved": "Profilbild entfernt.",
@@ -1360,7 +1371,8 @@
         "email": "E-Mail",
         "emailVerified": "Bestätigt",
         "role": "Rolle",
-        "team": "Team"
+        "team": "Team",
+        "gameStatus": "Spiel"
       },
       "form": {
         "firstName": "Vorname",
@@ -1587,7 +1599,20 @@
       "exampleExact": "Tipp 2:1 = {points} Pkt. (exakt)",
       "exampleDiff": "Tipp 3:2 = {points} Pkt. (Tordifferenz)",
       "exampleTendency": "Tipp 1:0 = {points} Pkt. (Tendenz)",
-      "exampleWrong": "Tipp 1:2 = {points} Pkt. (falsch)"
+      "exampleWrong": "Tipp 1:2 = {points} Pkt. (falsch)",
+      "knockoutPointsTitle": "K.o.-Runden (höhere Punkte)",
+      "knockoutPointsDesc": "Gruppenspiele nutzen die Basis-Punkte oben. Für jede K.o.-Runde kannst du höhere Werte festlegen.",
+      "knockoutPointsEnabled": "Höhere Punkte in K.o.-Runden aktivieren",
+      "knockoutStageColumn": "Runde",
+      "knockoutResetDefaults": "Standard-Vorschläge laden",
+      "knockoutStages": {
+        "LAST_32": "Sechzehntelfinale (Last 32)",
+        "LAST_16": "Achtelfinale",
+        "QUARTER_FINALS": "Viertelfinale",
+        "SEMI_FINALS": "Halbfinale",
+        "THIRD_PLACE": "Spiel um Platz 3",
+        "FINAL": "Finale"
+      }
     },
     "prizes": {
       "title": "Preisverwaltung",

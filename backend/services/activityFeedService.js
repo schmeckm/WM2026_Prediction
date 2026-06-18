@@ -35,6 +35,7 @@ async function buildRankMovementEvents({ teamId = null, limit = 10 } = {}) {
 
   const userWhere = {
     role: { [Op.in]: ['user', 'admin'] },
+    excludedFromGame: false,
     ...(teamId ? { teamId } : {}),
   };
 

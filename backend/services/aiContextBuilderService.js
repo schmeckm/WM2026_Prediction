@@ -212,7 +212,7 @@ async function buildMissingPredictionsContext(userId) {
 }
 
 async function buildAdminContext() {
-  const totalUsers = await User.count({ where: { role: 'user' } });
+  const totalUsers = await User.count({ where: { role: 'user', excludedFromGame: false } });
   const totalMatches = await Match.count();
   const finishedMatches = await Match.count({ where: { status: 'finished' } });
   const openMatches = await Match.count({ where: { status: 'scheduled' } });

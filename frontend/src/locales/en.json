@@ -1114,6 +1114,10 @@
         "title": "Points per match",
         "intro": "For each match you predict the score. After full time, only the best category counts — not multiple at once:"
       },
+      "knockoutScoring": {
+        "title": "Higher points in knockout rounds",
+        "intro": "From the knockout phase onward, higher point values apply. Group matches keep the base points."
+      },
       "deadline": {
         "title": "When can I predict?",
         "text": "Predictions are allowed until kick-off. After that, matches are locked — including live, finished, or admin-locked matches."
@@ -1174,6 +1178,9 @@
       "goalDiff": "Correct goal difference (wins only): {goalDiff} points",
       "tendency": "Correct tendency (win/draw): {tendency} points",
       "wrong": "Wrong prediction: {wrong} points"
+    },
+    "knockoutScoring": {
+      "row": "{stage}: exact {exact} · difference {goalDiff} · tendency {tendency}"
     },
     "example": {
       "title": "Example",
@@ -1338,6 +1345,10 @@
       "uploadHint": "JPG, PNG, WebP or GIF, max. 2 MB",
       "removeImage": "Remove image",
       "emailVerifiedLabel": "Email verified",
+      "excludedFromGameLabel": "Exclude from game flow",
+      "excludedFromGameHint": "User can still log in and submit tips, but won't appear in leaderboard, team ranking, or challenges.",
+      "active": "Active",
+      "excluded": "Excluded",
       "createImageHint": "After creating the user you can upload a profile image.",
       "imageTooLarge": "Image is too large (max. 2 MB).",
       "imageRemoved": "Profile image removed.",
@@ -1359,7 +1370,8 @@
         "email": "Email",
         "emailVerified": "Verified",
         "role": "Role",
-        "team": "Team"
+        "team": "Team",
+        "gameStatus": "Game"
       },
       "form": {
         "firstName": "First name",
@@ -1587,7 +1599,20 @@
       "exampleExact": "Prediction 2:1 = {points} pts (exact)",
       "exampleDiff": "Prediction 3:2 = {points} pts (goal difference)",
       "exampleTendency": "Prediction 1:0 = {points} pts (tendency)",
-      "exampleWrong": "Prediction 1:2 = {points} pts (wrong)"
+      "exampleWrong": "Prediction 1:2 = {points} pts (wrong)",
+      "knockoutPointsTitle": "Knockout rounds (higher points)",
+      "knockoutPointsDesc": "Group matches use the base points above. Set higher values for each knockout round.",
+      "knockoutPointsEnabled": "Enable higher points in knockout rounds",
+      "knockoutStageColumn": "Round",
+      "knockoutResetDefaults": "Load suggested defaults",
+      "knockoutStages": {
+        "LAST_32": "Round of 32",
+        "LAST_16": "Round of 16",
+        "QUARTER_FINALS": "Quarter-finals",
+        "SEMI_FINALS": "Semi-finals",
+        "THIRD_PLACE": "Third-place play-off",
+        "FINAL": "Final"
+      }
     },
     "prizes": {
       "title": "Prize management",

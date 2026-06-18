@@ -10,7 +10,7 @@
 
     <div class="card-body">
       <div class="team-pitch__scene">
-        <div class="team-pitch__field" :aria-label="t('teamPitch.fieldAria')">
+        <div class="team-pitch__field" :class="pitchDensityClass" :aria-label="t('teamPitch.fieldAria')">
           <div class="team-pitch__center-line" aria-hidden="true" />
           <div class="team-pitch__center-circle" aria-hidden="true" />
           <div class="team-pitch__penalty-arc team-pitch__penalty-arc--left" aria-hidden="true" />
@@ -125,6 +125,13 @@ const classified = computed(() => props.members.map((member) => ({
 
 const pitchPlayers = computed(() => classified.value.filter((p) => p.zone !== 'red'));
 const redPlayers = computed(() => classified.value.filter((p) => p.zone === 'red'));
+
+const pitchDensityClass = computed(() => {
+  const total = props.members.length;
+  if (total > 28) return 'team-pitch__field--compact';
+  if (total > 16) return 'team-pitch__field--cozy';
+  return '';
+});
 </script>
 
 <style scoped>
@@ -386,8 +393,56 @@ const redPlayers = computed(() => classified.value.filter((p) => p.zone === 'red
   text-align: center;
 }
 
+.team-pitch__row--pitch {
+  max-height: min(28rem, 55vh);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.15rem;
+  scrollbar-gutter: stable;
+}
+
+.team-pitch__field--cozy .team-pitch__row {
+  gap: 0.75rem 0.9rem;
+}
+
+.team-pitch__field--cozy .team-pitch__slot {
+  max-width: 4.85rem;
+}
+
+.team-pitch__field--cozy .team-pitch__name {
+  font-size: 0.72rem;
+}
+
+.team-pitch__field--compact .team-pitch__row {
+  gap: 0.55rem 0.65rem;
+}
+
+.team-pitch__field--compact .team-pitch__slot {
+  max-width: 4.1rem;
+}
+
+.team-pitch__field--compact .team-pitch__name,
+.team-pitch__field--compact .team-pitch__team,
+.team-pitch__field--compact .team-pitch__hint {
+  font-size: 0.62rem;
+}
+
+.team-pitch__row--sideline {
+  max-height: min(14rem, 30vh);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
 @media (max-width: 480px) {
+  .team-pitch__row--pitch {
+    max-height: none;
+    overflow-y: visible;
+  }
+
   .team-pitch__row--sideline {
+    max-height: none;
+    overflow-y: visible;
     flex-wrap: nowrap;
     overflow-x: auto;
     justify-content: flex-start;
