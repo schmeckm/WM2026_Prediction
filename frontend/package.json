@@ -31,7 +31,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@sentry/vue": "^10.56.0",
+    "@sentry/vue": "^10.58.0",
     "axios": "^1.7.9",
     "chart.js": "^4.4.8",
     "pinia": "^2.3.0",
