@@ -128,6 +128,13 @@
                   </select>
                 </div>
               </div>
+              <div class="form-group form-group--highlight">
+                <label class="checkbox-label">
+                  <input v-model="form.excludedFromGame" type="checkbox" />
+                  {{ t('adminPages.users.excludedFromGameLabel') }}
+                </label>
+                <p class="text-muted user-image-hint">{{ t('adminPages.users.excludedFromGameHint') }}</p>
+              </div>
               <div v-if="editingUser" class="form-group">
                 <label>{{ t('adminPages.users.profileImage') }}</label>
                 <div class="user-image-editor">
@@ -164,14 +171,7 @@
                   {{ t('adminPages.users.emailVerifiedLabel') }}
                 </label>
               </div>
-              <div class="form-group">
-                <label class="checkbox-label">
-                  <input v-model="form.excludedFromGame" type="checkbox" />
-                  {{ t('adminPages.users.excludedFromGameLabel') }}
-                </label>
-                <p class="text-muted user-image-hint">{{ t('adminPages.users.excludedFromGameHint') }}</p>
-              </div>
-              <p v-else class="text-muted user-image-hint">
+              <p v-if="!editingUser" class="text-muted user-image-hint">
                 {{ t('adminPages.users.createImageHint') }}
               </p>
             </div>
@@ -520,5 +520,12 @@ onUnmounted(() => {
 .user-image-hint {
   font-size: 0.8rem;
   margin: 0;
+}
+
+.form-group--highlight {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
 }
 </style>
