@@ -1112,11 +1112,13 @@
       },
       "scoring": {
         "title": "Points per match",
-        "intro": "For each match you predict the score. After full time, only the best category counts — not multiple at once:"
+        "intro": "For each match you predict the score. After full time, only the best category counts — not multiple at once. Group stage and knockout rounds may use different point values:"
       },
       "knockoutScoring": {
-        "title": "Higher points in knockout rounds",
-        "intro": "From the knockout phase onward, higher point values apply. Group matches keep the base points."
+        "title": "Knockout rounds – higher points",
+        "intro": "From the round of 32 onward, correct predictions can earn more points. Group matches use the base values above.",
+        "note": "For each knockout match, only the best category counts (exact, goal difference, or tendency) — same rule as the group stage.",
+        "disabled": "Currently all matches (group and knockout) use the same points as the group stage values above."
       },
       "deadline": {
         "title": "When can I predict?",
@@ -1174,13 +1176,25 @@
       }
     },
     "scoring": {
+      "groupTitle": "Group stage",
       "exact": "Exact score: {exact} points",
       "goalDiff": "Correct goal difference (wins only): {goalDiff} points",
       "tendency": "Correct tendency (win/draw): {tendency} points",
       "wrong": "Wrong prediction: {wrong} points"
     },
     "knockoutScoring": {
-      "row": "{stage}: exact {exact} · difference {goalDiff} · tendency {tendency}"
+      "columnStage": "Round",
+      "columnExact": "Exact",
+      "columnGoalDiff": "Difference",
+      "columnTendency": "Tendency",
+      "stages": {
+        "LAST_32": "Round of 32",
+        "LAST_16": "Round of 16",
+        "QUARTER_FINALS": "Quarter-finals",
+        "SEMI_FINALS": "Semi-finals",
+        "THIRD_PLACE": "Third-place play-off",
+        "FINAL": "Final"
+      }
     },
     "example": {
       "title": "Example",

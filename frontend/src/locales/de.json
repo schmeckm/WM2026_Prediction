@@ -1120,11 +1120,13 @@
       },
       "scoring": {
         "title": "Punkte pro Spiel",
-        "intro": "Für jedes Spiel tippst du das Ergebnis. Nach dem Abpfiff zählt nur die beste Trefferkategorie – nicht mehrere gleichzeitig:"
+        "intro": "Für jedes Spiel tippst du das Ergebnis. Nach dem Abpfiff zählt nur die beste Trefferkategorie – nicht mehrere gleichzeitig. In der Gruppenphase und in den K.o.-Runden können unterschiedliche Punktwerte gelten:"
       },
       "knockoutScoring": {
-        "title": "Höhere Punkte in K.o.-Runden",
-        "intro": "Ab der K.o.-Phase gelten erhöhte Punktwerte. Gruppenspiele behalten die Basis-Punkte."
+        "title": "K.o.-Runden – höhere Punkte",
+        "intro": "Ab dem Sechzehntelfinale steigen die möglichen Punkte pro richtigem Tipp. Die Gruppenspiele nutzen die Basis-Werte oben.",
+        "note": "Pro K.o.-Spiel gilt wie in der Gruppe: Es zählt nur die beste Kategorie (exakt, Tordifferenz oder Tendenz) – nicht mehrere gleichzeitig.",
+        "disabled": "Aktuell gelten für alle Spiele (Gruppe und K.o.) dieselben Punkte wie oben bei den Gruppenspielen."
       },
       "deadline": {
         "title": "Wann darf ich tippen?",
@@ -1182,13 +1184,25 @@
       }
     },
     "scoring": {
+      "groupTitle": "Gruppenspiele",
       "exact": "Exaktes Ergebnis: {exact} Punkte",
       "goalDiff": "Richtige Tordifferenz (nur bei Sieg): {goalDiff} Punkte",
       "tendency": "Richtige Tendenz (Sieg/Unentschieden): {tendency} Punkte",
       "wrong": "Falscher Tipp: {wrong} Punkte"
     },
     "knockoutScoring": {
-      "row": "{stage}: exakt {exact} · Differenz {goalDiff} · Tendenz {tendency}"
+      "columnStage": "Runde",
+      "columnExact": "Exakt",
+      "columnGoalDiff": "Differenz",
+      "columnTendency": "Tendenz",
+      "stages": {
+        "LAST_32": "Sechzehntelfinale",
+        "LAST_16": "Achtelfinale",
+        "QUARTER_FINALS": "Viertelfinale",
+        "SEMI_FINALS": "Halbfinale",
+        "THIRD_PLACE": "Spiel um Platz 3",
+        "FINAL": "Finale"
+      }
     },
     "example": {
       "title": "Beispiel",

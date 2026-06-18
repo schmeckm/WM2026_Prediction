@@ -166,7 +166,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import api from '../../services/api';
 import LoadingSpinner from '../../components/LoadingSpinner.vue';
@@ -248,6 +248,19 @@ function normalizeKnockoutStagePoints(rawPoints = {}) {
 function resetKnockoutDefaults() {
   form.value.knockoutStagePoints = buildDefaultKnockoutStagePoints();
 }
+
+watch(
+  () => form.value.knockoutStagePointsEnabled,
+  (enabled) => {
+    if (!enabled) return;
+    const hasAllStages = knockoutStageKeys.every(
+      (key) => form.value.knockoutStagePoints?.[key]?.exactResultPoints != null,
+    );
+    if (!hasAllStages) {
+      form.value.knockoutStagePoints = buildDefaultKnockoutStagePoints();
+    }
+  },
+);
 
 const teamSettings = ref({
   teamRankingMode: 'active_predictors_only',

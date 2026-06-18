@@ -931,7 +931,13 @@
       },
       "scoring": {
         "title": "Points par match",
-        "intro": "Pour chaque match, vous pronostiquez le score. À la fin, seule la meilleure catégorie compte — pas plusieurs en même temps :"
+        "intro": "Pour chaque match, vous pronostiquez le score. À la fin, seule la meilleure catégorie compte — pas plusieurs en même temps. La phase de groupes et les phases à élimination directe peuvent avoir des points différents :"
+      },
+      "knockoutScoring": {
+        "title": "Phases à élimination – points plus élevés",
+        "intro": "À partir des seizièmes de finale, un bon pronostic peut rapporter plus de points. Les matchs de groupe utilisent les valeurs de base ci-dessus.",
+        "note": "Pour chaque match à élimination, seule la meilleure catégorie compte (exact, différence ou tendance), comme en phase de groupes.",
+        "disabled": "Actuellement, tous les matchs (groupes et élimination) utilisent les mêmes points que la phase de groupes."
       },
       "deadline": {
         "title": "Quand puis-je pronostiquer ?",
@@ -989,10 +995,25 @@
       }
     },
     "scoring": {
+      "groupTitle": "Phase de groupes",
       "exact": "Score exact : {exact} points",
       "goalDiff": "Bonne différence de buts : {goalDiff} points",
       "tendency": "Bonne tendance (victoire/nul) : {tendency} points",
       "wrong": "Mauvais pronostic : {wrong} points"
+    },
+    "knockoutScoring": {
+      "columnStage": "Tour",
+      "columnExact": "Exact",
+      "columnGoalDiff": "Différence",
+      "columnTendency": "Tendance",
+      "stages": {
+        "LAST_32": "Seizièmes de finale",
+        "LAST_16": "Huitièmes de finale",
+        "QUARTER_FINALS": "Quarts de finale",
+        "SEMI_FINALS": "Demi-finales",
+        "THIRD_PLACE": "Match pour la 3e place",
+        "FINAL": "Finale"
+      }
     },
     "example": {
       "title": "Exemple",

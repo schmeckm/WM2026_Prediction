@@ -971,7 +971,13 @@
       },
       "scoring": {
         "title": "Pontos por jogo",
-        "intro": "Em cada jogo prevê o resultado. Após o apito final, conta apenas a melhor categoria — não várias em simultâneo:"
+        "intro": "Em cada jogo prevê o resultado. Após o apito final, conta apenas a melhor categoria — não várias em simultâneo. A fase de grupos e as eliminatórias podem ter pontos diferentes:"
+      },
+      "knockoutScoring": {
+        "title": "Eliminatórias – pontos mais altos",
+        "intro": "A partir dos dezasseis avos, um palpite certo pode valer mais pontos. Os jogos de grupos usam os valores base acima.",
+        "note": "Em cada jogo eliminatório conta apenas a melhor categoria (exato, diferença ou tendência), como na fase de grupos.",
+        "disabled": "Atualmente todos os jogos (grupos e eliminatórias) usam os mesmos pontos da fase de grupos."
       },
       "deadline": {
         "title": "Quando posso apostar?",
@@ -1029,10 +1035,25 @@
       }
     },
     "scoring": {
+      "groupTitle": "Fase de grupos",
       "exact": "Resultado exato: {exact} pontos",
       "goalDiff": "Diferença de golos correta (apenas vitórias): {goalDiff} pontos",
       "tendency": "Tendência correta (vitória/empate): {tendency} pontos",
       "wrong": "Palpite errado: {wrong} pontos"
+    },
+    "knockoutScoring": {
+      "columnStage": "Ronda",
+      "columnExact": "Exato",
+      "columnGoalDiff": "Diferença",
+      "columnTendency": "Tendência",
+      "stages": {
+        "LAST_32": "Dezasseis avos",
+        "LAST_16": "Oitavos de final",
+        "QUARTER_FINALS": "Quartos de final",
+        "SEMI_FINALS": "Meias-finais",
+        "THIRD_PLACE": "Jogo pelo 3.º lugar",
+        "FINAL": "Final"
+      }
     },
     "example": {
       "title": "Exemplo",

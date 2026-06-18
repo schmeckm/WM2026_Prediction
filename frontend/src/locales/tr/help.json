@@ -12,7 +12,13 @@
       },
       "scoring": {
         "title": "Maç başına puan",
-        "intro": "Her maç için skor tahmin edersiniz. Maç bittikten sonra yalnızca en iyi kategori sayılır — aynı anda birden fazlası değil:"
+        "intro": "Her maç için skor tahmin edersiniz. Maç bittikten sonra yalnızca en iyi kategori sayılır — aynı anda birden fazlası değil. Grup aşaması ve eleme turları farklı puan değerlerine sahip olabilir:"
+      },
+      "knockoutScoring": {
+        "title": "Eleme turları – daha yüksek puan",
+        "intro": "Son 32 turundan itibaren doğru tahminler daha fazla puan kazandırabilir. Grup maçları yukarıdaki temel değerleri kullanır.",
+        "note": "Her eleme maçında yalnızca en iyi kategori sayılır (tam skor, averaj veya eğilim) — grup aşamasıyla aynı kural.",
+        "disabled": "Şu anda tüm maçlar (grup ve eleme) grup aşaması değerleriyle aynı puanları kullanır."
       },
       "deadline": {
         "title": "Ne zamana kadar tahmin yapabilirim?",
@@ -70,10 +76,25 @@
       }
     },
     "scoring": {
+      "groupTitle": "Grup aşaması",
       "exact": "Tam skor: {exact} puan",
       "goalDiff": "Doğru averaj (sadece galibiyet): {goalDiff} puan",
       "tendency": "Doğru eğilim (galibiyet/beraberlik): {tendency} puan",
       "wrong": "Yanlış tahmin: {wrong} puan"
+    },
+    "knockoutScoring": {
+      "columnStage": "Tur",
+      "columnExact": "Tam",
+      "columnGoalDiff": "Averaj",
+      "columnTendency": "Eğilim",
+      "stages": {
+        "LAST_32": "Son 32",
+        "LAST_16": "Son 16",
+        "QUARTER_FINALS": "Çeyrek final",
+        "SEMI_FINALS": "Yarı final",
+        "THIRD_PLACE": "3.lük maçı",
+        "FINAL": "Final"
+      }
     },
     "example": {
       "title": "Örnek",

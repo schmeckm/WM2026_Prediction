@@ -466,6 +466,20 @@
       "exampleDiff": "Różnica bramek: {points} pkt",
       "exampleTendency": "Tendencja: {points} pkt",
       "exampleWrong": "Błędny typ: {points} pkt",
+      "matchPointsTitle": "Punkty za mecz (faza grupowa)",
+      "knockoutPointsTitle": "Runda pucharowa (wyższe punkty)",
+      "knockoutPointsDesc": "Mecze grupowe używają punktów bazowych powyżej. Dla każdej rundy pucharowej możesz ustawić własne wartości.",
+      "knockoutPointsEnabled": "Włącz wyższe punkty w rundach pucharowych",
+      "knockoutStageColumn": "Runda",
+      "knockoutResetDefaults": "Wczytaj sugerowane wartości",
+      "knockoutStages": {
+        "LAST_32": "1/16 finału",
+        "LAST_16": "1/8 finału",
+        "QUARTER_FINALS": "Ćwierćfinał",
+        "SEMI_FINALS": "Półfinał",
+        "THIRD_PLACE": "Mecz o 3. miejsce",
+        "FINAL": "Finał"
+      },
       "saved": "Zapisano zasady punktacji.",
       "loadFailed": "Nie udało się wczytać zasad punktacji.",
       "saveFailed": "Nie udało się zapisać zasad."

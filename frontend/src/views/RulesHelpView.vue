@@ -23,6 +23,8 @@
         <section class="help-section">
           <h2>{{ t('help.sections.scoring.title') }}</h2>
           <p>{{ t('help.sections.scoring.intro') }}</p>
+
+          <h3>{{ t('help.scoring.groupTitle') }}</h3>
           <ul class="help-list">
             <li>{{ t('help.scoring.exact', points) }}</li>
             <li>{{ t('help.scoring.goalDiff', points) }}</li>
@@ -30,23 +32,43 @@
             <li>{{ t('help.scoring.wrong', points) }}</li>
           </ul>
           <div class="help-callout">
-            <h3>{{ t('help.example.title') }}</h3>
+            <h4>{{ t('help.example.title') }}</h4>
             <p class="text-muted">{{ t('help.example.result') }}</p>
             <p>{{ t('help.example.exact', points) }}</p>
             <p>{{ t('help.example.goalDiff', points) }}</p>
             <p>{{ t('help.example.tendency', points) }}</p>
             <p>{{ t('help.example.wrong', points) }}</p>
           </div>
-        </section>
 
-        <section v-if="knockoutRows.length" class="help-section">
-          <h2>{{ t('help.sections.knockoutScoring.title') }}</h2>
-          <p>{{ t('help.sections.knockoutScoring.intro') }}</p>
-          <ul class="help-list">
-            <li v-for="row in knockoutRows" :key="row.key">
-              {{ t('help.knockoutScoring.row', row) }}
-            </li>
-          </ul>
+          <h3>{{ t('help.sections.knockoutScoring.title') }}</h3>
+          <p v-if="rules.knockoutStagePointsEnabled">
+            {{ t('help.sections.knockoutScoring.intro') }}
+          </p>
+          <p v-else class="help-callout help-callout--accent">
+            {{ t('help.sections.knockoutScoring.disabled') }}
+          </p>
+
+          <div v-if="knockoutRows.length" class="help-scoring-table-wrap">
+            <table class="help-scoring-table">
+              <thead>
+                <tr>
+                  <th>{{ t('help.knockoutScoring.columnStage') }}</th>
+                  <th>{{ t('help.knockoutScoring.columnExact') }}</th>
+                  <th>{{ t('help.knockoutScoring.columnGoalDiff') }}</th>
+                  <th>{{ t('help.knockoutScoring.columnTendency') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in knockoutRows" :key="row.key">
+                  <td>{{ row.stage }}</td>
+                  <td>{{ row.exact }}</td>
+                  <td>{{ row.goalDiff }}</td>
+                  <td>{{ row.tendency }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="text-muted help-knockout-note">{{ t('help.sections.knockoutScoring.note') }}</p>
+          </div>
         </section>
 
         <section class="help-section">
@@ -176,7 +198,7 @@ const knockoutRows = computed(() => {
       if (!stagePoints) return null;
       return {
         key,
-        stage: t(`adminPages.scoringRules.knockoutStages.${key}`),
+        stage: t(`help.knockoutScoring.stages.${key}`),
         exact: stagePoints.exactResultPoints,
         goalDiff: stagePoints.goalDifferencePoints,
         tendency: stagePoints.tendencyPoints,
@@ -266,9 +288,15 @@ onMounted(async () => {
 }
 
 .help-section h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.help-section h4 {
   font-size: 0.9rem;
   font-weight: 600;
-  margin: 1rem 0 0.5rem;
+  margin: 0 0 0.35rem;
 }
 
 .help-section p {
@@ -281,6 +309,42 @@ onMounted(async () => {
   margin: 0.75rem 0 0;
   padding-left: 1.25rem;
   line-height: 1.6;
+}
+
+.help-knockout-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+}
+
+.help-scoring-table-wrap {
+  margin-top: 0.75rem;
+}
+
+.help-scoring-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.help-scoring-table th,
+.help-scoring-table td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.help-scoring-table th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: var(--color-bg-elevated, rgba(255, 255, 255, 0.03));
+}
+
+.help-scoring-table td:not(:first-child) {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .help-callout {

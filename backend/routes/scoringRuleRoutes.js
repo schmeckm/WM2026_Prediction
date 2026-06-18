@@ -3,6 +3,7 @@ const { sendError, translate } = require('../utils/apiResponse');
 const { ScoringRule } = require('../models');
 const authMiddleware = require('../middleware/authMiddleware');
 const adminMiddleware = require('../middleware/adminMiddleware');
+const { invalidateLeaderboardCache } = require('../services/leaderboardService');
 const {
   buildDefaultKnockoutStagePoints,
   normalizeKnockoutStagePoints,
@@ -62,6 +63,7 @@ router.put('/', authMiddleware, adminMiddleware, async (req, res) => {
       applyScoringRuleUpdates(rules, req.body);
       await rules.save();
     }
+    invalidateLeaderboardCache();
     res.json(serializeScoringRules(rules));
   } catch (error) {
     sendError(res, req, 500, 'errors.scoringRulesUpdateFailed');
