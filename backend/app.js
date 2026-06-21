@@ -120,12 +120,21 @@ if (process.env.NODE_ENV !== 'test') {
 
 app.use(['/api', '/api/v1'], localeMiddleware);
 
+app.get('/api/health/live', async (req, res) => {
+  try {
+    await sequelize.authenticate();
+    res.json({ status: 'ok' });
+  } catch (error) {
+    res.status(503).json({ status: 'error', reason: 'database_unavailable' });
+  }
+});
+
 app.get('/api/health', async (req, res) => {
   try {
     await sequelize.authenticate();
     const aiEnabled = isAiEnabled();
     const aiKeyConfigured = isApiKeyConfigured();
-    const externalApis = await getExternalApiHealth();
+    const externalApis = await getExternalApiHealth({ cachedOnly: true });
     const playerDataBackup = getLastBackupInfo();
     res.json({
       status: 'ok',
@@ -137,6 +146,7 @@ app.get('/api/health', async (req, res) => {
         reason: !aiEnabled ? 'disabled' : !aiKeyConfigured ? 'no_api_key' : 'ok',
       },
       externalApis: externalApis.apis,
+      externalApisPending: externalApis.pending === true,
       externalApisCheckedAt: externalApis.checkedAt,
       playerDataBackup,
     });

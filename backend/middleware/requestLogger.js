@@ -2,7 +2,7 @@ function requestLogger(req, res, next) {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    if (req.path !== '/api/health') {
+    if (req.path !== '/api/health' && req.path !== '/api/health/live') {
       const userId = req.user?.id || '-';
       const ip = req.ip || req.headers['x-forwarded-for'] || '-';
       const requestId = req.requestId || '-';

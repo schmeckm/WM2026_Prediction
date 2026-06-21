@@ -112,7 +112,7 @@ router.get('/', authMiddleware, async (req, res) => {
         canPredict: editable,
         hasPrediction: !!prediction,
       };
-    })));
+    }))));
 
     if (filter === 'open') {
       result = result.filter((m) => m.canPredict);

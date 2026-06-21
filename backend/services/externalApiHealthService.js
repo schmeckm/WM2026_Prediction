@@ -221,10 +221,23 @@ async function probeExternalApis() {
   ];
 }
 
-async function getExternalApiHealth({ refresh = false } = {}) {
+async function getExternalApiHealth({ refresh = false, cachedOnly = false } = {}) {
   const isFresh = cache.apis && Date.now() - cache.at < CACHE_TTL_MS;
   if (!refresh && isFresh) {
     return { apis: cache.apis, cached: true, checkedAt: new Date(cache.at).toISOString() };
+  }
+
+  if (cachedOnly && process.env.NODE_ENV !== 'test') {
+    if (cache.apis) {
+      return {
+        apis: cache.apis,
+        cached: true,
+        stale: !isFresh,
+        checkedAt: new Date(cache.at).toISOString(),
+      };
+    }
+    getExternalApiHealth({ refresh: true }).catch(() => {});
+    return { apis: [], cached: false, pending: true, checkedAt: null };
   }
 
   if (probeInFlight) {

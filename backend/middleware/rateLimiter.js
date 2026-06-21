@@ -54,7 +54,7 @@ function isLocalDevRequest(req) {
 
 function shouldSkipApiLimiter(req) {
   if (rateLimitDisabled) return true;
-  if (req.path === '/health') return true;
+  if (req.path === '/health' || req.path === '/health/live') return true;
   if (hasDedicatedLimiter(req)) return true;
   return !isProduction && isLocalDevRequest(req);
 }
