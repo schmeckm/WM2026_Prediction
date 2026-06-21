@@ -5,6 +5,7 @@
     :class="{
       'match-card--highlight': highlighted,
       'match-card--next': nextUp,
+      'match-card--today': isToday,
     }"
   >
     <div class="match-card-top">
@@ -25,7 +26,12 @@
     </div>
 
     <div class="match-card-middle">
-      <div class="match-teams">
+      <LiveMatchScoreboard
+        v-if="showLiveScoreboard(match)"
+        :match="match"
+        class="match-card-live-scoreboard"
+      />
+      <div v-else class="match-teams">
         <div class="match-team">
           <TeamFlag :name="match.homeTeam" link-to-squad />
         </div>
@@ -189,6 +195,7 @@ import {
 import { useI18n } from 'vue-i18n';
 import PredictionForm from './PredictionForm.vue';
 import LiveScoreBadge from './LiveScoreBadge.vue';
+import LiveMatchScoreboard from './LiveMatchScoreboard.vue';
 import CountdownBadge from './CountdownBadge.vue';
 import TeamFlag from './TeamFlag.vue';
 import AIMatchPreview from './AIMatchPreview.vue';
@@ -198,6 +205,8 @@ import { useFormatters } from '../composables/useFormatters';
 import { useMatchMeta } from '../composables/useMatchMeta';
 import { hasDisplayableResult, displayMatchScore, formatMarketProbabilities, showMarketOdds } from '../composables/useMatchExtras';
 import { getPredictionLockReason } from '../utils/predictionLockReason';
+import { extractYoutubeId, buildYoutubeWatchUrl } from '../utils/youtubeUrl';
+import { isLiveScoreboardMatch } from '../utils/liveMatchClock';
 
 const showVenueModal = ref(false);
 const showHighlightsModal = ref(false);
@@ -214,6 +223,7 @@ const props = defineProps({
   showAiPreview: { type: Boolean, default: true },
   highlighted: { type: Boolean, default: false },
   nextUp: { type: Boolean, default: false },
+  isToday: { type: Boolean, default: false },
 });
 
 const lockTitle = computed(() => {
@@ -224,33 +234,7 @@ const lockTitle = computed(() => {
   return t(key);
 });
 
-function extractYoutubeId(url) {
-  if (!url) return '';
-  const str = String(url).trim();
-  try {
-    const u = new URL(str);
-    if (u.hostname.includes('youtu.be')) {
-      return u.pathname.replace('/', '');
-    }
-    if (u.searchParams.get('v')) return u.searchParams.get('v');
-    const parts = u.pathname.split('/').filter(Boolean);
-    const embedIdx = parts.indexOf('embed');
-    if (embedIdx >= 0 && parts[embedIdx + 1]) return parts[embedIdx + 1];
-    const shortsIdx = parts.indexOf('shorts');
-    if (shortsIdx >= 0 && parts[shortsIdx + 1]) return parts[shortsIdx + 1];
-  } catch {
-    // ignore parse errors
-  }
-  const m = str.match(/(?:v=|\/embed\/|youtu\.be\/|\/shorts\/)([A-Za-z0-9_-]{6,})/);
-  return m?.[1] || '';
-}
-
-const highlightsWatchUrl = computed(() => {
-  const raw = String(props.match?.highlightsUrl || '').trim();
-  const id = extractYoutubeId(props.match?.highlightsUrl);
-  if (id) return `https://www.youtube.com/watch?v=${id}`;
-  return raw;
-});
+const highlightsWatchUrl = computed(() => buildYoutubeWatchUrl(props.match?.highlightsUrl));
 
 const highlightsEmbedUrl = computed(() => {
   const id = extractYoutubeId(props.match?.highlightsUrl);
@@ -281,6 +265,10 @@ onMounted(() => {
 onUnmounted(() => {
   globalThis.removeEventListener('keydown', onKeydown);
 });
+
+function showLiveScoreboard(match) {
+  return isLiveScoreboardMatch(match) && shouldShowScore(match);
+}
 
 function shouldShowScore(match) {
   const hasScore = match.homeScore !== null && match.homeScore !== undefined
@@ -351,6 +339,10 @@ function scoreClass(match) {
   margin-top: 0.5rem;
 }
 
+.match-card-live-scoreboard {
+  padding: 0.15rem 0;
+}
+
 .match-score-display--live {
   color: var(--color-text);
 }
@@ -362,6 +354,11 @@ function scoreClass(match) {
 .match-card--next {
   border-color: var(--color-success);
   box-shadow: var(--shadow-md), inset 0 0 0 2px color-mix(in srgb, var(--color-success) 35%, transparent);
+}
+
+.match-card--today:not(.match-card--next) {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
+  box-shadow: var(--shadow-sm), inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 25%, transparent);
 }
 
 .video-wrap {

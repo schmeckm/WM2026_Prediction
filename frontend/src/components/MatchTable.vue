@@ -14,12 +14,17 @@
             <th>{{ t('matchTable.status') }}</th>
             <th v-if="showPrediction">{{ t('matchTable.tip') }}</th>
             <th v-if="showPrediction">{{ t('matchTable.points') }}</th>
+            <th v-if="showHighlights">{{ t('matchTable.highlights') }}</th>
             <th v-if="showActions">{{ t('common.actions') }}</th>
             <th v-if="showMatchRef" class="match-table-ref">{{ t('matchTable.ref') }}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="match in matches" :key="match.id" :class="{ 'match-row--next': isNextMatch(match) }">
+          <tr
+            v-for="match in matches"
+            :key="match.id"
+            :class="{ 'match-row--next': isNextMatch(match), 'match-row--today': isTodayMatch(match) }"
+          >
             <td>{{ formatDate(match.kickoffTime) }}</td>
             <td>{{ formatTime(match.kickoffTime) }}</td>
             <td>{{ stageLabel(match.stage) }}</td>
@@ -27,8 +32,14 @@
             <td><TeamFlag :name="match.homeTeam" inline /></td>
             <td><TeamFlag :name="match.awayTeam" inline /></td>
             <td>
+              <LiveMatchScoreboard
+                v-if="showLiveScoreboard(match)"
+                :match="match"
+                compact
+                class="match-table-live-scoreboard"
+              />
               <span
-                v-if="shouldShowScore(match)"
+                v-else-if="shouldShowScore(match)"
                 :class="scoreClass(match)"
               >{{ displayScore(match).home }} : {{ displayScore(match).away }}</span>
               <span v-else class="text-muted">–</span>
@@ -67,6 +78,9 @@
               <span v-if="match.prediction?.points !== null && match.prediction?.points !== undefined">{{ formatPoints(match.prediction.points) }}</span>
               <span v-else class="text-muted">–</span>
             </td>
+            <td v-if="showHighlights">
+              <MatchHighlightsLink :highlights-url="match.highlightsUrl" />
+            </td>
             <td v-if="showActions">
               <div class="btn-group">
                 <button class="btn btn-secondary btn-sm" @click="$emit('edit', match)">{{ t('common.edit') }}</button>
@@ -91,9 +105,15 @@
       <article
         v-for="match in matches"
         :key="`mobile-${match.id}`"
-        :class="['match-table-card', { 'match-table-card--next': isNextMatch(match) }]"
+        :class="['match-table-card', { 'match-table-card--next': isNextMatch(match), 'match-table-card--today': isTodayMatch(match) }]"
       >
-        <div class="match-table-card-teams">
+        <LiveMatchScoreboard
+          v-if="showLiveScoreboard(match)"
+          :match="match"
+          compact
+          class="match-table-live-scoreboard match-table-live-scoreboard--mobile"
+        />
+        <div v-else class="match-table-card-teams">
           <TeamFlag :name="match.homeTeam" inline />
           <span class="match-table-card-vs">vs</span>
           <TeamFlag :name="match.awayTeam" inline />
@@ -109,8 +129,14 @@
           <dd>{{ match.groupName ? `${t('matches.group')} ${match.groupName}` : '–' }}</dd>
           <dt>{{ t('matchTable.result') }}</dt>
           <dd>
+            <LiveMatchScoreboard
+              v-if="showLiveScoreboard(match)"
+              :match="match"
+              compact
+              class="match-table-live-scoreboard"
+            />
             <span
-              v-if="shouldShowScore(match)"
+              v-else-if="shouldShowScore(match)"
               :class="scoreClass(match)"
             >{{ displayScore(match).home }} : {{ displayScore(match).away }}</span>
             <span v-else class="text-muted">–</span>
@@ -158,6 +184,12 @@
               <span v-else class="text-muted">–</span>
             </dd>
           </template>
+          <template v-if="showHighlights">
+            <dt>{{ t('matchTable.highlights') }}</dt>
+            <dd>
+              <MatchHighlightsLink :highlights-url="match.highlightsUrl" />
+            </dd>
+          </template>
           <template v-if="showMatchRef">
             <dt>{{ t('matchTable.ref') }}</dt>
             <dd>
@@ -187,15 +219,21 @@ import TeamFlag from './TeamFlag.vue';
 import MatchRefCell from './MatchRefCell.vue';
 import PredictionForm from './PredictionForm.vue';
 import MatchPredictionMeta from './MatchPredictionMeta.vue';
+import MatchHighlightsLink from './MatchHighlightsLink.vue';
+import LiveMatchScoreboard from './LiveMatchScoreboard.vue';
 import { getPredictionLockReason } from '../utils/predictionLockReason';
+import { DEFAULT_MATCH_TIMEZONE, getDateStringInTimezone } from '../utils/matchDate';
+import { isLiveScoreboardMatch } from '../utils/liveMatchClock';
 
 const props = defineProps({
   matches: { type: Array, default: () => [] },
   showPrediction: { type: Boolean, default: false },
+  showHighlights: { type: Boolean, default: false },
   showActions: { type: Boolean, default: false },
   showMatchRef: { type: Boolean, default: true },
   editable: { type: Boolean, default: true },
   highlightMatchIds: { type: Array, default: () => [] },
+  todayDateStr: { type: String, default: '' },
 });
 
 defineEmits(['edit', 'delete', 'saved']);
@@ -207,6 +245,7 @@ const { stageLabel } = useMatchMeta();
 const colspan = computed(() => {
   let cols = 8;
   if (props.showPrediction) cols += 2;
+  if (props.showHighlights) cols += 1;
   if (props.showActions) cols += 1;
   if (props.showMatchRef) cols += 1;
   return cols;
@@ -216,6 +255,11 @@ const highlightIdSet = computed(() => new Set(props.highlightMatchIds.map(String
 
 function isNextMatch(match) {
   return highlightIdSet.value.has(String(match?.id));
+}
+
+function isTodayMatch(match) {
+  if (!props.todayDateStr) return false;
+  return getDateStringInTimezone(match.kickoffTime, DEFAULT_MATCH_TIMEZONE) === props.todayDateStr;
 }
 
 function statusLabel(status) {
@@ -228,6 +272,10 @@ function predictionLockTitle(match) {
     return t(key, { time: formatTime(kickoffTime), date: formatDate(kickoffTime) });
   }
   return t(key);
+}
+
+function showLiveScoreboard(match) {
+  return isLiveScoreboardMatch(match) && shouldShowScore(match);
 }
 
 function shouldShowScore(match) {
@@ -282,6 +330,14 @@ function scoreClass(match) {
     inset 0 -2px 0 var(--color-success);
 }
 
+.match-row--today td {
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+}
+
+.match-table-card--today {
+  border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border));
+}
+
 .match-row--next td:not(:first-child):not(:last-child) {
   box-shadow:
     inset 0 2px 0 var(--color-success),
@@ -313,6 +369,14 @@ function scoreClass(match) {
 .match-score--finished {
   color: var(--color-success);
   font-weight: 600;
+}
+
+.match-table-live-scoreboard {
+  min-width: 220px;
+}
+
+.match-table-live-scoreboard--mobile {
+  margin-bottom: 0.5rem;
 }
 
 .match-table-card-teams {

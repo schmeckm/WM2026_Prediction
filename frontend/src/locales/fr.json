@@ -729,6 +729,7 @@
     "title": "Matchs",
     "filters": {
       "all": "Tous les matchs",
+      "today": "Aujourd'hui",
       "open": "Pronostics ouverts",
       "finished": "Terminés",
       "missing": "Mes pronostics manquants",
@@ -740,6 +741,7 @@
       "reset": "Afficher tous les matchs"
     },
     "empty": "Aucun match trouvé pour ce filtre.",
+    "emptyToday": "Aucun match prévu aujourd'hui.",
     "group": "Groupe",
     "yourTip": "Votre pronostic",
     "actualResult": "Résultat du match",
@@ -788,6 +790,7 @@
     "status": "Statut",
     "tip": "Pronostic",
     "points": "Points",
+    "highlights": "Vidéo",
     "empty": "Aucun match trouvé."
   },
   "matchStatus": {

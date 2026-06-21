@@ -14,6 +14,7 @@ const { attachStadiumImage, attachStadiumImages } = require('../services/matchPr
 const { attachMarketOdds, attachMarketOddsList } = require('../utils/matchMarketOdds');
 const { getGroupStandings } = require('../services/groupStandingsService');
 const { validatePredictionScores } = require('../utils/predictionValidation');
+const { isKickoffOnDate, getTodayDateString } = require('../utils/matchDateUtils');
 
 const router = express.Router();
 
@@ -116,6 +117,10 @@ router.get('/', authMiddleware, async (req, res) => {
       result = result.filter((m) => m.canPredict);
     } else if (filter === 'missing') {
       result = result.filter((m) => m.canPredict && !m.hasPrediction);
+    } else if (filter === 'today') {
+      const tz = String(req.query.timezone || 'Europe/Zurich').trim();
+      const matchDate = String(req.query.matchDate || '').trim() || getTodayDateString(tz);
+      result = result.filter((m) => isKickoffOnDate(m.kickoffTime, matchDate, tz));
     }
 
     res.json(result);

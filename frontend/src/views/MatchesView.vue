@@ -147,17 +147,18 @@
         :aria-busy="filterLoading"
       >
         <MatchCard
-          v-for="match in matches"
+          v-for="match in displayMatches"
           :key="match.id"
           :match="match"
           :highlighted="String(match.matchNumber) === highlightedMatchNumber"
           :next-up="isNextUp(match)"
+          :is-today="isMatchToday(match)"
           @saved="() => loadMatches()"
         />
         <EmptyState
-          v-if="matches.length === 0 && !filterLoading"
+          v-if="displayMatches.length === 0 && !filterLoading"
           icon="⚽"
-          :message="t('matches.empty')"
+          :message="emptyMessage"
           :action-label="hasActiveFilters ? t('matches.filters.reset') : ''"
           @action="resetFilters"
         />
@@ -170,9 +171,11 @@
       >
         <div class="card-body">
           <MatchTable
-            :matches="matches"
+            :matches="displayMatches"
             :highlight-match-ids="nextMatchIds"
+            :today-date-str="todayDateStr"
             show-prediction
+            show-highlights
             @saved="() => loadMatches()"
           />
         </div>
@@ -193,6 +196,12 @@ import MatchTable from '../components/MatchTable.vue';
 import MatchesExternalApiStatus from '../components/MatchesExternalApiStatus.vue';
 import ErrorState from '../components/ErrorState.vue';
 import EmptyState from '../components/EmptyState.vue';
+import {
+  DEFAULT_MATCH_TIMEZONE,
+  getDateStringInTimezone,
+  isKickoffOnDate,
+  sortMatchesForBrowse,
+} from '../utils/matchDate';
 
 const { t } = useI18n();
 const route = useRoute();
@@ -203,6 +212,7 @@ const highlightedMatchNumber = ref('');
 
 const filters = computed(() => [
   { value: '', label: t('matches.filters.all') },
+  { value: 'today', label: t('matches.filters.today') },
   { value: 'open', label: t('matches.filters.open') },
   { value: 'finished', label: t('matches.filters.finished') },
   { value: 'missing', label: t('matches.filters.missing') },
@@ -218,6 +228,19 @@ const activeGroup = ref('');
 const groups = ref([]);
 const availableGroups = computed(() => (groups.value.length ? groups.value : DEFAULT_GROUPS));
 const matches = ref([]);
+const matchTimeZone = DEFAULT_MATCH_TIMEZONE;
+const todayDateStr = computed(() => getDateStringInTimezone(new Date(), matchTimeZone));
+
+const displayMatches = computed(() => {
+  if (activeFilter.value === 'finished' || activeFilter.value === 'today') {
+    return matches.value;
+  }
+  return sortMatchesForBrowse(matches.value, todayDateStr.value, matchTimeZone);
+});
+
+function isMatchToday(match) {
+  return isKickoffOnDate(match?.kickoffTime, todayDateStr.value, matchTimeZone);
+}
 const initialLoading = ref(true);
 const filterLoading = ref(false);
 const error = ref('');
@@ -286,6 +309,10 @@ const filterActiveLabel = computed(() => {
     : t('matches.filters.all');
 });
 
+const emptyMessage = computed(() => (
+  activeFilter.value === 'today' ? t('matches.emptyToday') : t('matches.empty')
+));
+
 function syncLockTimer() {
   if (needsLockTimer.value && !lockTimer) {
     now.value = Date.now();
@@ -333,10 +360,18 @@ async function loadMatches({ filterChange = false } = {}) {
   try {
     const params = {};
     if (activeFilter.value) params.filter = activeFilter.value;
+    if (activeFilter.value === 'today') {
+      params.matchDate = todayDateStr.value;
+      params.timezone = matchTimeZone;
+    }
     if (activeGroup.value) params.groupName = activeGroup.value;
     const { data } = await api.get('/matches', { params });
     matches.value = data;
     syncLockTimer();
+    if (activeFilter.value === 'today') {
+      await nextTick();
+      scrollToMatchesTop();
+    }
   } catch (err) {
     error.value = err.response?.data?.error || t('matches.loadFailed');
   } finally {
@@ -345,7 +380,14 @@ async function loadMatches({ filterChange = false } = {}) {
   }
 }
 
-const VALID_FILTERS = new Set(['', 'open', 'finished', 'missing', 'group', 'knockout']);
+const VALID_FILTERS = new Set(['', 'today', 'open', 'finished', 'missing', 'group', 'knockout']);
+
+function scrollToMatchesTop() {
+  const anchor = document.querySelector('.matches-list, .matches-table-mode');
+  if (!anchor) return;
+  const top = anchor.getBoundingClientRect().top + window.scrollY - 88;
+  window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+}
 
 function syncRouteQuery() {
   const query = { ...route.query };
@@ -365,7 +407,7 @@ function applyFilterFromRoute() {
 function setFilter(value) {
   activeFilter.value = value;
   syncRouteQuery();
-  loadMatches();
+  loadMatches({ filterChange: true });
 }
 
 function setGroup(value) {

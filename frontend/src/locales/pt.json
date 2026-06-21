@@ -767,6 +767,7 @@
     "title": "Jogos",
     "filters": {
       "all": "Todos os jogos",
+      "today": "Hoje",
       "open": "Palpites em aberto",
       "finished": "Terminados",
       "missing": "Os meus palpites em falta",
@@ -778,6 +779,7 @@
       "reset": "Mostrar todos os jogos"
     },
     "empty": "Não foram encontrados jogos para este filtro.",
+    "emptyToday": "Não há jogos agendados para hoje.",
     "group": "Grupo",
     "yourTip": "O seu palpite",
     "actualResult": "Resultado do jogo",
@@ -826,6 +828,7 @@
     "status": "Estado",
     "tip": "Palpite",
     "points": "Pontos",
+    "highlights": "Vídeo",
     "empty": "Não foram encontrados jogos."
   },
   "matchStatus": {

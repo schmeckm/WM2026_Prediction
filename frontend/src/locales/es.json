@@ -735,6 +735,7 @@
     "title": "Partidos",
     "filters": {
       "all": "Todos los partidos",
+      "today": "Hoy",
       "open": "Pronósticos abiertos",
       "finished": "Finalizados",
       "missing": "Mis pronósticos faltantes",
@@ -746,6 +747,7 @@
       "reset": "Mostrar todos los partidos"
     },
     "empty": "No se encontraron partidos para este filtro.",
+    "emptyToday": "No hay partidos programados para hoy.",
     "group": "Grupo",
     "yourTip": "Tu pronóstico",
     "actualResult": "Resultado del partido",
@@ -794,6 +796,7 @@
     "status": "Estado",
     "tip": "Pronóstico",
     "points": "Puntos",
+    "highlights": "Vídeo",
     "empty": "No se encontraron partidos."
   },
   "matchStatus": {

@@ -892,6 +892,7 @@
     "highlightsEmbedBlockedHint": "If the video is blocked from embedding (e.g. by FIFA), open it on YouTube.",
     "filters": {
       "all": "All matches",
+      "today": "Today",
       "open": "Open predictions",
       "finished": "Finished",
       "missing": "My missing predictions",
@@ -903,6 +904,7 @@
       "reset": "Show all matches"
     },
     "empty": "No matches found for this filter.",
+    "emptyToday": "No matches scheduled for today.",
     "group": "Group",
     "yourTip": "Your prediction",
     "actualResult": "Match result",
@@ -953,6 +955,7 @@
     "status": "Status",
     "tip": "Prediction",
     "points": "Points",
+    "highlights": "Video",
     "empty": "No matches found."
   },
   "matchStatus": {

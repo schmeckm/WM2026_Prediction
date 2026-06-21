@@ -899,6 +899,7 @@
     "highlightsEmbedBlockedHint": "Wenn das Video nicht eingebettet werden darf (z. B. FIFA-Sperre), öffne es direkt auf YouTube.",
     "filters": {
       "all": "Alle Spiele",
+      "today": "Heute",
       "open": "Offene Tipps",
       "finished": "Beendet",
       "missing": "Meine fehlenden Tipps",
@@ -910,6 +911,7 @@
       "reset": "Alle Spiele anzeigen"
     },
     "empty": "Keine Spiele für diesen Filter gefunden.",
+    "emptyToday": "Heute sind keine Spiele angesetzt.",
     "group": "Gruppe",
     "yourTip": "Ihr Tipp",
     "actualResult": "Spielergebnis",
@@ -960,6 +962,7 @@
     "status": "Status",
     "tip": "Tipp",
     "points": "Punkte",
+    "highlights": "Video",
     "empty": "Keine Spiele gefunden."
   },
   "matchStatus": {

@@ -1,8 +1,48 @@
 {
-  "generatedAt": "2026-06-18T19:44:31.611Z",
+  "generatedAt": "2026-06-21T18:02:26.829Z",
   "repository": "https://github.com/schmeckm/WM2026_Prediction",
   "limit": 20,
   "entries": [
+    {
+      "sha": "295d9ef78bcfcb77d10d685857a9ca7aac3048af",
+      "shortSha": "295d9ef",
+      "date": "2026-06-18T22:30:32+02:00",
+      "subject": "fix: make exclude-from-game checkbox visible in user edit modal",
+      "type": "fix",
+      "title": "Make exclude-from-game checkbox visible in user edit modal",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/295d9ef78bcfcb77d10d685857a9ca7aac3048af"
+    },
+    {
+      "sha": "c20981a2f281d691031bda4fba43cbe036ff8c4d",
+      "shortSha": "c20981a",
+      "date": "2026-06-18T22:20:50+02:00",
+      "subject": "docs: document knockout scoring rules on help page",
+      "type": "docs",
+      "title": "Document knockout scoring rules on help page",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/c20981a2f281d691031bda4fba43cbe036ff8c4d"
+    },
+    {
+      "sha": "501c828ad6cfc3837a5eed91694cdc2546ddf44f",
+      "shortSha": "501c828",
+      "date": "2026-06-18T22:16:58+02:00",
+      "subject": "fix: SSO callback auth, team performance filter, and scoring rules",
+      "type": "fix",
+      "title": "SSO callback auth, team performance filter, and scoring rules",
+      "core": false,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/501c828ad6cfc3837a5eed91694cdc2546ddf44f"
+    },
+    {
+      "sha": "84b1d593a7b4e0da2c918d2422f2e1aae0e228d5",
+      "shortSha": "84b1d59",
+      "date": "2026-06-18T21:52:10+02:00",
+      "subject": "feat: streamline dashboard layout and expand admin announcements",
+      "type": "feature",
+      "title": "Streamline dashboard layout and expand admin announcements",
+      "core": true,
+      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/84b1d593a7b4e0da2c918d2422f2e1aae0e228d5"
+    },
     {
       "sha": "3e69df22462918e0e6b067699b2825f565aa216e",
       "shortSha": "3e69df2",
@@ -162,46 +202,6 @@
       "title": "Respect iPhone safe area for navbar and toasts",
       "core": false,
       "url": "https://github.com/schmeckm/WM2026_Prediction/commit/8cf85c2b0b00642089976441324021607b407c64"
-    },
-    {
-      "sha": "108e20e601afd7266d439b6b4a87a691128afbdf",
-      "shortSha": "108e20e",
-      "date": "2026-06-16T07:24:46+02:00",
-      "subject": "docs: professionelles README, MIT-Lizenz, Football-API-Hinweis",
-      "type": "docs",
-      "title": "Professionelles README, MIT-Lizenz, Football-API-Hinweis",
-      "core": false,
-      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/108e20e601afd7266d439b6b4a87a691128afbdf"
-    },
-    {
-      "sha": "472e552f7dd1a8ea70b03e2226e0ec9a718293cc",
-      "shortSha": "472e552",
-      "date": "2026-06-16T07:22:26+02:00",
-      "subject": "docs: README und Portainer-Deploy-Guide mit Pflicht-Env-Variablen",
-      "type": "docs",
-      "title": "README und Portainer-Deploy-Guide mit Pflicht-Env-Variablen",
-      "core": false,
-      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/472e552f7dd1a8ea70b03e2226e0ec9a718293cc"
-    },
-    {
-      "sha": "e559182ebaf48cfadbfded0d6e0e25a21fc133be",
-      "shortSha": "e559182",
-      "date": "2026-06-15T20:30:46+02:00",
-      "subject": "fix(admin): Feedback-GitHub-Dialog und Konfigurationshinweis",
-      "type": "fix",
-      "title": "Feedback-GitHub-Dialog und Konfigurationshinweis",
-      "core": false,
-      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/e559182ebaf48cfadbfded0d6e0e25a21fc133be"
-    },
-    {
-      "sha": "9fcef6689104fc62f80c9787f0fe01aa43dd76ea",
-      "shortSha": "9fcef66",
-      "date": "2026-06-15T08:04:52+02:00",
-      "subject": "feat(admin): User-Feedback-Seite mit GitHub-Issue-Übernahme",
-      "type": "feature",
-      "title": "User-Feedback-Seite mit GitHub-Issue-Übernahme",
-      "core": true,
-      "url": "https://github.com/schmeckm/WM2026_Prediction/commit/9fcef6689104fc62f80c9787f0fe01aa43dd76ea"
     }
   ]
 }

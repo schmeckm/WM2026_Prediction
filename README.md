@@ -36,6 +36,22 @@
 
 Built for internal teams (IT, Finance, HR, …) with **104 matches** (72 group stage + 32 knockout), multilingual UI, PWA support, and production deployment via Docker / Portainer.
 
+### Recent updates
+
+| Area | What's new |
+|------|------------|
+| **Scoring** | Configurable **higher points per knockout round** (round of 32 → final) in **Admin → Scoring rules**; live tables on `/help` |
+| **User management** | **Exclude from game flow** per user — login & tips still work, but no leaderboard / team ranking / challenges (for duplicate accounts) |
+| **Team ranking** | Fair-play mode: members **without predictions** are excluded from the team average (configurable in scoring rules) |
+| **Team performance** | Playful **pitch view** with yellow/red cards for prediction coverage; filter by your team |
+| **Profile** | Custom **portal accent color** per user |
+| **Morning digest** | Localized **bookmaker odds** in daily emails (when Odds API is configured) |
+| **Analytics** | **Market vs. reality** analysis; WM **top scorers** with images |
+| **Odds API** | Optional integration with [The Odds API](https://the-odds-api.com/) for market probabilities (`ODDS_API_*`) |
+| **Admin** | Expanded **announcements**, streamlined dashboard, SSO callback reliability fixes |
+
+See [CHANGELOG.md](CHANGELOG.md) for version history.
+
 | Layer | Stack |
 |-------|--------|
 | **Frontend** | Vue 3 · Vite · Pinia · PWA · 7 languages (DE / EN / FR / ES / PT / PL / TR) |
@@ -84,6 +100,7 @@ Alternative providers (same backend abstraction): `api-football`, `sportmonks`, 
 | **YouTube Data API** | Match highlight search & auto-suggestions | `YOUTUBE_API_KEY`, `AUTO_HIGHLIGHTS_*` |
 | **TheSportsDB** | Player images, stadium/city enrichment | `PLAYER_IMAGE_THESPORTSDB_API_KEY` |
 | **OpenAI** | AI coach, previews, admin assistant | `OPENAI_API_KEY`, `AI_*` |
+| **The Odds API** | Market probabilities, morning digest odds | `ODDS_API_KEY`, `ODDS_API_*` |
 | **SMTP** | Registration, password reset, reminders | `SMTP_*` |
 | **GitHub** | Portal feedback → Issues | `GITHUB_TOKEN`, `GITHUB_REPO` |
 
@@ -102,7 +119,8 @@ Alternative providers (same backend abstraction): `api-football`, `sportmonks`, 
 | National teams | Squads, scorers, head-to-head history |
 | Bonus questions | Champion, top scorer, team progress, … |
 | Leaderboard | Overall, match, bonus, group, knockout filters · CSV export |
-| Team ranking | Average points per department member |
+| Team ranking | Average points per department member (fair-play: inactive members optional) |
+| Team performance | Pitch visualization, card system for tip coverage |
 | AI coach | Optional strategy chat |
 | Notifications | Real-time via WebSocket |
 | Report a gap | Submit bugs / ideas at `/feedback` |
@@ -118,8 +136,8 @@ Alternative providers (same backend abstraction): `api-football`, `sportmonks`, 
 | Dashboard | Overview, quick actions, **online users** |
 | Sync | Football API fixtures / results / live · player images |
 | Matches & results | Schedule, locks, manual correction, YouTube highlights |
-| Users & teams | Roles, departments, 2FA support |
-| Bonus & scoring | Questions, rules, prizes |
+| Users & teams | Roles, departments, **exclude from game flow**, 2FA support |
+| Bonus & scoring | Questions, **group + knockout point rules**, prizes |
 | Backup | JSON + **Excel emergency export** |
 | Feedback | Review submissions · **OK → GitHub Issue** |
 | Audit log | Full admin action history |
@@ -131,6 +149,8 @@ Alternative providers (same backend abstraction): `api-football`, `sportmonks`, 
 <details>
 <summary><strong>Scoring (default)</strong></summary>
 
+**Group stage** (all group matches):
+
 | Match outcome | Points |
 |---------------|--------|
 | Exact score | 4 |
@@ -138,7 +158,9 @@ Alternative providers (same backend abstraction): `api-football`, `sportmonks`, 
 | Correct tendency (W/D/L) | 2 |
 | Wrong | 0 |
 
-Team ranking uses **average points per member**. Full rules in-app at `/help`.
+**Knockout rounds** (optional, admin-configurable): higher points per round — round of 32, round of 16, quarter-finals, semi-finals, third-place play-off, and final. Enable under **Admin → Scoring rules → Knockout rounds**. After changing rules, run **Recalculate all points** once.
+
+Team ranking uses **average points per active member** (members without tips can be excluded — configurable). Full rules in-app at `/help` (includes live knockout table when enabled).
 
 </details>
 
@@ -240,6 +262,8 @@ flowchart LR
 | CORS errors | `CORS_ORIGIN` = exact browser URL |
 | GitHub feedback fails | `GITHUB_TOKEN` with Issues write access |
 | Old UI after deploy | Portainer **Pull and redeploy** · `Ctrl+F5` |
+| Exclude-user checkbox missing | Redeploy latest stack · hard refresh (`Ctrl+F5`) |
+| Knockout points not applied | Enable in **Admin → Scoring rules** · run **Recalculate all points** |
 
 More: [docs/DEPLOY-GITHUB-PORTAINER.md#troubleshooting](docs/DEPLOY-GITHUB-PORTAINER.md#troubleshooting)
 
