@@ -1,3 +1,10 @@
+const DEFAULT_PREFERRED_CHANNEL_IDS = [
+  'UC6c1z7bA__85CIWZ_jpCK-Q', // ESPN FC
+  'UCNAf1k0yIjyGu3k9BwAg3lg', // Sky Sports Premier League
+];
+const DEFAULT_PREFERRED_CHANNEL_KEYWORDS = ['espn fc', 'sky sports', 'fox soccer'];
+const DEFAULT_RELEVANCE_LANGUAGE = 'en';
+
 function getYouTubeApiKey() {
   const key = process.env.YOUTUBE_API_KEY;
   return typeof key === 'string' && key.trim() ? key.trim() : '';
@@ -20,10 +27,33 @@ function getSkipChannelIds() {
   return parseCsv(process.env.YOUTUBE_SKIP_CHANNEL_IDS || '');
 }
 
+function getPreferredChannelIds() {
+  if (process.env.YOUTUBE_PREFERRED_CHANNEL_IDS === '') return [];
+  const fromEnv = parseCsv(process.env.YOUTUBE_PREFERRED_CHANNEL_IDS);
+  if (fromEnv.length) return fromEnv;
+  return [...DEFAULT_PREFERRED_CHANNEL_IDS];
+}
+
+function getPreferredChannelKeywords() {
+  if (process.env.YOUTUBE_PREFERRED_CHANNEL_KEYWORDS === '') return [];
+  const fromEnv = parseCsv(process.env.YOUTUBE_PREFERRED_CHANNEL_KEYWORDS)
+    .map((s) => s.toLowerCase());
+  if (fromEnv.length) return fromEnv;
+  return [...DEFAULT_PREFERRED_CHANNEL_KEYWORDS];
+}
+
 function getRegionCode() {
-  const code = String(process.env.YOUTUBE_REGION_CODE || '').trim().toUpperCase();
+  const code = String(process.env.YOUTUBE_REGION_CODE || 'US').trim().toUpperCase();
   // YouTube uses ISO 3166-1 alpha-2 country codes (e.g. DE, CH, US)
-  return /^[A-Z]{2}$/.test(code) ? code : '';
+  return /^[A-Z]{2}$/.test(code) ? code : 'US';
+}
+
+function getRelevanceLanguage() {
+  if (process.env.YOUTUBE_RELEVANCE_LANGUAGE === '') return '';
+  const lang = String(process.env.YOUTUBE_RELEVANCE_LANGUAGE || DEFAULT_RELEVANCE_LANGUAGE)
+    .trim()
+    .toLowerCase();
+  return /^[a-z]{2}$/.test(lang) ? lang : DEFAULT_RELEVANCE_LANGUAGE;
 }
 
 function isBlockedInRegion(regionCode, videoDetails) {
@@ -46,6 +76,53 @@ function shouldSkipVideo(row) {
   // Only filter by channel name/id to avoid accidentally skipping non-FIFA channels
   // that mention "FIFA" in the video title.
   return keywords.some((kw) => kw && channelTitle.includes(kw));
+}
+
+function isPreferredChannel(row) {
+  const channelIds = new Set(getPreferredChannelIds());
+  const channelId = String(row?.channelId || '');
+  if (channelId && channelIds.has(channelId)) return true;
+
+  const channelTitle = String(row?.channelTitle || '').toLowerCase();
+  const keywords = getPreferredChannelKeywords();
+  return keywords.some((kw) => kw && channelTitle.includes(kw));
+}
+
+function compareViewCountDesc(a, b) {
+  const av = Number.isFinite(a?.viewCount) ? a.viewCount : -1;
+  const bv = Number.isFinite(b?.viewCount) ? b.viewCount : -1;
+  if (bv !== av) return bv - av;
+  const ap = a?.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+  const bp = b?.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+  return bp - ap;
+}
+
+function rankHighlightResults(items) {
+  const preferred = [];
+  const other = [];
+  for (const row of items || []) {
+    if (isPreferredChannel(row)) preferred.push(row);
+    else other.push(row);
+  }
+  preferred.sort(compareViewCountDesc);
+  other.sort(compareViewCountDesc);
+  return [...preferred, ...other];
+}
+
+function mergeHighlightResults(resultLists, { limit } = {}) {
+  const seen = new Set();
+  const merged = [];
+
+  for (const rows of resultLists) {
+    for (const row of rows || []) {
+      if (!row?.videoId || seen.has(row.videoId)) continue;
+      seen.add(row.videoId);
+      merged.push(row);
+      if (limit && merged.length >= limit) return merged;
+    }
+  }
+
+  return limit ? merged.slice(0, limit) : merged;
 }
 
 function buildQuery({ homeTeam, awayTeam, kickoffTime }) {
@@ -107,16 +184,20 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
   const desired = clamp(Number(maxResults) || 6, 1, 25);
   const searchLimit = clamp(desired * 4, 8, 25);
   const regionCode = getRegionCode();
+  const relevanceLanguage = getRelevanceLanguage();
+  const preferredChannelIds = getPreferredChannelIds();
 
-  async function searchOnce({ requireEmbeddable }) {
+  async function searchOnce({ requireEmbeddable, channelId = null } = {}) {
     const searchUrl = new URL('https://www.googleapis.com/youtube/v3/search');
     searchUrl.searchParams.set('part', 'snippet');
     searchUrl.searchParams.set('type', 'video');
     searchUrl.searchParams.set('maxResults', String(searchLimit));
     searchUrl.searchParams.set('q', query);
+    if (channelId) searchUrl.searchParams.set('channelId', channelId);
     if (requireEmbeddable) searchUrl.searchParams.set('videoEmbeddable', 'true');
     if (requireSyndicated) searchUrl.searchParams.set('videoSyndicated', 'true');
     if (regionCode) searchUrl.searchParams.set('regionCode', regionCode);
+    if (relevanceLanguage) searchUrl.searchParams.set('relevanceLanguage', relevanceLanguage);
     searchUrl.searchParams.set('safeSearch', 'none');
     const publishedAfter = isoHoursBefore(match.kickoffTime, 18);
     if (publishedAfter) searchUrl.searchParams.set('publishedAfter', publishedAfter);
@@ -138,6 +219,10 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
         || it.snippet?.thumbnails?.default?.url
         || '',
       url: it.id?.videoId ? `https://www.youtube.com/watch?v=${it.id.videoId}` : '',
+      preferred: isPreferredChannel({
+        channelId: it.snippet?.channelId || '',
+        channelTitle: it.snippet?.channelTitle || '',
+      }),
     }));
 
     if (videoIds.length === 0) return [];
@@ -171,21 +256,39 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
     });
   }
 
-  // 1) Preferred: embeddable (best UX in modal iframe), and non-FIFA channels.
-  const strict = (await searchOnce({ requireEmbeddable: true }))
-    .filter((row) => !shouldSkipVideo(row))
-    .filter((row) => !row.blockedInRegion)
-    .slice(0, desired);
-  if (strict.length > 0) return { query, regionCode, items: strict };
+  async function collectResults(requireEmbeddable) {
+    const preferredLists = [];
+    for (const channelId of preferredChannelIds) {
+      preferredLists.push(await searchOnce({ requireEmbeddable, channelId }));
+    }
+    const general = await searchOnce({ requireEmbeddable });
+    const filtered = mergeHighlightResults([...preferredLists, general])
+      .filter((row) => !shouldSkipVideo(row))
+      .filter((row) => !row.blockedInRegion);
+    return rankHighlightResults(filtered).slice(0, desired);
+  }
 
-  // 2) Fallback: still skip FIFA channels, but allow non-embeddable videos so admins can
-  // at least pick a "watch on YouTube" link instead of getting an empty list.
-  const relaxed = (await searchOnce({ requireEmbeddable: false }))
-    .filter((row) => !shouldSkipVideo(row))
-    .filter((row) => !row.blockedInRegion)
-    .slice(0, desired);
-  return { query, regionCode, items: relaxed };
+  // 1) Preferred: embeddable (best UX in modal iframe), preferred channels first.
+  const strict = await collectResults(true);
+  if (strict.length > 0) {
+    return { query, regionCode, relevanceLanguage, preferredChannelIds, items: strict };
+  }
+
+  // 2) Fallback: allow non-embeddable videos so admins can pick a "watch on YouTube" link.
+  const relaxed = await collectResults(false);
+  return { query, regionCode, relevanceLanguage, preferredChannelIds, items: relaxed };
 }
 
-module.exports = { searchMatchHighlights };
-
+module.exports = {
+  searchMatchHighlights,
+  buildQuery,
+  isPreferredChannel,
+  rankHighlightResults,
+  compareViewCountDesc,
+  mergeHighlightResults,
+  getPreferredChannelIds,
+  getPreferredChannelKeywords,
+  getRelevanceLanguage,
+  DEFAULT_PREFERRED_CHANNEL_IDS,
+  DEFAULT_RELEVANCE_LANGUAGE,
+};
