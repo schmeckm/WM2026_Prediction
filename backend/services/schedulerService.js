@@ -1,18 +1,21 @@
 const cron = require('node-cron');
-const { Match } = require('../models');
 const { syncFixtures } = require('./fixtureSyncService');
 const { syncResults } = require('./resultSyncService');
 const { syncLiveScores } = require('./liveScoreSyncService');
 const { syncMarketOdds } = require('./oddsSyncService');
 const oddsApiService = require('./oddsApiService');
 const { syncPlayerImagesWave } = require('./playerImageSyncService');
+const {
+  hasMatchesAwaitingFinalResult,
+  shouldRunAutoResultSync,
+  markAutoResultSyncCompleted,
+} = require('./schedulerMatchSyncHelpers');
 const { sendMissingPredictionReminders, sendBonusQuestionReminders, sendSyncErrorToAdmin, sendUpcomingMatchesSummary, sendLeaderboardUpdates } = require('./reminderService');
 const { sendMorningDigests } = require('./morningDigestService');
 const { getSetting } = require('./settingsService');
 const { isEmailRemindersEnabled, isMorningDigestEnabled } = require('./emailReminderSettingsService');
 const { buildReminderCron } = require('../utils/reminderCron');
 const footballProviderService = require('./footballProviderService');
-const socketService = require('./socketService');
 const { runWithCronMonitor, captureException } = require('./sentryCronService');
 
 let jobs = [];
@@ -83,15 +86,24 @@ function isTournamentActive() {
   return now >= start && now <= end;
 }
 
-async function hasLiveMatches() {
-  const { Op } = require('sequelize');
-  return Match.count({ where: { status: { [Op.in]: ['live', 'halftime'] } } }) > 0;
-}
+async function runBackgroundScoreSyncCycle() {
+  if (!isTournamentActive()) return;
+  if (!(await isSyncAllowed())) return;
 
-function hasActiveUsers() {
-  // Prefer the matches room (only when someone watches match updates),
-  // fall back to any connected client on this instance.
-  return socketService.getRoomSize('matches') > 0 || socketService.getClientCount() > 0;
+  await safeSyncRun(
+    () => syncLiveScores(),
+    'Live-Score-Sync',
+    CRON_MONITORS.liveScoreSync,
+  );
+
+  if (await hasMatchesAwaitingFinalResult() && shouldRunAutoResultSync()) {
+    markAutoResultSyncCompleted();
+    await safeSyncRun(
+      () => syncResults(),
+      'Ergebnis-Sync (Spiele ohne Endstand)',
+      CRON_MONITORS.resultSync,
+    );
+  }
 }
 
 async function isSyncAllowed() {
@@ -167,21 +179,19 @@ async function startScheduler() {
     }
   }));
 
-  // Every 15 minutes on active match days
+  // Background score sync during tournament: live scores every ~5 min (rate-limited),
+  // plus result sync when matches should already be finished (min 10 min apart).
+  jobs.push(cron.schedule('* * * * *', () => {
+    runBackgroundScoreSyncCycle();
+  }, { timezone: CRON_TZ }));
+
+  // Hourly result catch-up (finished matches from the last 7 days).
   jobs.push(cron.schedule('0 * * * *', async () => {
     if (isTournamentActive()) {
+      markAutoResultSyncCompleted();
       await safeSyncRun(() => syncResults(), 'Ergebnis-Sync (stündlich)', CRON_MONITORS.resultSync);
     }
-  }));
-
-  // Check every minute, but only sync when someone is online and live matches exist.
-  // The live sync service enforces its own 5-minute minimum interval + quota checks.
-  jobs.push(cron.schedule('* * * * *', async () => {
-    // Do not rely on DB status to start live sync (prevents chicken-and-egg on first kickoff).
-    if (hasActiveUsers() && isTournamentActive()) {
-      await safeSyncRun(() => syncLiveScores(), 'Live-Score-Sync (5min)', CRON_MONITORS.liveScoreSync);
-    }
-  }));
+  }, { timezone: CRON_TZ }));
 
   // Tip + bonus reminder emails (time/frequency from admin settings)
   jobs.push(cron.schedule(reminderCron, async () => {
@@ -343,4 +353,10 @@ function stopScheduler() {
   jobs = [];
 }
 
-module.exports = { startScheduler, stopScheduler, restartScheduler, isTournamentActive };
+module.exports = {
+  startScheduler,
+  stopScheduler,
+  restartScheduler,
+  isTournamentActive,
+  runBackgroundScoreSyncCycle,
+};
