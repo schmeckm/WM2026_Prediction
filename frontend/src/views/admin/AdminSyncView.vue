@@ -62,7 +62,7 @@
             <div
               class="player-image-sync-progress__track"
               role="progressbar"
-              :aria-valuenow="playerImageProgressStats.resolved"
+              :aria-valuenow="playerImageProgressStats.processed"
               :aria-valuemin="0"
               :aria-valuemax="playerImageProgressStats.total || 100"
               :aria-label="t('adminPages.sync.playerImagesProgressBar')"
@@ -196,10 +196,12 @@ function parsePlayerImageLogDetails(log) {
   }
 
   const total = details.totalPlayers || 0;
-  const loaded = details.loadedCount
-    ?? ((log?.createdCount || 0) + (log?.updatedCount || 0));
+  const created = log?.createdCount || details.createdCount || 0;
+  const updated = log?.updatedCount || details.updatedCount || 0;
+  const cached = details.cachedCount || 0;
+  const skipped = log?.skippedCount || details.skippedCount || 0;
   const processed = details.processedCount ?? (
-    loaded + (log?.skippedCount || 0) + (log?.errorCount || 0)
+    created + updated + cached + skipped + (log?.errorCount || 0)
   );
   const percent = total > 0
     ? Math.min(100, Math.round((processed / total) * 100))
@@ -207,10 +209,11 @@ function parsePlayerImageLogDetails(log) {
 
   return {
     total,
-    loaded,
-    resolved: loaded,
+    created,
+    updated,
+    cached,
+    skipped,
     processed,
-    skipped: log?.skippedCount || 0,
     percent,
   };
 }
@@ -218,7 +221,9 @@ function parsePlayerImageLogDetails(log) {
 const playerImageProgressStats = computed(() => (
   activePlayerImageLog.value
     ? parsePlayerImageLogDetails(activePlayerImageLog.value)
-    : { total: 0, loaded: 0, processed: 0, resolved: 0, skipped: 0, percent: 0 }
+    : {
+      total: 0, created: 0, updated: 0, cached: 0, skipped: 0, processed: 0, percent: 0,
+    }
 ));
 
 const oddsEndpoints = computed(() => {
@@ -424,7 +429,7 @@ async function enrichVenues() {
 
 function playerImageProgressMessage(log) {
   const stats = parsePlayerImageLogDetails(log);
-  return t('adminPages.sync.playerImagesLoadedCount', stats);
+  return t('adminPages.sync.playerImagesProgress', stats);
 }
 
 function stopPlayerImagePolling() {
@@ -470,9 +475,11 @@ async function pollPlayerImageSyncOnce() {
     }
 
     if (log.status === 'success') {
+      const details = parsePlayerImageLogDetails(log);
       message.value = t('adminPages.sync.playerImagesFinished', {
         created: log.createdCount || 0,
         updated: log.updatedCount || 0,
+        cached: details.cached || 0,
       });
       messageType.value = 'success';
     } else {

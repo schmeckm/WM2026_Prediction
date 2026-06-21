@@ -53,6 +53,12 @@ function isCacheValid(record) {
   return Date.now() - new Date(record.lastCheckedAt).getTime() < getCacheTtlMs();
 }
 
+function isRecentlyChecked(record) {
+  if (!record?.lastCheckedAt) return false;
+  if (record.isManuallyApproved || record.source === 'manual') return true;
+  return Date.now() - new Date(record.lastCheckedAt).getTime() < getCacheTtlMs();
+}
+
 async function findRecord(playerName, teamName) {
   const normalizedName = normalizePlayerName(playerName);
   const normalizedTeam = normalizeTeamName(teamName);
@@ -116,6 +122,9 @@ async function resolveImage({ playerName, teamName, countryCode, forceRefresh = 
     }
     if (cached?.imageUrl && isCacheValid(cached)) {
       return toPublicRecord(cached);
+    }
+    if (cached && !cached.imageUrl && isRecentlyChecked(cached)) {
+      return null;
     }
   }
 

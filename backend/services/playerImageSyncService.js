@@ -102,26 +102,7 @@ async function syncPlayerImages({
     for (let index = startIndex; index < players.length; index += 1) {
       const player = players[index];
       try {
-        const existing = await findRecord(player.playerName, player.teamName);
-        const hadImage = !!existing?.imageUrl;
-
-        const result = await resolveImageWithTimeout({
-          playerName: player.playerName,
-          teamName: player.teamName,
-          countryCode: player.countryCode,
-          forceRefresh,
-        });
-
-        if (!result?.imageUrl) {
-          summary.skippedCount++;
-        } else {
-          summary.loadedCount = (summary.loadedCount || 0) + 1;
-          if (!hadImage) {
-            summary.createdCount++;
-          } else if (existing.imageUrl !== result.imageUrl) {
-            summary.updatedCount++;
-          }
-        }
+        await processPlayerImageSyncEntry(summary, player, { forceRefresh });
       } catch (err) {
         summary.errorCount++;
         summary.errors = summary.errors || [];
@@ -159,7 +140,7 @@ async function syncPlayerImages({
     return {
       logId: log.id,
       ...summary,
-      message: `Spielerbilder synchronisiert: ${summary.loadedCount || 0} mit Bild (${summary.createdCount} neu, ${summary.updatedCount} aktualisiert), ${summary.skippedCount} ohne Bild, ${summary.errorCount} Fehler.`,
+      message: buildSyncResultMessage(summary),
     };
   } catch (error) {
     await failSyncLog(log, error, summary);
@@ -171,6 +152,54 @@ function isRecordFresh(record) {
   if (!record?.lastCheckedAt) return false;
   const ageMs = Date.now() - new Date(record.lastCheckedAt).getTime();
   return ageMs >= 0 && ageMs < getCacheTtlMs();
+}
+
+function shouldSkipCachedRecord(existing, forceRefresh) {
+  if (forceRefresh || !existing) return false;
+  if (existing.isManuallyApproved && existing.imageUrl) return true;
+  if (existing.imageUrl && isRecordFresh(existing)) return true;
+  if (!existing.imageUrl && isRecordFresh(existing)) return true;
+  return false;
+}
+
+function buildSyncResultMessage(summary, { totalPlayers = 0, wave = false, processed = 0 } = {}) {
+  const cached = summary.cachedCount || 0;
+  const created = summary.createdCount || 0;
+  const updated = summary.updatedCount || 0;
+  const noImage = summary.skippedCount || 0;
+  const errors = summary.errorCount || 0;
+  const prefix = wave
+    ? `Spielerbilder Wave-Sync: ${processed}/${totalPlayers} geprüft;`
+    : 'Spielerbilder synchronisiert:';
+  return `${prefix} ${created} neu, ${updated} aktualisiert, ${cached} aus Cache, ${noImage} ohne Bild, ${errors} Fehler.`;
+}
+
+async function processPlayerImageSyncEntry(summary, player, { forceRefresh = false } = {}) {
+  const existing = await findRecord(player.playerName, player.teamName);
+  const hadImage = !!existing?.imageUrl;
+
+  if (shouldSkipCachedRecord(existing, forceRefresh)) {
+    summary.cachedCount = (summary.cachedCount || 0) + 1;
+    return;
+  }
+
+  const result = await resolveImageWithTimeout({
+    playerName: player.playerName,
+    teamName: player.teamName,
+    countryCode: player.countryCode,
+    forceRefresh,
+  });
+
+  if (!result?.imageUrl) {
+    summary.skippedCount = (summary.skippedCount || 0) + 1;
+    return;
+  }
+
+  if (!hadImage) {
+    summary.createdCount = (summary.createdCount || 0) + 1;
+  } else if (existing?.imageUrl && existing.imageUrl !== result.imageUrl) {
+    summary.updatedCount = (summary.updatedCount || 0) + 1;
+  }
 }
 
 async function syncPlayerImagesWave({
@@ -232,45 +261,7 @@ async function syncPlayerImagesWave({
       const player = players[index];
 
       try {
-        const existing = await findRecord(player.playerName, player.teamName);
-        const hadImage = !!existing?.imageUrl;
-
-        if (!forceRefresh) {
-          if (existing?.isManuallyApproved && existing.imageUrl) {
-            summary.skippedCount += 1;
-            processed += 1;
-            continue;
-          }
-          if (existing?.imageUrl && isRecordFresh(existing)) {
-            summary.skippedCount += 1;
-            processed += 1;
-            continue;
-          }
-          if (!existing?.imageUrl && isRecordFresh(existing)) {
-            // Negative cache: don't re-query providers too often for players with no image.
-            summary.skippedCount += 1;
-            processed += 1;
-            continue;
-          }
-        }
-
-        const result = await resolveImageWithTimeout({
-          playerName: player.playerName,
-          teamName: player.teamName,
-          countryCode: player.countryCode,
-          forceRefresh,
-        });
-
-        if (!result?.imageUrl) {
-          summary.skippedCount += 1;
-        } else {
-          summary.loadedCount = (summary.loadedCount || 0) + 1;
-          if (!hadImage) {
-            summary.createdCount += 1;
-          } else if (existing?.imageUrl && existing.imageUrl !== result.imageUrl) {
-            summary.updatedCount += 1;
-          }
-        }
+        await processPlayerImageSyncEntry(summary, player, { forceRefresh });
       } catch (err) {
         summary.errorCount += 1;
         summary.errors = summary.errors || [];
@@ -307,7 +298,11 @@ async function syncPlayerImagesWave({
     return {
       logId: log.id,
       ...summary,
-      message: `Spielerbilder Wave-Sync: ${processed}/${players.length} geprüft; ${summary.loadedCount || 0} mit Bild (${summary.createdCount} neu, ${summary.updatedCount} aktualisiert), ${summary.skippedCount} übersprungen, ${summary.errorCount} Fehler.`,
+      message: buildSyncResultMessage(summary, {
+        totalPlayers: players.length,
+        wave: true,
+        processed,
+      }),
     };
   } catch (error) {
     await failSyncLog(log, error, summary);
@@ -330,6 +325,10 @@ module.exports = {
   syncPlayerImages,
   syncPlayerImagesWave,
   isStaleRunningLog,
+  isRecordFresh,
+  shouldSkipCachedRecord,
+  processPlayerImageSyncEntry,
+  buildSyncResultMessage,
   parseLogDetails,
   STALE_IDLE_MS,
   STALE_RUNNING_MS,
