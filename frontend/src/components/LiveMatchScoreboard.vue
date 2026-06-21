@@ -1,11 +1,10 @@
 <template>
   <div
     class="live-scoreboard"
-    :class="{ 'live-scoreboard--compact': compact }"
+    :class="[`live-scoreboard--${size}`]"
     aria-live="polite"
     :aria-label="ariaLabel"
   >
-    <div class="live-scoreboard-time">{{ clock }}</div>
     <div class="live-scoreboard-bar">
       <div class="live-scoreboard-side live-scoreboard-side--home">
         <img
@@ -43,35 +42,33 @@
 </template>
 
 <script setup>
-import {
-  ref, computed, onMounted, onUnmounted, watch,
-} from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { getTeamFlagImage } from '../utils/flags';
 import { getFifaTeamCode } from '../utils/fifaTeamCodes';
-import { getLiveMatchClock, isLiveScoreboardMatch } from '../utils/liveMatchClock';
 
 const props = defineProps({
   match: { type: Object, required: true },
+  size: {
+    type: String,
+    default: 'card',
+    validator: (value) => ['card', 'compact'].includes(value),
+  },
+  /** @deprecated use size="compact" */
   compact: { type: Boolean, default: false },
 });
 
 const { t } = useI18n();
-const now = ref(Date.now());
-let timerId = null;
+
+const size = computed(() => (props.compact ? 'compact' : props.size));
 
 const homeTeam = computed(() => props.match.homeTeam || '');
 const awayTeam = computed(() => props.match.awayTeam || '');
 const homeCode = computed(() => getFifaTeamCode(homeTeam.value));
 const awayCode = computed(() => getFifaTeamCode(awayTeam.value));
-const homeFlag = computed(() => getTeamFlagImage(homeTeam.value, props.compact ? 32 : 40));
-const awayFlag = computed(() => getTeamFlagImage(awayTeam.value, props.compact ? 32 : 40));
-
-const clock = computed(() => getLiveMatchClock(
-  props.match.kickoffTime,
-  props.match.status,
-  now.value,
-));
+const flagSize = computed(() => (size.value === 'compact' ? 32 : 56));
+const homeFlag = computed(() => getTeamFlagImage(homeTeam.value, flagSize.value));
+const awayFlag = computed(() => getTeamFlagImage(awayTeam.value, flagSize.value));
 
 function formatScore(value) {
   if (value === null || value === undefined) return '–';
@@ -85,69 +82,26 @@ const ariaLabel = computed(() => {
   const status = props.match.status === 'halftime'
     ? t('matchStatus.halftime')
     : t('matchStatus.live');
-  return `${status}: ${homeTeam.value} ${homeDisplay.value} ${t('common.vs')} ${awayDisplay.value} ${awayTeam.value}, ${clock.value}`;
+  return `${status}: ${homeTeam.value} ${homeDisplay.value} ${t('common.vs')} ${awayDisplay.value} ${awayTeam.value}`;
 });
-
-function startTimer() {
-  stopTimer();
-  if (!isLiveScoreboardMatch(props.match)) return;
-  timerId = globalThis.setInterval(() => {
-    now.value = Date.now();
-  }, 1000);
-}
-
-function stopTimer() {
-  if (timerId !== null) {
-    globalThis.clearInterval(timerId);
-    timerId = null;
-  }
-}
-
-onMounted(startTimer);
-onUnmounted(stopTimer);
-watch(() => [props.match.status, props.match.kickoffTime], startTimer);
 </script>
 
 <style scoped>
 .live-scoreboard {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  width: 100%;
-  max-width: 420px;
-  margin-inline: auto;
+  flex-shrink: 0;
+}
+
+.live-scoreboard--card {
+  min-width: 11rem;
+  max-width: 16rem;
 }
 
 .live-scoreboard--compact {
+  width: 100%;
   max-width: 100%;
-  gap: 0.25rem;
-}
-
-.live-scoreboard-time {
-  flex-shrink: 0;
-  min-width: 3.1rem;
-  padding: 0.28rem 0.55rem;
-  border-radius: 999px;
-  background: #fff;
-  color: #111;
-  font-size: 0.78rem;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-  text-align: center;
-  line-height: 1.2;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
-}
-
-.live-scoreboard--compact .live-scoreboard-time {
-  min-width: 2.6rem;
-  padding: 0.2rem 0.4rem;
-  font-size: 0.68rem;
 }
 
 .live-scoreboard-bar {
-  flex: 1;
-  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -157,6 +111,11 @@ watch(() => [props.match.status, props.match.kickoffTime], startTimer);
   background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
   color: #fff;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.live-scoreboard--card .live-scoreboard-bar {
+  gap: 0.5rem;
+  padding: 0.55rem 0.85rem;
 }
 
 .live-scoreboard--compact .live-scoreboard-bar {
@@ -169,6 +128,10 @@ watch(() => [props.match.status, props.match.kickoffTime], startTimer);
   align-items: center;
   gap: 0.3rem;
   min-width: 0;
+}
+
+.live-scoreboard--card .live-scoreboard-side {
+  gap: 0.4rem;
 }
 
 .live-scoreboard-side--home {
@@ -185,6 +148,11 @@ watch(() => [props.match.status, props.match.kickoffTime], startTimer);
   object-fit: cover;
   border-radius: 2px;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.live-scoreboard--card .live-scoreboard-flag {
+  width: 1.85rem;
+  height: 1.3rem;
 }
 
 .live-scoreboard--compact .live-scoreboard-flag {
@@ -204,11 +172,21 @@ watch(() => [props.match.status, props.match.kickoffTime], startTimer);
   font-weight: 700;
 }
 
+.live-scoreboard--card .live-scoreboard-flag-fallback {
+  width: 1.85rem;
+  height: 1.3rem;
+  font-size: 0.65rem;
+}
+
 .live-scoreboard-code {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   white-space: nowrap;
+}
+
+.live-scoreboard--card .live-scoreboard-code {
+  font-size: 0.95rem;
 }
 
 .live-scoreboard--compact .live-scoreboard-code {
@@ -220,6 +198,10 @@ watch(() => [props.match.status, props.match.kickoffTime], startTimer);
   align-items: center;
   gap: 0.28rem;
   flex-shrink: 0;
+}
+
+.live-scoreboard--card .live-scoreboard-center {
+  gap: 0.45rem;
 }
 
 .live-scoreboard-score {
@@ -236,6 +218,14 @@ watch(() => [props.match.status, props.match.kickoffTime], startTimer);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1;
+}
+
+.live-scoreboard--card .live-scoreboard-score {
+  min-width: 2.35rem;
+  height: 2.35rem;
+  padding: 0 0.35rem;
+  border-radius: 0.45rem;
+  font-size: 1.75rem;
 }
 
 .live-scoreboard--compact .live-scoreboard-score {
@@ -257,6 +247,11 @@ watch(() => [props.match.status, props.match.kickoffTime], startTimer);
   flex-shrink: 0;
 }
 
+.live-scoreboard--card .live-scoreboard-emblem {
+  width: 1.35rem;
+  height: 2.15rem;
+}
+
 .live-scoreboard--compact .live-scoreboard-emblem {
   width: 0.85rem;
   height: 1.3rem;
@@ -267,5 +262,38 @@ watch(() => [props.match.status, props.match.kickoffTime], startTimer);
   height: auto;
   object-fit: contain;
   filter: brightness(1.15);
+}
+
+@media (max-width: 640px) {
+  .live-scoreboard--card {
+    min-width: 9rem;
+    max-width: 13rem;
+  }
+
+  .live-scoreboard--card .live-scoreboard-bar {
+    padding: 0.4rem 0.65rem;
+    gap: 0.35rem;
+  }
+
+  .live-scoreboard--card .live-scoreboard-score {
+    min-width: 1.85rem;
+    height: 1.85rem;
+    font-size: 1.25rem;
+  }
+
+  .live-scoreboard--card .live-scoreboard-code {
+    font-size: 0.78rem;
+  }
+
+  .live-scoreboard--card .live-scoreboard-flag,
+  .live-scoreboard--card .live-scoreboard-flag-fallback {
+    width: 1.45rem;
+    height: 1rem;
+  }
+
+  .live-scoreboard--card .live-scoreboard-emblem {
+    width: 1.1rem;
+    height: 1.75rem;
+  }
 }
 </style>

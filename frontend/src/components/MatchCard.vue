@@ -26,16 +26,16 @@
     </div>
 
     <div class="match-card-middle">
-      <LiveMatchScoreboard
-        v-if="showLiveScoreboard(match)"
-        :match="match"
-        class="match-card-live-scoreboard"
-      />
-      <div v-else class="match-teams">
+      <div class="match-teams">
         <div class="match-team">
           <TeamFlag :name="match.homeTeam" link-to-squad />
         </div>
-        <div class="match-score-display" :class="scoreClass(match)">
+        <LiveMatchScoreboard
+          v-if="showLiveScoreboard(match)"
+          :match="match"
+          size="card"
+        />
+        <div v-else class="match-score-display" :class="scoreClass(match)">
           <template v-if="shouldShowScore(match)">
             {{ displayScore(match).home }} : {{ displayScore(match).away }}
           </template>
@@ -337,10 +337,6 @@ function scoreClass(match) {
 .match-card-highlights {
   text-align: center;
   margin-top: 0.5rem;
-}
-
-.match-card-live-scoreboard {
-  padding: 0.15rem 0;
 }
 
 .match-score-display--live {
