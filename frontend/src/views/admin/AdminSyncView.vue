@@ -113,6 +113,24 @@
         </div>
       </div>
 
+      <div class="card mb-2">
+        <div class="card-header"><h3>{{ t('adminPages.sync.youtubeHighlightsTitle') }}</h3></div>
+        <div class="card-body provider-form">
+          <p class="hint text-muted">{{ t('adminPages.sync.youtubeHighlightsHint') }}</p>
+          <div class="btn-group">
+            <button class="btn btn-primary btn-sm" :disabled="syncing" @click="syncHighlightsRecent">
+              {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.syncHighlightsRecent') }}
+            </button>
+            <button class="btn btn-secondary btn-sm" :disabled="syncing" @click="syncHighlightsBackfillAll">
+              {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.syncHighlightsBackfillAll') }}
+            </button>
+            <button class="btn btn-accent btn-sm" :disabled="syncing" @click="syncHighlightsMetadata">
+              {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.syncHighlightsMetadata') }}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="btn-group mb-2">
         <button class="btn btn-primary" :disabled="syncing || !status.apiConfigured" @click="syncOfficialSchedule">
           {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.syncOfficialSchedule') }}
@@ -565,6 +583,33 @@ async function recalculate() {
   } finally {
     syncing.value = false;
   }
+}
+
+async function runHighlightsSync(payload) {
+  syncing.value = true;
+  error.value = '';
+  message.value = '';
+  try {
+    const { data } = await api.post('/admin/sync/highlights', payload);
+    message.value = data.message || t('adminPages.sync.highlightsSynced');
+    messageType.value = data.skippedCount > 0 && !data.updatedCount ? 'warning' : 'success';
+  } catch (e) {
+    error.value = e.response?.data?.error || t('adminPages.sync.syncFailed');
+  } finally {
+    syncing.value = false;
+  }
+}
+
+function syncHighlightsRecent() {
+  return runHighlightsSync({ lookbackHours: 72, maxUpdates: 20 });
+}
+
+function syncHighlightsBackfillAll() {
+  return runHighlightsSync({ backfillAll: true, maxUpdates: 50 });
+}
+
+function syncHighlightsMetadata() {
+  return runHighlightsSync({ refreshMetadataOnly: true, maxUpdates: 50 });
 }
 
 function resumeRunningPlayerImageSync() {

@@ -279,8 +279,55 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
   return { query, regionCode, relevanceLanguage, preferredChannelIds, items: relaxed };
 }
 
+async function fetchVideoDetailsByIds(videoIds = []) {
+  const apiKey = getYouTubeApiKey();
+  if (!apiKey) {
+    const err = new Error('YOUTUBE_API_KEY missing');
+    err.code = 'YOUTUBE_API_KEY_MISSING';
+    throw err;
+  }
+
+  const ids = [...new Set((videoIds || []).map((id) => String(id || '').trim()).filter(Boolean))];
+  if (!ids.length) return [];
+
+  const regionCode = getRegionCode();
+  const videosUrl = new URL('https://www.googleapis.com/youtube/v3/videos');
+  videosUrl.searchParams.set('part', 'snippet,contentDetails,statistics,status');
+  videosUrl.searchParams.set('id', ids.join(','));
+  videosUrl.searchParams.set('key', apiKey);
+
+  const videosJson = await youtubeFetchJson(videosUrl.toString());
+  const items = Array.isArray(videosJson?.items) ? videosJson.items : [];
+
+  return items.map((item) => {
+    const viewCount = item.statistics?.viewCount ? Number(item.statistics.viewCount) : null;
+    const embeddable = item.status?.embeddable;
+    const blockedInRegion = isBlockedInRegion(regionCode, item);
+    return {
+      videoId: item.id,
+      title: item.snippet?.title || '',
+      channelTitle: item.snippet?.channelTitle || '',
+      channelId: item.snippet?.channelId || '',
+      publishedAt: item.snippet?.publishedAt || '',
+      thumbnailUrl: item.snippet?.thumbnails?.medium?.url
+        || item.snippet?.thumbnails?.default?.url
+        || '',
+      url: item.id ? `https://www.youtube.com/watch?v=${item.id}` : '',
+      viewCount: Number.isFinite(viewCount) ? viewCount : null,
+      duration: item.contentDetails?.duration || '',
+      embeddable: typeof embeddable === 'boolean' ? embeddable : null,
+      blockedInRegion,
+      preferred: isPreferredChannel({
+        channelId: item.snippet?.channelId || '',
+        channelTitle: item.snippet?.channelTitle || '',
+      }),
+    };
+  });
+}
+
 module.exports = {
   searchMatchHighlights,
+  fetchVideoDetailsByIds,
   buildQuery,
   isPreferredChannel,
   rankHighlightResults,

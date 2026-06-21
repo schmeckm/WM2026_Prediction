@@ -192,6 +192,7 @@ const form = ref({
   stadium: '',
   city: '',
   highlightsUrl: '',
+  highlightsMeta: null,
 });
 
 function closeModal() {
@@ -239,6 +240,7 @@ function openCreate() {
     stadium: '',
     city: '',
     highlightsUrl: '',
+    highlightsMeta: null,
   };
   showModal.value = true;
 }
@@ -257,6 +259,7 @@ function openEdit(match) {
     stadium: match.stadium || '',
     city: match.city || '',
     highlightsUrl: match.highlightsUrl || '',
+    highlightsMeta: match.highlightsMeta || null,
   };
   showModal.value = true;
 }
@@ -293,6 +296,18 @@ function useSuggestion(s) {
   const url = getSuggestionUrl(s);
   if (!url) return;
   form.value.highlightsUrl = url;
+  form.value.highlightsMeta = {
+    videoId: s.videoId,
+    title: s.title,
+    channelTitle: s.channelTitle,
+    channelId: s.channelId,
+    viewCount: s.viewCount,
+    publishedAt: s.publishedAt,
+    thumbnailUrl: s.thumbnailUrl,
+    embeddable: s.embeddable,
+    preferred: s.preferred,
+    url,
+  };
   nextTick(() => {
     highlightsInput.value?.focus?.();
     highlightsInput.value?.scrollIntoView?.({ behavior: 'smooth', block: 'center' });
@@ -331,6 +346,7 @@ async function handleSave() {
       kickoffTime: new Date(form.value.kickoffTime).toISOString(),
       groupName: form.value.groupName || null,
       highlightsUrl: form.value.highlightsUrl || null,
+      highlightsMeta: form.value.highlightsMeta || null,
     };
 
     if (editingMatch.value) {

@@ -246,4 +246,23 @@ router.post('/market-odds', async (req, res) => {
   }
 });
 
+router.post('/highlights', async (req, res) => {
+  try {
+    const { autoFillHighlightsForFinishedMatches } = require('../services/highlightsAutofillService');
+    const result = await autoFillHighlightsForFinishedMatches({
+      lookbackHours: req.body?.lookbackHours,
+      maxUpdates: req.body?.maxUpdates,
+      maxResults: req.body?.maxResults,
+      backfillAll: req.body?.backfillAll === true,
+      refreshMetadataOnly: req.body?.refreshMetadataOnly === true,
+    });
+    res.json(result);
+  } catch (error) {
+    if (error?.code === 'YOUTUBE_API_KEY_MISSING') {
+      return sendError(res, req, 503, 'errors.youtubeApiKeyMissing');
+    }
+    handleSyncError(error, res, req);
+  }
+});
+
 module.exports = router;

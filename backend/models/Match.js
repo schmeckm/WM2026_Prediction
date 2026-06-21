@@ -97,6 +97,10 @@ const Match = sequelize.define('Match', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  highlightsMetaJson: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
   marketOddsJson: {
     type: DataTypes.TEXT,
     allowNull: true,

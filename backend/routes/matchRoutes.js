@@ -11,6 +11,7 @@ const socketService = require('../services/socketService');
 const { isMatchEditable } = require('../services/matchLockService');
 const { countPredictionsForMatch } = require('../services/predictionProtectionService');
 const { attachStadiumImage, attachStadiumImages } = require('../services/matchPresentationService');
+const { attachHighlightsMeta, attachHighlightsMetaList, resolveHighlightsMetaForUpdate } = require('../services/highlightsMetaService');
 const { attachMarketOdds, attachMarketOddsList } = require('../utils/matchMarketOdds');
 const { getGroupStandings } = require('../services/groupStandingsService');
 const { validatePredictionScores } = require('../utils/predictionValidation');
@@ -102,7 +103,7 @@ router.get('/', authMiddleware, async (req, res) => {
     });
     const predictionMap = new Map(userPredictions.map((p) => [p.matchId, p]));
 
-    let result = attachMarketOddsList(attachStadiumImages(matches.map((match) => {
+    let result = attachHighlightsMetaList(attachMarketOddsList(attachStadiumImages(matches.map((match) => {
       const prediction = predictionMap.get(match.id);
       const editable = isMatchEditable(match);
       return {
@@ -173,7 +174,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
     if (!match) {
       return sendError(res, req, 404, 'errors.matchNotFound');
     }
-    res.json(attachMarketOdds(attachStadiumImage(match.toJSON())));
+    res.json(attachHighlightsMeta(attachMarketOdds(attachStadiumImage(match.toJSON()))));
   } catch (error) {
     sendError(res, req, 500, 'errors.matchLoadFailed');
   }
@@ -234,6 +235,7 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
       return sendError(res, req, 404, 'errors.matchNotFound');
     }
 
+    const previousHighlightsUrl = match.highlightsUrl;
     const fields = [
       'matchNumber', 'stage', 'groupName', 'homeTeam', 'awayTeam',
       'kickoffTime', 'stadium', 'city', 'homeScore', 'awayScore', 'status', 'isManuallyLocked', 'highlightsUrl',
@@ -245,8 +247,23 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
       }
     });
 
+    if (req.body.highlightsUrl !== undefined || req.body.highlightsMeta !== undefined) {
+      if (!match.highlightsUrl) {
+        match.highlightsMetaJson = null;
+      } else if (req.body.highlightsMeta !== undefined || match.highlightsUrl !== previousHighlightsUrl) {
+        try {
+          match.highlightsMetaJson = await resolveHighlightsMetaForUpdate({
+            highlightsUrl: match.highlightsUrl,
+            highlightsMeta: req.body.highlightsMeta,
+          });
+        } catch (error) {
+          console.warn(`Highlight metadata lookup failed for matchId=${match.id}:`, error.message);
+        }
+      }
+    }
+
     await match.save();
-    res.json(match);
+    res.json(attachHighlightsMeta(attachMarketOdds(attachStadiumImage(match.toJSON()))));
   } catch (error) {
     sendError(res, req, 500, 'errors.matchUpdateFailed');
   }

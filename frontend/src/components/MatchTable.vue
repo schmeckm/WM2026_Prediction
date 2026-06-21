@@ -79,7 +79,10 @@
               <span v-else class="text-muted">–</span>
             </td>
             <td v-if="showHighlights">
-              <MatchHighlightsLink :highlights-url="match.highlightsUrl" />
+              <MatchHighlightsLink
+                :highlights-url="match.highlightsUrl"
+                :highlights-meta="match.highlightsMeta"
+              />
             </td>
             <td v-if="showActions">
               <div class="btn-group">
@@ -187,7 +190,10 @@
           <template v-if="showHighlights">
             <dt>{{ t('matchTable.highlights') }}</dt>
             <dd>
-              <MatchHighlightsLink :highlights-url="match.highlightsUrl" />
+              <MatchHighlightsLink
+                :highlights-url="match.highlightsUrl"
+                :highlights-meta="match.highlightsMeta"
+              />
             </dd>
           </template>
           <template v-if="showMatchRef">

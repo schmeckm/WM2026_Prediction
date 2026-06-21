@@ -118,9 +118,10 @@
         <button
           type="button"
           class="btn btn-secondary btn-sm"
+          :title="highlightsTooltip"
           @click="openHighlights"
         >
-          {{ t('matches.highlights') }}
+          {{ match.highlightsMeta?.channelTitle || t('matches.highlights') }}
         </button>
       </div>
       <MatchWhatIfPanel v-if="match.status === 'finished'" :match="match" />
@@ -155,6 +156,7 @@
             </button>
           </div>
           <div class="modal-body">
+            <p v-if="highlightsMetaLine" class="highlights-meta-line">{{ highlightsMetaLine }}</p>
             <div v-if="highlightsEmbedUrl" class="video-wrap">
               <iframe
                 class="video-frame"
@@ -206,6 +208,7 @@ import { useMatchMeta } from '../composables/useMatchMeta';
 import { hasDisplayableResult, displayMatchScore, formatMarketProbabilities, showMarketOdds } from '../composables/useMatchExtras';
 import { getPredictionLockReason } from '../utils/predictionLockReason';
 import { extractYoutubeId, buildYoutubeWatchUrl } from '../utils/youtubeUrl';
+import { formatHighlightMetaLine, formatHighlightTooltip } from '../utils/highlightMeta';
 import { isLiveScoreboardMatch } from '../utils/liveMatchClock';
 
 const showVenueModal = ref(false);
@@ -235,6 +238,13 @@ const lockTitle = computed(() => {
 });
 
 const highlightsWatchUrl = computed(() => buildYoutubeWatchUrl(props.match?.highlightsUrl));
+
+const highlightsMetaLine = computed(() => formatHighlightMetaLine(props.match?.highlightsMeta, t));
+
+const highlightsTooltip = computed(() => formatHighlightTooltip(
+  props.match?.highlightsMeta,
+  t('matches.highlights'),
+));
 
 const highlightsEmbedUrl = computed(() => {
   const id = extractYoutubeId(props.match?.highlightsUrl);
@@ -378,6 +388,12 @@ function scoreClass(match) {
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.75rem;
+}
+
+.highlights-meta-line {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #6b7280);
 }
 
 .highlights-hint {

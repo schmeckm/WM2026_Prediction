@@ -890,6 +890,7 @@
     "highlightsInvalid": "Invalid highlights link.",
     "watchOnYoutube": "Watch on YouTube",
     "highlightsEmbedBlockedHint": "If the video is blocked from embedding (e.g. by FIFA), open it on YouTube.",
+    "highlightsMetaViews": "{count} views",
     "filters": {
       "all": "All matches",
       "today": "Today",
@@ -1756,6 +1757,12 @@
       "playerImagesLoadedCount": "{processed} / {total} players checked",
       "playerImagesProgressMeta": "{created} new, {updated} updated, {cached} from cache, {skipped} without image",
       "genericError": "Error.",
+      "youtubeHighlightsTitle": "YouTube highlights",
+      "youtubeHighlightsHint": "Search English highlight videos for finished matches (preferred channels first, highest views wins). Backfill also works for older games without a link.",
+      "syncHighlightsRecent": "Fill recent highlights (72h)",
+      "syncHighlightsBackfillAll": "Backfill all missing highlights",
+      "syncHighlightsMetadata": "Refresh video metadata",
+      "highlightsSynced": "Highlight sync completed.",
       "venuesEnrichedCount": "{count} venues enriched."
     },
     "bonus": {

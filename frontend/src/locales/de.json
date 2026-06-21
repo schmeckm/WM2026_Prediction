@@ -897,6 +897,7 @@
     "highlightsInvalid": "Ungültiger Highlights-Link.",
     "watchOnYoutube": "Auf YouTube ansehen",
     "highlightsEmbedBlockedHint": "Wenn das Video nicht eingebettet werden darf (z. B. FIFA-Sperre), öffne es direkt auf YouTube.",
+    "highlightsMetaViews": "{count} Aufrufe",
     "filters": {
       "all": "Alle Spiele",
       "today": "Heute",
@@ -1754,6 +1755,12 @@
       "playerImagesLoadedCount": "{processed} / {total} Spieler geprüft",
       "playerImagesProgressMeta": "{created} neu, {updated} aktualisiert, {cached} aus Cache, {skipped} ohne Bild",
       "genericError": "Fehler.",
+      "youtubeHighlightsTitle": "YouTube-Highlights",
+      "youtubeHighlightsHint": "Sucht englische Highlight-Videos für beendete Spiele (bevorzugte Kanäle zuerst, meiste Views gewinnt). Backfill funktioniert auch für ältere Spiele ohne Link.",
+      "syncHighlightsRecent": "Aktuelle Highlights (72h)",
+      "syncHighlightsBackfillAll": "Alle fehlenden Highlights nachladen",
+      "syncHighlightsMetadata": "Video-Metadaten aktualisieren",
+      "highlightsSynced": "Highlight-Sync abgeschlossen.",
       "venuesEnrichedCount": "{count} Stadien angereichert."
     },
     "bonus": {
