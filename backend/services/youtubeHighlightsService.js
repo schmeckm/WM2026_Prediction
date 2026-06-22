@@ -2,7 +2,9 @@ const DEFAULT_PREFERRED_CHANNEL_IDS = [
   'UC6c1z7bA__85CIWZ_jpCK-Q', // ESPN FC
   'UCNAf1k0yIjyGu3k9BwAg3lg', // Sky Sports Premier League
 ];
-const DEFAULT_PREFERRED_CHANNEL_KEYWORDS = ['espn fc', 'sky sports', 'fox soccer'];
+const DEFAULT_PREFERRED_CHANNEL_KEYWORDS = ['espn fc', 'sky sports'];
+const DEFAULT_SKIP_CHANNEL_KEYWORDS = ['fifa', 'fox soccer', 'fox sports'];
+const DEFAULT_REGION_CODE = 'CH';
 const DEFAULT_RELEVANCE_LANGUAGE = 'en';
 
 function getYouTubeApiKey() {
@@ -19,8 +21,11 @@ function parseCsv(value) {
 }
 
 function getSkipChannelKeywords() {
-  // Default: skip FIFA uploads. Can be extended via env.
-  return parseCsv(process.env.YOUTUBE_SKIP_CHANNEL_KEYWORDS || 'fifa').map((s) => s.toLowerCase());
+  if (process.env.YOUTUBE_SKIP_CHANNEL_KEYWORDS === '') return [];
+  const fromEnv = parseCsv(process.env.YOUTUBE_SKIP_CHANNEL_KEYWORDS)
+    .map((s) => s.toLowerCase());
+  if (fromEnv.length) return fromEnv;
+  return [...DEFAULT_SKIP_CHANNEL_KEYWORDS];
 }
 
 function getSkipChannelIds() {
@@ -43,9 +48,9 @@ function getPreferredChannelKeywords() {
 }
 
 function getRegionCode() {
-  const code = String(process.env.YOUTUBE_REGION_CODE || 'US').trim().toUpperCase();
+  const code = String(process.env.YOUTUBE_REGION_CODE || DEFAULT_REGION_CODE).trim().toUpperCase();
   // YouTube uses ISO 3166-1 alpha-2 country codes (e.g. DE, CH, US)
-  return /^[A-Z]{2}$/.test(code) ? code : 'US';
+  return /^[A-Z]{2}$/.test(code) ? code : DEFAULT_REGION_CODE;
 }
 
 function getRelevanceLanguage() {
@@ -76,6 +81,13 @@ function shouldSkipVideo(row) {
   // Only filter by channel name/id to avoid accidentally skipping non-FIFA channels
   // that mention "FIFA" in the video title.
   return keywords.some((kw) => kw && channelTitle.includes(kw));
+}
+
+function isHighlightUsable(row) {
+  if (!row) return false;
+  if (shouldSkipVideo(row)) return false;
+  if (row.blockedInRegion) return false;
+  return true;
 }
 
 function isPreferredChannel(row) {
@@ -263,8 +275,7 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
     }
     const general = await searchOnce({ requireEmbeddable });
     const filtered = mergeHighlightResults([...preferredLists, general])
-      .filter((row) => !shouldSkipVideo(row))
-      .filter((row) => !row.blockedInRegion);
+      .filter((row) => isHighlightUsable(row));
     return rankHighlightResults(filtered).slice(0, desired);
   }
 
@@ -330,12 +341,19 @@ module.exports = {
   fetchVideoDetailsByIds,
   buildQuery,
   isPreferredChannel,
+  shouldSkipVideo,
+  isBlockedInRegion,
+  isHighlightUsable,
   rankHighlightResults,
   compareViewCountDesc,
   mergeHighlightResults,
   getPreferredChannelIds,
   getPreferredChannelKeywords,
+  getSkipChannelKeywords,
+  getRegionCode,
   getRelevanceLanguage,
   DEFAULT_PREFERRED_CHANNEL_IDS,
+  DEFAULT_SKIP_CHANNEL_KEYWORDS,
+  DEFAULT_REGION_CODE,
   DEFAULT_RELEVANCE_LANGUAGE,
 };

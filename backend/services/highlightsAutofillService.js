@@ -1,11 +1,12 @@
 const { Op } = require('sequelize');
 const { Match } = require('../models');
-const { searchMatchHighlights } = require('./youtubeHighlightsService');
+const { searchMatchHighlights, fetchVideoDetailsByIds, isHighlightUsable } = require('./youtubeHighlightsService');
 const {
   metaFromSearchItem,
   serializeHighlightsMeta,
   fetchMetaForUrl,
 } = require('./highlightsMetaService');
+const { extractYoutubeId } = require('../utils/youtubeUrl');
 
 function parseIntOr(value, fallback) {
   const n = Number.parseInt(String(value ?? ''), 10);
@@ -16,6 +17,14 @@ function buildCandidateWhere(options = {}) {
   const lookbackHours = parseIntOr(options.lookbackHours, 72);
   const backfillAll = options.backfillAll === true;
   const refreshMetadataOnly = options.refreshMetadataOnly === true;
+  const replaceBlockedHighlights = options.replaceBlockedHighlights === true;
+
+  if (replaceBlockedHighlights) {
+    return {
+      status: 'finished',
+      highlightsUrl: { [Op.ne]: null },
+    };
+  }
 
   if (refreshMetadataOnly) {
     return {
@@ -57,17 +66,44 @@ async function refreshMatchHighlightMetadata(match) {
   return true;
 }
 
+async function isStoredHighlightUnusable(url) {
+  const videoId = extractYoutubeId(url);
+  if (!videoId) return true;
+  const rows = await fetchVideoDetailsByIds([videoId]);
+  const row = rows[0];
+  if (!row) return true;
+  return !isHighlightUsable(row);
+}
+
+async function reselectHighlightForMatch(match, { maxResults = 6 } = {}) {
+  const result = await searchMatchHighlights(match.toJSON(), { maxResults });
+  const best = Array.isArray(result?.items) ? result.items[0] : null;
+  if (!best?.url) {
+    match.highlightsUrl = null;
+    match.highlightsMetaJson = null;
+    await match.save();
+    return false;
+  }
+  return applyHighlightSelection(match, best);
+}
+
 async function autoFillHighlightsForFinishedMatches(options = {}) {
   const lookbackHours = parseIntOr(options.lookbackHours, 72);
   const maxUpdates = parseIntOr(options.maxUpdates, 5);
   const maxResults = parseIntOr(options.maxResults, 6);
   const backfillAll = options.backfillAll === true;
   const refreshMetadataOnly = options.refreshMetadataOnly === true;
+  const replaceBlockedHighlights = options.replaceBlockedHighlights === true;
 
   const candidates = await Match.findAll({
-    where: buildCandidateWhere({ lookbackHours, backfillAll, refreshMetadataOnly }),
+    where: buildCandidateWhere({
+      lookbackHours,
+      backfillAll,
+      refreshMetadataOnly,
+      replaceBlockedHighlights,
+    }),
     order: [['kickoffTime', 'DESC']],
-    limit: Math.max(0, maxUpdates),
+    limit: replaceBlockedHighlights ? Math.max(maxUpdates, 50) : Math.max(0, maxUpdates),
   });
 
   let updatedCount = 0;
@@ -75,6 +111,18 @@ async function autoFillHighlightsForFinishedMatches(options = {}) {
 
   for (const match of candidates) {
     try {
+      if (replaceBlockedHighlights) {
+        const unusable = await isStoredHighlightUnusable(match.highlightsUrl);
+        if (!unusable) {
+          skippedCount += 1;
+          continue;
+        }
+        const ok = await reselectHighlightForMatch(match, { maxResults });
+        if (ok) updatedCount += 1;
+        else skippedCount += 1;
+        continue;
+      }
+
       if (refreshMetadataOnly) {
         const ok = await refreshMatchHighlightMetadata(match);
         if (ok) updatedCount += 1;
@@ -94,7 +142,9 @@ async function autoFillHighlightsForFinishedMatches(options = {}) {
   }
 
   return {
-    message: refreshMetadataOnly
+    message: replaceBlockedHighlights
+      ? `replaced=${updatedCount} scanned=${candidates.length} skipped=${skippedCount}`
+      : refreshMetadataOnly
       ? `metadataUpdated=${updatedCount} scanned=${candidates.length} skipped=${skippedCount}`
       : `updated=${updatedCount} scanned=${candidates.length} skipped=${skippedCount} lookbackHours=${backfillAll ? 'all' : lookbackHours}`,
     updatedCount,
@@ -103,6 +153,7 @@ async function autoFillHighlightsForFinishedMatches(options = {}) {
     lookbackHours: backfillAll ? null : lookbackHours,
     backfillAll,
     refreshMetadataOnly,
+    replaceBlockedHighlights,
   };
 }
 
@@ -111,4 +162,6 @@ module.exports = {
   buildCandidateWhere,
   applyHighlightSelection,
   refreshMatchHighlightMetadata,
+  isStoredHighlightUnusable,
+  reselectHighlightForMatch,
 };

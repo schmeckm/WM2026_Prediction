@@ -7,7 +7,14 @@ const {
   mergeHighlightResults,
   getPreferredChannelIds,
   getRelevanceLanguage,
+  getSkipChannelKeywords,
+  getRegionCode,
+  shouldSkipVideo,
+  isHighlightUsable,
+  isBlockedInRegion,
   DEFAULT_PREFERRED_CHANNEL_IDS,
+  DEFAULT_SKIP_CHANNEL_KEYWORDS,
+  DEFAULT_REGION_CODE,
   DEFAULT_RELEVANCE_LANGUAGE,
 } = require('../../services/youtubeHighlightsService');
 
@@ -93,5 +100,28 @@ describe('youtubeHighlightsService', () => {
   it('allows disabling preferred channels via empty env', () => {
     process.env.YOUTUBE_PREFERRED_CHANNEL_IDS = '';
     assert.deepEqual(getPreferredChannelIds(), []);
+  });
+
+  it('skips Fox Soccer and other US-only channels by default', () => {
+    delete process.env.YOUTUBE_SKIP_CHANNEL_KEYWORDS;
+    assert.ok(getSkipChannelKeywords().includes('fox soccer'));
+    assert.equal(shouldSkipVideo({ channelTitle: 'FOX Soccer' }), true);
+    assert.equal(isHighlightUsable({ channelTitle: 'ESPN FC', blockedInRegion: false }), true);
+    assert.equal(isHighlightUsable({ channelTitle: 'FOX Soccer', blockedInRegion: false }), false);
+  });
+
+  it('defaults region code to CH for geo filtering', () => {
+    delete process.env.YOUTUBE_REGION_CODE;
+    assert.equal(getRegionCode(), 'CH');
+  });
+
+  it('treats region-blocked videos as unusable', () => {
+    assert.equal(isBlockedInRegion('CH', {
+      contentDetails: { regionRestriction: { blocked: ['CH'] } },
+    }), true);
+    assert.equal(isHighlightUsable({
+      channelTitle: 'ESPN FC',
+      blockedInRegion: true,
+    }), false);
   });
 });

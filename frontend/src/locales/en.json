@@ -1758,10 +1758,11 @@
       "playerImagesProgressMeta": "{created} new, {updated} updated, {cached} from cache, {skipped} without image",
       "genericError": "Error.",
       "youtubeHighlightsTitle": "YouTube highlights",
-      "youtubeHighlightsHint": "Search English highlight videos for finished matches (preferred channels first, highest views wins). Backfill also works for older games without a link.",
+      "youtubeHighlightsHint": "Search English highlight videos for finished matches (ESPN FC & Sky Sports first; Fox Soccer is skipped due to geo-blocks). Backfill also works for older games without a link.",
       "syncHighlightsRecent": "Fill recent highlights (72h)",
       "syncHighlightsBackfillAll": "Backfill all missing highlights",
       "syncHighlightsMetadata": "Refresh video metadata",
+      "syncHighlightsReplaceBlocked": "Replace geo-blocked links",
       "highlightsSynced": "Highlight sync completed.",
       "venuesEnrichedCount": "{count} venues enriched."
     },

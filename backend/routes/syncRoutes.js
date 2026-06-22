@@ -255,6 +255,7 @@ router.post('/highlights', async (req, res) => {
       maxResults: req.body?.maxResults,
       backfillAll: req.body?.backfillAll === true,
       refreshMetadataOnly: req.body?.refreshMetadataOnly === true,
+      replaceBlockedHighlights: req.body?.replaceBlockedHighlights === true,
     });
     res.json(result);
   } catch (error) {

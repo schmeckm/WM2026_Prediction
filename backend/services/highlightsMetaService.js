@@ -1,5 +1,5 @@
 const { extractYoutubeId, buildYoutubeWatchUrl } = require('../utils/youtubeUrl');
-const { fetchVideoDetailsByIds } = require('./youtubeHighlightsService');
+const { fetchVideoDetailsByIds, isHighlightUsable } = require('./youtubeHighlightsService');
 
 function metaFromSearchItem(item) {
   if (!item?.videoId && !item?.url) return null;
@@ -68,7 +68,7 @@ async function fetchMetaForUrl(url) {
 
   const rows = await fetchVideoDetailsByIds([videoId]);
   const row = rows[0];
-  if (!row) return null;
+  if (!row || !isHighlightUsable(row)) return null;
 
   return metaFromSearchItem({ ...row, source: 'youtube_videos_api' });
 }
