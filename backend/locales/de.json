@@ -355,6 +355,7 @@
       "teamPitchNoTipsLine": "{name} (noch keine Tipps)",
       "teamPitchYou": "(du)",
       "teamPitchAllClear": "Alle im Team sind auf dem Platz – keine Gelbe oder Rote Karte.",
+      "teamPitchPreviewSample": "Vorschau für Team „{teamName}“ (dein Profil hat kein Team – im echten Digest siehst du dein eigenes Team).",
       "highlight": {
         "matchOfNight": "Spiel der Nacht: {homeTeam} {homeScore}:{awayScore} {awayTeam} – insgesamt {totalPoints} Punkte verteilt.",
         "mostExactTips": "{count} Exakt-Tipps bei {homeTeam} vs {awayTeam}.",

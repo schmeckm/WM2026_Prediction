@@ -23,7 +23,7 @@ const { checkAiAvailability } = require('./llmService');
 const oddsApiService = require('./oddsApiService');
 const { syncMarketOdds } = require('./oddsSyncService');
 const { getScorers } = require('./footballCompetitionService');
-const { buildTeamPitchCardsForTeam } = require('../utils/teamPitchZones');
+const { buildTeamPitchCardsForTeam, resolveUserTeamId } = require('../utils/teamPitchZones');
 
 const TOP_PLAYERS = 5;
 const TOP_TEAMS = 3;
@@ -201,6 +201,44 @@ function formatTeamPitchCardsText(cards, locale) {
     }
   }
   return lines.join('\n');
+}
+
+function resolveTeamPitchForUser(user, shared, { previewFallback = false } = {}) {
+  const leaderboard = shared.leaderboardForPitch || shared.leaderboard;
+  const teamId = resolveUserTeamId(user);
+
+  if (teamId) {
+    return {
+      cards: buildTeamPitchCardsForTeam(leaderboard, teamId, { currentUserId: user.id }),
+      previewNote: null,
+    };
+  }
+
+  if (!previewFallback || !shared.teamRanking?.length) {
+    return { cards: null, previewNote: null };
+  }
+
+  const locale = resolveUserEmailLocale(user);
+  let bestTeam = shared.teamRanking[0];
+  let bestCards = buildTeamPitchCardsForTeam(leaderboard, bestTeam.teamId);
+  let bestScore = bestCards.yellow.length + bestCards.red.length;
+
+  for (const team of shared.teamRanking) {
+    const cards = buildTeamPitchCardsForTeam(leaderboard, team.teamId);
+    const score = cards.yellow.length + cards.red.length;
+    if (score > bestScore) {
+      bestScore = score;
+      bestTeam = team;
+      bestCards = cards;
+    }
+  }
+
+  return {
+    cards: bestCards,
+    previewNote: t('emails.morningDigest.teamPitchPreviewSample', locale, {
+      teamName: bestTeam.teamName,
+    }),
+  };
 }
 
 async function loadTopWmScorers() {
@@ -408,6 +446,7 @@ async function buildSharedDigestData() {
   const lastNightMatches = await getLastNightMatches(timezone);
   const todayMatches = await getTodayMatches(timezone);
   const leaderboard = await getLeaderboard();
+  const leaderboardForPitch = await getLeaderboard({ includeAdmins: true });
   const teamRanking = await getTeamRanking();
   const yesterdayRanks = await getYesterdayRanks();
   const scoringRules = await getScoringRules();
@@ -433,6 +472,7 @@ async function buildSharedDigestData() {
     lastNightMatches,
     todayMatches,
     leaderboard,
+    leaderboardForPitch,
     teamRanking,
     yesterdayRanks,
     pointsEarned,
@@ -444,10 +484,11 @@ async function buildSharedDigestData() {
   };
 }
 
-function buildUserDigestData(user, shared) {
+function buildUserDigestData(user, shared, { previewFallback = false } = {}) {
   const userEntry = shared.leaderboard.find((e) => e.userId === user.id) || null;
-  const teamEntry = user.teamId
-    ? shared.teamRanking.find((e) => e.teamId === user.teamId) || null
+  const teamId = resolveUserTeamId(user);
+  const teamEntry = teamId
+    ? shared.teamRanking.find((e) => e.teamId === teamId) || null
     : null;
 
   const yesterday = shared.yesterdayRanks[user.id];
@@ -457,15 +498,16 @@ function buildUserDigestData(user, shared) {
     ? userEntry.totalPoints - yesterday.totalPoints
     : pointsEarned;
 
+  const teamPitch = resolveTeamPitchForUser(user, shared, { previewFallback });
+
   return {
     userEntry,
     teamEntry,
     rankDelta,
     pointsEarned,
     pointsDelta,
-    teamPitchCards: user.teamId
-      ? buildTeamPitchCardsForTeam(shared.leaderboard, user.teamId, { currentUserId: user.id })
-      : null,
+    teamPitchCards: teamPitch.cards,
+    teamPitchPreviewNote: teamPitch.previewNote,
   };
 }
 
@@ -506,16 +548,21 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
   let teamPitchHtml = '';
   let teamPitchText = '';
   if (userData.teamPitchCards) {
+    const previewNoteHtml = userData.teamPitchPreviewNote
+      ? `<p style="margin:0 0 8px;font-size:13px;color:#94a3b8;font-style:italic;">${escapeHtml(userData.teamPitchPreviewNote)}</p>`
+      : '';
     teamPitchHtml = `
     <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.teamPitchHeading', locale))}</p>
+    ${previewNoteHtml}
     <p style="margin:0 0 8px;font-size:14px;color:#cbd5e1;">${escapeHtml(t('emails.morningDigest.teamPitchIntro', locale))}</p>
     ${formatTeamPitchCardsHtml(userData.teamPitchCards, locale)}
   `.trim();
     teamPitchText = [
       t('emails.morningDigest.teamPitchHeading', locale),
+      userData.teamPitchPreviewNote || null,
       t('emails.morningDigest.teamPitchIntro', locale),
       formatTeamPitchCardsText(userData.teamPitchCards, locale),
-    ].join('\n');
+    ].filter(Boolean).join('\n');
   }
 
   const lastNightHtml = formatFinishedMatchListHtml(shared.lastNightMatches, locale);
@@ -640,8 +687,8 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
   };
 }
 
-async function buildDigestForUser(user, shared) {
-  const base = buildUserDigestData(user, shared);
+async function buildDigestForUser(user, shared, { previewFallback = false } = {}) {
+  const base = buildUserDigestData(user, shared, { previewFallback });
   const { missingCount, missingMatches } = await getMissingPredictionData(user.id);
   return templateMorningDigest(user, shared, { ...base, missingCount, missingMatches });
 }
@@ -652,7 +699,7 @@ async function previewMorningDigest(userId) {
     return { error: 'User not found' };
   }
   const shared = await buildSharedDigestData();
-  return buildDigestForUser(users[0], shared);
+  return buildDigestForUser(users[0], shared, { previewFallback: true });
 }
 
 async function shouldSendDigestToday(timezone, { force = false } = {}) {

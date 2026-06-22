@@ -1,6 +1,15 @@
 const RED_CARD_THRESHOLD = 30;
 const YELLOW_CARD_THRESHOLD = 60;
 
+function normalizeTeamId(teamId) {
+  const id = Number(teamId);
+  return Number.isFinite(id) ? id : null;
+}
+
+function resolveUserTeamId(user) {
+  return normalizeTeamId(user?.teamId ?? user?.team?.id ?? null);
+}
+
 function classifyTeamPitchMember(member) {
   const tips = Number(member.submittedPredictions ?? 0);
   const pastDue = Number(member.pastDueMatches ?? 0);
@@ -13,12 +22,13 @@ function classifyTeamPitchMember(member) {
 }
 
 function buildTeamPitchCardsForTeam(leaderboard, teamId, { currentUserId = null } = {}) {
-  if (!teamId) {
+  const normalizedTeamId = normalizeTeamId(teamId);
+  if (!normalizedTeamId) {
     return { red: [], yellow: [], pitch: [] };
   }
 
   const members = leaderboard
-    .filter((entry) => entry.teamId === teamId)
+    .filter((entry) => normalizeTeamId(entry.teamId) === normalizedTeamId)
     .map((entry) => ({
       userId: entry.userId,
       name: `${entry.firstName} ${entry.lastName}`.trim(),
@@ -39,6 +49,8 @@ function buildTeamPitchCardsForTeam(leaderboard, teamId, { currentUserId = null 
 module.exports = {
   RED_CARD_THRESHOLD,
   YELLOW_CARD_THRESHOLD,
+  normalizeTeamId,
+  resolveUserTeamId,
   classifyTeamPitchMember,
   buildTeamPitchCardsForTeam,
 };

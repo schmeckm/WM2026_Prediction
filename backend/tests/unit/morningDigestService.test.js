@@ -40,6 +40,11 @@ describe('morningDigestService', () => {
       { userId: 9, rank: 8, totalPoints: 12, firstName: 'Lisa', lastName: 'L', teamId: 2, submittedPredictions: 0, pastDueMatches: 8, pastCompletionPercentage: 0 },
       { userId: 10, rank: 9, totalPoints: 20, firstName: 'Paul', lastName: 'P', teamId: 2, submittedPredictions: 4, pastDueMatches: 10, pastCompletionPercentage: 40 },
     ],
+    leaderboardForPitch: [
+      { userId: 1, rank: 3, totalPoints: 42, firstName: 'Max', lastName: 'M', teamId: 2, submittedPredictions: 5, pastDueMatches: 10, pastCompletionPercentage: 90 },
+      { userId: 9, rank: 8, totalPoints: 12, firstName: 'Lisa', lastName: 'L', teamId: 2, submittedPredictions: 0, pastDueMatches: 8, pastCompletionPercentage: 0 },
+      { userId: 10, rank: 9, totalPoints: 20, firstName: 'Paul', lastName: 'P', teamId: 2, submittedPredictions: 4, pastDueMatches: 10, pastCompletionPercentage: 40 },
+    ],
     teamRanking: [{ teamId: 2, rank: 2, teamName: 'Team A', averagePoints: 35 }],
     yesterdayRanks: { 1: { rank: 5, totalPoints: 36 } },
     pointsEarned: new Map([[1, 6]]),
@@ -108,6 +113,27 @@ describe('morningDigestService', () => {
     assert.match(tpl.html, /Lisa L \(noch keine Tipps\)/);
     assert.match(tpl.text, /Paul P/);
     assert.match(tpl.text, /Lisa L/);
+  });
+
+  it('shows sample team pitch cards in preview when user has no team', () => {
+    const adminNoTeam = {
+      id: 99,
+      firstName: 'Admin',
+      email: 'admin@example.com',
+      language: 'de',
+      teamId: null,
+      team: null,
+    };
+    const userData = buildUserDigestData(adminNoTeam, shared, { previewFallback: true });
+    assert.ok(userData.teamPitchCards);
+    assert.ok(userData.teamPitchPreviewNote);
+    const tpl = templateMorningDigest(adminNoTeam, shared, {
+      ...userData,
+      missingCount: 0,
+      missingMatches: [],
+    });
+    assert.match(tpl.html, /Gelbe &amp; Rote Karte/);
+    assert.match(tpl.html, /Vorschau für Team/);
   });
 
   it('builds english digest when user has no language', () => {
