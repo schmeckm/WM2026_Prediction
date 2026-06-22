@@ -130,6 +130,9 @@
             <button class="btn btn-secondary btn-sm" :disabled="syncing" @click="syncHighlightsReplaceBlocked">
               {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.syncHighlightsReplaceBlocked') }}
             </button>
+            <button class="btn btn-primary btn-sm" :disabled="syncing" @click="syncHighlightsReloadAll">
+              {{ syncing ? t('adminPages.sync.syncing') : t('adminPages.sync.syncHighlightsReloadAll') }}
+            </button>
           </div>
         </div>
       </div>
@@ -617,6 +620,11 @@ function syncHighlightsMetadata() {
 
 function syncHighlightsReplaceBlocked() {
   return runHighlightsSync({ replaceBlockedHighlights: true, maxUpdates: 50 });
+}
+
+function syncHighlightsReloadAll() {
+  if (!window.confirm(t('adminPages.sync.syncHighlightsReloadAllConfirm'))) return;
+  return runHighlightsSync({ reloadAllHighlights: true, maxUpdates: 150 });
 }
 
 function resumeRunningPlayerImageSync() {

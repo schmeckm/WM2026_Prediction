@@ -189,8 +189,12 @@ router.get('/:id/highlight-suggestions', authMiddleware, adminMiddleware, async 
     const result = await searchMatchHighlights(match.toJSON(), { maxResults: 6 });
     res.json(result);
   } catch (error) {
+    console.error('[highlight-suggestions]', error);
     if (error?.code === 'YOUTUBE_API_KEY_MISSING') {
       return sendError(res, req, 503, 'errors.youtubeApiKeyMissing');
+    }
+    if (error?.code === 'YOUTUBE_API_ERROR') {
+      return sendError(res, req, 502, 'errors.youtubeApiRequestFailed');
     }
     return sendError(res, req, 500, 'errors.actionFailed');
   }

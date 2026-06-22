@@ -124,4 +124,15 @@ describe('youtubeHighlightsService', () => {
       blockedInRegion: true,
     }), false);
   });
+
+  it('omits publishedAfter for future kickoffs', () => {
+    const { getPublishedAfterFilter } = require('../../services/youtubeHighlightsService');
+    const now = new Date('2026-06-10T12:00:00.000Z');
+    assert.equal(
+      getPublishedAfterFilter('2026-06-15T18:00:00.000Z', 18, now),
+      '',
+    );
+    const past = getPublishedAfterFilter('2026-06-09T20:00:00.000Z', 18, now);
+    assert.ok(past.startsWith('2026-06-09'));
+  });
 });

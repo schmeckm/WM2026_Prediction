@@ -57,4 +57,11 @@ describe('highlightsAutofillService buildCandidateWhere', () => {
     assert.equal(where.status, 'finished');
     assert.ok(Array.isArray(where[Op.or]));
   });
+
+  it('reloadAllHighlights targets all finished matches regardless of existing url', () => {
+    const where = buildCandidateWhere({ reloadAllHighlights: true });
+    assert.equal(where.status, 'finished');
+    assert.equal(where.highlightsUrl, undefined);
+    assert.equal(where.kickoffTime, undefined);
+  });
 });

@@ -18,6 +18,11 @@ function buildCandidateWhere(options = {}) {
   const backfillAll = options.backfillAll === true;
   const refreshMetadataOnly = options.refreshMetadataOnly === true;
   const replaceBlockedHighlights = options.replaceBlockedHighlights === true;
+  const reloadAllHighlights = options.reloadAllHighlights === true;
+
+  if (reloadAllHighlights) {
+    return { status: 'finished' };
+  }
 
   if (replaceBlockedHighlights) {
     return {
@@ -94,6 +99,11 @@ async function autoFillHighlightsForFinishedMatches(options = {}) {
   const backfillAll = options.backfillAll === true;
   const refreshMetadataOnly = options.refreshMetadataOnly === true;
   const replaceBlockedHighlights = options.replaceBlockedHighlights === true;
+  const reloadAllHighlights = options.reloadAllHighlights === true;
+
+  const candidateLimit = reloadAllHighlights || replaceBlockedHighlights
+    ? Math.max(maxUpdates, 50)
+    : Math.max(0, maxUpdates);
 
   const candidates = await Match.findAll({
     where: buildCandidateWhere({
@@ -101,9 +111,10 @@ async function autoFillHighlightsForFinishedMatches(options = {}) {
       backfillAll,
       refreshMetadataOnly,
       replaceBlockedHighlights,
+      reloadAllHighlights,
     }),
     order: [['kickoffTime', 'DESC']],
-    limit: replaceBlockedHighlights ? Math.max(maxUpdates, 50) : Math.max(0, maxUpdates),
+    limit: candidateLimit,
   });
 
   let updatedCount = 0;
@@ -111,11 +122,13 @@ async function autoFillHighlightsForFinishedMatches(options = {}) {
 
   for (const match of candidates) {
     try {
-      if (replaceBlockedHighlights) {
-        const unusable = await isStoredHighlightUnusable(match.highlightsUrl);
-        if (!unusable) {
-          skippedCount += 1;
-          continue;
+      if (reloadAllHighlights || replaceBlockedHighlights) {
+        if (replaceBlockedHighlights) {
+          const unusable = await isStoredHighlightUnusable(match.highlightsUrl);
+          if (!unusable) {
+            skippedCount += 1;
+            continue;
+          }
         }
         const ok = await reselectHighlightForMatch(match, { maxResults });
         if (ok) updatedCount += 1;
@@ -142,7 +155,9 @@ async function autoFillHighlightsForFinishedMatches(options = {}) {
   }
 
   return {
-    message: replaceBlockedHighlights
+    message: reloadAllHighlights
+      ? `reloaded=${updatedCount} scanned=${candidates.length} skipped=${skippedCount}`
+      : replaceBlockedHighlights
       ? `replaced=${updatedCount} scanned=${candidates.length} skipped=${skippedCount}`
       : refreshMetadataOnly
       ? `metadataUpdated=${updatedCount} scanned=${candidates.length} skipped=${skippedCount}`
@@ -154,6 +169,7 @@ async function autoFillHighlightsForFinishedMatches(options = {}) {
     backfillAll,
     refreshMetadataOnly,
     replaceBlockedHighlights,
+    reloadAllHighlights,
   };
 }
 

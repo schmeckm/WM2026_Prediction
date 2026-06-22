@@ -77,6 +77,7 @@
     "matchLockFailed": "Match could not be locked.",
     "matchUnlockFailed": "Match could not be unlocked.",
     "youtubeApiKeyMissing": "YouTube API key is missing. Set YOUTUBE_API_KEY in your deployment (Portainer/.env) and restart the backend.",
+    "youtubeApiRequestFailed": "YouTube API request failed. Check YOUTUBE_API_KEY, quota, and API restrictions in Google Cloud.",
     "actionFailed": "Action failed.",
     "predictionsLoadFailed": "Predictions could not be loaded.",
     "predictionRequired": "Match and prediction are required.",

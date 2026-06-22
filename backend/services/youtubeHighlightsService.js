@@ -144,6 +144,15 @@ function buildQuery({ homeTeam, awayTeam, kickoffTime }) {
   return [home, away, year, 'highlights'].filter(Boolean).join(' ');
 }
 
+function parseYouTubeErrorBody(body) {
+  try {
+    const parsed = JSON.parse(body);
+    return parsed?.error?.message || null;
+  } catch {
+    return null;
+  }
+}
+
 async function youtubeFetchJson(url) {
   const https = require('node:https');
   const text = await new Promise((resolve, reject) => {
@@ -154,16 +163,21 @@ async function youtubeFetchJson(url) {
       res.on('end', () => {
         const status = res.statusCode || 0;
         if (status < 200 || status >= 300) {
-          const err = new Error(`YouTube request failed (${status})`);
+          const err = new Error(parseYouTubeErrorBody(body) || `YouTube request failed (${status})`);
           err.status = status;
           err.body = body;
+          err.code = 'YOUTUBE_API_ERROR';
           reject(err);
           return;
         }
         resolve(body);
       });
     });
-    req.on('error', reject);
+    req.on('error', (error) => {
+      const err = new Error(error.message || 'YouTube request failed');
+      err.code = 'YOUTUBE_API_ERROR';
+      reject(err);
+    });
     req.end();
   });
 
@@ -174,11 +188,14 @@ async function youtubeFetchJson(url) {
   }
 }
 
-function isoHoursBefore(dateStr, hours) {
-  if (!dateStr) return '';
-  const ms = new Date(dateStr).getTime();
-  if (!Number.isFinite(ms)) return '';
-  return new Date(ms - hours * 60 * 60 * 1000).toISOString();
+function getPublishedAfterFilter(kickoffTime, hours = 18, now = new Date()) {
+  if (!kickoffTime) return '';
+  const kickoffMs = new Date(kickoffTime).getTime();
+  if (!Number.isFinite(kickoffMs)) return '';
+  // Highlights only exist after kickoff – future matches must not send a future publishedAfter.
+  if (kickoffMs > now.getTime()) return '';
+  const targetMs = kickoffMs - hours * 60 * 60 * 1000;
+  return new Date(targetMs).toISOString();
 }
 
 async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
@@ -211,7 +228,7 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
     if (regionCode) searchUrl.searchParams.set('regionCode', regionCode);
     if (relevanceLanguage) searchUrl.searchParams.set('relevanceLanguage', relevanceLanguage);
     searchUrl.searchParams.set('safeSearch', 'none');
-    const publishedAfter = isoHoursBefore(match.kickoffTime, 18);
+    const publishedAfter = getPublishedAfterFilter(match.kickoffTime, 18);
     if (publishedAfter) searchUrl.searchParams.set('publishedAfter', publishedAfter);
     searchUrl.searchParams.set('key', apiKey);
 
@@ -221,21 +238,27 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
       .map((it) => it?.id?.videoId)
       .filter(Boolean);
 
-    const base = items.map((it) => ({
-      videoId: it.id.videoId,
-      title: it.snippet?.title || '',
-      channelTitle: it.snippet?.channelTitle || '',
-      channelId: it.snippet?.channelId || '',
-      publishedAt: it.snippet?.publishedAt || '',
-      thumbnailUrl: it.snippet?.thumbnails?.medium?.url
-        || it.snippet?.thumbnails?.default?.url
-        || '',
-      url: it.id?.videoId ? `https://www.youtube.com/watch?v=${it.id.videoId}` : '',
-      preferred: isPreferredChannel({
-        channelId: it.snippet?.channelId || '',
-        channelTitle: it.snippet?.channelTitle || '',
-      }),
-    }));
+    const base = items
+      .map((it) => {
+        const videoId = it?.id?.videoId;
+        if (!videoId) return null;
+        return {
+          videoId,
+          title: it.snippet?.title || '',
+          channelTitle: it.snippet?.channelTitle || '',
+          channelId: it.snippet?.channelId || '',
+          publishedAt: it.snippet?.publishedAt || '',
+          thumbnailUrl: it.snippet?.thumbnails?.medium?.url
+            || it.snippet?.thumbnails?.default?.url
+            || '',
+          url: `https://www.youtube.com/watch?v=${videoId}`,
+          preferred: isPreferredChannel({
+            channelId: it.snippet?.channelId || '',
+            channelTitle: it.snippet?.channelTitle || '',
+          }),
+        };
+      })
+      .filter(Boolean);
 
     if (videoIds.length === 0) return [];
 
@@ -271,9 +294,22 @@ async function searchMatchHighlights(match, { maxResults = 6 } = {}) {
   async function collectResults(requireEmbeddable) {
     const preferredLists = [];
     for (const channelId of preferredChannelIds) {
-      preferredLists.push(await searchOnce({ requireEmbeddable, channelId }));
+      try {
+        preferredLists.push(await searchOnce({ requireEmbeddable, channelId }));
+      } catch (error) {
+        console.warn(`[YouTube] Preferred channel search failed (${channelId}): ${error.message}`);
+        preferredLists.push([]);
+      }
     }
-    const general = await searchOnce({ requireEmbeddable });
+    let general = [];
+    try {
+      general = await searchOnce({ requireEmbeddable });
+    } catch (error) {
+      console.warn(`[YouTube] General highlight search failed: ${error.message}`);
+      if (preferredLists.every((rows) => rows.length === 0)) {
+        throw error;
+      }
+    }
     const filtered = mergeHighlightResults([...preferredLists, general])
       .filter((row) => isHighlightUsable(row));
     return rankHighlightResults(filtered).slice(0, desired);
@@ -352,6 +388,7 @@ module.exports = {
   getSkipChannelKeywords,
   getRegionCode,
   getRelevanceLanguage,
+  getPublishedAfterFilter,
   DEFAULT_PREFERRED_CHANNEL_IDS,
   DEFAULT_SKIP_CHANNEL_KEYWORDS,
   DEFAULT_REGION_CODE,
