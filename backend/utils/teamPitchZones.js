@@ -21,29 +21,58 @@ function classifyTeamPitchMember(member) {
   return 'pitch';
 }
 
-function buildTeamPitchCardsForTeam(leaderboard, teamId, { currentUserId = null } = {}) {
+function filterLeaderboardEntriesForTeam(leaderboard, teamId, teamName = null) {
   const normalizedTeamId = normalizeTeamId(teamId);
-  if (!normalizedTeamId) {
+  const normalizedTeamName = teamName ? String(teamName).trim() : '';
+
+  return leaderboard.filter((entry) => {
+    if (normalizedTeamId && normalizeTeamId(entry.teamId) === normalizedTeamId) {
+      return true;
+    }
+    if (normalizedTeamName && String(entry.teamName || '').trim() === normalizedTeamName) {
+      return true;
+    }
+    return false;
+  });
+}
+
+function buildTeamPitchCardsFromMembers(members, { currentUserId = null } = {}) {
+  const mapped = members.map((entry) => ({
+    userId: entry.userId,
+    name: `${entry.firstName} ${entry.lastName}`.trim(),
+    zone: classifyTeamPitchMember(entry),
+    submittedPredictions: entry.submittedPredictions ?? 0,
+    pastDueMatches: entry.pastDueMatches ?? 0,
+    pastCompletionPercentage: entry.pastCompletionPercentage ?? 100,
+    isCurrentUser: currentUserId != null && entry.userId === currentUserId,
+  }));
+
+  return {
+    red: mapped.filter((m) => m.zone === 'red'),
+    yellow: mapped.filter((m) => m.zone === 'yellow'),
+    pitch: mapped.filter((m) => m.zone === 'pitch'),
+  };
+}
+
+function buildTeamPitchCardsForTeam(leaderboard, teamId, { teamName = null, currentUserId = null } = {}) {
+  const normalizedTeamId = normalizeTeamId(teamId);
+  if (!normalizedTeamId && !teamName) {
     return { red: [], yellow: [], pitch: [] };
   }
 
-  const members = leaderboard
-    .filter((entry) => normalizeTeamId(entry.teamId) === normalizedTeamId)
-    .map((entry) => ({
-      userId: entry.userId,
-      name: `${entry.firstName} ${entry.lastName}`.trim(),
-      zone: classifyTeamPitchMember(entry),
-      submittedPredictions: entry.submittedPredictions ?? 0,
-      pastDueMatches: entry.pastDueMatches ?? 0,
-      pastCompletionPercentage: entry.pastCompletionPercentage ?? 100,
-      isCurrentUser: currentUserId != null && entry.userId === currentUserId,
-    }));
+  const members = filterLeaderboardEntriesForTeam(leaderboard, teamId, teamName);
+  return buildTeamPitchCardsFromMembers(members, { currentUserId });
+}
 
-  return {
-    red: members.filter((m) => m.zone === 'red'),
-    yellow: members.filter((m) => m.zone === 'yellow'),
-    pitch: members.filter((m) => m.zone === 'pitch'),
-  };
+function buildTeamPitchMembersIndex(leaderboard, teamRanking = []) {
+  const index = new Map();
+  for (const team of teamRanking) {
+    index.set(
+      team.teamId,
+      filterLeaderboardEntriesForTeam(leaderboard, team.teamId, team.teamName),
+    );
+  }
+  return index;
 }
 
 module.exports = {
@@ -52,5 +81,8 @@ module.exports = {
   normalizeTeamId,
   resolveUserTeamId,
   classifyTeamPitchMember,
+  filterLeaderboardEntriesForTeam,
+  buildTeamPitchCardsFromMembers,
   buildTeamPitchCardsForTeam,
+  buildTeamPitchMembersIndex,
 };

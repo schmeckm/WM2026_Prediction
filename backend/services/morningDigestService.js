@@ -23,7 +23,13 @@ const { checkAiAvailability } = require('./llmService');
 const oddsApiService = require('./oddsApiService');
 const { syncMarketOdds } = require('./oddsSyncService');
 const { getScorers } = require('./footballCompetitionService');
-const { buildTeamPitchCardsForTeam, resolveUserTeamId } = require('../utils/teamPitchZones');
+const {
+  buildTeamPitchCardsForTeam,
+  buildTeamPitchCardsFromMembers,
+  buildTeamPitchMembersIndex,
+  filterLeaderboardEntriesForTeam,
+  resolveUserTeamId,
+} = require('../utils/teamPitchZones');
 
 const TOP_PLAYERS = 5;
 const TOP_TEAMS = 3;
@@ -203,13 +209,45 @@ function formatTeamPitchCardsText(cards, locale) {
   return lines.join('\n');
 }
 
+function formatTeamPitchSummaryHtml(cards, locale) {
+  const total = cards.red.length + cards.yellow.length + cards.pitch.length;
+  return `<p style="margin:0 0 8px;font-size:14px;color:#cbd5e1;">${escapeHtml(t('emails.morningDigest.teamPitchSummary', locale, {
+    total,
+    pitch: cards.pitch.length,
+    yellow: cards.yellow.length,
+    red: cards.red.length,
+  }))}</p>`;
+}
+
+function formatTeamPitchSummaryText(cards, locale) {
+  const total = cards.red.length + cards.yellow.length + cards.pitch.length;
+  return t('emails.morningDigest.teamPitchSummary', locale, {
+    total,
+    pitch: cards.pitch.length,
+    yellow: cards.yellow.length,
+    red: cards.red.length,
+  });
+}
+
 function resolveTeamPitchForUser(user, shared, { previewFallback = false } = {}) {
-  const leaderboard = shared.leaderboardForPitch || shared.leaderboard;
   const teamId = resolveUserTeamId(user);
+  const teamEntry = teamId
+    ? shared.teamRanking.find((entry) => entry.teamId === teamId) || null
+    : null;
+
+  const resolveCards = (resolvedTeamId, teamName) => {
+    const members = shared.teamPitchMembersByTeamId?.get(resolvedTeamId)
+      || filterLeaderboardEntriesForTeam(
+        shared.leaderboardForPitch || shared.leaderboard,
+        resolvedTeamId,
+        teamName,
+      );
+    return buildTeamPitchCardsFromMembers(members, { currentUserId: user.id });
+  };
 
   if (teamId) {
     return {
-      cards: buildTeamPitchCardsForTeam(leaderboard, teamId, { currentUserId: user.id }),
+      cards: resolveCards(teamId, teamEntry?.teamName),
       previewNote: null,
     };
   }
@@ -220,11 +258,11 @@ function resolveTeamPitchForUser(user, shared, { previewFallback = false } = {})
 
   const locale = resolveUserEmailLocale(user);
   let bestTeam = shared.teamRanking[0];
-  let bestCards = buildTeamPitchCardsForTeam(leaderboard, bestTeam.teamId);
+  let bestCards = resolveCards(bestTeam.teamId, bestTeam.teamName);
   let bestScore = bestCards.yellow.length + bestCards.red.length;
 
   for (const team of shared.teamRanking) {
-    const cards = buildTeamPitchCardsForTeam(leaderboard, team.teamId);
+    const cards = resolveCards(team.teamId, team.teamName);
     const score = cards.yellow.length + cards.red.length;
     if (score > bestScore) {
       bestScore = score;
@@ -466,6 +504,7 @@ async function buildSharedDigestData() {
   const ruleHighlights = buildRuleHighlights(lastNightMatches, predictions, scoringRules, usersById);
   const aiHighlights = await loadAiHighlightsByLocale();
   const topWmScorers = await loadTopWmScorers();
+  const teamPitchMembersByTeamId = buildTeamPitchMembersIndex(leaderboardForPitch, teamRanking);
 
   return {
     timezone,
@@ -474,6 +513,7 @@ async function buildSharedDigestData() {
     leaderboard,
     leaderboardForPitch,
     teamRanking,
+    teamPitchMembersByTeamId,
     yesterdayRanks,
     pointsEarned,
     topUsers: leaderboard.slice(0, TOP_PLAYERS),
@@ -555,12 +595,16 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
     <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.teamPitchHeading', locale))}</p>
     ${previewNoteHtml}
     <p style="margin:0 0 8px;font-size:14px;color:#cbd5e1;">${escapeHtml(t('emails.morningDigest.teamPitchIntro', locale))}</p>
+    ${formatTeamPitchSummaryHtml(userData.teamPitchCards, locale)}
+    <p style="margin:0 0 8px;font-size:13px;color:#94a3b8;">${escapeHtml(t('emails.morningDigest.teamPitchListNote', locale))}</p>
     ${formatTeamPitchCardsHtml(userData.teamPitchCards, locale)}
   `.trim();
     teamPitchText = [
       t('emails.morningDigest.teamPitchHeading', locale),
       userData.teamPitchPreviewNote || null,
       t('emails.morningDigest.teamPitchIntro', locale),
+      formatTeamPitchSummaryText(userData.teamPitchCards, locale),
+      t('emails.morningDigest.teamPitchListNote', locale),
       formatTeamPitchCardsText(userData.teamPitchCards, locale),
     ].filter(Boolean).join('\n');
   }

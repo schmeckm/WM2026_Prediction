@@ -356,6 +356,8 @@
       "teamPitchYou": "(you)",
       "teamPitchAllClear": "Everyone on your team is on the pitch – no yellow or red cards.",
       "teamPitchPreviewSample": "Preview for team \"{teamName}\" (your profile has no team – real digests show your own team).",
+      "teamPitchSummary": "{total} members · {pitch} on the pitch · {yellow} yellow · {red} red",
+      "teamPitchListNote": "Only yellow and red cards are listed by name – everyone else is on the pitch.",
       "highlight": {
         "matchOfNight": "Match of the night: {homeTeam} {homeScore}:{awayScore} {awayTeam} – {totalPoints} points awarded.",
         "mostExactTips": "{count} exact tips for {homeTeam} vs {awayTeam}.",

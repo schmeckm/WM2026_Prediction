@@ -74,4 +74,22 @@ describe('teamPitchZones', () => {
     assert.equal(cards.pitch.length, 1);
     assert.equal(cards.pitch[0].name, 'Tom T');
   });
+
+  it('includes members matched by team name when teamId is missing', () => {
+    const leaderboard = [
+      {
+        userId: 20,
+        teamId: null,
+        teamName: 'Team Intercompany',
+        firstName: 'Naveen',
+        lastName: 'Gopal',
+        submittedPredictions: 1,
+        pastDueMatches: 12,
+        pastCompletionPercentage: 8,
+      },
+    ];
+    const cards = buildTeamPitchCardsForTeam(leaderboard, 5, { teamName: 'Team Intercompany' });
+    assert.equal(cards.red.length, 1);
+    assert.equal(cards.red[0].name, 'Naveen Gopal');
+  });
 });

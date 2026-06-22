@@ -46,6 +46,13 @@ describe('morningDigestService', () => {
       { userId: 10, rank: 9, totalPoints: 20, firstName: 'Paul', lastName: 'P', teamId: 2, submittedPredictions: 4, pastDueMatches: 10, pastCompletionPercentage: 40 },
     ],
     teamRanking: [{ teamId: 2, rank: 2, teamName: 'Team A', averagePoints: 35 }],
+    teamPitchMembersByTeamId: new Map([
+      [2, [
+        { userId: 1, rank: 3, totalPoints: 42, firstName: 'Max', lastName: 'M', teamId: 2, teamName: 'Team A', submittedPredictions: 5, pastDueMatches: 10, pastCompletionPercentage: 90 },
+        { userId: 9, rank: 8, totalPoints: 12, firstName: 'Lisa', lastName: 'L', teamId: 2, teamName: 'Team A', submittedPredictions: 0, pastDueMatches: 8, pastCompletionPercentage: 0 },
+        { userId: 10, rank: 9, totalPoints: 20, firstName: 'Paul', lastName: 'P', teamId: 2, teamName: 'Team A', submittedPredictions: 4, pastDueMatches: 10, pastCompletionPercentage: 40 },
+      ]],
+    ]),
     yesterdayRanks: { 1: { rank: 5, totalPoints: 36 } },
     pointsEarned: new Map([[1, 6]]),
     ruleHighlights: [{
@@ -111,6 +118,7 @@ describe('morningDigestService', () => {
     assert.match(tpl.html, /Rote Karte/);
     assert.match(tpl.html, /Paul P \(40% der fälligen Spiele getippt\)/);
     assert.match(tpl.html, /Lisa L \(noch keine Tipps\)/);
+    assert.match(tpl.html, /3 Mitglieder · 1 auf dem Platz · 1 Gelb · 1 Rot/);
     assert.match(tpl.text, /Paul P/);
     assert.match(tpl.text, /Lisa L/);
   });
