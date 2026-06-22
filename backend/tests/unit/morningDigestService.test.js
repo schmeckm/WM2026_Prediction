@@ -35,7 +35,11 @@ describe('morningDigestService', () => {
     }],
     topUsers: [{ rank: 1, firstName: 'Anna', lastName: 'Müller', totalPoints: 50 }],
     topTeams: [{ rank: 1, teamName: 'Team X', averagePoints: 40 }],
-    leaderboard: [{ userId: 1, rank: 3, totalPoints: 42, firstName: 'Max', lastName: 'M' }],
+    leaderboard: [
+      { userId: 1, rank: 3, totalPoints: 42, firstName: 'Max', lastName: 'M', teamId: 2, submittedPredictions: 5, pastDueMatches: 10, pastCompletionPercentage: 90 },
+      { userId: 9, rank: 8, totalPoints: 12, firstName: 'Lisa', lastName: 'L', teamId: 2, submittedPredictions: 0, pastDueMatches: 8, pastCompletionPercentage: 0 },
+      { userId: 10, rank: 9, totalPoints: 20, firstName: 'Paul', lastName: 'P', teamId: 2, submittedPredictions: 4, pastDueMatches: 10, pastCompletionPercentage: 40 },
+    ],
     teamRanking: [{ teamId: 2, rank: 2, teamName: 'Team A', averagePoints: 35 }],
     yesterdayRanks: { 1: { rank: 5, totalPoints: 36 } },
     pointsEarned: new Map([[1, 6]]),
@@ -97,9 +101,13 @@ describe('morningDigestService', () => {
     assert.match(tpl.html, /Deine fehlenden Tipps/);
     assert.match(tpl.html, /2 offene Tipps in den nächsten 48 Stunden/);
     assert.match(tpl.html, /Spanien vs Italien/);
-    assert.match(tpl.text, /Max/);
-    assert.match(tpl.text, /Kylian Mbappé/);
-    assert.match(tpl.text, /Spanien vs Italien/);
+    assert.match(tpl.html, /Gelbe &amp; Rote Karte|Gelbe & Rote Karte/);
+    assert.match(tpl.html, /Gelbe Karte/);
+    assert.match(tpl.html, /Rote Karte/);
+    assert.match(tpl.html, /Paul P \(40% der fälligen Spiele getippt\)/);
+    assert.match(tpl.html, /Lisa L \(noch keine Tipps\)/);
+    assert.match(tpl.text, /Paul P/);
+    assert.match(tpl.text, /Lisa L/);
   });
 
   it('builds english digest when user has no language', () => {

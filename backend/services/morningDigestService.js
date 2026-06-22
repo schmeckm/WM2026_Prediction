@@ -23,6 +23,7 @@ const { checkAiAvailability } = require('./llmService');
 const oddsApiService = require('./oddsApiService');
 const { syncMarketOdds } = require('./oddsSyncService');
 const { getScorers } = require('./footballCompetitionService');
+const { buildTeamPitchCardsForTeam } = require('../utils/teamPitchZones');
 
 const TOP_PLAYERS = 5;
 const TOP_TEAMS = 3;
@@ -140,6 +141,66 @@ function formatTopWmScorersText(scorers, locale) {
     });
     return `${idx + 1}. ${line}`;
   }).join('\n');
+}
+
+function formatPitchMemberLine(member, locale) {
+  const name = member.isCurrentUser
+    ? `${member.name} ${t('emails.morningDigest.teamPitchYou', locale)}`
+    : member.name;
+  if (member.submittedPredictions === 0) {
+    return t('emails.morningDigest.teamPitchNoTipsLine', locale, { name });
+  }
+  return t('emails.morningDigest.teamPitchCoverageLine', locale, {
+    name,
+    coverage: member.pastCompletionPercentage,
+  });
+}
+
+function formatTeamPitchCardsHtml(cards, locale) {
+  if (!cards || (cards.red.length === 0 && cards.yellow.length === 0)) {
+    return `<p style="margin:0;">${escapeHtml(t('emails.morningDigest.teamPitchAllClear', locale))}</p>`;
+  }
+
+  const blocks = [];
+
+  if (cards.yellow.length > 0) {
+    const items = cards.yellow.map((m) => `<li>${escapeHtml(formatPitchMemberLine(m, locale))}</li>`).join('');
+    blocks.push(`
+      <p style="margin:0 0 4px;font-weight:600;">🟨 ${escapeHtml(t('emails.morningDigest.teamPitchYellowHeading', locale))}</p>
+      <ul style="margin:0 0 12px;padding-left:20px;">${items}</ul>
+    `.trim());
+  }
+
+  if (cards.red.length > 0) {
+    const items = cards.red.map((m) => `<li>${escapeHtml(formatPitchMemberLine(m, locale))}</li>`).join('');
+    blocks.push(`
+      <p style="margin:0 0 4px;font-weight:600;">🟥 ${escapeHtml(t('emails.morningDigest.teamPitchRedHeading', locale))}</p>
+      <ul style="margin:0;padding-left:20px;">${items}</ul>
+    `.trim());
+  }
+
+  return blocks.join('');
+}
+
+function formatTeamPitchCardsText(cards, locale) {
+  if (!cards || (cards.red.length === 0 && cards.yellow.length === 0)) {
+    return t('emails.morningDigest.teamPitchAllClear', locale);
+  }
+
+  const lines = [];
+  if (cards.yellow.length > 0) {
+    lines.push(t('emails.morningDigest.teamPitchYellowHeading', locale));
+    for (const member of cards.yellow) {
+      lines.push(`- ${formatPitchMemberLine(member, locale)}`);
+    }
+  }
+  if (cards.red.length > 0) {
+    lines.push(t('emails.morningDigest.teamPitchRedHeading', locale));
+    for (const member of cards.red) {
+      lines.push(`- ${formatPitchMemberLine(member, locale)}`);
+    }
+  }
+  return lines.join('\n');
 }
 
 async function loadTopWmScorers() {
@@ -402,6 +463,9 @@ function buildUserDigestData(user, shared) {
     rankDelta,
     pointsEarned,
     pointsDelta,
+    teamPitchCards: user.teamId
+      ? buildTeamPitchCardsForTeam(shared.leaderboard, user.teamId, { currentUserId: user.id })
+      : null,
   };
 }
 
@@ -437,6 +501,21 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
     personalHtml += `<p style="margin:0 0 12px;">${escapeHtml(t('emails.morningDigest.teamNotRanked', locale, {
       teamName: user.team.name,
     }))}</p>`;
+  }
+
+  let teamPitchHtml = '';
+  let teamPitchText = '';
+  if (userData.teamPitchCards) {
+    teamPitchHtml = `
+    <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.teamPitchHeading', locale))}</p>
+    <p style="margin:0 0 8px;font-size:14px;color:#cbd5e1;">${escapeHtml(t('emails.morningDigest.teamPitchIntro', locale))}</p>
+    ${formatTeamPitchCardsHtml(userData.teamPitchCards, locale)}
+  `.trim();
+    teamPitchText = [
+      t('emails.morningDigest.teamPitchHeading', locale),
+      t('emails.morningDigest.teamPitchIntro', locale),
+      formatTeamPitchCardsText(userData.teamPitchCards, locale),
+    ].join('\n');
   }
 
   const lastNightHtml = formatFinishedMatchListHtml(shared.lastNightMatches, locale);
@@ -495,6 +574,7 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
     ${lastNightHtml}
     <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.yourStandHeading', locale))}</p>
     ${personalHtml}
+    ${teamPitchHtml}
     <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.leaderboardHeading', locale))}</p>
     ${leaderboardHtml}
     <p style="margin:16px 0 8px;font-weight:600;">${escapeHtml(t('emails.morningDigest.teamHeading', locale))}</p>
@@ -546,6 +626,7 @@ function templateMorningDigest(user, shared, userData, { preview = false } = {})
       pointsEarned: userData.pointsEarned,
       teamName: userData.teamEntry?.teamName ?? user.team?.name ?? '–',
       teamRank: userData.teamEntry?.rank ?? '–',
+      teamPitchText: teamPitchText ? `\n${teamPitchText}\n` : '',
       wmTopScorersText,
       highlightsText,
       aiText,
